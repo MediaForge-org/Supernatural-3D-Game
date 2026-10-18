@@ -1,0 +1,135 @@
+# === External planning master (reference only, never versioned) ===
+# Planning/Master is a symlink to the external ~3 GB master archive.
+# Both patterns are needed: a symlink is not a directory for git.
+Planning/Master
+Planning/Master/
+/SPN_FULL_MASTER_*/
+/SPN_FULL_CUMULATIVE_MASTER_*/
+
+# === CMake / build outputs ===
+/build/
+/build-*/
+/out/
+cmake-build-*/
+CMakeUserPresets.json
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+compile_commands.json
+.cache/
+
+# === Compiler / linker artifacts ===
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.exp
+*.gch
+*.pch
+*.d
+*.log
+/core
+/core.[0-9]*
+
+# === Unreal Engine generated files ===
+Unreal/**/Binaries/
+Unreal/**/Intermediate/
+Unreal/**/Saved/
+Unreal/**/DerivedDataCache/
+Unreal/**/Build/Receipts/
+Unreal/**/.vs/
+Unreal/**/*.sln
+Unreal/**/*.suo
+Unreal/**/*.xcworkspace
+Unreal/**/*.xcodeproj
+Unreal/**/.vscode/
+Unreal/**/.idea/
+Unreal/**/.ccls-cache/
+Unreal/**/*.VC.db
+Unreal/**/*.VC.opendb
+
+# === IDE / editor ===
+.vs/
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# === Temporary files and logs ===
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+logs/
+tmp/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Local AI / tool configuration (may contain secrets) ===
+.claude/settings.local.json
+.claude/*.local.*
+.claude/projects/
+CLAUDE.local.md
+.cursor/
+.aider*
+.env
+.env.*
+!.env.example
+
+# === Credentials and confidential files ===
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+id_rsa*
+id_ed25519*
+*.secret
+*.secrets
+secrets/
+credentials*.json
+*token*.txt
+.netrc
+
+# === Large / unreleased binaries (not cleared for versioning) ===
+# Raw GIS/terrain/source archives and unreviewed binaries stay out until
+# explicitly approved (rights audit + LFS decision). Add per-case exceptions
+# deliberately with `!path` once approved.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+*.tar.xz
+*.tif
+*.tiff
+*.geotiff
+*.asc
+*.gpkg
+*.shp
+*.dem
+*.hgt
+*.uasset
+*.umap
+*.blend
+*.blend1
+*.fbx
+*.psd
+*.wav
+*.mp4
+*.mov
+/LocalData/
+/Archive/

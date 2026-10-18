@@ -1,0 +1,17 @@
+# Normalize line endings (Fedora + Windows workflow, NTFS-backed worktree).
+* text=auto eol=lf
+
+*.sh text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
+
+# Binary types (none are cleared for versioning yet; see .gitignore).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.uasset binary
+*.umap binary

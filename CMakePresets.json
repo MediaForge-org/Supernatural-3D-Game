@@ -1,0 +1,58 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 25, "patch": 0 },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "SPN_WARNINGS_AS_ERRORS": "ON"
+      }
+    },
+    {
+      "name": "clang",
+      "displayName": "Clang, Debug",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "clang++" }
+    },
+    {
+      "name": "gcc",
+      "displayName": "GCC, Debug",
+      "inherits": "base",
+      "cacheVariables": { "CMAKE_CXX_COMPILER": "g++" }
+    },
+    {
+      "name": "clang-asan-ubsan",
+      "displayName": "Clang, Debug, ASan+UBSan",
+      "inherits": "clang",
+      "cacheVariables": { "SPN_SANITIZE": "ON" }
+    },
+    {
+      "name": "gcc-asan-ubsan",
+      "displayName": "GCC, Debug, ASan+UBSan",
+      "inherits": "gcc",
+      "cacheVariables": { "SPN_SANITIZE": "ON" }
+    }
+  ],
+  "buildPresets": [
+    { "name": "clang", "configurePreset": "clang", "jobs": 4 },
+    { "name": "gcc", "configurePreset": "gcc", "jobs": 4 },
+    { "name": "clang-asan-ubsan", "configurePreset": "clang-asan-ubsan", "jobs": 4 },
+    { "name": "gcc-asan-ubsan", "configurePreset": "gcc-asan-ubsan", "jobs": 4 }
+  ],
+  "testPresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "output": { "outputOnFailure": true },
+      "execution": { "noTestsAction": "error", "jobs": 4 }
+    },
+    { "name": "clang", "configurePreset": "clang", "inherits": "base" },
+    { "name": "gcc", "configurePreset": "gcc", "inherits": "base" },
+    { "name": "clang-asan-ubsan", "configurePreset": "clang-asan-ubsan", "inherits": "base" },
+    { "name": "gcc-asan-ubsan", "configurePreset": "gcc-asan-ubsan", "inherits": "base" }
+  ]
+}
