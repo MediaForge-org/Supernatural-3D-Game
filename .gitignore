@@ -133,3 +133,4 @@ credentials*.json
 *.mov
 /LocalData/
 /Archive/
+/graphify-out
