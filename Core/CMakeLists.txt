@@ -1,5 +1,11 @@
 # Engine-independent core. Must never depend on Unreal Engine.
 add_library(spn_core STATIC
+    src/Appearance.cpp
+    src/AppearanceEdit.cpp
+    src/AppearanceGenerator.cpp
+    src/AppearanceRecipe.cpp
+    src/ContentId.cpp
+    src/DetailTiers.cpp
     src/WorldFacts.cpp)
 add_library(spn::core ALIAS spn_core)
 
