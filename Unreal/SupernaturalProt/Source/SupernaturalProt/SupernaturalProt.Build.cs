@@ -1,0 +1,52 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+using UnrealBuildTool;
+
+public class SupernaturalProt : ModuleRules
+{
+	public SupernaturalProt(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicDependencyModuleNames.AddRange(new string[] {
+			"Core",
+			"CoreUObject",
+			"Engine",
+			"InputCore",
+			"EnhancedInput",
+			"AIModule",
+			"StateTreeModule",
+			"GameplayStateTreeModule",
+			"UMG",
+			"Slate"
+		});
+
+		// SpnCore: integration layer to the engine-independent SPN C++20 core.
+		PrivateDependencyModuleNames.AddRange(new string[] { "SpnCore" });
+
+		PublicIncludePaths.AddRange(new string[] {
+			"SupernaturalProt",
+			"SupernaturalProt/Variant_Platforming",
+			"SupernaturalProt/Variant_Platforming/Animation",
+			"SupernaturalProt/Variant_Combat",
+			"SupernaturalProt/Variant_Combat/AI",
+			"SupernaturalProt/Variant_Combat/Animation",
+			"SupernaturalProt/Variant_Combat/Gameplay",
+			"SupernaturalProt/Variant_Combat/Interfaces",
+			"SupernaturalProt/Variant_Combat/UI",
+			"SupernaturalProt/Variant_SideScrolling",
+			"SupernaturalProt/Variant_SideScrolling/AI",
+			"SupernaturalProt/Variant_SideScrolling/Gameplay",
+			"SupernaturalProt/Variant_SideScrolling/Interfaces",
+			"SupernaturalProt/Variant_SideScrolling/UI"
+		});
+
+		// Uncomment if you are using Slate UI
+		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+
+		// Uncomment if you are using online features
+		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
+
+		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+	}
+}

@@ -134,3 +134,13 @@ credentials*.json
 /LocalData/
 /Archive/
 /graphify-out
+/Unreal/**/Binaries/
+/Unreal/**/Intermediate/
+/Unreal/**/Saved/
+/Unreal/**/DerivedDataCache/
+/Unreal/**/.vs/
+/Unreal/**/*.sln
+/Unreal/**/*.suo
+/Unreal/**/*.VC.db
+/Unreal/**/UpgradeLog.htm
+/Unreal/**/Config/DefaultEditorPerProjectUserSettings.ini
