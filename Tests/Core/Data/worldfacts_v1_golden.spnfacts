@@ -1,0 +1,18 @@
+SPNFACTS 1
+change	1	set	placeholder.case.door_open	b:false	-	b:false	"scene_start"
+change	2	set	placeholder.case.clues_found	i:0	-	i:0	""
+change	3	set	placeholder.witness.name	s:"Ann \"A\" O'Neil"	-	s:"Ann \"A\" O'Neil"	"dialogue"
+change	4	adjust	placeholder.case.clues_found	i:1	i:0	i:1	"evidence"
+change	5	set	placeholder.case.door_open	b:true	b:false	b:true	"player_action"
+change	6	adjust	placeholder.case.clues_found	i:2	i:1	i:3	"evidence"
+change	7	set	placeholder.case.door_open	b:true	b:true	b:true	""
+change	8	set	placeholder.note.text	s:"line1\nline2\ttab\\slash \x01 \x7f café €"	-	s:"line1\nline2\ttab\\slash \x01 \x7f café €"	"journal"
+change	9	set	placeholder.limit.max	i:9223372036854775807	-	i:9223372036854775807	""
+change	10	set	placeholder.limit.min	i:-9223372036854775808	-	i:-9223372036854775808	""
+change	11	set	placeholder.empty.text	s:""	-	s:""	""
+change	12	adjust	placeholder.limit.max	i:-1	i:9223372036854775807	i:9223372036854775806	"clamp"
+change	13	remove	placeholder.witness.name	-	s:"Ann \"A\" O'Neil"	-	"witness_left"
+change	14	set	placeholder.witness.name	i:42	-	i:42	"type_change_after_remove"
+change	15	adjust	placeholder.case.clues_found	i:-2	i:3	i:1	"evidence_retracted"
+change	16	remove	placeholder.empty.text	-	s:""	-	""
+end	16

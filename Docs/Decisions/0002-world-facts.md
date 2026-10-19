@@ -40,6 +40,9 @@ current, free-form cause). Errors are values (`Result<T, FactError>`), no except
 8. **No authority model:** anyone holding the store may apply commands. `cause`
    is audit text only and carries no permission semantics.
 
+Format rules, compatibility strategy and historical replay (`StateAt`) are documented
+in `0004-world-facts-save-format-v1.md`.
+
 ## Known limitations / OPEN
 - Journal grows without bound; snapshot/compaction would need format v2.
 - No UTF-8 validation, no per-save metadata (save id, host/guest scope).

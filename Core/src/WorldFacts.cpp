@@ -292,6 +292,8 @@ std::string_view ToString(FactErrorCode code) noexcept {
         return "journal mismatch";
     case FactErrorCode::CountMismatch:
         return "count mismatch";
+    case FactErrorCode::SequenceOutOfRange:
+        return "sequence out of range";
     }
     return "unknown error";
 }
@@ -361,6 +363,24 @@ Result<ChangeRecord, FactError> WorldFacts::Apply(const FactCommand& command,
     journal_.push_back(ChangeRecord{journal_.size() + 1, command, std::move(previous),
                                     std::move(current), std::string(cause)});
     return journal_.back();
+}
+
+Result<WorldFacts, FactError> WorldFacts::StateAt(std::uint64_t sequence) const {
+    if (sequence > Revision()) {
+        return Fail(FactErrorCode::SequenceOutOfRange, 0);
+    }
+    WorldFacts state;
+    for (std::size_t index = 0; index < sequence; ++index) {
+        const ChangeRecord& record = journal_[index];
+        const auto applied = state.Apply(record.command, record.cause);
+        if (!applied) {
+            return Fail(applied.Error().code, 0);
+        }
+        if (applied.Value() != record) {
+            return Fail(FactErrorCode::JournalMismatch, 0);
+        }
+    }
+    return state;
 }
 
 std::string WorldFacts::Serialize() const {

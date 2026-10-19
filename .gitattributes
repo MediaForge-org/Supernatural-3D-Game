@@ -9,6 +9,9 @@ CMakeLists.txt text eol=lf
 *.bat text eol=crlf
 *.ps1 text eol=crlf
 
+# Golden save files are byte-exact test fixtures: never convert line endings.
+*.spnfacts -text
+
 # Binary types (none are cleared for versioning yet; see .gitignore).
 *.png binary
 *.jpg binary

@@ -494,14 +494,15 @@ TEST_CASE("WorldFacts: any single-byte corruption is rejected or re-serializes i
 }
 
 TEST_CASE("FactErrorCode: every code has a distinct readable name") {
-    constexpr std::array kAll = {FactErrorCode::InvalidKey,       FactErrorCode::ValueTooLong,
-                                 FactErrorCode::CauseTooLong,     FactErrorCode::KeyNotFound,
-                                 FactErrorCode::TypeMismatch,     FactErrorCode::IntegerOverflow,
-                                 FactErrorCode::InvalidHeader,    FactErrorCode::UnsupportedVersion,
-                                 FactErrorCode::TruncatedData,    FactErrorCode::TrailingData,
-                                 FactErrorCode::MalformedLine,    FactErrorCode::InvalidToken,
-                                 FactErrorCode::SequenceMismatch, FactErrorCode::JournalMismatch,
-                                 FactErrorCode::CountMismatch};
+    constexpr std::array kAll = {
+        FactErrorCode::InvalidKey,       FactErrorCode::ValueTooLong,
+        FactErrorCode::CauseTooLong,     FactErrorCode::KeyNotFound,
+        FactErrorCode::TypeMismatch,     FactErrorCode::IntegerOverflow,
+        FactErrorCode::InvalidHeader,    FactErrorCode::UnsupportedVersion,
+        FactErrorCode::TruncatedData,    FactErrorCode::TrailingData,
+        FactErrorCode::MalformedLine,    FactErrorCode::InvalidToken,
+        FactErrorCode::SequenceMismatch, FactErrorCode::JournalMismatch,
+        FactErrorCode::CountMismatch,    FactErrorCode::SequenceOutOfRange};
     std::vector<std::string_view> names;
     for (const FactErrorCode code : kAll) {
         const std::string_view name = ToString(code);

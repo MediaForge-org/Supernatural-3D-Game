@@ -88,6 +88,8 @@ enum class FactErrorCode : std::uint8_t {
     SequenceMismatch,
     JournalMismatch,
     CountMismatch,
+    // Historical queries (appended last: existing values stay stable)
+    SequenceOutOfRange,
 };
 
 [[nodiscard]] std::string_view ToString(FactErrorCode code) noexcept;
@@ -121,6 +123,14 @@ public:
     [[nodiscard]] const std::vector<ChangeRecord>& Journal() const noexcept { return journal_; }
     /// Sequence number of the latest change; 0 for an empty store.
     [[nodiscard]] std::uint64_t Revision() const noexcept { return journal_.size(); }
+
+    /// Reconstructs the store as it was right after journal record `sequence`
+    /// (0 = empty store, Revision() = a copy of this store). The result carries the
+    /// journal prefix up to that record. This store is not modified. Fails with
+    /// SequenceOutOfRange if `sequence` > Revision(), and with JournalMismatch if the
+    /// journal does not replay to its recorded values (cannot happen for journals
+    /// built by Apply or accepted by Deserialize).
+    [[nodiscard]] Result<WorldFacts, FactError> StateAt(std::uint64_t sequence) const;
 
     /// Deterministic text form of the journal; the state is derived by replay.
     [[nodiscard]] std::string Serialize() const;
