@@ -15,6 +15,12 @@ add_library(spn_doctest INTERFACE)
 add_library(spn::doctest ALIAS spn_doctest)
 target_include_directories(spn_doctest SYSTEM INTERFACE ${doctest_SOURCE_DIR}/doctest)
 
+# By default doctest forward-declares std::basic_ostream instead of including
+# <ostream>. Stringifying std::string_view then instantiates MSVC's
+# operator<< on an incomplete type (C2027). Make doctest include the real
+# standard headers on every platform (libc++ already forces this).
+target_compile_definitions(spn_doctest INTERFACE DOCTEST_CONFIG_USE_STD_HEADERS)
+
 # doctest v2.4.12 expands __COUNTER__ and includes <ciso646>, which newer
 # compilers flag. Silence exactly these third-party diagnostics for consumers
 # of this target (the test executables) only; Core keeps the full warning set.
