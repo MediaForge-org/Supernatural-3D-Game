@@ -112,6 +112,9 @@ public:
 	/** Absolute path of the slot's save file; empty for an invalid slot name. */
 	static FString GetSlotFilePath(const FString& Slot);
 
+	/** D2 stable id rule of the core (1..96 chars, [a-z][a-z0-9_.]*), for editor-side validation. */
+	static bool IsValidInteractableId(const FString& StableId);
+
 	/** Kind and fact key of the placeholder test door (spn::core TestDoor). */
 	static FString TestDoorKind();
 	static FString TestDoorOpenKey(const FString& StableId);
@@ -121,6 +124,9 @@ public:
 	FSimpleMulticastDelegate OnWorldStateReplaced;
 
 private:
+	/** Owning game instance name for logs, so separate instances (PIE sessions, tests) can be told apart. */
+	FString DescribeOwner() const;
+
 	struct FState;
 	TPimplPtr<FState> State;
 };

@@ -221,6 +221,8 @@ bool FSpnWorldStateFailedLoadTest::RunTest(const FString& Parameters)
 		TestEqual(What + TEXT(": no replace broadcast"), Broadcasts, 0);
 	};
 
+	AddExpectedMessagePlain(TEXT("NOT loaded: no save in slot 'spn_automation_missing'"), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 1);
+	AddExpectedMessagePlain(TEXT("NOT loaded: invalid slot name"), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 1);
 	TestEqual(TEXT("missing slot"), WorldState.LoadFromSlot(Missing.Name).Result, ESpnSlotResult::SlotNotFound);
 	ExpectStateKept(TEXT("missing slot"));
 
@@ -318,6 +320,7 @@ bool FSpnWorldStateSlotNameTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("slot file path is absolute"), !FPaths::IsRelative(Path));
 
 	FScopedGameInstance Instance;
+	AddExpectedMessagePlain(TEXT("NOT saved: invalid slot name '../escape'"), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 1);
 	TestEqual(TEXT("save to an invalid slot is refused"), Instance.WorldState()->SaveToSlot(TEXT("../escape")).Result,
 		ESpnSlotResult::InvalidSlotName);
 	return true;

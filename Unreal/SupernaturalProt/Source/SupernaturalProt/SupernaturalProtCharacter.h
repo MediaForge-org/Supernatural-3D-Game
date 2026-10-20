@@ -4,12 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputCoreTypes.h"
 #include "Logging/LogMacros.h"
 #include "SupernaturalProtCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class UInputAction;
+class UInputMappingContext;
+class USpnInteractionComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -30,7 +33,18 @@ class ASupernaturalProtCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-	
+
+	/** Finds and uses interactables in front of the character (SPN placeholder interaction) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpnInteractionComponent* Interaction;
+
+	/** Runtime fallback used while InteractAction is not set: an Enhanced Input action and context mapping DefaultInteractKey */
+	UPROPERTY(Transient)
+	UInputAction* RuntimeInteractAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimeInteractMappingContext;
+
 protected:
 
 	/** Jump Input Action */
@@ -49,6 +63,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	UInputAction* MouseLookAction;
 
+	/** Interact Input Action. If set, map it in an Input Mapping Context yourself; if empty, DefaultInteractKey is mapped at runtime */
+	UPROPERTY(EditAnywhere, Category="Input")
+	UInputAction* InteractAction;
+
+	/** Key for the runtime interact mapping, used only while InteractAction is empty (placeholder binding) */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultInteractKey = EKeys::E;
+
 public:
 
 	/** Constructor */
@@ -58,6 +80,12 @@ protected:
 
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	/** Removes the runtime interact mapping again */
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	/** Returns the action bound to interact: InteractAction, or the runtime fallback (created and mapped on first use) */
+	UInputAction* ResolveInteractAction();
 
 protected:
 
@@ -85,6 +113,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoJumpEnd();
 
+	/** Handles interact pressed inputs from either controls or UI interfaces */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoInteract();
+
 public:
 
 	/** Returns CameraBoom subobject **/
@@ -92,5 +124,8 @@ public:
 
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	/** Returns the action bound to interact (InteractAction or the runtime fallback); null before input setup **/
+	FORCEINLINE UInputAction* GetBoundInteractAction() const { return InteractAction != nullptr ? InteractAction : RuntimeInteractAction; }
 };
 

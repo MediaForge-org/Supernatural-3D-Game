@@ -1,6 +1,7 @@
 #include "SpnWorldStateSubsystem.h"
 #include "SpnCoreModule.h"
 
+#include "Engine/GameInstance.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
 #include "Misc/FileHelper.h"
@@ -146,8 +147,8 @@ USpnWorldStateSubsystem::~USpnWorldStateSubsystem() = default;
 void USpnWorldStateSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	UE_LOG(LogSpnCore, Log, TEXT("World state subsystem initialized (revision %llu)"),
-		static_cast<unsigned long long>(GetRevision()));
+	UE_LOG(LogSpnCore, Log, TEXT("World state [%s]: subsystem initialized (revision %llu)"),
+		*DescribeOwner(), static_cast<unsigned long long>(GetRevision()));
 }
 
 void USpnWorldStateSubsystem::Deinitialize()
@@ -211,12 +212,19 @@ uint64 USpnWorldStateSubsystem::GetRevision() const
 	return State->Facts.Revision();
 }
 
+FString USpnWorldStateSubsystem::DescribeOwner() const
+{
+	return GetNameSafe(GetGameInstance());
+}
+
 FSpnSlotStatus USpnWorldStateSubsystem::SaveToSlot(const FString& Slot) const
 {
 	FSpnSlotStatus Status;
 	if (!IsValidSlotName(Slot))
 	{
 		Status.Result = ESpnSlotResult::InvalidSlotName;
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: NOT saved: invalid slot name '%s' (allowed: [a-z][a-z0-9_]*, at most %d chars)"),
+			*DescribeOwner(), *Slot, MaxSlotNameLength);
 		return Status;
 	}
 
@@ -234,13 +242,13 @@ FSpnSlotStatus USpnWorldStateSubsystem::SaveToSlot(const FString& Slot) const
 	{
 		PlatformFile.DeleteFile(*TempPath);
 		Status.Result = ESpnSlotResult::WriteFailed;
-		UE_LOG(LogSpnCore, Error, TEXT("World state: saving slot '%s' to '%s' failed; the previous save is unchanged"),
-			*Slot, *FinalPath);
+		UE_LOG(LogSpnCore, Error, TEXT("World state [%s]: saving slot '%s' to '%s' failed; the previous save is unchanged"),
+			*DescribeOwner(), *Slot, *FinalPath);
 		return Status;
 	}
 
-	UE_LOG(LogSpnCore, Log, TEXT("World state: saved slot '%s' (revision %llu, %llu bytes)"),
-		*Slot, static_cast<unsigned long long>(GetRevision()), static_cast<unsigned long long>(Bytes.size()));
+	UE_LOG(LogSpnCore, Log, TEXT("World state [%s]: saved slot '%s' (revision %llu, %llu bytes) to '%s'"),
+		*DescribeOwner(), *Slot, static_cast<unsigned long long>(GetRevision()), static_cast<unsigned long long>(Bytes.size()), *FinalPath);
 	return Status;
 }
 
@@ -250,6 +258,7 @@ FSpnSlotStatus USpnWorldStateSubsystem::LoadFromSlot(const FString& Slot)
 	if (!IsValidSlotName(Slot))
 	{
 		Status.Result = ESpnSlotResult::InvalidSlotName;
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: NOT loaded: invalid slot name '%s'; state unchanged"), *DescribeOwner(), *Slot);
 		return Status;
 	}
 
@@ -257,6 +266,7 @@ FSpnSlotStatus USpnWorldStateSubsystem::LoadFromSlot(const FString& Slot)
 	if (!FPaths::FileExists(Path))
 	{
 		Status.Result = ESpnSlotResult::SlotNotFound;
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: NOT loaded: no save in slot '%s' ('%s'); state unchanged"), *DescribeOwner(), *Slot, *Path);
 		return Status;
 	}
 
@@ -264,7 +274,7 @@ FSpnSlotStatus USpnWorldStateSubsystem::LoadFromSlot(const FString& Slot)
 	if (!FFileHelper::LoadFileToArray(Bytes, *Path, FILEREAD_Silent))
 	{
 		Status.Result = ESpnSlotResult::ReadFailed;
-		UE_LOG(LogSpnCore, Warning, TEXT("World state: reading slot '%s' from '%s' failed; state unchanged"), *Slot, *Path);
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: reading slot '%s' from '%s' failed; state unchanged"), *DescribeOwner(), *Slot, *Path);
 		return Status;
 	}
 
@@ -275,14 +285,15 @@ FSpnSlotStatus USpnWorldStateSubsystem::LoadFromSlot(const FString& Slot)
 		Status.Result = ESpnSlotResult::CorruptData;
 		Status.Detail = ToFString(spn::core::ToString(Loaded.Error().code));
 		Status.Line = static_cast<int32>(Loaded.Error().line);
-		UE_LOG(LogSpnCore, Warning, TEXT("World state: slot '%s' rejected (%s at line %d); state unchanged"),
-			*Slot, *Status.Detail, Status.Line);
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: slot '%s' rejected (%s at line %d) from '%s'; state unchanged"),
+			*DescribeOwner(), *Slot, *Status.Detail, Status.Line, *Path);
 		return Status;
 	}
 
+	const uint64 PreviousRevision = GetRevision();
 	State->Facts = std::move(Loaded.Value());
-	UE_LOG(LogSpnCore, Log, TEXT("World state: loaded slot '%s' (revision %llu)"),
-		*Slot, static_cast<unsigned long long>(GetRevision()));
+	UE_LOG(LogSpnCore, Log, TEXT("World state [%s]: loaded slot '%s' from '%s' (revision %llu -> %llu); notifying listeners"),
+		*DescribeOwner(), *Slot, *Path, static_cast<unsigned long long>(PreviousRevision), static_cast<unsigned long long>(GetRevision()));
 	OnWorldStateReplaced.Broadcast();
 	return Status;
 }
@@ -307,6 +318,11 @@ bool USpnWorldStateSubsystem::IsValidSlotName(const FString& Slot)
 FString USpnWorldStateSubsystem::GetSlotFilePath(const FString& Slot)
 {
 	return IsValidSlotName(Slot) ? SaveRootDirectory() / Slot / SaveFileName : FString();
+}
+
+bool USpnWorldStateSubsystem::IsValidInteractableId(const FString& StableId)
+{
+	return spn::core::IsValidInteractableId(ToUtf8(StableId));
 }
 
 FString USpnWorldStateSubsystem::TestDoorKind()

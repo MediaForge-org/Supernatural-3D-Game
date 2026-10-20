@@ -9,8 +9,23 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "InputAction.h"
 #include "InputActionValue.h"
+#include "InputMappingContext.h"
+#include "Spn/SpnInteractionComponent.h"
 #include "SupernaturalProt.h"
+
+namespace
+{
+	// Above the template contexts (priority 0), so the runtime interact key wins a conflict.
+	constexpr int32 RuntimeInteractContextPriority = 1;
+
+	UEnhancedInputLocalPlayerSubsystem* GetEnhancedInput(const AController* Controller)
+	{
+		const APlayerController* PlayerController = Cast<APlayerController>(Controller);
+		return PlayerController != nullptr ? ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()) : nullptr;
+	}
+}
 
 ASupernaturalProtCharacter::ASupernaturalProtCharacter()
 {
@@ -46,6 +61,9 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	// Interaction with SPN interactables (E by default, see DefaultInteractKey)
+	Interaction = CreateDefaultSubobject<USpnInteractionComponent>(TEXT("Interaction"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -65,11 +83,52 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::Look);
+
+		// Interacting
+		EnhancedInputComponent->BindAction(ResolveInteractAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoInteract);
 	}
 	else
 	{
 		UE_LOG(LogSupernaturalProt, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+}
+
+void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (RuntimeInteractMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimeInteractMappingContext);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
+
+UInputAction* ASupernaturalProtCharacter::ResolveInteractAction()
+{
+	if (InteractAction != nullptr)
+	{
+		return InteractAction;
+	}
+
+	// No asset assigned: build a transient Enhanced Input action and context in code,
+	// so E works without editing the template's input assets.
+	if (RuntimeInteractAction == nullptr)
+	{
+		RuntimeInteractAction = NewObject<UInputAction>(this, TEXT("IA_SpnInteract_Runtime"), RF_Transient);
+		RuntimeInteractAction->ValueType = EInputActionValueType::Boolean;
+
+		RuntimeInteractMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnInteract_Runtime"), RF_Transient);
+		RuntimeInteractMappingContext->MapKey(RuntimeInteractAction, DefaultInteractKey);
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimeInteractMappingContext, RuntimeInteractContextPriority);
+	}
+	return RuntimeInteractAction;
 }
 
 void ASupernaturalProtCharacter::Move(const FInputActionValue& Value)
@@ -130,4 +189,10 @@ void ASupernaturalProtCharacter::DoJumpEnd()
 {
 	// signal the character to stop jumping
 	StopJumping();
+}
+
+void ASupernaturalProtCharacter::DoInteract()
+{
+	// use whatever interactable is in front of the character (authority only)
+	Interaction->TryInteract();
 }
