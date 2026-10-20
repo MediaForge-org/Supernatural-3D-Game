@@ -42,6 +42,7 @@ public class SpnCore : ModuleRules
 		PCHUsage = PCHUsageMode.NoPCHs;
 		bUseUnity = false;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core" });
+		// CoreUObject/Engine: USpnWorldStateSubsystem (a game instance subsystem).
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
 	}
 }

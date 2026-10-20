@@ -34,6 +34,25 @@ Status: engineering notes, **not** master canon. First working integration,
   builds `SpnCore` is a DLL and Core symbols are not exported, so other modules
   use the exported bridge functions (`SPNCORE_API`), not Core types directly.
 
+## World state subsystem (2026-10-20, Proposal 0004 increment 3)
+- `USpnWorldStateSubsystem` (game instance subsystem, module `SpnCore`) owns one
+  `WorldFacts` store and the `InteractionRegistry` (test door registered). Core types sit
+  behind a `TPimplPtr`, so the public header uses Unreal types only (bridge, see open
+  point below). `SpnCore` now also depends on `CoreUObject` and `Engine`.
+- Slot file (placeholder for M5): `Saved/SpnSaves/<slot>/worldfacts.spnfacts`, WorldFacts
+  v1 bytes unchanged. Placeholder slot rule: 1..64 chars, `[a-z][a-z0-9_]*` (no dots: Windows
+  drops trailing dots; no separators: no path escape).
+- Save: write `<file>.tmp`, full flush, read back and compare, then one atomic rename over
+  the old file (`MoveFileExW(REPLACE_EXISTING | WRITE_THROUGH)` on Windows, `rename()` via
+  `IPlatformFile::MoveFile` elsewhere). `IFileManager::Move(Replace)` is not used: it deletes
+  the target before moving. A failure before the rename leaves the old save untouched.
+- Load: missing slot, unreadable file or a `Deserialize` error returns an error status
+  (core error text and line) and keeps the current store; only success replaces it and
+  broadcasts `OnWorldStateReplaced`.
+- Known warnings: `SpnCore` builds without PCH, so each TU including `UObject/Class.h`
+  shows 7 C4996 warnings from that UE 5.8.3 header (`UE_INTERNAL`/deprecated overrides in
+  `UClass`). The project's shared PCH compiles report the same 7; not from SPN code.
+
 ## Open (needs developer decision)
 - Direct use of Core types from gameplay modules: either keep a bridge layer,
   or add an opt-in export macro to Core headers (empty in CMake). Not decided.
