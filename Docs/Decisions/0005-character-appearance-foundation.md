@@ -19,9 +19,13 @@ developer's decisions of the planning phase. These are *requirements*, not desig
 - Long-term open source; no third-party copyrighted material in the public repo.
 - World size is not fixed (about 25 candidate sizes); future systems must be size-independent.
 
-### CONFIRMED in the master canon (read-only check of `Planning/Master`)
-- The master has **no** character-editor, appearance, photorealism or LOD requirement
-  (October 15/18 addenda and the 2026-09 status files checked).
+### In the master (read-only check of `Planning/Master`, corrected 2026-10-20)
+- `01_CURRENT_CANONICAL_STATE/` (tier 1, including the addenda of 2026-10-15 and 2026-10-18)
+  contains no character-editor, appearance, photorealism or LOD requirement. The
+  requirements are in a review-only daily delta (tier 2) and in older reference documents
+  (tier 3); see the **Master basis** table below. An earlier version of this document said
+  the master has no such requirement; that was wrong and is corrected here. No design
+  decision of this document changes because of the correction.
 - Modding (`01_CURRENT_CANONICAL_STATE/MODDING/`): `.spnmod`, provider-independent,
   project-owned manifest/registry; **mods can be enabled/disabled per save; disabled mods
   and their state stay preserved; critical missing mods block save loading by default, with
@@ -29,6 +33,32 @@ developer's decisions of the planning phase. These are *requirements*, not desig
   → consequences for appearance data are in section 4.4.
 - Accepted earlier: realistic injury, clothing/inventory, many individually authored NPCs,
   companions (Blocks 9/10, as summarised in 0003).
+
+#### Master basis (paths relative to `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`)
+`PD` = `02_EMBEDDED_BASE_ARCHIVES/02_PROMPT_LIBRARY_CURRENT/docs/reference/PROJECT_DECISIONS.md`
+(tier 3, dated 2026-08-31); `CCR` = `99_DAILY_DELTAS/2026-10-18/SPN_DAILY_DELTA_2026-10-18/docs/design/CHARACTER_CREATOR_AND_RELEASE_POLICY.md`
+(tier 2). Lines as read on 2026-10-20. The delta is a review package, so its
+"user-confirmed" statements are **reported developer decisions that are not yet part of the
+tier 1 canon**, and the delta itself says they are a design goal, not evidence that assets or
+systems exist.
+
+| # | Requirement (paraphrased) | Status as read | Source (path, section, line) | Used in this document |
+|---|---|---|---|---|
+| A1 | Human characters as photorealistic as reasonably achievable within evolving production limits | user-confirmed direction (reported, tier 2) | `CCR`, "User-confirmed long-term direction", L5 | long-term goal; no rendering decision (section 1, 4.5) |
+| A2 | Deep modular character creator for player characters and generated NPCs: faces, body types and proportions, hair, clothing, appearance details | user-confirmed direction (reported, tier 2); a design goal | `CCR` L6 | parameter groups, edits, editor foundation |
+| A3 | Scalable NPC fidelity/performance; staged implementation; not every endgame customization needed for Phase 0 | user-confirmed direction (reported, tier 2) | `CCR` L7–8 | detail tiers, "no editor UI now" |
+| A4 | One deeply customizable player-created protagonist; male and female both fully viable without story/content locks | CONFIRMED ("preferred current model", tier 3) | `PD`, "Player-created protagonist, Hunter crew and HQ", L618 | no sex-specific restriction in the model; representation choices stay OPEN |
+| A5 | Creator inventory: face/body customization, cosmetic anatomy separate from gameplay power, save/versioning rules for creator parameters, regression tests for extreme valid body combinations | planned direction; file status "PLANNING INVENTORY", work packages not yet written | `02_EMBEDDED_BASE_ARCHIVES/02_PROMPT_LIBRARY_CURRENT/docs/planning-backlog/33-custom-protagonist-character-creator.md`, "Canonical direction", L4–L17 | versioned formats, validation; gameplay effects of the body are not modelled |
+| A6 | Not every NPC needs full simulation; important NPCs can be full Actors, background/distant populations lighter | CONFIRMED (tier 3) | `PD`, "NPCs and AI", L73 | simulation tier is the NPC system's job, not appearance's (section 2) |
+| A7 | Asset LOD/Nanite suitability is part of the DCC/asset specification | CONFIRMED (tier 3), asset level | `PD`, "AI-assisted Blender / scene production", L555; "Prompt library, Scrum and implementation orchestration", L394 | LOD of meshes is the renderer's concern; `DetailTierTable` only supplies distance thresholds |
+| A8 | Important characters get authored depth; generic NPCs may use systemic content | CONFIRMED (tier 1), about dialogue and relationship depth; says nothing about looks | `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-05.md`, "Block 10 — social/life sandbox accepted direction", L42 | context only; individual looks of NPCs stay a developer requirement from 0003 |
+| A9 | Eventual open source of code and planning master only after a per-file rights audit; third-party assets and generated media are not presumed redistributable | reported intent, no license decided (tier 2); same rule in `CLAUDE.md` §9 | `CCR`, "Open-source and project-data handling", L12–15 | separation of third-party content (section 1) |
+| A10 | Data-driven character definitions and LOD tiers; stable identity/appearance serialization before expanding customization | PROPOSAL (labelled "proposals only") | `CCR`, "Suggested architecture notes (proposals only)", L19–21 | consistent with this document; not used as a requirement |
+| A11 | Candidate data boundaries and a testable first slice for appearance; undecided: morph count, rig topology, mesh generation technique, photoreal targets by distance, collision, editor UI, NPC budget, likeness/consent constraints, licensing | PROPOSAL (review-only, "not a locked schema") | `99_DAILY_DELTAS/2026-10-19/SPN_DAILY_DELTA_2026-10-19/docs/design/CHARACTER_APPEARANCE_PHASE_0_4_PROPOSAL.md`, "Candidate modular data boundaries", "Testable first slice", "Not yet decided" | consistent; the undecided items stay in section 6 |
+
+Not found in the master: a specification of parameters, morph counts, distance numbers or
+LOD tier counts (none is decided here either), and any statement that NPCs must look
+individually (that requirement comes from the developer statement in 0003).
 
 ### ENGINEERING PROPOSALS (this document; all changeable)
 Everything under "What exists" below: id scheme, fixed-point parameters, catalog, provider

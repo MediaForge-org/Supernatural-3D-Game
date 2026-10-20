@@ -25,6 +25,8 @@ The archive has a nested cumulative master directory. Important starting points 
 - `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/00_START_HERE/`
 - `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/01_CURRENT_CANONICAL_STATE/`
 - Dated addenda under `01_CURRENT_CANONICAL_STATE/ADDENDA_2026/`, including 2026-10-15 and 2026-10-18.
+- Review-only daily deltas under `99_DAILY_DELTAS/` (2026-10-14 to 2026-10-19): proposals, reported status and evidence, not canon.
+- Topic entry points and source weights: `Docs/MasterIndex.md` (section 11 below).
 
 **Source-of-truth discipline:**
 1. Later explicit developer decisions override older conflicting decisions.
@@ -143,5 +145,17 @@ The project is intended to become **open source in the long term**. This covers 
 These rules apply after successful tests and regardless of change size. Every commit and every publication remains exclusively under the developer's control.
 
 Allowed: editing files, running local tests, read-only Git (`status`, `diff`, `log`, `check-ignore`), and preparing changes (e.g. a suggested commit message or a staged-file list) for the developer's manual commit. Local `git init` and `.gitignore` setup only when the developer asks for it.
+
+## 11. Master consultation protocol
+
+**Required before** new gameplay systems, architecture decisions, save or persistence formats, and larger gameplay changes. It may be skipped for pure build fixes and refactorings without behavior change; say so in the report.
+
+1. Find the topic in `Docs/MasterIndex.md` and search with `bash Tools/master-search.sh <terms>` (default: current canonical state and review deltas; `--tier 1,2,3` adds older reference docs; `--history` only on explicit need). Never read the whole archive for a task.
+2. Read the section behind a hit. A file name, a search hit or a folder never makes something canon.
+3. Classify each relevant finding as **CONFIRMED / LOCKED**, **PROVISIONAL**, **PROPOSAL**, **OPEN**, or **unclear / contradictory**, using the status words in the source itself.
+4. A newer file is not automatically more binding. Apply the supersession rules (`01_CURRENT_CANONICAL_STATE/SOURCE_OF_TRUTH_AND_SUPERSESSION*.md`) and later explicit developer decisions. Prompt-library prompts are drafts (`DRAFT_REWRITE_REQUIRED`), not requirements; reported results in deltas are not reproduced evidence.
+5. On a conflict or an unclear status do not set canon yourself: cite both paths and ask the developer.
+6. Record adopted requirements with path and section (a "Master basis" table) in the `Docs/Decisions` or `Docs/Proposals` document that uses them, separate from our own proposals, and derive tests from the confirmed ones. Report what was found, including "nothing found".
+7. `Planning/Master` stays read-only; nothing from it is copied wholesale or committed.
 
 **This file guides implementation; it does not supersede the developer's later explicit instructions or the authoritative master canon.**
