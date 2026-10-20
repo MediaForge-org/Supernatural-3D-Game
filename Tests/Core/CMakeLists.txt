@@ -8,6 +8,7 @@ add_executable(spn_core_tests
     AppearanceGeneratorTests.cpp
     AppearanceRecipeTests.cpp
     DetailTierTests.cpp
+    InteractionTests.cpp
     WorldFactsTests.cpp
     WorldFactsCompatibilityTests.cpp)
 # Frozen golden save files used by the compatibility tests.

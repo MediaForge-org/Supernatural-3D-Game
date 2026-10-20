@@ -38,6 +38,9 @@ compile_commands.json
 *.log
 /core
 /core.[0-9]*
+# With core.ignorecase (Windows default) "/core" also matches the Core/ source
+# directory; re-include it as a directory only, so core dump files stay ignored.
+!/Core/
 
 # === Unreal Engine generated files ===
 Unreal/**/Binaries/

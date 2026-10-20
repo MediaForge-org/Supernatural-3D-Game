@@ -6,6 +6,8 @@ add_library(spn_core STATIC
     src/AppearanceRecipe.cpp
     src/ContentId.cpp
     src/DetailTiers.cpp
+    src/Interaction.cpp
+    src/TestDoor.cpp
     src/WorldFacts.cpp)
 add_library(spn::core ALIAS spn_core)
 

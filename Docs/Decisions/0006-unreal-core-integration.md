@@ -24,8 +24,11 @@ Status: engineering notes, **not** master canon. First working integration,
   `_HAS_EXCEPTIONS=0` in game builds. A CMake-prebuilt `spn_core.lib` (`/EHsc`,
   `_HAS_EXCEPTIONS=1`, debug CRT in Debug) would mix incompatible settings.
   Compiling with UBT gives each UE configuration matching flags automatically.
-- Core path: env var `SPN_CORE_ROOT`, fallback is a sibling checkout
-  `../Supernatural-3D-Game` next to the Unreal project. No absolute paths.
+- Core path: env var `SPN_CORE_ROOT`, else the repository that contains the
+  project (`<repo>/Unreal/SupernaturalProt`, layout since commit `cd7d0da`), else a
+  sibling checkout `../Supernatural-3D-Game` next to the Unreal project. No
+  absolute paths. (2026-10-20: the in-repo case was added; before it, the in-repo
+  project failed with a RulesError unless `SPN_CORE_ROOT` was set.)
 - Core TUs: no PCH, no unity build (each .cpp stays its own TU, as in CMake).
 - Core headers are a *private* include path of `SpnCore`. In modular (editor)
   builds `SpnCore` is a DLL and Core symbols are not exported, so other modules

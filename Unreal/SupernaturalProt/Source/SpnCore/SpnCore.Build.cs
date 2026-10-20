@@ -12,11 +12,16 @@ public class SpnCore : ModuleRules
 {
 	public SpnCore(ReadOnlyTargetRules Target) : base(Target)
 	{
-		// Core repository root: SPN_CORE_ROOT, or the sibling checkout next to this project.
+		// Core repository root: SPN_CORE_ROOT, else the repository containing this project
+		// (<repo>/Unreal/SupernaturalProt), else a sibling checkout next to this project.
 		string CoreRoot = Environment.GetEnvironmentVariable("SPN_CORE_ROOT");
 		if (string.IsNullOrEmpty(CoreRoot))
 		{
-			CoreRoot = Path.Combine(ModuleDirectory, "..", "..", "..", "Supernatural-3D-Game");
+			CoreRoot = Path.Combine(ModuleDirectory, "..", "..", "..", "..");
+			if (!File.Exists(Path.Combine(CoreRoot, "Core", "include", "spn", "core", "WorldFacts.h")))
+			{
+				CoreRoot = Path.Combine(ModuleDirectory, "..", "..", "..", "Supernatural-3D-Game");
+			}
 		}
 		CoreRoot = Path.GetFullPath(CoreRoot);
 
