@@ -85,3 +85,45 @@ store. The queried store is never modified (`const`). `sequence > Revision()` �
 `SequenceOutOfRange`. The returned store has its own journal prefix and can be
 serialized or continued independently (a branch; the original is unaffected).
 Cost is O(sequence); no caching or snapshots yet (needed only with compaction).
+
+## 5. Limits are pinned by a second frozen fixture
+`Tests/Core/Data/worldfacts_v1_limits.spnfacts` holds a save at the exact maximum key
+(128), string (4096 decoded bytes, also as 4096 escaped newlines = 8192 bytes on disk)
+and cause (128 bytes) lengths. `WorldFactsCompatibilityTests.cpp` pins its size and
+hash, loads it, re-saves it byte-identically, checks that today's writer reproduces
+it, and rejects 129 / 4097 / 129 on load (`InvalidKey`, `ValueTooLong`,
+`CauseTooLong`). The golden v1 file only reaches 28-character keys, so before this
+fixture a tightened limit would not have been noticed. Same rule as for the golden
+file: never edit or regenerate it; a failing test means a bug or a format change.
+
+## 6. What belongs in WorldFacts — ENGINEERING POLICY
+Status: technical policy for review. **Not story canon**; it decides no gameplay
+content, world size, realm model or co-op authority.
+
+**Belongs in WorldFacts:** persistent, discrete world changes and their event
+history, in the sense of the canon notes cited in `0002` (opened gates, removed
+artifacts, freed/killed entities, case and evidence progress, relationship stages),
+where the history of the change itself may matter later (debugging, historical
+queries via `StateAt`, history rebuilt from change events).
+
+**Belongs in separate systems:**
+- High-frequency simulation, physics, positions, vehicle state, animation state:
+  derived or transient, owned by the simulation / engine and saved by it.
+- Large data blocks or collections: the string limit (4096 bytes) is intentional.
+- Complete character appearance data: `AppearanceSpec` / `AppearanceRecipe`
+  (`0005`). WorldFacts may at most hold a reference such as a character id.
+- State the engine serializes anyway, and anything cheaply recomputable from facts.
+
+**Guideline, not a rule:** every journaled command costs about 60 bytes on disk and
+load time grows linearly with the journal (measured in `Docs/Proposals/0003`, one
+machine, small values). A state that changes about once per second or more often is
+usually a sign that it belongs elsewhere; "once per second" is an orientation, not a
+threshold, and a rarely changing fact can still be wrong here while a bursty but
+history-relevant one can be right. Decide per fact family.
+
+**OPEN architecture decision — snapshot / journal compaction:** the journal is
+unbounded. Compaction (snapshot plus journal tail) needs format v2 and conflicts
+with "history from change events" unless it is decided which history is kept
+(everything, per-key last N, milestones only). Not decided, not implemented. Also
+OPEN: UTF-8 validation, per-save metadata, realm/namespace separation, co-op
+authority and compare-and-set, observers/threading rules.

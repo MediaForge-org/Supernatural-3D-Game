@@ -383,3 +383,94 @@ TEST_CASE("StateAt: historical queries never change the queried store") {
 TEST_CASE("FactErrorCode: the historical-query code is named") {
     CHECK(ToString(FactErrorCode::SequenceOutOfRange) == "sequence out of range");
 }
+
+// --- Limits are part of format v1 ---------------------------------------------
+//
+// Data/worldfacts_v1_limits.spnfacts is FROZEN like the golden file: a save at the
+// exact maximum key (128), string (4096 bytes) and cause (128 bytes) lengths. If a
+// limit is tightened in code, these saves stop loading, which is a format change.
+
+namespace {
+
+constexpr std::size_t kLimitsSize = 24920;
+constexpr std::uint64_t kLimitsFnv1a = 0xe54d868e5873ad16ULL;
+
+std::string ReadLimits() {
+    std::ifstream file(std::string(SPN_TEST_DATA_DIR) + "/worldfacts_v1_limits.spnfacts",
+                       std::ios::binary);
+    REQUIRE_MESSAGE(file.is_open(), "limits file not found in ", SPN_TEST_DATA_DIR);
+    return {std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>()};
+}
+
+std::string LimitKey() {
+    return "limit." + std::string(kMaxFactKeyLength - 6, 'k');
+}
+
+/// One-record document written by hand (independent of Serialize).
+std::string SingleSet(const std::string& key, const std::string& value, const std::string& cause) {
+    const std::string token = "s:\"" + value + "\"";
+    return "SPNFACTS 1\nchange\t1\tset\t" + key + "\t" + token + "\t-\t" + token + "\t\"" + cause +
+           "\"\nend\t1\n";
+}
+
+} // namespace
+
+TEST_CASE("Limits v1: the limits file itself is unchanged") {
+    const std::string bytes = ReadLimits();
+    CHECK(bytes.size() == kLimitsSize);
+    CHECK(Fnv1a(bytes) == kLimitsFnv1a);
+    CHECK(bytes.find('\r') == std::string::npos);
+}
+
+TEST_CASE("Limits v1: a save at the maximum key, string and cause lengths loads") {
+    static_assert(kMaxFactKeyLength == 128 && kMaxFactStringLength == 4096 &&
+                      kMaxCauseLength == 128,
+                  "A limit changed: that is a format change (see 0004). Keep this test and file.");
+    const std::string bytes = ReadLimits();
+    const auto loaded = WorldFacts::Deserialize(bytes);
+    REQUIRE_MESSAGE(loaded.HasValue(), "load failed: ", ToString(loaded.Error().code));
+    const WorldFacts& facts = loaded.Value();
+    CHECK(facts.Revision() == 2);
+
+    const std::string* longText = facts.FindAs<std::string>(LimitKey());
+    REQUIRE(longText != nullptr);
+    CHECK(*longText == std::string(kMaxFactStringLength, 'x'));
+    CHECK(facts.Journal()[0].cause == std::string(kMaxCauseLength, 'c'));
+
+    // The limit counts decoded bytes: 4096 newlines occupy 8192 bytes on disk.
+    const std::string* escaped = facts.FindAs<std::string>("limit.escaped");
+    REQUIRE(escaped != nullptr);
+    CHECK(*escaped == std::string(kMaxFactStringLength, '\n'));
+
+    CHECK(facts.Serialize() == bytes); // canonical: byte-identical re-save
+}
+
+TEST_CASE("Limits v1: today's writer reproduces the limits file") {
+    WorldFacts facts;
+    Do(facts, SetFact{LimitKey(), std::string(kMaxFactStringLength, 'x')},
+       std::string(kMaxCauseLength, 'c'));
+    Do(facts, SetFact{"limit.escaped", std::string(kMaxFactStringLength, '\n')});
+    CHECK(facts.Serialize() == ReadLimits());
+}
+
+TEST_CASE("Limits v1: one unit over each limit is rejected on load") {
+    const std::string key = LimitKey();
+    const std::string text(kMaxFactStringLength, 'x');
+    const std::string cause(kMaxCauseLength, 'c');
+
+    // Control: the same hand-written shape at the exact limits is accepted.
+    CHECK(WorldFacts::Deserialize(SingleSet(key, text, cause)).HasValue());
+
+    CHECK(LoadError(SingleSet(key + "k", text, cause)) == FactError{FactErrorCode::InvalidKey, 2});
+    CHECK(LoadError(SingleSet(key, text + "x", cause)) ==
+          FactError{FactErrorCode::ValueTooLong, 2});
+    CHECK(LoadError(SingleSet(key, text, cause + "c")) ==
+          FactError{FactErrorCode::CauseTooLong, 2});
+    // Escaped form: 4097 newlines are over the limit although each is 2 bytes on disk.
+    std::string escapedOver;
+    for (std::size_t i = 0; i <= kMaxFactStringLength; ++i) {
+        escapedOver += "\\n";
+    }
+    CHECK(LoadError(SingleSet(key, escapedOver, cause)) ==
+          FactError{FactErrorCode::ValueTooLong, 2});
+}
