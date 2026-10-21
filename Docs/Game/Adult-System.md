@@ -103,11 +103,13 @@ Details: [Modul 02](Adult/02-Architektur-Pakete-Technik.md).
 | Alle Entscheidungen mit Status und Herkunft | [14 Entscheidungsregister](Adult/14-Entscheidungsregister.md) |
 | Fragen und Antworten der Interviewrunden | [15](Adult/15-Interviewprotokoll-Runden-1-bis-10.md), [16](Adult/16-Interviewprotokoll-Runden-11-bis-16.md), [17](Adult/17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md) |
 | Zeitleiste, Überschreibungen | [18 Chronologie im Detail](Adult/18-Chronologie-Detail.md) |
-| Konflikte K1 bis K22 | [19 Konflikt- und Widerspruchsmatrix](Adult/19-Konflikt-und-Widerspruchsmatrix.md) |
+| Konflikte K1 bis K23 | [19 Konflikt- und Widerspruchsmatrix](Adult/19-Konflikt-und-Widerspruchsmatrix.md) |
 | Spezifikationsskizzen (Vorschläge) | [20](Adult/20-Spezifikation-Regelkern-Zustimmung.md) bis [28](Adult/28-Spezifikation-Speicherung-Mods-Builds.md) |
 | Tests, Abnahme, Randfälle | [29](Adult/29-QA-Testkatalog.md), [30](Adult/30-Abnahmekriterien.md), [31](Adult/31-Randfaelle-Katalog.md) |
 | Abhängigkeiten, Glossar, offene Entscheidungen | [32](Adult/32-Systemabhaengigkeiten.md), [33](Adult/33-Glossar.md), [34](Adult/34-Offene-Entscheidungen-Katalog.md) |
 | Rahmenentwurf 28.08. | [35](Adult/35-Auswertung-Rahmenentwurf-28-08.md) |
+| Frage-für-Frage-Matrix aller 1.903 Interviewfragen | [36](Adult/36-Frage-Antwort-Matrix-Runden-1-bis-9.md), [37](Adult/37-Frage-Antwort-Matrix-Runden-10-bis-13.md), [38](Adult/38-Frage-Antwort-Matrix-Runden-14-und-15.md), [39](Adult/39-Frage-Antwort-Matrix-Runde-16.md), [40](Adult/40-Frage-Antwort-Matrix-Runden-17-bis-20.md) |
+| Quellen-Audit Etappe 2.2 | [41](Adult/41-Audit-Etappe-2-2.md) |
 
 Die Spezifikationsskizzen sind **Vorschläge der Dokumentation (🧭)**, kein Kanon, und lösen keine Entscheidung des Entwicklers aus.
 

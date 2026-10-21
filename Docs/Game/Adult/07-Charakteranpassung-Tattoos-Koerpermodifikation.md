@@ -77,7 +77,7 @@ Modifikatoren: Alter (18 bis 30 deutlich höher, ältere Generationen niedriger)
 
 - **Piercings:** von keinem bis sehr vielen, an vielen anatomisch **plausiblen** Stellen (Ohr, Nase, Lippen, Zunge, Augenbrauen, Bauchnabel, Brustwarzen, äußere Genitalregion, gedehnte Ohrläppchen und weitere). Das System erzeugt nicht beliebige Stellen, nur weil dort Geometrie ist.
 - **Schmuck ist getrennt vom Piercing:** Form, Größe, Material, Gewicht, Zustand; wechselbar. Schmuck reagiert auf die Physik.
-- **Heilung:** Heilungszustände, Reizung, Verletzung, kleine Narben. Qualität hängt von Material, Verarbeitung, Größe, Hygiene, Kompetenz des Piercers, Allergien und Pflege ab. „Billig ≠ schlecht, teuer ≠ sicher“ (Entwickler).
+- **Heilung:** Heilungszustände, Reizung, Verletzung, kleine Narben. Qualität hängt von Material, Verarbeitung, Größe, Hygiene, Kompetenz des Piercers, Allergien und Pflege ab. ‚Billig ≠ schlecht, teuer ≠ sicher‘ (Entwickler).
 - **Weitere Modifikationen** (Narbengestaltung, gespaltene Zunge, subdermale Implantate und weitere real existierende Formen) kommen vor, meist seltener als Tattoos und Piercings.
 - **Nägel:** Nagelstudios (Hände und Füße), lange künstliche Nägel und Nagellack als Läden und Anziehungsmerkmale (Entwickler, 15.09.).
 
@@ -103,7 +103,7 @@ Modifikatoren: Alter (18 bis 30 deutlich höher, ältere Generationen niedriger)
 
 - 📋 Jedes Tattoo bleibt im Spielzustand ein **eigenes Objekt** (Motiv, Künstler, Position, Größe, Farbe, Alter, Zustand), wird fürs Rendering aber zu optimierten **Haut-/Körper-Schichten** zusammengefasst, damit Vollkörper-Bedeckung nicht Hunderte Draw Calls erzeugt (Frage 113, bestätigt). Aggressive Bündelung und Detailstufen; hohe Nahqualität.
 - 📋 **Gemeinsamer Produktionsablauf** für Spieler, NPCs, Mods und Werkzeuge: Entwurf oder Import → Vorschau → Interpretation durch den Künstler → Platzierung → Sitzungen → Heilung → Langzeitzustand.
-- 📋 **Optimierung** ist globales Kernziel: hohe Qualität, aber nicht „jeder braucht Spitzenhardware“.
+- 📋 **Optimierung** ist globales Kernziel: hohe Qualität, aber nicht ‚jeder braucht Spitzenhardware‘.
 - 🔭 Die technische Umsetzung des realistischen Tätowierens (Auftragen, Verlaufsdarstellung) ist offen („wie wir das machen, weiß ich nicht“, Entwickler).
 
 ---

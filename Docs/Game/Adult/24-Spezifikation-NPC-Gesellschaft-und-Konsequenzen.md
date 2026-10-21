@@ -133,7 +133,7 @@ Aus [Modul 21, Abschnitt 5](21-Spezifikation-Datenmodell.md#5-beziehungs--und-ge
 |---|---|---|
 | NP-GD-01 | Gedächtnisklassen: permanent, lang, kurz, verwerfbar. | E-LE-002 |
 | NP-GD-02 | Ankererinnerungen für außergewöhnlich gute oder schlechte Erlebnisse. | E-NP-016 |
-| NP-GD-03 | Vergessen: unscharfe Erinnerung (Details verblassen) – ein Entwickler-Wunsch („ungenau erinnern“). | 35#268/14 |
+| NP-GD-03 | Vergessen: unscharfe Erinnerung (Details verblassen) – ein Entwickler-Wunsch (‚ungenau erinnern‘). | 35#268/14 |
 | NP-GD-04 | Ein Widerruf oder eine Grenzverletzung wirkt in der Erinnerung nach und beeinflusst Vertrauen und Reaktion. | [Modul 01](01-Grundregeln-Alter-Zustimmung.md) |
 | NP-GD-05 | Erinnerungen aktualisieren Beziehungswerte nicht pauschal (+50), sondern erzählerisch/kontextabhängig (28#25). | 28#25 |
 | NP-GD-06 | Erlebnisse fließen in Beziehung und Vertrauen ein (gut/schlecht). | E-IA-020 |
@@ -167,7 +167,7 @@ Aus [Modul 21, Abschnitt 5](21-Spezifikation-Datenmodell.md#5-beziehungs--und-ge
 
 ### 11.1 Grundsatz
 
-📋 E-WE-014/E-WE-015: Das Strafsystem folgt einer **realistischen Kette**: Tat → Schweregrad → Vorsatz → Opfer → Zeugen/Beweise → Notwehr → Vorstrafen → Festnahme → Staatsanwaltschaft → Prozess → Urteil → Haft. Es gibt keine „künstliche Liste von Verbrechen“; Tat-Typen ergeben sich aus Weltregeln. Das Gefängnis ist eine soziale Simulation. Selbstverteidigung ist geschlechtsunabhängig. Prinzip: **Tat vor Identität**.
+📋 E-WE-014/E-WE-015: Das Strafsystem folgt einer **realistischen Kette**: Tat → Schweregrad → Vorsatz → Opfer → Zeugen/Beweise → Notwehr → Vorstrafen → Festnahme → Staatsanwaltschaft → Prozess → Urteil → Haft. Es gibt keine ‚künstliche Liste von Verbrechen‘; Tat-Typen ergeben sich aus Weltregeln. Das Gefängnis ist eine soziale Simulation. Selbstverteidigung ist geschlechtsunabhängig. Prinzip: **Tat vor Identität**.
 
 ### 11.2 Sexualstraftaten (⚠ K3, nur Konsequenzebene)
 

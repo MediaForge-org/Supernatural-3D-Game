@@ -43,7 +43,7 @@ Regeln aus `CLAUDE.md` §11: Ein Dateiname oder Suchtreffer macht nichts zum Kan
 | 16. bis 25.09. | Mega-Runde 16 (über 400 Fragen in Paketen zu 25): Kategorien, Intensität, Orte, Items, Reaktionen, Master-Registry; **20.09.: „USER-LOCK“-Äußerungen** ([Modul 11, K2](11-Offene-Fragen-und-Konflikte.md#1-konflikte-die-eine-entscheidung-brauchen)); 25.09.: Audit-Fragen (A1 bis A15), Rechtsgespräch, Entwickler bittet, Runde 16 zu begrenzen. |
 | 26.09. | Runde 17 (Tattoos, Piercings, Körpermodifikation) abgeschlossen; Runde 18 (Steuerung/UI/VR) begonnen. |
 | 27.09. | Runde 18 abgeschlossen, Runde 19 (technische Integration) abgeschlossen, Runde 20 (Produktionsabschluss): Planung „im Wesentlichen fertig“; Veröffentlichungsziel bestätigt. Offen: Missing-Family-Audit, externer Lauf, Nachträge aus Prototyping und Recht. |
-| 20./27.09. | Der Assistent erstellte Gesamt-ZIPs; ein Dokument „vom Benutzer gewünscht, nicht kanonisiert“ wurde angekündigt, ist im Archiv aber **nicht** enthalten. |
+| 20./27.09. | Der Assistent erstellte Gesamt-ZIPs; ein Dokument ‚vom Benutzer gewünscht, nicht kanonisiert‘ wurde angekündigt, ist im Archiv aber **nicht** enthalten. |
 
 ---
 
@@ -81,4 +81,4 @@ Status-Klassen nach `CLAUDE.md` §11: **CONFIRMED / LOCKED**, **PROVISIONAL**, *
 - Der Rahmenentwurf (Chat 28) wurde in der Endfassung (Nachricht 25) sowie in den Nachrichten 17, 19, 21 und 23 und den Nutzernachrichten gelesen, die früheren Fassungen nur über Gliederung und Stichproben.
 - Chat 35 vor Nachricht 185 (Beginn des Interviews) wurde nachgelesen (Adult-Passagen); Chat 23 und Chat 37 wurden, soweit sie Adult betreffen, gezielt gelesen. Genaue Bereiche: [Modul 13, Abschnitt 7](13-Quelleninventar-und-Abdeckung.md#7-nicht-oder-nur-teilweise-gelesen).
 
-**Nicht ausgewertet:** das 2.9 GB umfassende restliche Archiv; die später angekündigte, aber im Archiv fehlende Datei „vom Benutzer gewünscht, nicht kanonisiert“; die Ergebnisse der Missing-Family-/Qwen-Audits (stehen aus).
+**Nicht ausgewertet:** Binärdateien des 2.9 GB umfassenden restlichen Archivs (die Textdateien wurden per Stichwortsuche geprüft); die später angekündigte, aber nirgends gefundene Datei ‚vom Benutzer gewünscht, nicht kanonisiert‘ (Stand Etappe 2.2: auch außerhalb des Masters nicht vorhanden); die Ergebnisse der Missing-Family-/Qwen-Audits (stehen aus).

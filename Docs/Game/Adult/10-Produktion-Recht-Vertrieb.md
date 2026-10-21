@@ -26,13 +26,13 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 - **Registry-Einfrieren** erst nach Taxonomie-Audit und externer Gegenprüfung.
 - **Dokumentation:** Vor jedem großen Teilsystem eine kurze technische Spezifikation.
 - **Erst kleiner vertikaler Schnitt, dann Skalierung.** Die allgemeinen Systeme (Mensch, Physik, Gesundheit, Gedächtnis, Welt, Replay, Statistik, Modding) werden zuerst und für das ganze Spiel gebaut. Der Entwickler sagte am 16.09., die Erwachsenen-Mod solle früh verfügbar sein, noch vor manchen anderen Systemen; die Einordnung relativ zum Rest ist **❓ offen** und in der [Roadmap der README](../../../README.md#27-entwicklungsphasen-roadmap-und-meilensteine) nicht enthalten. Das Repository ist derzeit in Phase 0 (siehe [CLAUDE.md](../../../CLAUDE.md), Abschnitt 4); die Erwachsenen-Mod gehört nicht zu Phase 0 oder dem Vertical Slice.
-- Eine schlanke Feinplanung ist gewollt: Der Entwickler hält sehr kleinteilige Detailplanung des Erwachsenen-Bereichs inzwischen für übertrieben („einfach wie in echt“, 23.09.) und bat, Fragen auf die wichtigsten zu beschränken.
+- Eine schlanke Feinplanung ist gewollt: Der Entwickler hält sehr kleinteilige Detailplanung des Erwachsenen-Bereichs inzwischen für übertrieben (‚einfach wie in echt‘, 23.09.) und bat, Fragen auf die wichtigsten zu beschränken.
 
 ---
 
 ## 2. Veröffentlichung und Vertrieb
 
-- 📋 **Ziel ist eine öffentliche Veröffentlichung** des optionalen Pakets (Entwickler, 27.09.: „ich will schon, dass es veröffentlicht wird, nur für mich brauche ich es nicht“). Privat-only ist **Rückfallplan**, falls Recht oder Plattformregeln eine Veröffentlichung unpraktisch machen. Das Basisspiel darf davon in keinem Fall abhängen.
+- 📋 **Ziel ist eine öffentliche Veröffentlichung** des optionalen Pakets (Entwickler, 27.09.: ‚ich will schon, dass es veröffentlicht wird, nur für mich brauche ich es nicht‘). Privat-only ist **Rückfallplan**, falls Recht oder Plattformregeln eine Veröffentlichung unpraktisch machen. Das Basisspiel darf davon in keinem Fall abhängen.
 - 📋 Getrennte Builds und getrenntes Paket ([Modul 02, Abschnitt 4](02-Architektur-Pakete-Technik.md#4-builds)).
 - ❓ **Vertriebsweg, Plattform- und Altersfreigaberegeln sind nicht entschieden.** Eine Prüfung erfolgt erst zum Veröffentlichungszeitpunkt, weil Regeln sich ändern. Planungsannahme: Gängige Spiele-Plattformen würden ein solches Paket im Hauptspiel nicht akzeptieren; es ist deshalb als getrenntes Paket zu behandeln.
 - **Projektregel (CLAUDE.md, Abschnitt 9 und 10):** Kein Lizenztext, kein öffentliches Repository und keine Veröffentlichung des Pakets oder der Planung ohne ausdrückliche Entscheidung des Entwicklers. Die Veröffentlichung der Planung ist eine **getrennte** Frage: Sie setzt eine Prüfung jeder Datei auf Urheberrecht, Lizenzen, personenbezogene Daten und Zugangsdaten voraus.

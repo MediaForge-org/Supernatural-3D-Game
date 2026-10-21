@@ -73,7 +73,7 @@ Die Sammelkategorie ist ausdrücklich nur für künftige Kategorien, Experimente
 |---|---|
 | Standard | normale Varianten |
 | Fortgeschritten | technisch oder körperlich anspruchsvoller: stärkere Kontaktabhängigkeit, komplizierteres Alignment, engere Kompatibilitätsbereiche |
-| Hochintensität („Hardcore“) | deutlich intensiver als Standard und viele fortgeschrittene Varianten; **kein bloßes Synonym für „Intensität hoch“**, sondern eine eigene Profilklasse mit zusätzlichen Anforderungen an Kontakt, Ausrichtung, Rollenlayout, Bewegungsprofil, Timing, Kompatibilität, Zustimmung, Präferenzen und Darstellung |
+| Hochintensität („Hardcore“) | deutlich intensiver als Standard und viele fortgeschrittene Varianten; **kein bloßes Synonym für ‚Intensität hoch‘**, sondern eine eigene Profilklasse mit zusätzlichen Anforderungen an Kontakt, Ausrichtung, Rollenlayout, Bewegungsprofil, Timing, Kompatibilität, Zustimmung, Präferenzen und Darstellung |
 | Höchste unterstützte Stufe | das vom Content-Paket ausdrücklich höchste unterstützte Profil; nicht automatisch aus Hochintensität abgeleitet |
 
 Im Interview wurde „Hardcore“ als **Preset über mehrere Einstellungen** festgelegt (Entwickler: es gehe um das, was Figuren sich gefallen lassen, und um die Geschwindigkeit; danach einzeln änderbar). Für Hochintensitäts-Varianten sind unabhängige technische Variantenfamilien vorgesehen (zum Beispiel erhöhte Kontakttiefe, hohe Kontaktkomplexität, intensives Bewegungsprofil, anhaltend hohe Intensität, eingeschränkte Ausrichtung, spezialisierte Rollenprofile, Mehrfachkontakt). Sie sind **reine Metadaten** für Auswahl, Prüfung und Zustimmung.
@@ -139,7 +139,7 @@ Jeder Zustand hat erlaubte Übergänge, Zeitlimit, Fehlerübergang, Autorität, 
 📋 Bestätigt in den Runden 6 bis 8 und 14 bis 16:
 
 - **Keine Schnitte.** Das Spiel simuliert die Welt weiter. Ein Date kann natürlich zur Annäherung führen (Heimfahrt, Wohnung, Gespräch). Der Entwickler: Verabredungen führen oft zuerst woandershin, dann gibt es einen sinnvollen Übergang, erst danach startet die Szene.
-- **Keine Pflichtreihenfolge** und kein Fortschrittsbalken. Eine Situation kann beliebig kurz oder lang sein oder „einfach nicht gut laufen“, ohne dass das ein Fehler wäre.
+- **Keine Pflichtreihenfolge** und kein Fortschrittsbalken. Eine Situation kann beliebig kurz oder lang sein oder ‚einfach nicht gut laufen‘, ohne dass das ein Fehler wäre.
 - **Pausen** (kurz, Ruhe, Gespräch, Übergang, Neupositionierung, umgebungsbedingt, auf Spielerwunsch) erlauben Dialog, Kamerawechsel, Asset-Vorladung, Neupositionierung, neue Anfragen, Zustimmungsprüfung, Stopp und Fortsetzung.
 - **Dialog:** Längere Gespräche nur in definierten Phasen (vorher, Pausen, danach). Währenddessen sind kurze, persönlichkeitsabhängige Äußerungen möglich; manche Figuren sind still, ohne dass das ein Fehler wäre. Vollständiger Dialog in der aktiven Phase nur bei Animationen mit ausgewiesenen Dialogfenstern.
 - **Danach:** Nähe, Gespräch, Schlafen, Duschen, Essen, Anziehen, gemeinsames Einschlafen, normales Weiterspielen am nächsten Morgen. Duschen ist eine normale Handlung im Tagesablauf, keine Aftercare-Cutscene.
@@ -161,6 +161,6 @@ Jeder Zustand hat erlaubte Übergänge, Zeitlimit, Fehlerübergang, Autorität, 
 ## 7. Stand der Registry und der Audits
 
 - ❓ Die **Kategorien-Registry ist nicht eingefroren.** Vorgesehen sind (a) ein eigener **Missing-Family-/Taxonomie-Audit** nach dem Ende der Runde 16, (b) ein **externer Gegenprüfungslauf** durch ein anderes Modell als Lückenfinder und (c) eventuell daraus entstehende Folgefragen. Erst danach wird die Registry eingefroren.
-- Der Entwickler wollte die externe Prüfung später ausführen („ich dachte, wir machen das erst mit Qwen“); zum Stand 27.09. war sie nicht erfolgt. Ein erster eigener Audit mit 15 Fragen (A1 bis A15) lief am 25.09.; Zu A15 („fehlt eine komplette Familie?“) bat der Entwickler um einen Vorschlag und bestätigte die vorgeschlagenen Punkte danach pauschal („die Sachen passen gut“).
-- Der Entwickler bat am 25. September, Runde 16 auf „die wichtigsten Fragen“ zu reduzieren, und hält sehr feine Details der Taxonomie für nachrangig (23.09.: „einfach so wie in echt“).
+- Der Entwickler wollte die externe Prüfung später ausführen („ich dachte, wir machen das erst mit Qwen“); zum Stand 27.09. war sie nicht erfolgt. Ein erster eigener Audit mit 15 Fragen (A1 bis A15) lief am 25.09.; Zu A15 (‚fehlt eine komplette Familie?‘) bat der Entwickler um einen Vorschlag und bestätigte die vorgeschlagenen Punkte danach pauschal („die Sachen passen gut“).
+- Der Entwickler bat am 25. September, Runde 16 auf „die wichtigsten Fragen“ zu reduzieren, und hält sehr feine Details der Taxonomie für nachrangig (23.09.: ‚einfach so wie in echt‘).
 - Konkrete Inhaltskataloge, Animationsumfang und Kamera-/Stimmenproduktion: ❓ offen ([Offene Fragen](11-Offene-Fragen-und-Konflikte.md)).

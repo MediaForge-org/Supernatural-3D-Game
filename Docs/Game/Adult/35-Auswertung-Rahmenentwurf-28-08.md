@@ -3,7 +3,7 @@
 > [!IMPORTANT]
 > **Nichts davon ist implementiert.** Der Rahmenentwurf („Adult Content Framework“, Chat 28) ist ein **Prompt, den ein früherer KI-Assistent für einen anderen KI-Chat schrieb**. Er ist ein **Architekturvorschlag**, kein Kanon, und teils durch spätere Entscheidungen überholt. Dieses Modul sagt, was er enthält, was davon noch trägt und was nicht. Statuszeichen: [Legende](README.md#statuslegende).
 
-Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)). Quelle: Chat 28 (`28#n`), Endfassung `28#25`, Nutzernachrichten 1–24. Gesprächszusammenhang: [Modul 17, Abschnitt 8](17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md#8-chat-28-rahmenentwurf-adult-content-framework). Gelesen: Nutzernachrichten 1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24 vollständig; Assistenten-Nachricht 25 (Endfassung) vollständig; 17, 19, 21, 23 vollständig; frühere Fassungen 2, 4, 6, 9, 11 nur über Gliederung und Stichproben ([Modul 13](13-Quelleninventar-und-Abdeckung.md)).
+Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)). Quelle: Chat 28 (`28#n`), Endfassung `28#25`, Nutzernachrichten 1–24. Gesprächszusammenhang: [Modul 17, Abschnitt 8](17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md#8-chat-28-rahmenentwurf-adult-content-framework). Gelesen: Nutzernachrichten 1, 3, 5, 7, 10, 12, 14, 16, 18, 20, 22, 24 vollständig; Assistenten-Nachricht 25 (Endfassung) vollständig; 17, 19, 21, 23 vollständig; frühere Fassungen 2, 4, 6, 9, 11 in Etappe 2.2 auf Sicherheitsregeln und Gliederungsentwicklung geprüft, nicht Zeile für Zeile verglichen ([Modul 13](13-Quelleninventar-und-Abdeckung.md)).
 
 **Inhalt**
 
@@ -26,7 +26,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | Datum | 28.08.2026, 25 Nachrichten, ca. 362.000 Zeichen |
 | Charakter | Prompt für einen **anderen** KI-Chat („Technical Design Document“), kein Spieldesign |
 | Status | **PROPOSAL**; teils überholt |
-| Nutzerwünsche | mehr/andere Kategorien, „wesentlich granularer“ als vier grobe Tags, „du kannst doch Hardcore dazu schreiben“, „andeuten, was gemeint ist“ |
+| Nutzerwünsche | mehr/andere Kategorien, „wesentlich granularer“ als vier grobe Tags, „du kannst doch Hardcore dazu schreiben“, ‚andeuten, was gemeint ist‘ |
 | Reaktion des Assistenten | Aufnahme einer abstrakten Taxonomie; **Ablehnung codierter Umschreibungen konkreter Praktiken** (28#23) |
 | Spätere Kritik (23#525–531) | Zustimmung kommt in der Roadmap zu spät; Prompt zu groß als Einzelprompt; Overengineering-Gefahr |
 
@@ -52,14 +52,14 @@ Die Endfassung (28#25) beschreibt (Ausgabeformat A–AJ):
 | Animation | `CharacterAnimationProfile`, Query/Hard Filter/Scoring (Skeleton, Height, Body, Position, Environment, Relationship, Mood, Preference, ContentProfile, Variant, Intensity, Motion, TransitionQuality, RecentUsePenalty, Variation, Authoring, PerformanceCost), Transitions als First-Class Assets, Missing-Transition-Fallback, Sync Markers |
 | Kleidung/Kamera/Audio | Clothing States, Camera Director (+Constraints, Shot Definitions, Player Camera Options), Audio-Architektur |
 | Eingabe | Continue, Pause, Resume, Stop, Skip; Stop mit ImmediateSafeExit; Skip löst narrativen Outcome auf; Interruption Reasons + Priorität; Witness System (LOS, Distance, Room, Doors, Walls, Audio, Lighting, Visibility, Privacy, Relationship, Faction); NPC-AI-Inputs |
-| Mehrspieler | Singleplayer/Online getrennt; Online als „langfristiges festes Ziel“: Server Authority, Player-Player Consent separat, Request Flow, Request Permissions (Everyone/Friends/Party/Trusted/Nobody), Anti-Spam, Block, Client-spezifische Darstellung, Observer, Content-Off-Client, Datenminimierung, Interest Management, Replication, Latenz, Ready Check, Disconnect, Server Crash, Transaktionsgrenzen, Private Instance, Griefing, Matchmaking (kein Adult-Matchmaking), Cross-Server |
+| Mehrspieler | Singleplayer/Online getrennt; Online als ‚langfristiges festes Ziel‘: Server Authority, Player-Player Consent separat, Request Flow, Request Permissions (Everyone/Friends/Party/Trusted/Nobody), Anti-Spam, Block, Client-spezifische Darstellung, Observer, Content-Off-Client, Datenminimierung, Interest Management, Replication, Latenz, Ready Check, Disconnect, Server Crash, Transaktionsgrenzen, Private Instance, Griefing, Matchmaking (kein Adult-Matchmaking), Cross-Server |
 | Einstellungen | Adult Content Off/Romance Only/Enabled; Profile; Nudity; Presentation; Adult Audio; Cinematic Camera; Player Camera Control; Adult Dialogue; Request-Einstellungen; Accessibility |
 | Paketierung | Optional Content Pack (`/Game/AdultContent`), Primary Asset Manager, Preloading, World Partition |
 | Speicherung | Persistieren: Relationship, Stage, Memories, Preferences, Story Flags, Outcomes; **nicht**: Loops, Frames, Kamera, IK; Online-DB; Character Memory (`FRelationshipMemory`) |
 | Datenschutz | Privacy by Design, minimale Telemetrie |
 | Modding | moddbar: Definitions, AnimationSets, PositionPresets, VariantTags, ContentProfiles, Transitions, Camera/Audio/Dialogue/Environment/Surface/Compatibility Profiles; **nicht moddbar:** AdultEligibility, ConsentRequirement, PlayerOptOut, ServerAuthority, BlockRules, RequestPermissions, SessionSecurity |
 | Grenze C++/Daten/Blueprint | nicht Blueprint-only: Consent, Server Authority, Session Lifecycle, Eligibility, Replication, Persistence, Block Rules, Request Permissions |
-| Physik | „Primary: authored animation, Physik nur unterstützend“ |
+| Physik | ‚Primary: authored animation, Physik nur unterstützend‘ |
 | Robustheit | Cache-Architektur, Failure Handling, Fallback Ladder (Content-Profil-Fallback nur wenn explizit erlaubt), No Softlocks, Debug Overlay, Editor Tools, Authoring Workflow, Batch Authoring, CI/Cook Validation (21 Checks), Automated Test Matrix, Network Load Testing (100/500/1000 Sessions, keine unrealistischen Behauptungen), Security, Stable IDs, Localization |
 | Profile für Spieler | Content Profiles (FullContent, Reduced, RomanceOnly, NoAdult) ≠ `AdultContentProfile` |
 | Konsequenzen | nicht „+50 Relationship“, sondern narrativ |
@@ -146,4 +146,4 @@ Der Entwurf nennt 21 Phasen mit Zustimmung in Phase 10. Die Kritik (23#525–531
 1. Der Rahmenentwurf bleibt eine **wertvolle Strukturvorlage**, vor allem für Zustimmung, Zustandsautomat, Fallback, Modding-Grenzen und Qualitätssicherung.
 2. Er ist **kein** Spezifikationsstand; die Interviewrunden und Kanonentscheidungen haben ihn in mehreren Punkten überholt.
 3. Seine UE-spezifischen Typen sind für den engine-neutralen Kern **nicht** zu übernehmen.
-4. Eine **vollständige** Auswertung der früheren Fassungen (28#2, 4, 6, 9, 11) steht aus; sie sind laut Gliederung je eine Überarbeitung desselben Prompts. Ob sie abweichende Sicherheitsregeln enthalten, ist **nicht geprüft**.
+4. Die früheren Fassungen (28#2, 4, 6, 9, 11) sind je eine Überarbeitung desselben Prompts. **Etappe 2.2:** Alle enthalten dieselben Sicherheitsausschlüsse (Fassung 2: nur eindeutig Erwachsene, keine Minderjährigen, keine nicht-einvernehmlichen Inhalte, keine schlafenden/bewusstlosen Figuren; Fassung 4 ergänzt Party-Leader-Autorität, Fassung 6 Story-/Quest-Zwang, Fassung 9 Admin-Consent). Die Gliederung wuchs von 58 Überschriften (Fassung 2) über 166 (Fassung 6) und 221 (Fassung 9) auf 246 (Endfassung); ab Fassung 15 kamen Abschnitte zu mehrachsiger Taxonomie, Root-Kategorien und Profilen hinzu. Ein vollständiger Zeilenvergleich steht aus.

@@ -27,9 +27,9 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 ## 1. Ziel und Abgrenzung
 
-Das Adult-Paket integriert sich in die **normale Welt**; es gibt **keine Adult-Welt neben der Welt** (R15B 50; E-WE-007). Die Orte gehören ins Hauptspiel („ohne Mod hat man dort weniger zu tun“, E-PA-017). Das Paket ergänzt Inhalte (Interaktionen, Dienstleistungen, Medienproduktion), nicht Orte.
+Das Adult-Paket integriert sich in die **normale Welt**; es gibt **keine Adult-Welt neben der Welt** (R15B 50; E-WE-007). Die Orte gehören ins Hauptspiel (‚ohne Mod hat man dort weniger zu tun‘, E-PA-017). Das Paket ergänzt Inhalte (Interaktionen, Dienstleistungen, Medienproduktion), nicht Orte.
 
-Prinzip: Weltlogik („logisch statt emotional“, E-WE-015) gilt auch hier.
+Prinzip: Weltlogik (‚logisch statt emotional‘, E-WE-015) gilt auch hier.
 
 ## 2. Beschlossen, vorgeschlagen, offen
 
@@ -217,11 +217,11 @@ Status: ❓ ([K15](19-Konflikt-und-Widerspruchsmatrix.md#k15-zeitmaßstab)).
 | Test | Erwartung |
 |---|---|
 | Transaktion ohne Zustimmung | Leistung wird nicht erbracht; Geldfluss gemäß Vertragsregeln |
-| Tarif „bis zur Ohnmacht“ | nicht erzeugbar; Capacity-Stop gilt |
+| Tarif ‚bis zur Ohnmacht‘ | nicht erzeugbar; Capacity-Stop gilt |
 | Vertragskündigung beider Seiten | beide Wege führen zum Vertragsende |
 | Altersprüfung bei Buchung | `NotAdultEligible` → keine Buchung |
 | Video-Replay-Konsistenz | gleiches Video bei jedem Abruf |
-| Hausregel „keine Kameras“ | Aufnahme blockiert |
+| Hausregel ‚keine Kameras‘ | Aufnahme blockiert |
 | Jurisdiktionswechsel | Betrieb legal/illegal gemäß Daten |
 | Verteilung in synthetischer Karte | Betriebsdichte nach Datenvorgabe |
 

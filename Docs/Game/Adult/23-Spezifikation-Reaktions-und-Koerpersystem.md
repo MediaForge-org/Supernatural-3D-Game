@@ -27,7 +27,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 ## 1. Ziel und Abgrenzung
 
-Es gibt **ein** hochwertiges Menschensystem für das ganze Spiel (E-SO-005). Dieses Modul beschreibt, wie Körperzustand, Physiologie und Reaktionen **zusammenhängen** und wie die Adult-Erweiterung sie nutzt. Der Entwickler: „Das Spiel simuliert die Welt, es gibt keine Cuts“ und „jede Person nicht nur aus drei Elementen, realistisch nachgebaut“ (35#283, 35#486). Reaktionen sind **keine Animationen**, sondern das Ergebnis des Zusammenspiels von Handlung, Körper, Person und Situation (E-KO-022).
+Es gibt **ein** hochwertiges Menschensystem für das ganze Spiel (E-SO-005). Dieses Modul beschreibt, wie Körperzustand, Physiologie und Reaktionen **zusammenhängen** und wie die Adult-Erweiterung sie nutzt. Der Entwickler: „Das Spiel simuliert die Welt, es gibt keine Cuts“ und ‚jede Person nicht nur aus drei Elementen, realistisch nachgebaut‘ (35#283, 35#486). Reaktionen sind **keine Animationen**, sondern das Ergebnis des Zusammenspiels von Handlung, Körper, Person und Situation (E-KO-022).
 
 Nicht Gegenstand: Zustimmung ([Modul 20](20-Spezifikation-Regelkern-Zustimmung.md)), Aktionsablauf ([Modul 22](22-Spezifikation-Interaktionsengine.md)).
 
@@ -79,7 +79,7 @@ Nicht Gegenstand: Zustimmung ([Modul 20](20-Spezifikation-Regelkern-Zustimmung.m
 | KS-WG-08 | Verformung ist poseabhängig, mit Korrekturformen (Corrective Morphs). | 35#283 |
 | KS-WG-09 | Druckverteilung zwischen Körper, Kleidung und Fläche (Haut, Stoff, Matratze). | E-SO-028 |
 
-Offen: Solver (analytisch, Mass-Spring, XPBD, vorberechnet?), Budgets, Netzwerkregel („Soft-Tissue clientseitig“ laut E-SP-005).
+Offen: Solver (analytisch, Mass-Spring, XPBD, vorberechnet?), Budgets, Netzwerkregel (‚Soft-Tissue clientseitig‘ laut E-SP-005).
 
 ## 5. Physiologische Zustände
 
@@ -226,7 +226,7 @@ Heilungsstufen, Narbengewebe, Schmerzgedächtnis (E-SO-035), Alltagseffekte (Sit
 | KS-FP-02 | Fruchtbarkeit individuell; Zyklus **abstrahiert** (kein Kalender-Mikromanagement). | 📋 | E-GE-002 |
 | KS-FP-03 | Schwangerschaft entsteht nur bei passender Biologie und Situation; **langfristiger Weltzustand** (Körper, Gewicht, Bewegung, Kleidung, Termine, Arbeit, Beziehungen). | 📋 | E-GE-002, E-GE-011 |
 | KS-FP-04 | Tests als echte Gegenstände; Ärzte/Kliniken. | 📋 | E-GE-002 |
-| KS-FP-05 | Hormonelle Verhütung kann Stimmung/Libido beeinflussen (Entwickler: „ganze Persönlichkeit“). | 🧭 | E-GE-003 |
+| KS-FP-05 | Hormonelle Verhütung kann Stimmung/Libido beeinflussen (Entwickler: ‚ganze Persönlichkeit‘). | 🧭 | E-GE-003 |
 | KS-FP-06 | Geburt: Junge oder Mädchen; wenn der Spieler es will. | 📋 | E-GE-002 |
 | KS-FP-07 | **Kein detailliertes STI-System** in der Basisversion; Architektur lässt Erweiterung zu. | 📋 | E-GE-004 |
 | KS-FP-08 | Wissen über den eigenen Gesundheitsstatus, Hygiene, Duschen als normale Handlung. | 📋 | E-GE-005 |

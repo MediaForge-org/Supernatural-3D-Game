@@ -49,7 +49,7 @@ Der Entwickler wünscht Tattoos **extrem detailliert** (Ziel: etwa 90 bis 95 Pro
 | Baseline-Prozentzahlen der Verteilung | 🧭 (Assistent) | E-TA-023 |
 | Tattoo-Rendering-Technik | 🧭 (offen: „wie wir das machen, weiß ich nicht“) | E-TA-018 |
 | Extremistische Symbole | ❓ | [K16](19-Konflikt-und-Widerspruchsmatrix.md#k16-extremistische-symbolik) |
-| Studioanzahl in der Metropole „20–30 oder mehr“ | 🧭 | E-TA-005 |
+| Studioanzahl in der Metropole ‚20–30 oder mehr‘ | 🧭 | E-TA-005 |
 
 ## 3. Tattoo als persistentes Objekt
 
@@ -80,7 +80,7 @@ Alle Felder sind Vorschläge; das Format ist offen.
 | Nr. | Anforderung (🧭) | Basis |
 |---|---|---|
 | TA-PL-01 | Freie Platzierung auf **jeder** Körperstelle (auch Gesicht, Hände, Füße, Hals, Mundinnenseite; Augen sehr selten). | E-TA-004 |
-| TA-PL-02 | Abdeckung **kontinuierlich** von 0 % bis ~100 % („bis auf den letzten Millimeter“); Anteil pro Region. | E-TA-004 |
+| TA-PL-02 | Abdeckung **kontinuierlich** von 0 % bis ~100 % (‚bis auf den letzten Millimeter‘); Anteil pro Region. | E-TA-004 |
 | TA-PL-03 | Überlappung mit Schichtenverlauf (Layer History); Negativraum; Füllmotive für Lücken. | E-TA-014 |
 | TA-PL-04 | Sleeves entstehen aus einzelnen Motiven **oder** einem Gesamtentwurf; Patchwork möglich. | E-TA-004, E-TA-014 |
 | TA-PL-05 | Ganzkörperprojekte erstrecken sich über mehrere Sitzungen und Jahre; Masterplan erlaubt. | E-TA-014 |
@@ -99,9 +99,9 @@ Alle Felder sind Vorschläge; das Format ist offen.
 | TA-ST-03 | Schrift: Fehler (Tippfehler) bei schlechten Künstlern. | E-TA-017 |
 | TA-ST-04 | Porträts (auch nach Referenzbild/NPC) möglich. | E-TA-017 |
 | TA-ST-05 | Fehlerbilder bei geringer Qualität: wackelige Linien, Ausbluten (Blowouts), ungleichmäßige Farbe. | 35#762 (Vorschlag) |
-| TA-ST-06 | Schablone/Freihand; spontane Tattoos möglich („meist mit Termin“). | E-TA-006 |
+| TA-ST-06 | Schablone/Freihand; spontane Tattoos möglich (‚meist mit Termin‘). | E-TA-006 |
 | TA-ST-07 | Motiv-Wiederverwendung (Vorlagen werden häufiger genutzt). | E-TA-024 |
-| TA-ST-08 | Blackout ist möglich, „aber nicht schön“ (Entwickler 35#761/21). | E-TA-017 |
+| TA-ST-08 | Blackout ist möglich, ‚aber nicht schön‘ (Entwickler 35#761/21). | E-TA-017 |
 
 ## 6. Künstler
 
@@ -249,7 +249,7 @@ Tattoo Design → Body-Surface Mask → Pigment Layer → Skin Shader Integratio
 
 - Gruppensymbolik bleibt an konkrete Fraktionen und Figuren gebunden, nicht zufällig verteilt (Modul 07).
 - Der Entwickler nannte auch Symbole extremistischer Gruppen (35#775/103). Ob solche Symbole **in Zielmärkten** erlaubt sind, ist **ungeprüft** ([K16](19-Konflikt-und-Widerspruchsmatrix.md#k16-extremistische-symbolik), E-RC-011).
-- Nacktheit im Tattoo-Editor betrifft Plattform-Deskriptoren; die Grenze „erst bei Penetration Adult Only“ ist laut Assistent zu eng ([K17](19-Konflikt-und-Widerspruchsmatrix.md#k17-erst-bei-penetration-adult-only)).
+- Nacktheit im Tattoo-Editor betrifft Plattform-Deskriptoren; die Grenze ‚erst bei Penetration Adult Only‘ ist laut Assistent zu eng ([K17](19-Konflikt-und-Widerspruchsmatrix.md#k17-erst-bei-penetration-adult-only)).
 - Alle Tattoo-Figuren sind Erwachsene; Minderjährige erhalten keine Tattoos aus der Dienstleistung (Altersgate des Studios, [Modul 20](20-Spezifikation-Regelkern-Zustimmung.md)).
 
 ## 17. Technische Komponenten

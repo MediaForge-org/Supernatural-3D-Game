@@ -31,9 +31,9 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 ## 1. Ziel und Abgrenzung
 
-Ziel der Engine ist eine **Interaktionssitzung aus modularen Aktionen**, nicht eine Auswahl fertiger Szenen (E-IA-010, E-IA-011). Die Positionen entstehen als **kontinuierlicher Ganzkörperzustand**, nicht aus einer Liste (E-SO-007). Der Entwickler wünscht „fast wie in echt“, mit Positionen „auch zwischen Positionen“ (35#446).
+Ziel der Engine ist eine **Interaktionssitzung aus modularen Aktionen**, nicht eine Auswahl fertiger Szenen (E-IA-010, E-IA-011). Die Positionen entstehen als **kontinuierlicher Ganzkörperzustand**, nicht aus einer Liste (E-SO-007). Der Entwickler wünscht ‚fast wie in echt‘, mit Positionen „auch zwischen Positionen“ (35#446).
 
-**Die Engine ist nicht Adult-spezifisch**: Umarmen, Tragen, Medizin, Ringen und Bodenkampf nutzen dieselben Bausteine; Adult erweitert sie (E-SO-023). Der Entwickler: „Teile davon sollen übernommen und für Adult erweitert werden“.
+**Die Engine ist nicht Adult-spezifisch**: Umarmen, Tragen, Medizin, Ringen und Bodenkampf nutzen dieselben Bausteine; Adult erweitert sie (E-SO-023). Der Entwickler: ‚Teile davon sollen übernommen und für Adult erweitert werden‘.
 
 Nicht Gegenstand dieses Moduls: Zustimmung ([Modul 20](20-Spezifikation-Regelkern-Zustimmung.md)), Darstellung ([Modul 04](04-Steuerung-Darstellung-Kamera-Audio.md)).
 
@@ -51,7 +51,7 @@ Nicht Gegenstand dieses Moduls: Zustimmung ([Modul 20](20-Spezifikation-Regelker
 | Jedes Mal etwas anders, aber deterministisch bei gleichem Seed | 📋 | E-SO-016 |
 | Die konkrete Kette Intent → Kontakt → IK → Proportionen → Kollision → Balance → Mikrobewegung | 🧭 | E-SO-008 |
 | Anfangsposition: selbst wählen oder NPC positioniert sich | ❓ | E-SO-009 |
-| Steuerung „wie UFC-Spiele nur genauer“ (Eingabekonzept) | ❓ / ✅ Hybrid für Adult | E-SO-030, E-ST-002 |
+| Steuerung ‚wie UFC-Spiele nur genauer‘ (Eingabekonzept) | ❓ / ✅ Hybrid für Adult | E-SO-030, E-ST-002 |
 | Konkrete Solver, Rigs, Bibliotheken | ❓ | – |
 
 ## 3. Gesamtkette
@@ -107,18 +107,18 @@ Der Rahmenentwurf nannte ca. 28 Zustände; die Liste ist nicht im Interview best
 
 Regeln (🧭):
 - `HardStop` führt aus **jedem** Zustand nach `SafeExit` ([Modul 20, Abschnitt 8](20-Spezifikation-Regelkern-Zustimmung.md#8-stopp-unbehagen-widerruf)).
-- Dialog ist in `Pause` und `Aftercare` Standard; in `Active` nur kontextabhängig (28#25 „Dialog nur in Pausen standardmäßig“, E-IA-041).
+- Dialog ist in `Pause` und `Aftercare` Standard; in `Active` nur kontextabhängig (28#25 ‚Dialog nur in Pausen standardmäßig‘, E-IA-041).
 - Skip/Zeitraffer löst einen **narrativen Ausgang** auf; er überspringt nie den Regelkern (E-IA-041).
 - Die Sitzung kann beliebig kurz oder lang sein; es gibt **keinen Fortschrittsbalken** und kein Minispiel (E-IA-010).
-- Eine Sitzung darf „nicht gut laufen“ (35#444/47–50) und trotzdem sauber enden.
+- Eine Sitzung darf ‚nicht gut laufen‘ (35#444/47–50) und trotzdem sauber enden.
 
 ### 4.2 Einstieg
 
-📋 Der Beginn folgt dem Alltag: Verabredung → Weg → Ort → sinnvoller Übergang → Beginn (E-IA-013). „Direkt nur Sex“ ist ein weiterer sozialer Intent, wenn der NPC offen ist (E-IA-015). Es gibt keinen Szenenwechsel durch Schnitt (E-IA-014).
+📋 Der Beginn folgt dem Alltag: Verabredung → Weg → Ort → sinnvoller Übergang → Beginn (E-IA-013). ‚Direkt nur Sex‘ ist ein weiterer sozialer Intent, wenn der NPC offen ist (E-IA-015). Es gibt keinen Szenenwechsel durch Schnitt (E-IA-014).
 
 ### 4.3 Ende
 
-📋 Eine Sitzung endet nicht automatisch beim Höhepunkt; Orgasmus ist ein Ereignis innerhalb der Sitzung, nicht ihr Ende (E-IA-019, E-IA-033). Sie darf ohne Orgasmus normal enden. Danach: Nähe, Gespräch, Schlaf, Duschen, Essen, Anziehen, gemeinsames Einschlafen, „Morgen danach“ (E-IA-020).
+📋 Eine Sitzung endet nicht automatisch beim Höhepunkt; Orgasmus ist ein Ereignis innerhalb der Sitzung, nicht ihr Ende (E-IA-019, E-IA-033). Sie darf ohne Orgasmus normal enden. Danach: Nähe, Gespräch, Schlaf, Duschen, Essen, Anziehen, gemeinsames Einschlafen, ‚Morgen danach‘ (E-IA-020).
 
 ## 5. Absicht und Aktionen
 
@@ -179,7 +179,7 @@ Die Details stehen in [Modul 23](23-Spezifikation-Reaktions-und-Koerpersystem.md
 - Weichgewebe ist **sekundär** zum Skelett (E-SO-013), reagiert auf **Beschleunigung, Kontakt, Druck** und Haltung.
 - Sekundärbewegung wird **pro Körperteil** aus individueller Anatomie berechnet, nicht aus Größe pauschal (E-SO-024).
 - Sie wirkt auch bei rhythmischer Bewegung, subtil und realistisch (E-SO-006).
-- Muskelaktivierung wird aus Pose, Bewegung und Last **approximiert** („90 % Realismus reicht“, E-SO-004, E-SO-015).
+- Muskelaktivierung wird aus Pose, Bewegung und Last **approximiert** (‚90 % Realismus reicht‘, E-SO-004, E-SO-015).
 
 ## 9. Mikrovariation und Determinismus
 
@@ -263,7 +263,7 @@ Weitere Anforderungen: autoritativer Interaktionszustand im Mehrspielermodus (E-
 | Ultra / Cinematic | höchste Genauigkeit, auch für Replay-Re-Render (E-RP-002) |
 
 - Alle Stufen simulieren **dasselbe** Verhalten; nur die Genauigkeit unterscheidet sich (35#459).
-- Performance-Budgets sind Ziele **pro Subsystem** (E-SP-001); Zahlen existieren nicht. „Nicht jeder hat Spitzenhardware“ (E-PR-011).
+- Performance-Budgets sind Ziele **pro Subsystem** (E-SP-001); Zahlen existieren nicht. ‚Nicht jeder hat Spitzenhardware‘ (E-PR-011).
 - Entfernung und Wichtigkeit steuern den Detailgrad (E-SO-037).
 
 ## 15. Debugging und Werkzeuge
@@ -295,7 +295,7 @@ Weitere Anforderungen: autoritativer Interaktionszustand im Mehrspielermodus (E-
 | `EnvironmentQuery` | Flächen, Platz, Privatheit |
 | `UnrealAdapter` | Rig/IK/Animation/Physik der Engine |
 
-Hinweis: Welche Teile im Kern (portabel testbar) und welche im Unreal-Adapter liegen, muss im Prototyp entschieden werden; die Dokumentation gibt nur die Trennlinie vor („Regeln, Zustände, Entscheidungen im Kern, Rig/IK/Physik im Adapter“).
+Hinweis: Welche Teile im Kern (portabel testbar) und welche im Unreal-Adapter liegen, muss im Prototyp entschieden werden; die Dokumentation gibt nur die Trennlinie vor (‚Regeln, Zustände, Entscheidungen im Kern, Rig/IK/Physik im Adapter‘).
 
 ## 17. Randfälle
 

@@ -82,7 +82,7 @@ Hinweise:
 | ZU-AL-03 | Das Gate liest **keine** Aussehens-, Körper-, Stimm- oder Kleidungsdaten. | E-SK-010 |
 | ZU-AL-04 | Verstorbene Figuren haben keinen aktiven Zustand für Interaktionen; ihre Daten bleiben für Gedächtnis/History. | E-SK-014 |
 | ZU-AL-05 | Der Zustand `AdultEligible` kann nicht durch Mods, Skripte, Story-Ereignisse oder Cheats gesetzt werden, sondern nur durch die Alterslogik des Spielkerns aus dem Geburtsdatum. | E-SK-004 |
-| ZU-AL-06 | Der Nachweis „zeigt Ausweis“ ist ein **Ereignis in der Welt**; gespeichert wird nur das Ergebnis `verifizierter Erwachsener`, kein Ausweisinhalt. | E-SK-011, E-SK-012 |
+| ZU-AL-06 | Der Nachweis ‚zeigt Ausweis‘ ist ein **Ereignis in der Welt**; gespeichert wird nur das Ergebnis `verifizierter Erwachsener`, kein Ausweisinhalt. | E-SK-011, E-SK-012 |
 | ZU-AL-07 | Neu erzeugte Figuren durchlaufen die Altersgrenze der Pipeline: Minderjährige sind für das Adult-Paket **unsichtbar** (kein Eintrag in Auswahllisten, kein Präferenzprofil, keine Anziehungsdaten). | E-SK-032 |
 | ZU-AL-08 | Beim Altern wird Eligibility **am Weltdatum** berechnet; Tests prüfen Tag 17 Jahre 364/365 und Tag 18 Jahre 0. | E-SK-009, E-SK-012 |
 | ZU-AL-09 | Visuelle Mindestreife sehr junger Erwachsener ist **Asset-Qualität**, kein Laufzeitgate; der Build-Validator prüft Pflichtfelder und Beschreibungen. | E-SK-031 |
@@ -122,7 +122,7 @@ Schwellen für „niedrig/mittel/hoch“ sind **Konfigurationsdaten** und bewuss
 
 - Alle Teilnehmer liefern kontinuierlich `responsiveness` und `awareness`.
 - Ein **Erkennungsfenster** `T_detect` (Konfigurationswert, kein Beschlusswert) beginnt, sobald `responsiveness` unter den Schwellwert fällt. Läuft es ab, wechselt der Zustand auf `Unconscious/Unresponsive` und der Abbruch greift sofort.
-- Das System zeigt dem Spieler **keine** Hilfeanzeige „Person bewusstlos“; die Figur zeigt natürliche Signale (Muskelspannung, Atmung, ausbleibende Antworten).
+- Das System zeigt dem Spieler **keine** Hilfeanzeige ‚Person bewusstlos‘; die Figur zeigt natürliche Signale (Muskelspannung, Atmung, ausbleibende Antworten).
 - Kein Pfad darf die Interaktion über das Fenster hinaus weitersimulieren.
 
 ## 6. Zustimmung als Datensatz
@@ -223,7 +223,7 @@ Regeln:
 
 | Klasse | Beispiele | Wirkung |
 |---|---|---|
-| `HardStop` | vereinbartes Stopp-Signal; deutliches „Nein/Aufhören“; Wegstoßen; Fluchtreaktion | **Sofort**: logische Beendigung → Sperre weiterer Eskalation → sicherer Ausstieg → neutraler Zustand |
+| `HardStop` | vereinbartes Stopp-Signal; deutliches ‚Nein/Aufhören‘; Wegstoßen; Fluchtreaktion | **Sofort**: logische Beendigung → Sperre weiterer Eskalation → sicherer Ausstieg → neutraler Zustand |
 | `Withdraw` | Rücknahme einer Zustimmung („doch nicht“) | wie `HardStop`, Zustimmung → `Withdrawn` |
 | `DiscomfortCue` | verzerrte Mimik, Verspannung, Verlangsamen | Check-in, Intensität senken, Repositionierung |
 | `PreferenceCue` | „anders“, „langsamer“ | Anpassung innerhalb des Rahmens |
@@ -319,7 +319,7 @@ Tests sind aus bestätigten Aussagen abgeleitet. Vollständig in [Modul 29](29-Q
 | Frage | Bezug |
 |---|---|
 | Schwellen und Zeitfenster für Capacity, Erkennungsfenster, Check-in | K1 |
-| Gewichtung der Signale, wann „ruhig und beteiligt“ in „unsicher“ übergeht | K1 |
+| Gewichtung der Signale, wann ‚ruhig und beteiligt‘ in „unsicher“ übergeht | K1 |
 | Umgang mit Schlaf-Zuständen (einvernehmliches Schlafspiel) | K9 |
 | Alters-/Zustimmungsprüfung bei Gästen im Koop | K21 |
 | Darf ein Rahmen über mehrere Tage gelten (z. B. Dauerbeziehung)? Die Quellen sagen: neue Begegnung = neue Berechnung (E-SK-025); Dauerrahmen ist nicht beschlossen. | – |

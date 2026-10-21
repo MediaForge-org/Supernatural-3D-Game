@@ -25,7 +25,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 - 📋 **Kein Parallelsystem.** Erinnerungen, Beziehungen, Physiologie, Weltzustand und Wirtschaft sind dieselben wie im Hauptspiel. „Adult“ ist keine zweite Welt neben der echten.
 - 📋 **Kein „Gott-System“.** Jedes Teilsystem bleibt austauschbar.
 - 📋 **Daten statt Code.** Neue Kategorien, Animationen, Profile entstehen als registrierte Daten, nicht als neuer C++-Code im Kern.
-- 📋 **Gleiche öffentliche Schnittstellen.** Das offizielle optionale Paket nutzt dieselben Schnittstellen und dasselbe Paketmodell wie jede Drittanbieter-Mod. Es gibt keine Sonderabfrage der Art „ist das Erwachsenen-Paket installiert?“ im Kern.
+- 📋 **Gleiche öffentliche Schnittstellen.** Das offizielle optionale Paket nutzt dieselben Schnittstellen und dasselbe Paketmodell wie jede Drittanbieter-Mod. Es gibt keine Sonderabfrage der Art ‚ist das Erwachsenen-Paket installiert?‘ im Kern.
 - 📋 **Erst kleiner vertikaler Schnitt, dann Skalierung** ([Produktion](10-Produktion-Recht-Vertrieb.md)).
 
 ---
@@ -66,7 +66,7 @@ Komplett-Paket             Alles zusammen, solange die Gesamtgröße sinnvoll bl
 - 📋 Orte wie Clubs, Hotels und Wohnungen gehören **zur normalen Spielwelt**, nicht zu einem Paket. Das Paket nutzt deren Räume, Möbel, Privatsphäre, Besitzer, Öffnungszeiten und Sicherheitsregeln.
 - 📋 **Kein einzelner globaler Intensitätsschalter.** Das Paket ist an oder aus; wer weniger Extremes möchte, installiert ein anderes Paket (Entwickler, 10.09.). Innerhalb des Pakets sind Kategorien und Presets einzeln konfigurierbar. Der Entwickler wünscht zusätzlich ein Paket „mit allem“ neben den Teilpaketen.
 - ❓ Zuschnitt, Gesamtgröße und Preset-Bündel (zum Beispiel Minimal, Standard, Voll, Hochintensität, Eigene) sind nicht entschieden.
-- 🧭 Das Dreier-Schema der dunklen Inhalte (A Framework, B Hochintensität, C „Dunkle Kriminalität / Mature World Events“, unabhängig schaltbar) steht in [Dunkle Themen](09-Dunkle-Themen-und-Nicht-Uebernommenes.md).
+- 🧭 Das Dreier-Schema der dunklen Inhalte (A Framework, B Hochintensität, C ‚Dunkle Kriminalität / Mature World Events‘, unabhängig schaltbar) steht in [Dunkle Themen](09-Dunkle-Themen-und-Nicht-Uebernommenes.md).
 
 ---
 
@@ -81,7 +81,7 @@ Komplett-Paket             Alles zusammen, solange die Gesamtgröße sinnvoll bl
 | Entwicklungsversion mit Erwachsenen-Paket | Entwicklung und Test des Pakets |
 | gegebenenfalls später: Distributionsversion mit Paket | öffentliche Verteilung, nach Rechts- und Plattformprüfung |
 
-Die Werte-Ansicht verborgener Zustände ist **nur in Mod-, Debug- und Cheat-Modus** vorgesehen. Die „interne Testversion“ darf keine Funktion enthalten, die der Sicherheitskern ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#1-sicherheitskern)) verbietet.
+Die Werte-Ansicht verborgener Zustände ist **nur in Mod-, Debug- und Cheat-Modus** vorgesehen. Die ‚interne Testversion‘ darf keine Funktion enthalten, die der Sicherheitskern ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#1-sicherheitskern)) verbietet.
 
 ---
 

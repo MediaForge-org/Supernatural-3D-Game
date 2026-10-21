@@ -56,7 +56,7 @@ Die Werte-Ansicht verborgener Zustände ist nur in Mod-, Debug- und Cheat-Modus 
 
 📋 Planungsstand aus Runde 18 (26.09.), vom Entwickler als Richtung bestätigt, Details offen:
 
-- **Hybrid-Steuerung:** *Direkt* (freiere Körpersteuerung) und *Assistiert* (erweiterte Aktionen und Kombinationen, angelehnt an das Prinzip von Kampfspielen mit Kombinations-Menü). Der Wechsel soll ohne Unterbrechung möglich sein. ❓ Ausgestaltung offen. Der Entwickler: Er finde „das UFC-System etwas erweitert extrem stark“, wisse aber noch nicht genau, wie „direkt“ aussieht.
+- **Hybrid-Steuerung:** *Direkt* (freiere Körpersteuerung) und *Assistiert* (erweiterte Aktionen und Kombinationen, angelehnt an das Prinzip von Kampfspielen mit Kombinations-Menü). Der Wechsel soll ohne Unterbrechung möglich sein. ❓ Ausgestaltung offen. Der Entwickler: Er finde ‚das UFC-System etwas erweitert extrem stark‘, wisse aber noch nicht genau, wie „direkt“ aussieht.
 - **Kombinationen sind Abkürzungen.** Freie Bewegung ist nie auf gespeicherte Kombinationen beschränkt.
 - **Analoge Steuerung:** Tempo und Richtung über Stick und Trigger; **kein Tasten-Spammen** („Spammen wäre zu GTA“). Ein zusätzlicher Modifikator verändert Stärke oder Tempo einer laufenden Bewegung. Intensität und Tempo sind zu jeder Sekunde änderbar.
 - **Schnelle Wahl des gesteuerten Körperbereichs**, falls mehrere Aktionen gleichzeitig laufen, mit **Smart Context** (das Spiel errät die gemeinte Hand/Region, der Spieler kann übersteuern) und einer Anzeige laufender Aktionen.

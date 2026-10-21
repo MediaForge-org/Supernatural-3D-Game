@@ -63,7 +63,7 @@ Spezifikation: [Modul 20](20-Spezifikation-Regelkern-Zustimmung.md). Alle Tests 
 | T-ZU-030 | K | S | Längere Unterbrechung | Pause > Schwellwert | Neuprüfung | E-SK-027 |
 | T-ZU-031 | K | S | Neue Begegnung | gleicher Tag/Ort, neue Situation | neue Berechnung | E-SK-025 |
 | T-ZU-032 | K | S | Schweigen allein | keine Signale | keine Zustimmung | E-SK-022 |
-| T-ZU-033 | K | S | „Ruhig, aber beteiligt“ | aktive Teilnahme | keine Unterbrechung | E-SK-023 |
+| T-ZU-033 | K | S | ‚Ruhig, aber beteiligt‘ | aktive Teilnahme | keine Unterbrechung | E-SK-023 |
 | T-ZU-034 | K | S | Stöhnen allein | nur Laut | nicht ausreichend für Rahmenerweiterung | E-SK-022 |
 | T-ZU-035 | K | S | Explizites Nein | Signal `HardStop` | sofortige Wirkung, kein Score | E-SK-023 |
 | T-ZU-036 | K | S | Wegdrücken/Abwehr | Signal | `HardStop` | E-SK-023 |
@@ -76,7 +76,7 @@ Spezifikation: [Modul 20](20-Spezifikation-Regelkern-Zustimmung.md). Alle Tests 
 | T-ZU-043 | K | S | Dialog-Popups | Standardkonfiguration | keine Dauer-Popups | E-SK-023 |
 | T-ZU-044 | K | S | Determinismus | gleiche Eingaben, gleicher Seed | gleiche Entscheidung und Begründung | E-SK-029 |
 | T-ZU-045 | K | S | Begründung | jede `Deny`-Antwort | Grund-Code vorhanden | E-SK-029 |
-| T-ZU-046 | K | S | Mod-Konflikt mit Kernregel | Mod-Profil „keine Zustimmung nötig“ | wird abgelehnt/ignoriert, Protokoll | E-SK-004 |
+| T-ZU-046 | K | S | Mod-Konflikt mit Kernregel | Mod-Profil ‚keine Zustimmung nötig‘ | wird abgelehnt/ignoriert, Protokoll | E-SK-004 |
 | T-ZU-047 | K | S | Verfügbarkeit: Kampf | NPC im Kampf | `Deny(Unavailable)` | Modul 20 |
 | T-ZU-048 | K | S | Verfügbarkeit: gefesselt ohne Vereinbarung | Zustand | `Deny(Unavailable)` | Modul 20 |
 | T-ZU-049 | K | S | Mehrere Teilnehmer: Widerruf eines | einer widerruft | Sitzung für ihn beendet; Rest nur mit Zustimmung | Modul 20 |
@@ -150,7 +150,7 @@ Spezifikation: [Modul 22](22-Spezifikation-Interaktionsengine.md).
 | T-IE-025 | W | S | Ende ohne Orgasmus | Sitzungsende | `Completed` | E-IA-019 |
 | T-IE-026 | W | M | Aftercare-Abläufe | Duschen/Schlaf/Gespräch | verfügbar | E-IA-020 |
 | T-IE-027 | W | U | Qualitätsstufen | Low vs. Cinematic | gleiche Entscheidungen | E-SO-014 |
-| T-IE-028 | W | M | „Low sieht nicht fake aus“ | Playtest | Prüfliste (visuell) | E-SO-014 |
+| T-IE-028 | W | M | ‚Low sieht nicht fake aus‘ | Playtest | Prüfliste (visuell) | E-SO-014 |
 | T-IE-029 | S | U | Privacy Score | Fenster/Licht/Geräusch | plausible Werte | E-IA-035 |
 | T-IE-030 | S | U | Zeugenerkennung | Sichtlinie+Gehör | Zeugen konsistent | E-WE-021 |
 | T-IE-031 | S | U | Fahrzeug-Innenraum | reale Innenmaße | Möglichkeiten korrekt | E-IA-035 |
@@ -276,12 +276,12 @@ Spezifikation: [Modul 26](26-Spezifikation-Weltintegration-Branche-Wirtschaft.md
 | ID | Prio | Art | Testziel | Erwartung | Basis |
 |---|---|---|---|---|---|
 | T-WE-001 | K | S | Transaktion ohne Zustimmung | Leistung nicht erbracht | E-SK-003 |
-| T-WE-002 | K | S | Tarif „bis zur Ohnmacht“ | nicht erzeugbar | 35#545 |
+| T-WE-002 | K | S | Tarif ‚bis zur Ohnmacht‘ | nicht erzeugbar | 35#545 |
 | T-WE-003 | W | S | Vertragskündigung beider Seiten | Vertragsende | E-NP-024 |
 | T-WE-004 | K | S | Altersprüfung bei Buchung | keine Buchung bei `NotAdultEligible` | E-NP-024 |
 | T-WE-005 | W | S | Video-Replay-Konsistenz | gleiches Video | E-WE-010 |
 | T-WE-006 | W | S | Cache-Limit | Obergrenze | 35#527 |
-| T-WE-007 | W | S | Hausregel „keine Kameras“ | Aufnahme blockiert | E-IA-007 |
+| T-WE-007 | W | S | Hausregel ‚keine Kameras‘ | Aufnahme blockiert | E-IA-007 |
 | T-WE-008 | W | S | Jurisdiktion | legal/illegal nach Daten | E-WE-004 |
 | T-WE-009 | W | S | Aufnahme ≠ Veröffentlichung | getrennte Zustimmungen | E-WE-011 |
 | T-WE-010 | W | S | Meinungsänderung vor Veröffentlichung | Veröffentlichung blockiert | E-WE-011 |
@@ -352,7 +352,7 @@ Spezifikation: [Modul 28](28-Spezifikation-Speicherung-Mods-Builds.md).
 
 | ID | Prio | Art | Testziel | Erwartung | Basis |
 |---|---|---|---|---|---|
-| T-QS-001 | W | S | Massentest „tausende Kombinationen“ | kein Absturz, Gates halten | E-SP-001 |
+| T-QS-001 | W | S | Massentest ‚tausende Kombinationen‘ | kein Absturz, Gates halten | E-SP-001 |
 | T-QS-002 | W | S | Golden Tests für Entscheidungen | stabil über Versionen | E-SP-001 |
 | T-QS-003 | W | S | Property-Test: Gate ist deterministisch | gleiche Eingabe → gleiche Ausgabe | E-SK-029 |
 | T-QS-004 | K | S | Fuzzing der Zustimmungsübergänge | keine verbotenen Übergänge | E-SK-026 |

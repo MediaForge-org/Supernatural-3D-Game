@@ -85,7 +85,7 @@ Jede Entscheidung hat eine Nummer `OE-nn`, eine Frage, die Optionen **ohne Wertu
 | OE-45 | B | Steuerungsdetails (Belegung, Modifier, Menü) | Prototyp | UI | E-SO-030 |
 | OE-46 | B | Verhältnis Mocap/Motion Matching/Prozedural | Prototyp | Animation | E-PA-026 |
 | OE-47 | B | Weichgewebe-Solver und Budgets | Prototyp | Physik | Modul 23 |
-| OE-48 | B | Wann wird Adult in der Entwicklungsreihenfolge umgesetzt? | „sehr früh“ vs. „nach Ladebildschirm/Karte“ | Planung | [K19](19-Konflikt-und-Widerspruchsmatrix.md#k19-zeitpunkt-von-adult) |
+| OE-48 | B | Wann wird Adult in der Entwicklungsreihenfolge umgesetzt? | „sehr früh“ vs. ‚nach Ladebildschirm/Karte‘ | Planung | [K19](19-Konflikt-und-Widerspruchsmatrix.md#k19-zeitpunkt-von-adult) |
 | OE-49 | C | Preset-Bündel (Minimal/Standard/Full) | später | Paket | E-PA-022 |
 | OE-50 | C | Paketgrößen und -aufteilung | nach Größenmessung | Distribution | E-PA-018 |
 | OE-51 | C | Verhältnis Tattoo-Rendering (Decals/Virtual Texture/prozedural) | Prototyp | Rendering | Modul 25 |
@@ -122,11 +122,12 @@ Jede Entscheidung hat eine Nummer `OE-nn`, eine Frage, die Optionen **ohne Wertu
 | Nr. | Frage | Stand |
 |---|---|---|
 | OE-80 | **Missing-Family-/Taxonomie-Audit** (Ende R16) | offen; Pre-Audit A1–A15 liegt vor ([Modul 17](17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md#23-pre-audit-742748)) |
-| OE-81 | **Qwen-Audit** (Lückenfinder) | offen; kein Qwen-Ergebnis im Archiv; Entwickler „jetzt nicht“ (35#747) |
+| OE-81 | **Qwen-Audit** (Lückenfinder) und **inhaltliche Qwen-Befragung** | offen; im Master-Archiv kein Qwen-Ergebnis; im Knowledge Vault nur zwei **Teilausgaben** des Architekturentwurfs (bis Abschnitt 28 bzw. ca. 30, Referenzmaterial, [E-SP-010](14-Entscheidungsregister.md#14-sp-speicherstand-modding-builds-technik)); Entwickler „jetzt nicht“ (35#747) |
 | OE-82 | **Registry-Freeze** | nach OE-80/81 (E-PR-009) |
 | OE-83 | Prototyping- und Rechtserkenntnisse | offen |
-| OE-84 | Konsolidierte Master-Dokumente für R1–R20 | im Master nicht auffindbar ([Modul 13](13-Quelleninventar-und-Abdeckung.md#2-befund-wo-die-adult-planung-tatsächlich-liegt)) |
-| OE-85 | Datei `USER_REQUESTED_BUT_NOT_CANONICALIZED.md` | im Archiv nicht vorhanden |
+| OE-84 | Konsolidierte Dokumente für R1–R20 | für **R10, R11, R13, R14, R15** liegen projekteigene Lock-Dokumente vor (`VD15`, außerhalb des Masters); für **R16–R20** nicht auffindbar ([Modul 13](13-Quelleninventar-und-Abdeckung.md#2-befund-wo-die-adult-planung-tatsächlich-liegt)) |
+| OE-85 | Datei `USER_REQUESTED_BUT_NOT_CANONICALIZED.md` und Master-ZIP 20.09. | weder im Archiv noch in Vault, Delta-Ordner, kumulativen ZIPs 23.–26.09. oder ChatGPT-Export gefunden |
+| OE-86 | Zweiter, kurzer Audit über die Unterkategorien (angekündigt 35#742) | nicht durchgeführt; 35#748 verweist auf einen späteren Nachcheck ([K23](19-Konflikt-und-Widerspruchsmatrix.md#k23-reihenfolge-der-abschlussschritte)) |
 
 ## 9. Abhängigkeitsübersicht
 

@@ -43,7 +43,7 @@ Die Steuerung soll das Gefühl einer **freien, realistischen Interaktion** geben
 | Aktionsbibliothek erst nach Freischaltung sichtbar | 📋 | E-ST-004 |
 | Intensitätsmodifikator, Körperbereichswahl, Smart Context, parallele Aktionen, HUD-Stufen, Remapping, Haptik, Kamera, Barrierefreiheit, Profile | 📋 | E-ST-005 |
 | VR: gleiches System, Handtracking, optional Ganzkörper | 📋 | E-ST-006, E-SO-031 |
-| Favoriten | 🧭 („weiß ich noch nicht, aber ja, glaube schon“) | E-ST-009 |
+| Favoriten | 🧭 (‚weiß ich noch nicht, aber ja, glaube schon‘) | E-ST-009 |
 | Content-Toggle für starke Körperreaktionen und Blut | 📋 | E-ST-011 |
 | Replay als Datenpaket, Cinematic Re-Render | 📋 / 🧭 | E-RP-002, E-RP-003 |
 | Streaming/Aufnahme im Hauptspiel | 📋 | E-RP-004 |
@@ -62,7 +62,7 @@ Die Steuerung soll das Gefühl einer **freien, realistischen Interaktion** geben
 | **Analogebene (Echtzeit)** | kontinuierliche Steuerung von Bewegungsrichtung, Tempo, Amplitude, Druck (Stick, Trigger) mit Modifikatoren |
 | **Kontextfilter** | zeigt nur, was nach Haltung, freier Hand, Items, Möbeln, Rolle und Übergängen sinnvoll ist |
 
-Die Wahl „direkt vs. unterstützt“ ist eine **Spielereinstellung** (35#790 Frage 1), nicht ein harter Moduswechsel.
+Die Wahl ‚direkt vs. unterstützt‘ ist eine **Spielereinstellung** (35#790 Frage 1), nicht ein harter Moduswechsel.
 
 ## 4. Intensitäts- und Rhythmuseingabe
 
@@ -74,14 +74,14 @@ Die Wahl „direkt vs. unterstützt“ ist eine **Spielereinstellung** (35#790 F
 | ST-IR-04 | Spamming ist nicht optimal; Analogeingaben sind schneller als Tastenhämmern. | E-ST-001 |
 | ST-IR-05 | Eingaben werden zu **Absichten** (Intent), nie direkt zu Animationen. | E-SO-017 |
 | ST-IR-06 | Eingabe kann nie eine Zustimmungs-/Fähigkeitsprüfung umgehen. | [Modul 20](20-Spezifikation-Regelkern-Zustimmung.md) |
-| ST-IR-07 | Intensität wird **von Sekunde zu Sekunde** anpassbar (Entwickler 35#574/5); die Eingabe dafür ist offen („X-Taste spammen … oder Steuerpad rechts“). | E-ST-005 |
+| ST-IR-07 | Intensität wird **von Sekunde zu Sekunde** anpassbar (Entwickler 35#574/5); die Eingabe dafür ist offen (‚X-Taste spammen … oder Steuerpad rechts‘). | E-ST-005 |
 | ST-IR-08 | Unbeabsichtigter Kontakt (z. B. falscher Körperbereich) wird als solcher erkannt; die Figur reagiert; keine Zustimmung zu neuer Handlung (siehe Regelkern ZU-LS-05). | 35#575/577 |
 
 ## 5. Aktionsbibliothek und Oberfläche
 
 ### 5.1 Bibliothek
 
-📋 E-ST-010: Die Bibliothek ist **kontextabhängig** und **jederzeit einsehbar** (Entwickler 35#610: „alle verfügbaren im Menü anschauen“).
+📋 E-ST-010: Die Bibliothek ist **kontextabhängig** und **jederzeit einsehbar** (Entwickler 35#610: ‚alle verfügbaren im Menü anschauen‘).
 
 | Eigenschaft (🧭) | Beschreibung |
 |---|---|
@@ -100,7 +100,7 @@ Die Wahl „direkt vs. unterstützt“ ist eine **Spielereinstellung** (35#790 F
 | Nr. | Anforderung | Basis |
 |---|---|---|
 | ST-UI-01 | Beim ersten Start des Pakets: **Setup-Assistent** (Standard bei Überspringen). | E-ST-008 |
-| ST-UI-02 | Begründung bei ungültiger Aktion („warum geht das nicht“). | E-ST-007 |
+| ST-UI-02 | Begründung bei ungültiger Aktion (‚warum geht das nicht‘). | E-ST-007 |
 | ST-UI-03 | Smart Context: Vorschläge nach Situation; **parallele Aktionen** im UI sichtbar. | E-ST-005 |
 | ST-UI-04 | Keine sichtbare Präferenz-Checkliste (Spieler lernt über Verhalten). | E-NP-004 |
 | ST-UI-05 | Risiko-Anzeige subtil, keine Prozentwerte. | E-KO-028 |
@@ -152,7 +152,7 @@ Siehe [Modul 04, Abschnitt 7](04-Steuerung-Darstellung-Kamera-Audio.md#7-audio-u
 | ST-VR-03 | Fingertracking, Body Ownership, Teil-Körpertracking; IK ergänzt fehlende Tracker. | E-ST-007 |
 | ST-VR-04 | VR-Intent-Prediction (Vorschlag). | 35#626 (R16H) |
 | ST-VR-05 | Räumliches Menü, Komfort (Übelkeitsvermeidung), sitzend/stehend, Kalibrierung. | E-ST-006 |
-| ST-VR-06 | Entwickler: VR „soll sich anfühlen wie echt“, bewegliche Hände/Füße/Hüfte. | E-ST-006 |
+| ST-VR-06 | Entwickler: VR ‚soll sich anfühlen wie echt‘, bewegliche Hände/Füße/Hüfte. | E-ST-006 |
 | ST-VR-07 | **VR wird später implementiert**, bleibt aber in der Architektur berücksichtigt. | E-ST-006 |
 
 ## 10. Barrierefreiheit und Einstellungen
@@ -175,7 +175,7 @@ Siehe [Modul 04, Abschnitt 7](04-Steuerung-Darstellung-Kamera-Audio.md#7-audio-u
 - Re-Render im Hintergrund mit Fortschritt; Weiterspielen ohne großen Performanceverlust (E-RP-003).
 - Aufnahme/Streaming direkt im Hauptspiel, unabhängig von Adult, „ein Button“ (E-RP-004).
 - Jede Szene aufnehmbar, auch nachträglich; nur kleine Clips aus dem Replay-Puffer (E-RP-006).
-- Fragen 21–100 (Replay-Editor, Kameras, Codecs, Audiobusse, Provider-Unabhängigkeit): „mach, was du gut findest“ (E-RP-007).
+- Fragen 21–100 (Replay-Editor, Kameras, Codecs, Audiobusse, Provider-Unabhängigkeit): ‚mach, was du gut findest‘ (E-RP-007).
 
 ### 11.2 Modell (🧭 Vorschlag des Assistenten, 35#465/467/469/485)
 

@@ -33,13 +33,19 @@ Quellen und Entscheidungen:
 | Nr. | Dokument | Inhalt |
 |---|---|---|
 | 13 | [Quelleninventar und Abdeckung](13-Quelleninventar-und-Abdeckung.md) | Zitierschlüssel, was wie gründlich gelesen wurde, Abweichungen |
-| 14 | [Entscheidungsregister](14-Entscheidungsregister.md) | 358 Einträge mit Datum, Quelle, Status |
+| 14 | [Entscheidungsregister](14-Entscheidungsregister.md) | 371 Einträge mit Datum, Quelle, Status |
 | 15 | [Interviewprotokoll Runden 1–10](15-Interviewprotokoll-Runden-1-bis-10.md) | Fragen und Antworten, chronologisch |
 | 16 | [Interviewprotokoll Runden 11–16](16-Interviewprotokoll-Runden-11-bis-16.md) | dito |
 | 17 | [Interviewprotokoll Runden 17–20 und Rahmenchats](17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md) | dito, plus Recht, KI-Offenlegung, Chats 23/28/37, Kanon |
 | 18 | [Chronologie im Detail](18-Chronologie-Detail.md) | Zeitleiste, spätere Überschreibungen |
-| 19 | [Konflikt- und Widerspruchsmatrix](19-Konflikt-und-Widerspruchsmatrix.md) | K1–K22 mit Belegen, Optionen |
+| 19 | [Konflikt- und Widerspruchsmatrix](19-Konflikt-und-Widerspruchsmatrix.md) | K1–K23 mit Belegen, Optionen |
 | 35 | [Auswertung des Rahmenentwurfs vom 28.08.](35-Auswertung-Rahmenentwurf-28-08.md) | Was trägt, was ist überholt |
+| 36 | [Frage-Antwort-Matrix, Runden 1–9](36-Frage-Antwort-Matrix-Runden-1-bis-9.md) | je Frage: Antwort, Quelle, Status, Register (Etappe 2.2) |
+| 37 | [Frage-Antwort-Matrix, Runden 10–13](37-Frage-Antwort-Matrix-Runden-10-bis-13.md) | dito |
+| 38 | [Frage-Antwort-Matrix, Runden 14–15](38-Frage-Antwort-Matrix-Runden-14-und-15.md) | dito |
+| 39 | [Frage-Antwort-Matrix, Runde 16](39-Frage-Antwort-Matrix-Runde-16.md) | dito |
+| 40 | [Frage-Antwort-Matrix, Runden 17–20](40-Frage-Antwort-Matrix-Runden-17-bis-20.md) | dito, plus Pre-Audit |
+| 41 | [Audit Etappe 2.2](41-Audit-Etappe-2-2.md) | neu ausgewertete Quellen, Methode, Abgleich, Prüfungen, offene Lücken |
 
 Spezifikationsskizzen (🧭 Vorschläge der Dokumentation, kein Kanon):
 

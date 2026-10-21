@@ -20,7 +20,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 ---
 
-**Lesehilfe:** Jede Zeile = ein Randfall. „Sollverhalten“ ist ein Vorschlag; wo die Quellen nichts festlegen, steht **„offen“**.
+**Lesehilfe:** Jede Zeile = ein Randfall. ‚Sollverhalten‘ ist ein Vorschlag; wo die Quellen nichts festlegen, steht **„offen“**.
 
 ## 1. Regelkern
 
@@ -35,7 +35,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | RF-ZU-07 | Zeitraffer (Schlaf/Warten) während der Sitzung | Sitzung endet vorher; kein Überspringen des Gates | E-IA-041 |
 | RF-ZU-08 | Geburtstag der Figur während der Sitzung | Neuberechnung nur bei Beginn der nächsten Sitzung | T-ZU-008 |
 | RF-ZU-09 | Geburtsdatum fehlt bei importierter Figur | `Unknown` → `Deny` | E-SK-010 |
-| RF-ZU-10 | NPC lügt über Alter („zeigt Ausweis“ gefälscht) | Das Spiel kennt Ausweis-Ereignisse als Weltereignisse; die Verifikation läuft über den Figurenzustand, nicht über Spielerglauben; Fälschung ist Weltphänomen (offen) | E-SK-011 |
+| RF-ZU-10 | NPC lügt über Alter (‚zeigt Ausweis‘ gefälscht) | Das Spiel kennt Ausweis-Ereignisse als Weltereignisse; die Verifikation läuft über den Figurenzustand, nicht über Spielerglauben; Fälschung ist Weltphänomen (offen) | E-SK-011 |
 | RF-ZU-11 | Zwei widersprüchliche Signale gleichzeitig (Wegdrücken + Zustimmungsworte) | Der **restriktivere** Hinweis gewinnt; Check-in | K§18 |
 | RF-ZU-12 | Stopp-Signal im Rahmen definiert, aber Figur ist stumm | Alternative Signale (Körper) bleiben gültig | 35#579 |
 | RF-ZU-13 | Rahmen deckt Familie A ab, Figur zeigt Unbehagen | Check-in, Intensitätsanpassung, ggf. Ende | E-SK-021 |
@@ -44,7 +44,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | RF-ZU-16 | Konflikt: Mod fordert Ausnahme vom Gate | Ablehnung, Protokoll | E-SK-004 |
 | RF-ZU-17 | Zustimmungsdienst nicht erreichbar (Server) | `Deny`, keine Sitzung | P1 |
 | RF-ZU-18 | Frühere Zustimmung (Ja am Vorabend), heute neue Situation | Neu berechnen; Erinnerung beeinflusst Angebot, ersetzt Zustimmung nicht | E-SK-025 |
-| RF-ZU-19 | Figur ist Parteimitglied/Begleiter und „Teil der Gruppe“ | Party-/Admin-Zustimmung ist nicht gültig | E-SK-003 |
+| RF-ZU-19 | Figur ist Parteimitglied/Begleiter und ‚Teil der Gruppe‘ | Party-/Admin-Zustimmung ist nicht gültig | E-SK-003 |
 | RF-ZU-20 | Figur ist in Haft oder gefangen | `Unavailable`; abhängig von Weltregeln nicht verfügbar | Modul 20 |
 
 ## 2. Datenmodell

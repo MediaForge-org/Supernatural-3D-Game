@@ -22,7 +22,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 ## 1. Ein gemeinsamer Human Core
 
-📋 Der wichtigste Architekturgrundsatz: **Es gibt ein hochwertiges Menschensystem für das ganze Spiel.** Das Erwachsenen-Paket hat keinen eigenen Körper, kein zweites Rig, kein zweites Charaktersystem. Muskelspannung, Fett- und Weichgewebe, Haut, Gewicht, Haar, Kleidung und Schmuck existieren immer und reagieren auf Bewegung und Kontakt; dasselbe gilt für Atmung, Schweiß und Körpertemperatur. Der Entwickler betonte (10.09., 12.09.), dass das System im normalen Spiel (Laufen, Training, Kampf) genauso gilt und dass es „nicht aus drei Elementen“ bestehen darf, sondern realistisch aufgebaut sein muss.
+📋 Der wichtigste Architekturgrundsatz: **Es gibt ein hochwertiges Menschensystem für das ganze Spiel.** Das Erwachsenen-Paket hat keinen eigenen Körper, kein zweites Rig, kein zweites Charaktersystem. Muskelspannung, Fett- und Weichgewebe, Haut, Gewicht, Haar, Kleidung und Schmuck existieren immer und reagieren auf Bewegung und Kontakt; dasselbe gilt für Atmung, Schweiß und Körpertemperatur. Der Entwickler betonte (10.09., 12.09.), dass das System im normalen Spiel (Laufen, Training, Kampf) genauso gilt und dass es ‚nicht aus drei Elementen‘ bestehen darf, sondern realistisch aufgebaut sein muss.
 
 Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und Kontaktpräzision in relevanten Zonen ([Modul 02](02-Architektur-Pakete-Technik.md#1-leitprinzipien)).
 
@@ -36,7 +36,7 @@ Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und K
 - Krafttraining baut Muskeln auf; Körperzusammensetzung verändert sich über Ernährung, Training, Schlaf und Stress ([Gameplay-Systeme](../Gameplay-Systeme.md)).
 - Individuelle Merkmale wie Größen, Formen und Gebrauchsspuren sind einzigartig. Der Entwickler wünscht eine hohe Vielfalt auch bei intimen Merkmalen; Details der Parameter gehören in den Charaktereditor ([Modul 07](07-Charakteranpassung-Tattoos-Koerpermodifikation.md)).
 - Alles, was nicht eigens anders festgelegt ist, soll sich **so realistisch und logisch wie in der echten Welt** verhalten (Entwickler, 26.09.; gilt für das ganze Spiel).
-- Der Entwickler will „90 Prozent Realismus“ statt Perfektion (12.09.): zu hoher Aufwand für das letzte Zehntel.
+- Der Entwickler will ‚90 Prozent Realismus‘ statt Perfektion (12.09.): zu hoher Aufwand für das letzte Zehntel.
 
 ---
 
@@ -44,7 +44,7 @@ Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und K
 
 📋 Die Weichgewebe-Nachbewegung ergibt sich **pro Körperteil** aus dessen Anatomie (Masse, Steifigkeit, Dämpfung, Muskelzustand, Haltung, Bewegungsrichtung und -frequenz, Kontakt), nicht aus einer pauschalen „Wackel“-Animation. Sie soll **realistisch, nicht übertrieben** sein.
 
-- Dieselbe Simulation gilt im Hauptspiel (zum Beispiel beim Laufen; ein Sport-BH dämpft die Bewegung) und in der Intimität, nur im anderen Kontext. Der Entwickler: „Jiggle-Physik, aber realistisch“.
+- Dieselbe Simulation gilt im Hauptspiel (zum Beispiel beim Laufen; ein Sport-BH dämpft die Bewegung) und in der Intimität, nur im anderen Kontext. Der Entwickler: ‚Jiggle-Physik, aber realistisch‘.
 - Der Entwickler verlangte ausdrücklich, dass sich in intimen Szenen Muskeln, Haut und Gewebe beider Beteiligter erkennbar bewegen. Ob eine Region überhaupt sichtbar sein muss, ist ein Anzeigeprofil ([Modul 04](04-Steuerung-Darstellung-Kamera-Audio.md#2-darstellungsprofile-und-erzählung)), nicht eine Frage der Simulation.
 - **Variation:** Wiederholungen sehen nie identisch aus; Mikrobewegungen und leichte Asymmetrien sind gewollt.
 - Kleidung, Haar und Schmuck reagieren auf dieselbe Physik.
@@ -77,7 +77,7 @@ Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und K
 - 📋 **Adult Health ist nie ein separates Minigame** (Frage 150, bestätigt). Verletzung, Schmerz, Blutung, Heilung, Narben, Medikamente, Erholung und Physiologie kommen vollständig aus dem normalen Charakter- und Gesundheitssystem. Es gibt keinen magischen Sonderzustand für den Erwachsenen-Bereich.
 - 📋 **Risiko** ist in sechs Arten getrennt (Verletzung, Entdeckung, sozial, rechtlich, gesundheitlich, Beziehung).
 - 📋 Eine Verletzung kann länger anhalten (Wochen) und die Handlungsfähigkeit, das Sitzen, den Schlaf und Folgesitzungen beeinflussen. Ärztliche Versorgung ist möglich; ein Krankenhausaufenthalt ist bei schweren Verletzungen realistisch.
-- 📋 Wie viel eine Figur riskieren will, ist eine **Persönlichkeits- und Präferenzfrage** (manche Figuren nehmen Schmerz oder Verletzungsrisiko bewusst in Kauf). Es gilt: Das Spiel setzt keine feste Obergrenze, die **Figur entscheidet**, und alle Folgen laufen über das Gesundheitssystem (Entwickler, 15.09.). Das hebt die Regeln zu Zustimmung und Stopp nicht auf ([Modul 01](01-Grundregeln-Alter-Zustimmung.md)). Eine „optimale Ausführungsmechanik“ für gefährliche Handlungen wird nicht gebaut; es werden Zustand und Folgen simuliert.
+- 📋 Wie viel eine Figur riskieren will, ist eine **Persönlichkeits- und Präferenzfrage** (manche Figuren nehmen Schmerz oder Verletzungsrisiko bewusst in Kauf). Es gilt: Das Spiel setzt keine feste Obergrenze, die **Figur entscheidet**, und alle Folgen laufen über das Gesundheitssystem (Entwickler, 15.09.). Das hebt die Regeln zu Zustimmung und Stopp nicht auf ([Modul 01](01-Grundregeln-Alter-Zustimmung.md)). Eine ‚optimale Ausführungsmechanik‘ für gefährliche Handlungen wird nicht gebaut; es werden Zustand und Folgen simuliert.
 - 📋 Bei Bewusstlosigkeit endet die Interaktion ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#5-entscheidungsfähigkeit-alkohol-und-drogen)). Der Entwickler hielt fest, dass der Spieler den Zustand meist selbst bemerkt und aufhört; das System erzwingt den Abbruch nach der Erkennung dennoch.
 - 🧭 Heilung, Risikoraten, Zeiträume, Komplikationen: ❓ **Zahlenwerte offen.** Sie werden nicht aus dieser Dokumentation abgeleitet.
 
@@ -85,7 +85,7 @@ Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und K
 
 ## 7. Flüssigkeiten, Hygiene, Kleidung, Möbel
 
-- 📋 **Flüssigkeiten haben getrennte Eigenschaften:** Speichel ≠ Schweiß ≠ Tränen ≠ Blut ≠ Erbrochenes ≠ weitere. Menge entsteht aus Körperzustand, Hydration, vorhandenem Inhalt und vorherigen Ereignissen, nicht aus einer festen Effektmenge. Das System nutzt dieselbe Material-/Physik-Infrastruktur des Spiels, keine vorgefertigten Aufkleber, soweit die Leistung es erlaubt. Aufwendige Flüssigkeitsdetails sind **Spät-Features** hinter einem Funktionsschalter (Entwickler, 23.09., zu diesem Themenblock: „erst ganz spät implementieren“).
+- 📋 **Flüssigkeiten haben getrennte Eigenschaften:** Speichel ≠ Schweiß ≠ Tränen ≠ Blut ≠ Erbrochenes ≠ weitere. Menge entsteht aus Körperzustand, Hydration, vorhandenem Inhalt und vorherigen Ereignissen, nicht aus einer festen Effektmenge. Das System nutzt dieselbe Material-/Physik-Infrastruktur des Spiels, keine vorgefertigten Aufkleber, soweit die Leistung es erlaubt. Aufwendige Flüssigkeitsdetails sind **Spät-Features** hinter einem Funktionsschalter (Entwickler, 23.09., zu diesem Themenblock: ‚erst ganz spät implementieren‘).
 - 📋 **Hygiene** ist ein allgemeines Charaktersystem (Duschen, Schweiß, Geruch, saubere Kleidung). NPCs reagieren je nach Persönlichkeit unterschiedlich empfindlich.
 - 📋 **Kleidung** nimmt Flüssigkeiten auf und bekommt einen Sauberkeitszustand; Bettwäsche, Handtücher und Möbel ebenfalls, ohne daraus ein Haushalts-Minispiel zu machen.
 - 📋 Möbel können bei grober Belastung beschädigt werden; das Material zählt.
@@ -99,7 +99,7 @@ Die Erweiterungen des Pakets: Profile, Bindungen, Content, höhere Solver- und K
 - **Verhütung** ist Teil der Gesundheits- und Inventarsimulation (Kondome, hormonelle Methoden, weitere) mit unterschiedlicher Wirksamkeit und möglichen Anwendungsfehlern; NPCs haben eine eigene bevorzugte Methode und können mit dem Partner darüber sprechen. Der Entwickler: Hormonelle Verhütung kann die Persönlichkeit verändern.
 - **Fruchtbarkeit** variiert individuell; ein **Zyklus** wird abstrahiert simuliert (kein Kalender-Mikromanagement) und beeinflusst Fruchtbarkeit, Körper und Stimmung. Schwangerschaft entsteht nur, wenn Biologie und Situation es ermöglichen.
 - **Schwangerschaft** ist ein langfristiger Weltzustand über Monate (Körper, Gewicht, Bewegung, Kleidung, Termine, Arbeit, Beziehungen), mit Ärzten und Kliniken, Tests als echte Gegenstände. Wenn der Spieler es will, kann eine Geburt (Junge oder Mädchen) stattfinden; Familien über Generationen sind niedrigere Priorität.
-- **Infektionen (STI):** ⛔ **Nicht beschlossen.** Der Assistent schlug in Runde 15F (Fragen 137 bis 139) ein STI-System vor; der Entwickler lehnte ab („nein, würde ich jetzt nicht machen, das brauchen wir nicht, ist eh schon genug“, 16.09., 35#542). Die Basisversion enthält **kein detailliertes STI-System**. Die Architektur soll eine spätere Erweiterung über das allgemeine Gesundheitssystem nicht ausschließen (35#543). Zu Verhütung, Schwangerschaft und Zyklus gilt weiterhin die obige Planung. Register: [E-GE-004](14-Entscheidungsregister.md#7-ge-gesundheit-verletzung-fortpflanzung).
+- **Infektionen (STI):** ⛔ **Nicht beschlossen.** Der Assistent schlug in Runde 15F (Fragen 137 bis 139) ein STI-System vor; der Entwickler lehnte ab (‚nein, würde ich jetzt nicht machen, das brauchen wir nicht, ist eh schon genug‘, 16.09., 35#542). Die Basisversion enthält **kein detailliertes STI-System**. Die Architektur soll eine spätere Erweiterung über das allgemeine Gesundheitssystem nicht ausschließen (35#543). Zu Verhütung, Schwangerschaft und Zyklus gilt weiterhin die obige Planung. Register: [E-GE-004](14-Entscheidungsregister.md#7-ge-gesundheit-verletzung-fortpflanzung).
 - ❓ Raten, Zeiträume und Zahlenwerte sind offen.
 
 ---

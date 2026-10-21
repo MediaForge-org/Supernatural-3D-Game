@@ -59,14 +59,14 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-SK-004 | 31.08. | PS 15; K§16 | Sicherheitskern nicht normal moddbar: AdultEligibility, Consent, BlockRules, ServerAuthority, AccountPermissions, AntiSpam, OnlineSecurity | 📋 | Kanon |
 | E-SK-005 | 10.09. | 35#187E | Hard Limits können sich über die Zeit ändern (anfangs tabu, später erlaubt), bei Einmalbegegnungen eher weniger | 📋 | Assistent 35#188: ein *aktuelles* Hard Limit wird nie mitten in einer Situation überschrieben |
 | E-SK-006 | 10.09. | 35#190A, 35#192A, 35#196A, 35#200A | Entscheidungsfähigkeit (*Capacity Gate*): Zustimmung = Zustimmung plus ausreichende Entscheidungsfähigkeit; Alkohol allein erzeugt keine Zustimmung | 🧭 → 📋 | Vom Entwickler zunächst abgelehnt (E-XX-001, E-XX-002), am 13.09. bestätigt (E-SK-015) |
-| E-SK-007 | 10.09. | 35#190A | Reihenfolge: Capacity → Consent → Eskalation (nicht „keine Abwehr → erlaubt“) | 📋 | bestätigt mit E-SK-015 |
+| E-SK-007 | 10.09. | 35#190A | Reihenfolge: Capacity → Consent → Eskalation (nicht ‚keine Abwehr → erlaubt‘) | 📋 | bestätigt mit E-SK-015 |
 | E-SK-008 | 10.09. | 35#194A | Nähe, Zuneigung, Vertrauen beeinflussen Wahrscheinlichkeit von Angeboten, ersetzen Zustimmung nicht | 🧭 | Entwickler 35#193: „Dann sowas wie Nähe, Zuneigung und so weiter“ |
 | E-SK-009 | 11.09. | 35#237E | Ab 18 Jahren und 0 Tagen zugelassen; darunter nicht erlaubt und nicht angezeigt | 📋 | |
 | E-SK-010 | 11.09. | 35#238A | Alter unbekannt oder nicht eindeutig als 18+ markiert: ausgeschlossen; keine Ableitung aus Aussehen/Körper/Stimme; Prüfung vor allen anderen Regeln | 🧭 → 📋 | Vom Entwickler weiterentwickelt (E-SK-011) |
 | E-SK-011 | 11.09. | 35#239E | Bei unbekanntem Alter: Figur kann gefragt werden und zeigt Ausweis oder anderen Nachweis | 📋 | |
-| E-SK-012 | 11.09. | 35#240A | Nur Status „verifizierter Erwachsener“ wird gespeichert, nicht der Ausweis; Geburtsdatum statt „Alter = 18“; Tests mit 18 Jahren + 0 Tage | 🧭 | Entwickler 35#243 „Ja genau“ auf E-SK-013, nicht ausdrücklich auf diesen Vorschlag |
+| E-SK-012 | 11.09. | 35#240A | Nur Status ‚verifizierter Erwachsener‘ wird gespeichert, nicht der Ausweis; Geburtsdatum statt „Alter = 18“; Tests mit 18 Jahren + 0 Tage | 🧭 | Entwickler 35#243 „Ja genau“ auf E-SK-013, nicht ausdrücklich auf diesen Vorschlag |
 | E-SK-013 | 11.09. | 35#241E, 35#242A, 35#243E | Alter und Vorlieben sind getrennt: 18+ ist nur ein Eligibility-Gate | 📋 | |
-| E-SK-014 | 11.09. | 35#262A | Verstorbene NPCs: Identität und wichtige History bleiben erhalten | 🧭 | Entwickler 35#261 „39 ja, aber Person kennen/Vorlieben gespeichert außer sie ist tot“ |
+| E-SK-014 | 11.09. | 35#262A | Verstorbene NPCs: Identität und wichtige History bleiben erhalten | 🧭 | Entwickler 35#261 ‚39 ja, aber Person kennen/Vorlieben gespeichert außer sie ist tot‘ |
 | E-SK-015 | 13.09. | 35#444E, 35#446E, 35#448E–454E | Betrunkene, die noch denken und antworten können, können wirksam zustimmen; ein klares „Ja“ genügt; Nicken bei klarem Verständnis; ein „komm mit zu mir“ signalisiert Interesse | 📋 | Assistent 35#445: kein pauschales Okay für jede Handlung danach |
 | E-SK-016 | 13.09. | 35#447A | Entscheidungsformel `capacity + responsiveness + prior affirmative intent + current behavior` statt Promillegrenze | 🧭 | |
 | E-SK-017 | 13.09. | 35#451A, 35#453A, 35#454E | Bewusstlos/nicht ansprechbar: Interaktion endet; Erkennung darf kurz dauern (Awareness-Verzögerung), dann sofort Abbruch; kein minutenlanges Weitersimulieren | 📋 | Entwickler 35#454 „Ja ok dann passt das“ |
@@ -80,14 +80,17 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-SK-025 | 13.09. | 35#445A | Zustimmung bleibt innerhalb der laufenden Situation bestehen, bis Widerruf oder wesentliche Änderung; neue Begegnung = neue Berechnung | 🧭 | Entwickler 35#444 zu R10 Frage 5: „wenn einmal ja und danach nicht mehr nein, dann wird das ja übernommen“; Assistent schränkte auf die laufende Situation ein; ohne Widerspruch |
 | E-SK-026 | 28.08. | 28#25A | Zustimmungszustände: unbekannt, möglicherweise interessiert, angeboten, erwogen, akzeptiert, abgelehnt, zurückgezogen, abgelaufen, vorübergehend nicht verfügbar | 🧭 | Entwurf, in [Modul 01](01-Grundregeln-Alter-Zustimmung.md#3-zustimmungsmodell) übernommen |
 | E-SK-027 | 28.08. | 28#25A | Zustimmungs-Datensatz (Anfrage, Teilnehmer, erlaubte Inhalte/Varianten/Profile/Intensität, Kontext, Zeitpunkt, Gültigkeit); Scope-Stufen; Neuprüfung an Grenzen | 🧭 | Entwurf |
-| E-SK-028 | 10.09. | 35#176A | Berechtigungsstatus Unknown/NotEligible/AdultEligible; kein Standardwert „wahr“; Hard Limits sind echte Invarianten (keine Story-Ausnahme); Widerruf wirkt logisch sofort, sicherer Ausstieg getrennt | 🧭 | Korrekturvorgaben an das externe Modell (Qwen-Vorphase); Entwickler bestätigte pauschal 35#179 („er soll Fragen stellen“) |
+| E-SK-028 | 10.09. | 35#176A | Berechtigungsstatus Unknown/NotEligible/AdultEligible; kein Standardwert „wahr“; Hard Limits sind echte Invarianten (keine Story-Ausnahme); Widerruf wirkt logisch sofort, sicherer Ausstieg getrennt | 🧭 | Korrekturvorgaben an das externe Modell (Qwen-Vorphase); Entwickler bestätigte pauschal 35#179 (‚er soll Fragen stellen‘) |
 | E-SK-029 | 10.09. | 35#176A | Eligibility-/Capacity-Gate vor Präferenz- und Zustimmungsauswertung; deterministisch, inspizierbar, nicht durch Präferenz-Scores übersteuerbar | 🧭 | |
 | E-SK-030 | 11.09. | 35#262A | Erregung ist ein Reaktions-/Arousal-Zustand, nicht Zustimmung oder Präferenz | 🧭 | |
 | E-SK-031 | 25.09. | 35#716A | Altersregel als Build-Validator; sehr junge Erwachsene sollen auch visuell eindeutig erwachsen wirken | 🧭 | rechtlich begründet, ungeprüft |
 | E-SK-032 | 25.09. | 35#716A | Kein Adult-Interaction-Entry für minderjährige Figuren; Alter als harter Charakterzustand | 🧭 | Entwickler 35#719: „ja genau“ (zu den IP-/Rechtsfolgen insgesamt) |
 | E-SK-033 | 26.09. | 35#786A | Realismus-Defaultregel: Alles nicht eigens Festgelegte verhält sich wie in der Realität | 📋 | gilt laut Entwickler 35#785 für das ganze Spiel |
-| E-SK-034 | 20.09. | 35#630A, 35#632A | Eine neue, außerhalb des Rahmens liegende Handlung ohne Zustimmung gilt als Grenzverletzung, nicht als Zustimmung; „technisch möglich ≠ einverstanden“ | 🧭 | Siehe E-XX-010 bis E-XX-014 |
-| E-SK-035 | 24.09. | 35#708E | „Das meiste passt schon“: weitere Detailfragen reduzieren | 📋 | Prozess, keine Regel |
+| E-SK-034 | 20.09. | 35#630A, 35#632A | Eine neue, außerhalb des Rahmens liegende Handlung ohne Zustimmung gilt als Grenzverletzung, nicht als Zustimmung; ‚technisch möglich ≠ einverstanden‘ | 🧭 | Siehe E-XX-010 bis E-XX-014 |
+| E-SK-035 | 24.09. | 35#707E | „Das meiste passt schon“: weitere Detailfragen reduzieren | 📋 | Prozess, keine Regel |
+| E-SK-036 | 31.08. | K§52, PD, T44 | Kinder dürfen als Weltbewohner existieren, ohne magische Unverwundbarkeit; keine Belohnung, Herausforderung oder Gameplay-Fokus auf Gewalt gegen Kinder; harte Reaktion der Welt; offizielle Darstellung Minderjähriger mit **eingeschränktem Gore-Profil** (kein expliziter extremer Dismemberment/Decapitation/Gibbing); vorbehaltlich Rating-/Plattform-/Rechtsprüfung | 📋 | Etappe 2.2 ergänzt (Master-Quelle bisher nicht erfasst); gehört zum Alters-/Darstellungsrahmen, nicht zur Adult-Mechanik |
+| E-SK-037 | 04.09. | WORLD_DESIGN_BLOCKS_8_TO_9, 23#1074A, 23#1075E | Erwachsene Menschen und Monster können extrem grafische, realistische Gewalt zeigen, ‚substantially beyond RDR2‘; Minderjährige ohne expliziten Gore/Dismemberment | 📋 | Etappe 2.2; **Präzisierung** gegenüber K§53/PD (‚mindestens RDR2-Niveau, systemisch an Medizin/Physik gebunden‘). Entwickler 23#641 (30.08.): bei Kindern kein Gore, bei Erwachsenen wie RDR2; Entwickler 23#1075 (04.09.) zu Frage 147: „ja genau, sehr realistisch, wie in der echten Welt“, zu Frage 148 (Kinder ohne Gore): „ja, weil es auf Xbox und PS vielleicht Probleme gibt, mir ist es persönlich egal, aber es sollte realistisch sein“ (Begründung: Plattformrisiko). Detailtiefe weiter an Plattform-/Rechtsprüfung gebunden |
+| E-SK-038 | 28.08. | 28#2, 28#4, 28#6, 28#9 | Die Sicherheitsausschlüsse (nur eindeutig Erwachsene; keine Minderjährigen; keine Nicht-Einwilligung; keine Bewusstlosen/Schlafenden als Teilnehmer) stehen **seit der ersten Fassung** des Rahmenentwurfs; Party-Leader-/Admin-Consent-Ausschluss ab 28#4/28#9, Story-/Quest-Zwang ab 28#6 | 🧭 | Etappe 2.2: frühe Fassungen 2, 4, 6, 9, 11 geprüft; kein Abweichen der Sicherheitsregeln |
 
 ---
 
@@ -109,9 +112,9 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-PA-012 | 10.09. | 35#187E, 35#189E | „Hardcore“ = Preset über mehrere Einstellungen; Verhalten (wie viel Figuren zulassen, Tempo); nach Preset einzeln änderbar; „kommt auf die Person an“ | 📋 | |
 | E-PA-013 | 10.09. | 35#208A, 35#210A | Dreiteilung: A Framework, B Hochintensität, C Dunkle Kriminalität/Mature World Events, unabhängig schaltbar | 🧭 | Entwickler 35#211 „Ok gut“ |
 | E-PA-014 | 11.09. | 35#221E | Kategorie > Unterkategorie > Variante; Rollenprofile je Kategorie; eigene Intensitätsdimensionen je Kategorie; Presets Soft/Normal/Intense/Hardcore/Custom; Mods können Presets ergänzen | 📋 | „ja, genauer“ später bestätigt (35#223) |
-| E-PA-015 | 11.09. | 35#221E | „Das ist sowieso eine Mod“: alle Strukturfragen betreffen die interne Architektur des optionalen Pakets | 📋 | |
+| E-PA-015 | 11.09. | 35#221E | ‚Das ist sowieso eine Mod‘: alle Strukturfragen betreffen die interne Architektur des optionalen Pakets | 📋 | |
 | E-PA-016 | 11.09. | 35#222A | Hierarchie dient Browsen/Filtern im Mod-Editor | 🧭 | |
-| E-PA-017 | 11.09. | 35#247E | Orte (Clubs, Hotels, Wohnungen) gehören ins Hauptspiel; „ohne Mod hat man dort weniger zu tun“ | 📋 | Kein Pflicht-Location-Pack |
+| E-PA-017 | 11.09. | 35#247E | Orte (Clubs, Hotels, Wohnungen) gehören ins Hauptspiel; ‚ohne Mod hat man dort weniger zu tun‘ | 📋 | Kein Pflicht-Location-Pack |
 | E-PA-018 | 11.09. | 35#247E | Aufteilung in Packs hängt von der Größe ab; All-in-One als Standard, wenn nicht riesig; einzelne Kategorien deaktivierbar | 📋 | Größenbeispiele (15–25 GB bzw. 50–100+ GB) sind Assistentenbeispiele |
 | E-PA-019 | 11.09. | 35#247E, 35#248A | Packs mit Versionen, Abhängigkeiten, Kompatibilität; requires/optional/incompatible/recommended; Mod-Manager-Status | 📋 | |
 | E-PA-020 | 11.09. | 35#247E | Animationspakete nur teilweise wiederverwendbar (Körpermaße, Reaktionen) | 📋 | |
@@ -119,8 +122,8 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-PA-022 | 11.09. | 35#247E | Preset-Bündel (Minimal, Standard, Full…): „kann man schauen“ | ❓ | |
 | E-PA-023 | 11.09. | 35#247E | Stabilität des Frameworks: „weiß noch nicht, mal schauen“ | ❓ | |
 | E-PA-024 | 11.09. | 35#248A | Framework = Motor, Content-Packs = Inhalte; Hochintensitäts-Pack ändert das Framework nicht | 🧭 | Entwickler „weiß nicht, erkläre“; danach 35#249 „Ja das passt gut“ |
-| E-PA-025 | 13.09. | 35#286A, 35#283E | Gesamtprojekt: Runtime-Gameplay C++-first, Blueprint optional für Modder; eigenes engine-neutrales C++20-Persistenzsystem; Unreal nur Adapter | 📋 | Entwickler 35#283 formulierte die Anforderung selbst |
-| E-PA-026 | 13.09. | 35#473A | Architektur: engine-neutraler Kern, Unreal-Integrationsschicht, Daten, Offline-Pipeline, Tools, Backend; Entity-Stufen simuliert/aktiv/materialisiert | 🧭 | Zahlen (5.000/100–300) „müssen gemessen werden“ |
+| E-PA-025 | 13.09. | 35#286A, 35#283E | Gesamtprojekt: Runtime-Gameplay C++-first, Blueprint optional für Modder; eigenes engine-neutrales C++20-Persistenzsystem; Unreal nur Adapter | 📋 | Entwickler 35#283 formulierte die Anforderung selbst; Etappe 2.2: der Vault (`VD12`, C++-first-Dokument) führt dies als „CURRENT STRONG DIRECTION / intended lock pending formal consolidation“, `VD15` als Architekturrichtung |
+| E-PA-026 | 13.09. | 35#473A | Architektur: engine-neutraler Kern, Unreal-Integrationsschicht, Daten, Offline-Pipeline, Tools, Backend; Entity-Stufen simuliert/aktiv/materialisiert | 🧭 | Zahlen (5.000/100–300) ‚müssen gemessen werden‘ |
 | E-PA-027 | 13.09. | 35#473A | Zielsprachen: C++ 80–90 %, TypeScript nur Tools, Python nur Offline-Pipeline | 🧭 | Schätzung |
 | E-PA-028 | 26.09. | 35#804A, 35#805E | Ein gemeinsamer Human Core; Adult nur Erweiterungen; Modulgrenzen; Plugin-Struktur; Hauptspiel baubar ohne Adult | 📋 | 1–3 ja |
 | E-PA-029 | 26.09. | 35#805E, 35#806A | Adult-Daten werden **separat gespeichert**, verknüpft über dieselben IDs | 📋 | „die Daten von Adult werden extra gespeichert“ |
@@ -131,6 +134,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-PA-034 | 31.08. | K§16 | Entwickler-Mod bekommt keine Sonderrechte; gleiche öffentliche Schnittstellen | 📋 | PS 15 |
 | E-PA-035 | 28.08. | 28#25A | Moddbar: Definitionen, Animationen, Presets, Tags, Profile, Übergänge, Kamera/Audio/Dialog, Umgebung, Oberflächen, Kompatibilität | 🧭 | Entwurf, in [Modul 02](02-Architektur-Pakete-Technik.md#7-modding) |
 | E-PA-036 | 10.09. | 35#176A | Community-Mods ohne unbeschränkten Internetzugriff; Offline-first; `<GameRoot>/mods/` als lokale Wahrheit | 📋 | Hard Lock im Modding-Block; Hosting provider-unabhängig |
+| E-PA-037 | 09.09. | VD12 (Modding Block 1, Frage 28, ratifiziert) | Content-Rating, Warnungen und Adult-Content-Metadaten gehören zu den Mod-Metadaten, damit Mod-Manager, Distribution, Profile und Plattformrichtlinien filtern können; Nutzer wählt selbst sichtbare Content-Kategorien (35#141) | 📋 | Etappe 2.2; ergänzt E-PA-035/036 |
 
 ---
 
@@ -138,17 +142,17 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
-| E-IA-001 | 10.09. | 35#189E | Eskalationsstufen als Zustände/Varianten, nicht als einfacher Level-Schalter | 📋 | |
+| E-IA-001 | 10.09. | 35#189E, 35#190A, 35#220A | Eskalationsstufen als Zustände/Varianten, nicht als einfacher Level-Schalter | 🧭 | Etappe 2.2: Frage 23 Entwickler „wie genau?“ (35#189); Assistent erklärte (35#190) und führte es als gelockt (35#220); keine ausdrückliche Entwicklerantwort, nur „Ja passt“ auf die Runde-3-Zusammenfassung (35#225). Zuvor 📋 |
 | E-IA-002 | 10.09. | 35#187E | NPC↔NPC-Interaktionen in der Welt; Zuschauen und Beitreten möglich | 📋 | |
 | E-IA-003 | 10.09. | 35#187E, 35#189E | Beobachter ist eine echte Rolle mit eigener KI/Gedächtnis; spontanes Beitreten möglich; Verlassen möglich | 📋 | 18–20 ja |
-| E-IA-004 | 10.09. | 35#189E | Rollenabhängige Grenzen („dieselbe Handlung in Rolle A anders als in Rolle B“) | 📋 | Frage 16: Dev „verstehe ich nicht“, Assistent erklärte, Folgeantwort „ja“ (35#221 Frage 2) |
-| E-IA-005 | 10.09. | 35#190A, 35#189E | Registry ohne C++-Änderung für neue Kategorien (Mod-Editor) | 📋 | Frage 24 „genauer bitte“ → erklärt → Empfehlung ja |
+| E-IA-004 | 10.09. | 35#189E | Rollenabhängige Grenzen (‚dieselbe Handlung in Rolle A anders als in Rolle B‘) | 📋 | Frage 16: Dev „verstehe ich nicht“, Assistent erklärte, Folgeantwort „ja“ (35#221 Frage 2) |
+| E-IA-005 | 10.09. | 35#190A, 35#189E | Registry ohne C++-Änderung für neue Kategorien (Mod-Editor) | 🧭 | Etappe 2.2: Frage 24 ‚genauer bitte‘ (35#189) → erklärt, Assistentenempfehlung „ja“ (35#190); Entwickler ergänzte nur „das wird ja sowieso schon eine Mod“ (35#221). Keine ausdrückliche Zustimmung. Zuvor 📋 |
 | E-IA-006 | 11.09. | 35#233E | Location-Tags intern, Spieler sieht sie nicht | 📋 | |
 | E-IA-007 | 11.09. | 35#233E, 35#236A | Sicherheit/Polizei/NPC-Reaktionen hängen vom Ort ab (World Rules/Venue Policy), nicht vom Adult-System | 📋 | Entwickler fragte „was hat das mit adult zu tun“, dann „Ok passt jetzt mit 14“ |
-| E-IA-008 | 11.09. | 35#233E, 35#234A | Nicht unterstützte Mehrpersonenkonstellation: abwechseln/Beobachter/getrennte Varianten statt kaputter Animation | 📋 | „ok, aber logisch, dann wechselt man sich ab“ |
+| E-IA-008 | 11.09. | 35#233E, 35#234A | Nicht unterstützte Mehrpersonenkonstellation: abwechseln/Beobachter/getrennte Varianten statt kaputter Animation | 📋 | ‚ok, aber logisch, dann wechselt man sich ab‘ |
 | E-IA-009 | 11.09. | 35#233E | Locations merken sich Zustände (Besitzer, Zugang, Kameras, Beschwerden) | 📋 | |
 | E-IA-010 | 13.09. | 35#443A, 35#444E | Interaktion als laufende Session aus modularen Aktionen; Intent/Action getrennt von Animation/IK/Physik; jedes Mal anders; niemals Minispiel | 📋 | R10 Fragen 31–36, 100 |
-| E-IA-011 | 13.09. | 35#444E | Nicht „10.000 Szenen hardcoded“, sondern modulares Szenensystem | 📋 | |
+| E-IA-011 | 13.09. | 35#444E | Nicht ‚10.000 Szenen hardcoded‘, sondern modulares Szenensystem | 📋 | |
 | E-IA-012 | 13.09. | 35#444E, 35#445A | Fehlende Ablehnung bei Positionsvarianten und Eskalation: Sitzungsrahmen | 🧭 | siehe E-SK-022 |
 | E-IA-013 | 13.09. | 35#464E | Übergang: Verabredung → Heimweg/Ort → sinnvoller Übergang → Szene startet realistisch | 📋 | |
 | E-IA-014 | 14.09. | 35#486E | Keine Cuts: die Welt wird weiter simuliert | 📋 | |
@@ -159,7 +163,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-IA-019 | 14.09. | 35#485A | Orgasmus nicht garantiert, individuell, nicht als Szenenende, mehrere möglich, Recovery-Zustand; Szene darf auch ohne enden | 📋 | R13 81–90 |
 | E-IA-020 | 14.09. | 35#485A | Danach: Nähe, Gespräch, Schlaf, Duschen, Essen, Anziehen, gemeinsames Einschlafen, Morgen danach | 📋 | R13 91–98 |
 | E-IA-021 | 14.09. | 35#485A, 35#486E | Keine isolierte Adult-Statistik als Verhaltenstreiber (kein SexSkill); Zähler nur für Statistik/Debug | 📋 | |
-| E-IA-022 | 14.09. | 35#487A | Erfahrung besteht aus mehreren unabhängigen Bereichen; Neugier ist getrennt von Erfahrung | 🧭 | Entwickler „60 ja, sag genauer“, nach Erklärung 35#488 „Ja passt“ |
+| E-IA-022 | 14.09. | 35#487A | Erfahrung besteht aus mehreren unabhängigen Bereichen; Neugier ist getrennt von Erfahrung | 🧭 | Entwickler ‚60 ja, sag genauer‘, nach Erklärung 35#488 „Ja passt“ |
 | E-IA-023 | 15.09. | 35#524E, 35#525A | Allgemeine Erfahrung plus Erfahrung je Bereich plus partnerspezifisch (`General + Category + Partner-Specific`) | 📋 | |
 | E-IA-024 | 16.09. | 35#573A | Interaktion klassifiziert über orthogonale Dimensionen (Kategorie, Unterart, Beteiligte, Rollen, Körperbereiche, Intensität, Tempo, Kraft, Ort, Umgebung, Kleidung, Items, Öffentlichkeit, Risiko, Erfahrung, Präferenz, Partnerkontext, Aufnahme, Gesundheitszustand, Nachzustand, Gedächtnis) | 🧭 | |
 | E-IA-025 | 16.09. | 35#573A, 35#574E | R16A 1–25: Mehrfachkategorien, Unterkategorien, Tags, mehrachsige Intensität, lokal pro Kontakt, dynamisch, Soll vs Ist, Orts-Master-Typen, kein Adult-Slot, variable Teilnehmerzahl, Rollenwechsel, Initiative je Aktion, Körperbereich-Taxonomie, Aktion = Typ + Zielregion + Parameter, Items als Teilnehmer, Kleidung als Zustand, Privacy Intent vs Entdeckungswahrscheinlichkeit, mehrdimensionales Risiko, dreistufige Erfahrung, PreferenceState, nachträgliche Klassifikation, orthogonale Dimensionen | 📋 | Dev: 1 ja; 2–4 ja; 5 ja; 6 ja; 7 ja; 8–9 ja; 10 ja; 11 ja; 12 dynamisch; 13–24 ja; 25 „kommt noch die Kategorien“ |
@@ -169,10 +173,10 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-IA-030 | 20.09. | 35#642A, 35#644A | Registry-Schema (ID, Kategorie, Unterkategorie, Tags, Zielregionen, Teilnehmer, Körperteil/Item, Intensitätsachsen, Positions-/Ortsanforderungen, Reaktions-/Risiko-/Präferenz-/Gedächtnis-/Statistik-Hooks, Replay-/Modding-Metadaten) ist ziemlich fest; Kategorienamen nicht final | 📋 | Dev: „201–225 ja“, „waren nur ungefähr?“ → ja |
 | E-IA-031 | 20.09. | 35#650A–654A | Unterarten und Reaktionen als eigene Zustände (Würgen, Retching, Übelkeit, Erbrechen, Rückfluss, Husten, Atemnot, Atempause, Keuchen, Tränen, Speichel, Schweiß, Hautrötung, Schmerz-/Lustlaute, Schreien, Stöhnen, Krämpfe, Zittern, Erstarren), gleichzeitig kombinierbar, eigene Flüssigkeits-Registry | 📋 | Dev 35#651: Gagging allein sei zu vage; später in 16K beantwortet |
 | E-IA-032 | 20.09. | 35#678A, 35#679E | Konkrete Unterarten für Küssen, Lecken, Saugen (+Tiefe), manuelle/orale/penetrative Aktionen, Toys, Körperteil-Interaktion, Fokus-Bereiche; Granularitätsregel: eigener klar benannter Eintrag, sobald technisch/physiologisch/präferenzrelevant verschieden | 📋 | 301–325 ja |
-| E-IA-033 | 23.09. | 35#686E, 35#688A | Orgasmus/Ejakulation getrennt; Fluid-System (Menge, Zielregion, Übertragung, Absorption, Trocknen, Reinigung) als **Spät-Feature** | 📋 | 326–349 ja; Spät-Einordnung vom Entwickler |
+| E-IA-033 | 23.09. | 35#687E, 35#688A | Orgasmus/Ejakulation getrennt; Fluid-System (Menge, Zielregion, Übertragung, Absorption, Trocknen, Reinigung) als **Spät-Feature** | 📋 | 326–349 ja; Spät-Einordnung vom Entwickler |
 | E-IA-034 | 23.09. | 35#688A, 35#689E | Missing-Family-Audit als eigener Schritt am Ende von R16 | 📋 | „Ja machen wir das extra“ |
 | E-IA-035 | 23.09. | 35#692A | Ort ist Umgebungskontext, kein Szenentyp; praktisch jeder geeignete Raum; Möbel/Fahrzeuge/Outdoor/Wetter/Untergrund über normale Systeme; Privacy-Score; Schall; Zeugenerkennung; Moebelbruch; kein Adult-Raum nötig | 📋 | 351–375 ja |
-| E-IA-036 | 23.09. | 35#694A, 35#695E | Kombinierte Aktionen, Layer, Unterbrechungen, Failure States, Edge-Case-Prinzip; **Default-Lock nur für Adult: Wenn nichts anderes festgelegt, verhält sich alles wie in der Realität** | 📋 | Dev: „376–400 ja; zu genau geplant“ |
+| E-IA-036 | 23.09. | 35#694A, 35#695E | Kombinierte Aktionen, Layer, Unterbrechungen, Failure States, Edge-Case-Prinzip; **Default-Lock nur für Adult: Wenn nichts anderes festgelegt, verhält sich alles wie in der Realität** | 📋 | Dev: ‚376–400 ja; zu genau geplant‘ |
 | E-IA-037 | 25.09. | 35#712A, 35#713E | Funktionen werden in Core/Important/Late Polish eingeteilt; Realismus-Default; datengetrieben; Shared Systems; kleiner Release-Core zuerst | 📋 | 426–437 ja |
 | E-IA-038 | 25.09. | 35#742A, 35#743E | Pre-Audit: Hauptfamilien als Top-Level ja; Body-Focus als Target/Preference-Familie; Kleidung nur Tags/State; Power/Dynamic-Dimension; Sensation als Registry-Dimension; Fantasy vs Activity getrennt; Media Production eigene Kontextfamilie („anfangs klein und immer wachsend“); Commerce/Service als Vertragskontext; Physiologie-Outcomes noch genauer; Social Outcomes; Time Context abgeleitet; Participant Structure Solo/Pair/Group; Intensität nie Kategorie | 📋 | A1–A14 ja/ok, A5 „genauer“, A9 „noch genauer“ |
 | E-IA-039 | 25.09. | 35#744A, 35#745E, 35#746A | Kandidaten für weitere Familien: Erotische Kommunikation, Remote/Digital, Orgasm Control/Teasing, Body Worship/Fetischfokus, Praise/Verbale Dynamik, Mutual/Synchronized Actions, Schwangerschaftsfantasie-Kontext, Fetischobjekte | 🧭 | Dev: „Die Sachen passen gut“; Assistent: nicht eingefroren, Audit offen |
@@ -193,7 +197,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-SO-006 | 13.09. | 35#444E | Gleiches Menschensystem wie im Hauptspiel; Jiggle realistisch, auch im normalen Spiel | 📋 | R10 39, 66 |
 | E-SO-007 | 13.09. | 35#446E, 35#447A | Freeform statt Positionsmenü: jede beliebige Stellung auch zwischen Positionen | 📋 | |
 | E-SO-008 | 13.09. | 35#447A | Kette Pose/Intent → Kontaktgraph → Ganzkörper-IK → Körperproportionen → Kollision/Weichgewebe → Balance/Gewicht → Mikrobewegung | 🧭 | Entwickler „ja, korrekt“ (35#458 Frage 100) |
-| E-SO-009 | 13.09. | 35#458E | Beginn: Position selbst wählen oder NPC positioniert sich; „wie umsetzen ist die Frage“ | ❓ | Frage 1 |
+| E-SO-009 | 13.09. | 35#458E | Beginn: Position selbst wählen oder NPC positioniert sich; ‚wie umsetzen ist die Frage‘ | ❓ | Frage 1 |
 | E-SO-010 | 13.09. | 35#458E | Positionen als Solver-Hilfen, müssen nie benutzt werden | 📋 | Fragen 9, 10 |
 | E-SO-011 | 13.09. | 35#458E | Biomechanischer Bewegungsbereich pro Gelenk individuell; Widerstand wächst allmählich; Knochen können brechen; Kleidung schränkt ein | 📋 | Fragen 11–20 |
 | E-SO-012 | 13.09. | 35#458E | Schwerpunkt, Balance, Abstützen, Gewichtsdifferenz | 📋 | Fragen 21–30 (21 „wofür?“, erklärt) |
@@ -203,7 +207,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-SO-016 | 13.09. | 35#458E | Kontinuierliche Übergänge; Gewichtsverlagerung vor Armbewegung; Mikrovariation; deterministisch (Session Seed) | 📋 | 61–70 (70 „was genau“, erklärt); 66: Unerfahrene unbeholfener, Lautstärke steigt bei ungewohnt Härterem (auch bei Geübten) |
 | E-SO-017 | 13.09. | 35#458E | Steuerung über relative Bewegungsbefehle, nicht Hotkeys; Controller vollständig; VR später | 🧭 | 71, 72: „weiß ich noch nicht“, Stick-Idee „zu oberflächlich“ |
 | E-SO-018 | 13.09. | 35#458E | Optionales Pose-Overlay, standardmäßig aus; Setup-Befragung beim ersten Start | 📋 | 75, 76 |
-| E-SO-019 | 13.09. | 35#458E | Relax-Solver, Halten, Feinjustage, einfache Schnellbefehle | 📋 | 77–80 (80 „wieso 3D-Animationsprogramm“, erklärt) |
+| E-SO-019 | 13.09. | 35#458E | Relax-Solver, Halten, Feinjustage, einfache Schnellbefehle | 📋 | 77–80 (80 ‚wieso 3D-Animationsprogramm‘, erklärt) |
 | E-SO-020 | 13.09. | 35#458E | NPC nutzt denselben Solver; Prioritätslogik; Stärke entscheidet nie allein; **einvernehmliche Dominanz darf kräftig aussehen** | 📋 | 81–90; 85: manche wollen dominiert werden |
 | E-SO-021 | 13.09. | 35#458E | Fallback-Stufen Micro-Correction → IK-Relaxation → Neuberechnung → harter Reset; Teleportieren gibt es nicht; harter Reset praktisch nie | 📋 | 91–93 |
 | E-SO-022 | 13.09. | 35#458E | Debug-Logging und Pose/Contact-Debugger im Mod-Editor | 📋 | 94 („was ist problematisch“), 95 („was ist das“) erklärt |
@@ -230,7 +234,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
 | E-KO-001 | 11.09. | 35#280A, 35#281E | Body Profile Seed; kontinuierliche Körperparameter, Asymmetrien, Muskelmasse separat, Training/Gewicht/Alterung verändern; Schwangerschaft später im allgemeinen Life-Sim-System | 📋 | R10A 1–35 (Frage 14 „weiß noch nicht“) |
-| E-KO-002 | 11.09. | 35#281E | Narben, Tattoos, Piercings persistent und individuell („ich will viele NPCs mit vielen Tattoos“) | 📋 | Fragen 15–17 |
+| E-KO-002 | 11.09. | 35#281E | Narben, Tattoos, Piercings persistent und individuell (‚ich will viele NPCs mit vielen Tattoos‘) | 📋 | Fragen 15–17 |
 | E-KO-003 | 11.09. | 35#281E | Haare und Bart wachsen; kein sofortiger Wechsel von Kurzhaar auf Langhaar | 📋 | Frage 27 |
 | E-KO-004 | 11.09. | 35#281E | Make-up als Schicht; Wasserfestigkeit „keine Ahnung wie das in echt ist“ | 🧭 | Assistentenvorschlag WaterResistance/SweatResistance |
 | E-KO-005 | 11.09. | 35#281E, 35#283E | Attraction wird auf dem tatsächlich generierten Körper/Gesicht berechnet; Body-System unabhängig vom Adult-Mod | 📋 | 33–35 ja |
@@ -266,8 +270,8 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 |---|---|---|---|---|---|
 | E-GE-001 | 15.09. | 35#528E | Verletzungssystem bleibt aktiv, auch bei gewolltem Risiko; Schmerzreaktionen, Blutung, Komplikationen | 📋 | 44/45 ja |
 | E-GE-002 | 15.09. | 35#541A, 35#542E | Verhütung als Items/Zustände mit unterschiedlicher Wirksamkeit; NPC mit eigener Methode; Gespräch darüber; Fruchtbarkeit individuell; abstrahierter Zyklus; Schwangerschaft nur bei passender Biologie, langfristiger Weltzustand, Test-Item, medizinische Versorgung | 📋 | 126–136 ja; Kind (Junge/Mädchen) möglich |
-| E-GE-003 | 15.09. | 35#542E | Hormonelle Verhütung kann Persönlichkeit verändern („die ganze Persönlichkeit“) | 🧭 | Assistent 35#543: Stimmung/Libido/Energie, nicht die ganze Persönlichkeit |
-| E-GE-004 | 15.09. | 35#542E, 35#543A | **Kein detailliertes Infektionssystem (STI) in der Basisversion** | 📋 | 137–139 **abgelehnt**: „das brauchen wir nicht, es ist eh schon genug“; Architektur lässt Erweiterung zu |
+| E-GE-003 | 15.09. | 35#542E | Hormonelle Verhütung kann Persönlichkeit verändern (‚die ganze Persönlichkeit‘) | 🧭 | Assistent 35#543: Stimmung/Libido/Energie, nicht die ganze Persönlichkeit |
+| E-GE-004 | 15.09. | 35#542E, 35#543A | **Kein detailliertes Infektionssystem (STI) in der Basisversion** | 📋 | Etappe 2.2: `VD15` bestätigt „detailliertes STI-System für Basis derzeit nicht geplant“. 137–139 **abgelehnt**: „das brauchen wir nicht, es ist eh schon genug“; Architektur lässt Erweiterung zu |
 | E-GE-005 | 15.09. | 35#542E | Wissen über den eigenen Gesundheitsstatus, Hygiene, Duschen als normale Handlung, Flüssigkeiten über Material-Infrastruktur, Bettwäsche/Möbel, Erschöpfung | 📋 | 140–148 ja |
 | E-GE-006 | 15.09. | 35#542E | Kumulative Verletzungen: Folgesitzungen verschärfen; Heilung über Wochen; „es gibt keine Grenzen vom Spiel aus, aber der Charakter entscheidet“ | 📋 | 149 |
 | E-GE-007 | 15.09. | 35#542E | Adult Health nie ein separates Minigame | 📋 | 150 |
@@ -283,7 +287,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
-| E-NP-001 | 10.09. | 35#187E | Jede erwachsene wichtige Figur hat eigene Präferenzen und Grenzen; Frauen sind nicht pauschal bereit (Entwickler: „beim Richtigen machen sie alles“) | 🧭 | Assistent 35#188: individuell, nicht pauschal; Entwickler widersprach nicht |
+| E-NP-001 | 10.09. | 35#187E | Jede erwachsene wichtige Figur hat eigene Präferenzen und Grenzen; Frauen sind nicht pauschal bereit (Entwickler: ‚beim Richtigen machen sie alles‘) | 🧭 | Assistent 35#188: individuell, nicht pauschal; Entwickler widersprach nicht |
 | E-NP-002 | 10.09. | 35#187E | Vorlieben ändern sich durch Beziehung und Erfahrung; Hard Limits können sich ändern | 📋 | siehe E-SK-005 |
 | E-NP-003 | 10.09. | 35#187E | Figuren zeigen Anzeichen wie in der realen Welt; Erinnerung an frühere Interaktionen | 📋 | |
 | E-NP-004 | 11.09. | 35#227E | Präferenzprofil veränderbar; Persönlichkeit/Erfahrung getrennt; Überreden möglich; Skala neugierig bis Hard Limit; Spieler sieht Profil nicht (nur Debug) | 📋 | R4 1–15 |
@@ -296,23 +300,25 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-NP-011 | 11.09. | 35#231E | NPC initiiert, flirtet, schlägt Orte vor, kontaktiert später; Aussehen/Outfit erster Trigger; spontane Begegnungen Kernziel; Casual-/Beziehungstypen; Faktorenmix | 📋 | R6 |
 | E-NP-012 | 11.09. | 35#261E | Präferenz-DNA aus Seed, an globale NPC-ID gekoppelt, nur am Anfang erzeugt | 📋 | R9A 1–45 |
 | E-NP-013 | 11.09. | 35#261E | Initial Attraction nur bei Dates; bei ONS eher weniger | 🧭 | Assistent 35#262: auch bei ONS beibehalten; Entwickler „Ok“ |
-| E-NP-014 | 11.09. | 35#261E | Regionale Variation (leicht andere Stimme/Aussehen); „keine Immigranten, nur Leute von dort oder aus den USA“ | ❓ | Assistent widersprach (35#262), Entwickler „Ok“ (35#263) ohne Klärung |
+| E-NP-014 | 11.09. | 35#261E | Regionale Variation (leicht andere Stimme/Aussehen); ‚keine Immigranten, nur Leute von dort oder aus den USA‘ | ❓ | Assistent widersprach (35#262), Entwickler „Ok“ (35#263) ohne Klärung |
 | E-NP-015 | 11.09. | 35#261E | ONS genauso genau gespeichert wie Beziehung | 📋 | R9A 40 |
 | E-NP-016 | 11.09. | 35#269E–273E | Langzeitveränderung, Anker-Erinnerungen, Wiedersehen, Gossip, Reputation, Alterung, Tod, Zeitreisen über Temporal-World-State-System | 📋 | R9B.1/2/3 ja |
 | E-NP-017 | 11.09. | 35#271E | Gutes Date führt nicht zwingend zu Adult („kann sein, aber oft mit“) | 📋 | R9B.2 16 |
-| E-NP-018 | 11.09. | 35#271E | ONS kann einmalig bleiben oder zur Beziehung werden (nicht „nein, vorbei“) | 📋 | R9B.2 21 |
+| E-NP-018 | 11.09. | 35#271E | ONS kann einmalig bleiben oder zur Beziehung werden (nicht ‚nein, vorbei‘) | 📋 | R9B.2 21 |
 | E-NP-019 | 15.09. | 35#524E, 35#525A | Mehrdimensionales Präferenzprofil; Stärke; partner-/situationsabhängig; Neugier; Erfahrung nach Bereichen; Veränderung; Kernvorlieben; Verteilungen; Wissensstufen; falsche Annahmen; Dialog; Grenzen gleich tief; Intensität ≠ Praktik; Dominanz nicht binär; Initiative ≠ Dominanz; Roleplay-System; Kleidungs-/Material-/Sinnesvorlieben | 📋 | R15A ja (Ausnahmen 3, 4, 6, 9, 10, 18, 21) |
 | E-NP-020 | 15.09. | 35#524E | Extrem unterwürfige Figur lässt einem Partner „alles“ zu und einem anderen kaum etwas | 🧭 | Assistent 35#525: partner-/situationsabhängig; Kapazität, Beteiligung, harte Grenzen bleiben |
 | E-NP-021 | 15.09. | 35#524E | Entwickler will Präferenzen im Entwicklungs-/Debug-Modus sehen („nur ich“) | 📋 | Adult Debug Inspector (35#525) |
 | E-NP-022 | 15.09. | 35#526E | Gruppen: paarweise Beziehungen; Beteiligungsgrade; „sie soll herkommen“ möglich | 📋 | R15B 26–31 |
 | E-NP-023 | 15.09. | 35#542E | Sexuelle Libido/Intensität schwankt; Zeit nicht zu schnell | 📋 | 102 |
 | E-NP-024 | 15.09. | 35#544E, 35#546E, 35#548E | Langzeit-Begleitvertrag: NPC kann kündigen, tut es „fast nie“; Spieler soll eher kündigen | 🧭 | K6 in [Modul 19](19-Konflikt-und-Widerspruchsmatrix.md) |
-| E-NP-025 | 15.09. | 35#550E, 35#552E | Sexuelle/romantische Orientierung getrennt; datengetriebener Zustand; **keine LGBTQ-Inhalte in der Spielwelt** (Setting-Entscheidung) | 📋 / ❓ | 151 ja; 152: erst Scherz, dann „ich will LGBTQ nicht im Spiel haben“; Fragen zum Modell offen (K5) |
+| E-NP-025 | 15.09. | 35#550E, 35#552E | Sexuelle/romantische Orientierung getrennt; datengetriebener Zustand; **keine LGBTQ-Inhalte in der Spielwelt** (Setting-Entscheidung) | 📋 / ❓ | 151 ja; 152: erst Scherz, dann „ich will LGBTQ nicht im Spiel haben“; Etappe 2.2: `VD15` führt dies als „aktuelle Nutzer-Setting-Vorgabe“ (R15-Lock und `CONTENT_SETTING_SOCIAL_DIRECTION`), die Human-/Relationship-Systeme bleiben „technisch datengetrieben“; Fragen zum Modell offen (K5) |
 | E-NP-026 | 15.09. | 35#551A | Fiktive Region demografisch stark heterosexuell; Gewalt wegen Orientierung keine positive Weltregel | 🧭 | Assistent; Entwickler widersprach nicht |
 | E-NP-027 | 15.09. | 35#550E | R15G 153–175 ja: Merkmale vor Label, Liebe vs Lust, Paar-Dynamik, Libidounterschiede, Spontanität, Dauer, Pausen, Rhythmus, Orgasmusprofile, Edging, Orgasmuskontrolle in Dominanz-Dynamik, Mehrfach, Geruch, Parfüm, Stimme, Haare, Nägel, extreme Looks, Lieblingsgegenstand, Solo-/Partnerpräferenz, Fantasien, partnerspezifische „Offenheit“ | 📋 | |
 | E-NP-028 | 15.09. | 35#552E | R15H 176–200 ja: Kompatibilität aus Faktoren, Paare mit Unterschieden, Partnerwissen, Attraction folgt Aussehen, Bindung gleicht aus, Veränderung für Partner optional, Vorfreude, Abstinenz individuell, kein Sex-Cooldown, kein Sex-Counter, verborgene Vorlieben, Beruf ≠ privat, Vertragsprofil, Companion-Leistungen | 📋 | 191: zusätzlich globales Statistiksystem |
 | E-NP-029 | 18.09. | 35#625E | R16G 151–175 ja: Partnerprofil, Attraction ≠ Preference, Trust, Bindung, aktuelle Lust, Initiative, Lernen durch Beobachtung/Gespräch mit Confidence, falsches Lernen, Erfahrungs-Gedächtnis, Entdeckung, Stärkenänderung, Partnerassoziation, Gewohnheit, Langeweile, Neugier, Stimmung/Stress, Konflikt, Eifersucht an Personen, NPC-Vorschläge mit Kontextprüfung, Persönlichkeitsstabilität, Persistenz, Modding | 📋 | |
 | E-NP-030 | 26.09. | 35#785E | NPCs sollen ein Leben haben: Tattoos/Body Mods/Looks ändern sich über Jahre unabhängig vom Spieler | 📋 | R17I 137, 138 |
+| E-NP-031 | 05.09. | 23#1089E, 23#1090A | Beziehungssystem sehr offen: nahezu jeder erwachsene NPC sozial/romantisch ansprechbar; parallele Beziehungen und mehrere Partnerinnen/Partner gleichzeitig möglich (Geheimhaltung/Offenheit beeinflusst Konsequenzen); sexuelle Beziehungen „sofern Beziehung, gegenseitiges Interesse und Zustimmung passen“ | 📋 | Etappe 2.2 (Block 10A, Fragen 4–5); Grundlage von CA05 Block 10; Entwickler 23#1089: „theoretisch jeder einzelne, auch Sex kann man mit jedem haben“, präzisiert durch Assistent 23#1090 (Zustimmung bleibt) |
+| E-NP-032 | 05.09. | 23#1089E, 23#1090A | Zusammenziehen, Heirat, gemeinsame Immobilien: ja; Familiengründung/Kinder: Entwickler „weiß nicht, als Hunter eher schwierig“ → offen, niedrige Priorität | 📋 / ❓ | Etappe 2.2 (Block 10A, Fragen 7–10); Familiengründung ❓ |
 
 ---
 
@@ -321,16 +327,16 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
 | E-LE-001 | 11.09. | 35#279E | Welt läuft nur, wenn man spielt (Singleplayer); Online anders | 📋 | R9C 11 |
-| E-LE-002 | 11.09. | 35#279E | Globale NPC-ID; Simulationsstufen; Tier 3 nur Ereignisschritte; deterministisch aus NPC-ID+Welt-Seed+Zeitfenster; relevante Begegnung friert Zustand ein; Delta-Saves; Memory-Klassen; Migration | 📋 | R9C ja (5 „nicht der ganze Weg“, 36 „solange alles einzeln erinnert“) |
-| E-LE-003 | 11.09. | 35#279E, 35#280A | Save-Größe: Dev „eher kleiner“; Assistent: Ziel 50–150 MB normal, 150–300 MB extrem | 🧭 | Zahlen sind Vorschlag |
+| E-LE-002 | 11.09. | 35#279E | Globale NPC-ID; Simulationsstufen; Tier 3 nur Ereignisschritte; deterministisch aus NPC-ID+Welt-Seed+Zeitfenster; relevante Begegnung friert Zustand ein; Delta-Saves; Memory-Klassen; Migration | 📋 | R9C ja (5 „nicht der ganze Weg“, 36 ‚solange alles einzeln erinnert‘) |
+| E-LE-003 | 11.09. | 35#279E, 35#280A | Save-Größe: Dev „eher kleiner“; Assistent: Ziel 50–150 MB normal, 150–300 MB extrem | 🧭 | Zahlen sind Vorschlag. Etappe 2.2: `VD12` hält fest „ideally tens to low hundreds of MB; multi-GB per ordinary save = architecture warning; **no final byte budget is locked**“ |
 | E-LE-004 | 11.09. | 35#283E | Kaum Blueprints im Projekt; eigenes Savegame-System | 📋 | |
 | E-LE-005 | 12.09. | 35#301E | Entfernte NPCs werden weiter simuliert (Friseur, Tattoo, Altern) | 📋 | |
 | E-LE-006 | 13.09. | 35#473A | Entity-Stufen: Simulated Entity / Active Simulation Entity / Fully Materialized Actor | 🧭 | |
 | E-LE-007 | 13.09. | 35#461A | Persistenz-Datei-/Ordnerstruktur (manifest, player, world, regions, npc, relationships, cases, vehicles, properties, economy, temporal, mods) | 🧭 | |
-| E-LE-008 | 11.09. | 35#262A | Gedächtnisstufen Minimal Record / Known NPC / Detailed Persistent / Full Persistent | 🧭 | Entwickler „40 ok, aber ONS gleiche Genauigkeit wie Beziehung“ |
+| E-LE-008 | 11.09. | 35#262A | Gedächtnisstufen Minimal Record / Known NPC / Detailed Persistent / Full Persistent | 🧭 | Entwickler ‚40 ok, aber ONS gleiche Genauigkeit wie Beziehung‘ |
 | E-LE-009 | 15.09. | 35#552E | Globales Lifetime-Statistiksystem unabhängig von Adult, zentral über Ereignisse | 📋 | Core-Entscheidung; eigene Runde später |
 | E-LE-010 | 18.09. | 35#609A | Interaction Event Stream, den Memory, Statistics, Replay, Audio, Animation, Health, Modding abonnieren | 🧭 | 100 ja |
-| E-LE-011 | 15.09. | 35#540E, 35#541A | Spielzeit im Szenenverlauf nahe 1:1 (nicht 30 min = 12 h); Kalender/Tagesabläufe eigene Planung | 🧭 | Forderung des Entwicklers, Zahl vom Assistenten |
+| E-LE-011 | 15.09. | 35#540E, 35#541A | Spielzeit im Szenenverlauf nahe 1:1 (nicht 30 min = 12 h); Kalender/Tagesabläufe eigene Planung | 🧭 | Forderung des Entwicklers, Zahl vom Assistenten. Etappe 2.2: `VD15` (R15-Lock) hält „Adult-Situationen zeitlich nahe 1:1; größere Time Skips separat planen“ fest, die Änderungsliste führt „World Time Scale“ unter *Deferred* – unverändert [K15](19-Konflikt-und-Widerspruchsmatrix.md#k15-zeitmaßstab) |
 | E-LE-012 | 15.09. | 35#530E, 35#531A | Gebäudeplanung nach Adult-Block (hierarchische Weltplanung) | 🧭 | |
 
 ---
@@ -343,26 +349,26 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-TA-002 | 12.09. | 35#299E | Stark Tätowierte sind eher an Tattoo-Shops und passenden Orten; Tattoos ändern sich im Leben | 📋 | |
 | E-TA-003 | 14.09. | 35#494E | Tattoos nur teilweise festgelegt; eigene Planung nötig | 📋 | |
 | E-TA-004 | 14.09. | 35#500E | Tattoos auf jeder Körperstelle, auch Augen und Körperöffnungen/Mundinnenseite; 0 bis praktisch 100 %; Sleeve aus Motiven oder Gesamtdesign; Lücken auffüllbar; mehrere Künstler/Stile | 📋 | R14A 76–81 |
-| E-TA-005 | 14.09. | 35#500E | Studios in der Metropole „sicherlich 20–30 oder mehr“ | 🧭 | Zahl von Dev als Schätzung |
+| E-TA-005 | 14.09. | 35#500E | Studios in der Metropole ‚sicherlich 20–30 oder mehr‘ | 🧭 | Zahl von Dev als Schätzung |
 | E-TA-006 | 14.09. | 35#500E | Künstlerqualität variiert (Gefängnis-Tattoos schlecht); Fading erst nach Jahren; UV; Hautalterung; Deformation bei Gewicht/Schwangerschaft; Cover-up; Laser; Termine | 📋 | 83–99 |
 | E-TA-007 | 14.09. | 35#501A | Tattoo-Lebenszyklus frisch → Heilung → settled → Fading → Touch-up/Cover-up/Laser | 🧭 | Entwickler: Fading nicht nach 2 Wochen, sondern Jahre |
-| E-TA-008 | 14.09. | 35#501A | Künstlerprofil mehrdimensional; Studio-Typen | 🧭 | Dev „84: wie genau meinst du das“ → erklärt |
+| E-TA-008 | 14.09. | 35#501A | Künstlerprofil mehrdimensional; Studio-Typen | 🧭 | Dev ‚84: wie genau meinst du das‘ → erklärt |
 | E-TA-009 | 14.09. | 35#502E, 35#503A | Je mehr Tattoos, desto seltener zufällig, außer an passenden Orten; Webseiten-Baukasten im Spiel (nicht Unreal-Blueprint) | 🧭 | Spielerseiten „stark vereinfacht“ |
 | E-TA-010 | 14.09. | 35#512E | Piercings auch an anderen Stellen; billig ≠ schlecht; Material; Heilung; Dehnung; Intimpiercings; Body Mods (Split Tongue, Scarification, subdermal); Kliniken für kosmetische Chirurgie | 📋 | R14B 101–140 |
 | E-TA-011 | 14.09. | 35#513A | 14C Konsolidierung (Tattoos, Piercings, Eingriffe, Studios & Internet) | 🧭 | vom Assistenten zusammengefasst; Entwickler 35#514 „Gute Nacht“ |
 | E-TA-012 | 15.09. | 35#528E | Nagelstudios (Hände, Füße), Nagellack im Supermarkt | 📋 | |
 | E-TA-013 | 16.09. | 35#590E, 35#591A | Eigene Tattoo-Runde (90–95 % Tattoos) | 📋 | Entwickler-Wunsch |
-| E-TA-014 | 26.09. | 35#749E, 35#750A | R17A: Tattoo als persistentes Objekt mit Geschichte; freies Placement; Oberflächen-Koordinaten; kontinuierliche Coverage; Überlappung; Layer History; Negative Space; Filler; Sleeve-Komposition; Patchwork; Full-Body-Projekte; Symmetrie bewusst; Anatomie beeinflusst Design; Körperveränderung dehnt; Narben; Dichte; Autonomie; Creator | 📋 | 1–12, 14–20 ja; 13 nach Rückfrage ja |
+| E-TA-014 | 26.09. | 35#749E, 35#750A, 35#751E | R17A: Tattoo als persistentes Objekt mit Geschichte; freies Placement; Oberflächen-Koordinaten; kontinuierliche Coverage; Überlappung; Layer History; Negative Space; Filler; Sleeve-Komposition; Patchwork; Full-Body-Projekte; Symmetrie bewusst; Anatomie beeinflusst Design; Körperveränderung dehnt; Narben; Dichte; Autonomie; Creator | 📋 | 1–12, 14–20 ja; 13 nach Rückfrage ja |
 | E-TA-015 | 26.09. | 35#749E, 35#750A | **Vollständiger Tattoo-Editor und Nacktheit im Hauptspiel**, nicht hinter der Adult-Mod | 📋 | 20: Dev fragte „wieso?“; Assistent 35#750 stimmte zu |
 | E-TA-016 | 26.09. | 35#749E | Verteilung: Land selten, ältere Menschen ohne Gefängnis selten, junge Erwachsene in der Stadt häufiger, einzelne Vollkörper („Tattoo-süchtige“) | 📋 | 18 |
-| E-TA-017 | 26.09. | 35#761E | R17B 21–40: Stile frei, Blackout möglich, Vorschau beim Tätowierer, Realism, Yakuza/Mafia-Stile, Fine Line (oft junge Frauen), Portraits „kann sehr gut werden“, Preview, Freehand, Mischstile, Vollkörper-Masterplan, „wirklich alles tätowierbar“ | 📋 | 27/28 nach Rückfrage ja |
+| E-TA-017 | 26.09. | 35#761E | R17B 21–40: Stile frei, Blackout möglich, Vorschau beim Tätowierer, Realism, Yakuza/Mafia-Stile, Fine Line (oft junge Frauen), Portraits „kann sehr gut werden“, Preview, Freehand, Mischstile, Vollkörper-Masterplan, ‚wirklich alles tätowierbar‘ | 📋 | 27/28 nach Rückfrage ja |
 | E-TA-018 | 26.09. | 35#762A | Technik `Design → Body-Surface Mask → Pigment Layer → Skin Shader`; Virtual Texturing / Body-Space-Layers | 🧭 | Dev „wie wir das machen, weiß ich nicht“ |
 | E-TA-019 | 26.09. | 35#767E | R17C 41–60: Artist-Skills, Spezialisierung, Handschrift, Karriere, Preisformel inkl. Standort, Fixpreis/Stundensatz, **Wartezeit 1–2 Spielwochen**, Buchung, Beratung, Anzahlung, Walk-ins, Studio-Reputation, Typen, Hygiene separat, schlechte Studios, Preis ≠ Qualität, Empfehlungen, Portfolio, berühmte Kunden, Artist-Wechsel (sichtbarer Bruch möglich) | 📋 | 41–59 ja; 45, 47, 60 mit Zusatz |
 | E-TA-020 | 26.09. | 35#769E | R17D 61–80: Sitzungen (nicht zwingend, fast immer), Zeitraffer (nicht 5 h Echtzeit), Schmerz nach Körperstelle, Heilungsphasen, Aftercare, Kleidungskontakt, Wasser/Sonne, Touch-up, Fading, Refresh, Historie | 📋 | |
 | E-TA-021 | 26.09. | 35#771E | R17E 81–100: selbsterklärende reale Tattoo-Logik gilt automatisch | 📋 | |
-| E-TA-022 | 26.09. | 35#775E | R17F 101–112: Verteilung nach Alter/Stadt-Land/Subkultur/Beruf, Vollkörper in Metropole „mehrere, nicht einer“, Studiodichte, Identität, Konkurrenz, Trends, NPC-Entscheidung, Reaktionen, berühmte Studios; **Subkulturen inkl. extremistischer Symbole** | 📋 / ❓ | 103: Symbolik rechtlich offen |
+| E-TA-022 | 26.09. | 35#775E | R17F 101–112: Verteilung nach Alter/Stadt-Land/Subkultur/Beruf, Vollkörper in Metropole ‚mehrere, nicht einer‘, Studiodichte, Identität, Konkurrenz, Trends, NPC-Entscheidung, Reaktionen, berühmte Studios; **Subkulturen inkl. extremistischer Symbole** | 📋 / ❓ | 103: Symbolik rechtlich offen |
 | E-TA-023 | 26.09. | 35#776A, 35#777E | Baseline-Prozentverteilung Metropole/Städte/Land (Assistentenvorschlag) | 🧭 | Dev nur „passt“; Zahlen nicht einzeln bestätigt |
-| E-TA-024 | 26.09. | 35#779E | R17G 113–122: Composer/Body-Layer, Haut-Integration, LOD (10–20 m noch klar), Generator mit Logik („manche haben einfach Lust“), Komposition zuerst, virtueller Artist, Vorlagen wiederverwendbar, **Import eigener Bilder als Pflichtfeature**, Modding, Asset-QA mit hoher Auflösung | 📋 | |
+| E-TA-024 | 26.09. | 35#779E | R17G 113–122: Composer/Body-Layer, Haut-Integration, LOD (10–20 m noch klar), Generator mit Logik (‚manche haben einfach Lust‘), Komposition zuerst, virtueller Artist, Vorlagen wiederverwendbar, **Import eigener Bilder als Pflichtfeature**, Modding, Asset-QA mit hoher Auflösung | 📋 | |
 | E-TA-025 | 26.09. | 35#783E | R17H 123–134: Piercings an plausiblen Stellen, Arten, Material, Heilung, Wechsel/Entfernen, Dehnen, Narben, Intimpiercings als normale Body-Mod-Kategorie, Scarification/Branding/Split Tongue/Subdermal, selten und subkulturell, Spezialstudios, Creator bietet Piercings | 📋 | |
 | E-TA-026 | 26.09. | 35#785E | R17I 135–141: Realismus-Default fürs ganze Spiel, keine künstlichen Grenzen, NPC-Autonomie, dynamische Population, Performance-Priorität, gemeinsamer Workflow, Abschlussregel | 📋 | |
 | E-TA-027 | 14.09. | 35#500E | Kosmetische Eingriffe (BBL, Brust, Gesicht) als Weltmechanik mit Kliniken | 📋 | 41, 131–136 |
@@ -381,7 +387,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-WE-006 | 15.09. | 35#526E | Stripclubs „essentiell“, in der Metropole 15–30; ein riesiger mehrstöckiger Betrieb; Kleinstädte weniger | 🧭 | Zahlen als Schätzung des Entwicklers; Assistent 35#527: drei Betriebstypen (Stripclub, Nightclub/Adult Club, Brothel/Escort) und ein großer Komplex |
 | E-WE-007 | 15.09. | 35#526E | Performer als normale persistente NPCs; Karriere; Creator-Plattform; Spieler als Creator; gemeinsame Produktion; Studios; Wirtschaft; mehrdimensionale Reputation | 📋 | R15B 33–40 |
 | E-WE-008 | 15.09. | 35#526E | Mehrere Adult-Websites im Spiel-Internet; Seiten pro Betrieb | 📋 | 41 |
-| E-WE-009 | 15.09. | 35#524E, 35#526E | Pornoseiten- und OnlyFans-ähnliche Plattformen in der Spielwelt; Performer-Persönlichkeit ≠ privat verfügbar | 📋 / 🧭 | Entwickler: „Performerinnen sind richtig extrem“; Assistent 35#525: Beruf ≠ Verfügbarkeit |
+| E-WE-009 | 15.09. | 35#524E, 35#526E | Pornoseiten- und OnlyFans-ähnliche Plattformen in der Spielwelt; Performer-Persönlichkeit ≠ privat verfügbar | 📋 / 🧭 | Entwickler: ‚Performerinnen sind richtig extrem‘; Assistent 35#525: Beruf ≠ Verfügbarkeit |
 | E-WE-010 | 15.09. | 35#528E, 35#529A | In-Game-Videos: immer exakt dasselbe Video (feste Replay-ID, Cache rekonstruiert); Speicher durch Metadaten + Replay-Daten | 📋 / 🧭 | Entwickler: „immer das gleiche Video“; Technik vom Assistenten |
 | E-WE-011 | 15.09. | 35#527A | Aufnahme und Veröffentlichung sind getrennte Zustimmungen; privat speichern / mit Partner teilen / Creator-Seite / kommerziell; Meinungsänderung vor Veröffentlichung | 🧭 | 62–64 (Entwickler 35#528: 56–72 ja) |
 | E-WE-012 | 15.09. | 35#528E | Fans wollen Foto oder Chance auf Sex („73 ja“); Ruhm mit Nachteilen | 📋 | |
@@ -390,10 +396,11 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-WE-015 | 15.09. | 35#536E, 35#537A | Welt-Simulationsprinzip: logisch statt emotional (Tat vor Identität, Kontext, Verhältnismäßigkeit, Gerüchte ≠ Fakten) | 📋 | Entwickler 35#538 „Ja genau“ |
 | E-WE-016 | 15.09. | 35#540E, 35#549A | Bordell-Matching-Website, Langzeitbuchung, Vertrag; Pass-/Altersprüfung | 🧭 | K6 |
 | E-WE-017 | 15.09. | 35#540E | Preisniveau verschieden; Bezahlung unterschiedlich gut; Performer-Karriere | 📋 | 110–120 ja (117: Scheitern selten) |
-| E-WE-018 | 15.09. | 35#552E | Globales Statistik-Menü mit Wert „wie viele Frauen (adult)“ usw. | 📋 | 191 |
+| E-WE-018 | 15.09. | 35#552E | Globales Statistik-Menü mit Wert ‚wie viele Frauen (adult)‘ usw. | 📋 | 191 |
 | E-WE-019 | 25.09. | 35#742A, 35#743E | Medienproduktion startet klein und wächst | 📋 | A7 |
 | E-WE-020 | 23.09. | 35#692A | Venues mit eigenen Raumtypen und Hausregeln; Studios mit Kamera/Licht/Set/Crew; Workplace mit höherem Risiko; Orts-Gedächtnis | 📋 | 351–375 ja |
 | E-WE-021 | 28.08. | 28#25A | Zeugen aus Sichtlinie, Entfernung, Raum, Türen, Wänden, Audio, Licht, Sichtbarkeit, Privatsphäre, Beziehung, Fraktion | 🧭 | in Interview bestätigt (E-WE-005, E-IA-035) |
+| E-WE-022 | 03.09. | 23#1035E, 23#1037E | Nachtleben „essentiell, und auch Stripclubs“; Entwickler 23#1037: nicht nur Stripclubs, sondern auch Clubs, in denen man Frauen für Sex bezahlt, „in vielen verschiedenen Stärken“ | 📋 | Etappe 2.2: Ursprung der Erweiterung in 23#1038 (E-WE-004) |
 
 ---
 
@@ -403,13 +410,13 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 |---|---|---|---|---|---|
 | E-ST-001 | 26.09. | 35#791E, 35#793E | Analoge Stick-Steuerung statt Button-Spammen („spammen wäre zu GTA“) | 📋 | 7 ja |
 | E-ST-002 | 26.09. | 35#791E, 35#796A, 35#797E, 35#799E | Adult nutzt **ein Hybrid-Control-System**: Aktions-/Kombinationshilfen plus analoge Echtzeitsteuerung; Kampf behält separates UFC-artiges Lernsystem | 📋 | Fragen 1, 2, 4, 6 offen → Hybrid; Entwickler „ok dann weiter das passt dann“ |
-| E-ST-003 | 26.09. | 35#791E, 35#792A | Combat-Lernsystem (Basismoves früh, komplexe lernen, Trainer/Gyms, Upgrades „kein normales Upgradesystem“) | 📋 | **nicht** Adult; Core-Combat-Block |
+| E-ST-003 | 26.09. | 35#791E, 35#792A | Combat-Lernsystem (Basismoves früh, komplexe lernen, Trainer/Gyms, Upgrades ‚kein normales Upgradesystem‘) | 📋 | **nicht** Adult; Core-Combat-Block |
 | E-ST-004 | 26.09. | 35#791E | Aktionsbibliothek erst nach Freischaltung vollständig sichtbar; Namen als Hinweis | 📋 | 3, 5 |
 | E-ST-005 | 26.09. | 35#793E | R18A 8–20 ja: Intensitätsmodifikator, Körperbereichswahl, Smart Context, parallele Aktionen im UI, HUD-Stufen, Minimal-HUD filmisch, Remapping, Konfliktwarnung, Haptik, Kamera, First-Person-Stabilisierung, Barrierefreiheit, Kontrollprofile | 📋 | |
 | E-ST-006 | 26.09. | 35#795E | VR fühlt sich in Bewegung wie echt an; Handtracking; Full-Body optional; IK; Menü; Haptik später; Komfort; sitzend/stehend; Kalibrierung; VR später | 📋 | 21–30 |
 | E-ST-007 | 27.09. | 35#801E | R18C 31–42 ja: kontextsensitive Eingaben, Suche, Favoriten, Lern-UI, Vorschau ohne Exaktheitsversprechen, Begründung bei ungültiger Aktion, Kamera unabhängig, Cinematic nur Beobachtung/Replay, modulares HUD, VR-Fingertracking, Body Ownership | 📋 | |
 | E-ST-008 | 11.09. | 35#458E | Beginn mit Setup-Befragung beim ersten Start, Standards bei Überspringen | 📋 | 76 |
-| E-ST-009 | 20.09. | 35#627E | Favoriten: „weiß ich noch nicht, aber ja, glaube schon, dass das gut wäre“ | 🧭 | vorläufig |
+| E-ST-009 | 20.09. | 35#627E | Favoriten: ‚weiß ich noch nicht, aber ja, glaube schon, dass das gut wäre‘ | 🧭 | vorläufig |
 | E-ST-010 | 17.09. | 35#610E, 35#611A | Kontextabhängige Aktions-/Kombinations-Bibliothek, jederzeit einsehbar | 📋 | 81 |
 | E-ST-011 | 20.09. | 35#675E | Content-Toggle für starke Körperreaktionen und Blut | 📋 | 117 ja |
 | E-ST-012 | 18.09. | 35#620A | Streamer-Filter/Namen der Nacktheitsstufen offen | ❓ | OD |
@@ -421,12 +428,12 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
 | E-RP-001 | 13.09. | 35#464E | Szene speichern; Export 4K/8K oder niedriger, extrem hohe Bitrate, einstellbar, Speicherverbrauch anzeigen | 📋 | |
-| E-RP-002 | 13.09. | 35#465A, 35#467A | Replay-Datenpaket statt Video; HUD/Untertitel/Prompts/Debug getrennt schaltbar; Cinematic Render Mode; Quick Export vs Cinematic Re-Render | 🧭 | Entwickler 35#466 „Filmlook, fast echt“, 35#468 „Der Rest passt“ |
+| E-RP-002 | 13.09. | 35#465A, 35#467A | Replay-Datenpaket statt Video; HUD/Untertitel/Prompts/Debug getrennt schaltbar; Cinematic Render Mode; Quick Export vs Cinematic Re-Render | 🧭 | Entwickler 35#466 ‚Filmlook, fast echt‘, 35#468 „Der Rest passt“ |
 | E-RP-003 | 13.09. | 35#468E | Re-Render im Hintergrund mit Fortschritt; Weiterspielen ohne großen Performanceverlust | 📋 | |
 | E-RP-004 | 13.09. | 35#468E | Aufnahme/Streaming direkt im Hauptspiel, unabhängig von Adult | 📋 | |
 | E-RP-005 | 13.09. | 35#469A | Adult-Inhalte können separat als nicht streambar/versteckt konfiguriert werden (falls Plattformregeln es verlangen) | 🧭 | |
 | E-RP-006 | 14.09. | 35#484E | Streaming ohne Zusatzprogramm; jede Szene aufnehmbar; Replay = Aufgenommenes abspielen; Replay-Buffer nur für kleine Clips | 📋 | R12 1–20 |
-| E-RP-007 | 14.09. | 35#484E, 35#485A | Fragen 21–100 (Replay-Editor, Kameras, Render-Qualität, Export-Formate, Audio-Busse, Provider-Unabhängigkeit, gemeinsame Capture-Pipeline): Entwickler „mir ist das egal, mache was du gut findest“ | 🧭 | delegiert; nur Scene-State-Track für Re-Render |
+| E-RP-007 | 14.09. | 35#484E, 35#485A | Fragen 21–100 (Replay-Editor, Kameras, Render-Qualität, Export-Formate, Audio-Busse, Provider-Unabhängigkeit, gemeinsame Capture-Pipeline): Entwickler ‚mir ist das egal, mache was du gut findest‘ | 🧭 | delegiert; nur Scene-State-Track für Re-Render |
 | E-RP-008 | 18.09. | 35#626A, 35#628A | Replay ≠ Savegame; deterministische Kernspur; Cinematic Re-Render; Hintergrund-Job mit „Gameplay zuerst“ | 📋 | R16H 186–190 ja |
 
 ---
@@ -443,7 +450,8 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-SP-006 | 18.09. | 35#626A | Modding-Registry für Kategorien, Präferenzen, Items, Pose-Hints, Reaktionen, Audio/Visual-Profile; Konflikterkennung; Debug/Developer-Inspector | 📋 | 198–200 |
 | E-SP-007 | 10.09. | 35#176A | Stable IDs ohne Version (namespace:kind:local-id); engine-neutraler Kern ohne Unreal-Typen; offene Kategorien nicht als C++-Enums; Save-Impact NONE/OPTIONAL/STATEFUL/CRITICAL | 🧭 | Korrekturvorgaben |
 | E-SP-008 | 10.09. | 35#176A | Adult Experience Configuration: Global → Mod Profile → Character → Savegame → Per-NPC; Nutzer-Overrides nie destruktiv | 🧭 | Vorgabe an das externe Modell |
-| E-SP-009 | 18.09. | 35#620A | Rollen der Modelle: Claude/GPT für Kernarchitektur, uncensored Qwen für Katalog, Testdaten, Lückenfinder | 🧭 | Planungswerkzeug |
+| E-SP-009 | 18.09. | 35#619E, 35#620A, 35#645E | Rollen der Modelle: Claude/GPT für Kernarchitektur, uncensored Qwen für Katalog, Testdaten, Lückenfinder | 🧭 | Planungswerkzeug |
+| E-SP-010 | 10.–12.09. | VD12, 35#176A, 35#180A, 35#184A | Qwen-Referenzausgaben: V0.9-Architekturentwurf bis Abschnitt 28 und eine abgebrochene Fortsetzung bis ca. Abschnitt 30; Review (`VD12`) nennt 12 Mängel, 35#176 gibt 16 Korrekturvorgaben; bewahrenswerte Ideen benannt; Status ‚Referenzmaterial, nicht kanonisch‘; Abschnitte 30–43 und die inhaltliche Qwen-Befragung nie fertiggestellt | 🧭 | Etappe 2.2; Qwen-Draft erlaubte u. a. Hard-Limit-Umgehung ‚durch Story-Marker desselben Mod-Pakets‘ → vom Assistenten als unzulässig korrigiert (E-SK-028) |
 
 ---
 
@@ -451,9 +459,9 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
-| E-PR-001 | 10.09. | 35#252A, 35#254A | Rundenplan 16–18 (R16 = „was ist enthalten“); Teilfragen ab R9 in Blöcken | 🧭 | |
+| E-PR-001 | 10.09. | 35#252A, 35#254A | Rundenplan 16–18 (R16 = ‚was ist enthalten‘); Teilfragen ab R9 in Blöcken | 🧭 | |
 | E-PR-002 | 11.09. | 35#255E, 35#265E, 35#275E | Fragen tiefer (50–500), dann „bis 100 reicht“; ab R10 maximal 100; Ausnahme R16 | 📋 | |
-| E-PR-003 | 14.09. | 35#518E, 35#520E | 25er-Pakete, ausführlich formuliert; R15 darf über 100 gehen, „solange wirklich alles beantwortet“ | 📋 | |
+| E-PR-003 | 14.09. | 35#518E, 35#520E | 25er-Pakete, ausführlich formuliert; R15 darf über 100 gehen, ‚solange wirklich alles beantwortet‘ | 📋 | |
 | E-PR-004 | 14.09. | 35#490E, 35#491A | Alle Runden Adult; Zusatzrunde 12 zählt nicht → 19 Runden | 📋 | |
 | E-PR-005 | 16.09. | 35#591A | Eigene Tattoo-Runde 17 → 20 Runden | 📋 | |
 | E-PR-006 | 16.09. | 35#604E | Adult-Mod soll schnell verfügbar sein, noch vor manchen anderen Systemen | 📋 | Spätere Präzisierung: E-PR-010 |
@@ -467,6 +475,10 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-PR-014 | 23.09. | 35#698A | Default-Lock gilt nur für Adult | 📋 | 697 |
 | E-PR-015 | 28.09. | 37#83 | Entwickler: „Bro ich habe adult fertig“ | 🧭 | Planung nach Interview „im Wesentlichen abgeschlossen“ (35#812), Audit offen |
 | E-PR-016 | 26.09. | 35#785E | Optimierung globales Kernziel | 📋 | |
+| E-PR-017 | 16.09. | 35#598E | Entwickler will „alles in dem Spiel komplett genau definieren“ (Welt, Gameplay, Charaktere, Adult, Locations), extrem viele Bilder (Visual Bible), Story 80–100 h, Karte später | 📋 | Etappe 2.2 ergänzt (in Modul 16 erwähnt, nicht im Register) |
+| E-PR-018 | 25.09. | 35#747E, 37#82A | Entwickler 25.09.: ‚Qwen habe ich jetzt nicht, also jetzt Runde 17‘; Tagesplan-Assistent 28.09.: Reihenfolge „MEGA 16 → Missing-Family-Audit → Ergänzungsfragen → später Qwen-Audit → danach erst Adult-Runde 17“ | 📋 / 🧭 | Etappe 2.2: [K23](19-Konflikt-und-Widerspruchsmatrix.md#k23-reihenfolge-der-abschlussschritte) |
+| E-PR-019 | 24.09. | 37#79, 37#80 | Entwicklerkontext 24.09.: Frage 400 ist kein geplantes Ende von Runde 16; keine Fragen nur zur Vergrößerung; Endgröße offen (Stand 25.09.: 1–375 abgeschlossen, 37#80) | 📋 | Etappe 2.2; Prozessentscheidung |
+| E-PR-020 | 15.09. | VD15 (MASTER_DELTA_SUMMARY, ADULT_ROUNDS_16_TO_19_NEXT) | Projekteigene Konsolidierung vom 15.09.: Adult-Runden 1–11 und 13–15 abgeschlossen, Runde 12 zusätzliche Nicht-Adult-Runde (19 nummerierte Runden), offen 16–19; Runde 16 mindestens 200 Fragen in 25er-Paketen; R15 „1–200“ | 📋 | Etappe 2.2; Stand wurde später überholt (R16 = 437 Fragen, R17 Tattoos, insgesamt 20 Runden) |
 
 ---
 
@@ -479,11 +491,11 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | E-RC-003 | 28.08. | 23#545E | Frage: „Wenn ich die Mod über z. B. mod.io hochlade und tue, als wäre das Fanwork…“ | ⛔ | Assistent 23#546 lehnt die Täuschung ab |
 | E-RC-004 | 25.09. | 35#715E, 35#716A | Frage nach dem Rechtlichen; Assistent: eigener LEGAL/COMPLIANCE/IP-Block, Dreifach-Gate Gesetz ∩ Store ∩ Zahlungsdienstleister, Österreich/Deutschland-Hinweise, Marken | 🧭 | ungeprüft |
 | E-RC-005 | 25.09. | 35#717E, 35#718A, 35#720A | Adult erst privat; Veröffentlichung später nur bei passender Rechts-/Store-Lage; KI-Shipping-Assets deklarieren; fiktive Automarken; eigenes Design; Motorsport mit eigener IP | 🧭 | Dev 35#719 „ja genau“ |
-| E-RC-006 | 25.09. | 35#721E, 35#727E, 35#729E | Fragen nach der Sichtbarkeit der KI-Offenlegung („wie macht man, dass dort wenig steht“, „es wird fast alles mit KI sein“) | ❓ | |
+| E-RC-006 | 25.09. | 35#721E, 35#723E, 35#725E, 35#727E, 35#729E, 35#731E | Fragen nach der Sichtbarkeit der KI-Offenlegung (‚wie macht man, dass dort wenig steht‘, ‚es wird fast alles mit KI sein‘) | ❓ | |
 | E-RC-007 | 25.09. | 35#733E, 35#734A | **„ich will das eher geheimhalten“**; Assistent: nicht verstecken oder kleinreden, wahrheitsgemäß deklarieren | ❓ | K7 |
 | E-RC-008 | 25.09. | 35#735E–741E | Keine Live-Generative-KI im fertigen Spiel („genau so habe ich das im Sinn“); Pre-Generated-AI ist publishbar; Beruhigung | 📋 | |
 | E-RC-009 | 25.09. | 35#736A | Provenance-Registry pro Asset (human/AI-assisted/AI-generated+edited/licensed/purchased) | 🧭 | |
-| E-RC-010 | 26.09. | 35#750A | Steam-Nudity-Deskriptoren; Entwicklergrenze „erst bei Penetration“ sei zu eng | 🧭 | ungeprüft |
+| E-RC-010 | 26.09. | 35#750A | Steam-Nudity-Deskriptoren; Entwicklergrenze ‚erst bei Penetration‘ sei zu eng | 🧭 | ungeprüft |
 | E-RC-011 | 26.09. | 35#776A | Symbolik extremistischer Gruppen an konkrete Fraktionen gebunden | 🧭 | rechtliche Zulässigkeit offen |
 | E-RC-012 | 27.09. | 35#812A | Planung für Adult „im Wesentlichen fertig“, offen: Audit, Qwen-Audit, Prototyping, Recht | 📋 | |
 
@@ -496,28 +508,29 @@ Diese Einträge dokumentieren geäußerte Wünsche, damit sie **nicht verloren g
 | ID | Datum | Quelle | Aussage | Status | Vermerk |
 |---|---|---|---|---|---|
 | E-XX-001 | 10.09. | 35#191E | Stark Betrunkene müssten nur einmal „ja“ sagen, auch ohne zu wissen, worum es geht | 🕰️ | Ersetzt durch Capacity Gate (E-SK-006/015) |
-| E-XX-002 | 10.09. | 35#195E, 35#197E, 35#199E | Ausziehen sei okay, wenn sie „die Hände nicht dazwischen hält“; „das System blockiert nicht, wenn zu betrunken“ | 🕰️ | Assistent lehnte ab; Entwickler stellte 35#203 klar, er habe nicht gemeint, „keine Gegenwehr = Zustimmung“ sei Regel |
+| E-XX-002 | 10.09. | 35#195E, 35#197E, 35#199E, 35#574E | Ausziehen sei okay, wenn sie ‚die Hände nicht dazwischen hält‘; „das System blockiert nicht, wenn zu betrunken“ | 🕰️ | Assistent lehnte ab; Entwickler stellte 35#203 klar, er habe nicht gemeint, ‚keine Gegenwehr = Zustimmung‘ sei Regel; ähnliche Aussage zu Passivität in R16A Frage 10 (35#574) |
 | E-XX-003 | 10.09. | 35#205E | „Es kann in der Welt auch Rape geben, wenn man die Frau rettet, kann man belohnt werden“ | ⛔ | Assistent 35#206: Crime-Content, kein Sex als Belohnung |
 | E-XX-004 | 10.09. | 35#207E | Eine Variante der Mod, in der man ohne Zustimmung handeln kann (nicht in der normalen Mod; „ich weiß nicht, ob das jemals veröffentlicht wird“) | ⛔ | Assistent 35#208 lehnt Design ab |
 | E-XX-005 | 11.09. | 35#229E | „Nein“ ohne Chance auf Änderung abgelehnt, weil Frauen „oft nur so tun, als hätten sie kein Interesse“ | 🕰️ | siehe E-NP-009 |
 | E-XX-006 | 15.09. | 35#544E | Bei Bewusstlosigkeit durch Atemkontrolle: „Stopp-Logik greift nicht, aber der Spieler spürt es“ | 🕰️ | Assistent 35#545: Interaktion läuft technisch nicht weiter |
 | E-XX-007 | 15.09. | 35#544E | Langzeitvertrag: NPC kündigt „in 99,99999999 % der Fälle“ nicht, weil sie sonst weitergegeben würde | 🕰️ | Assistent 35#545: nicht hardcoden; Kompromiss E-NP-024 |
 | E-XX-008 | 15.09. | 35#530E | Spieler können schwere Sexualstraftaten begehen und dafür ins Gefängnis kommen; ohne Hinweis im Spiel | ❓ | Konsequenzebene (E-WE-013); K3 |
-| E-XX-009 | 15.09. | 35#524E | Gespielte Nicht-Einwilligung „wie bei Produktionsfirmen“, hochgeladen auf Seiten der Spielwelt | ❓ | Assistent 35#525: als vereinbartes Rollenspiel zwischen Erwachsenen; K4 |
+| E-XX-009 | 15.09. | 35#524E | Gespielte Nicht-Einwilligung ‚wie bei Produktionsfirmen‘, hochgeladen auf Seiten der Spielwelt | ❓ | Assistent 35#525: als vereinbartes Rollenspiel zwischen Erwachsenen; K4 |
 | E-XX-010 | 16.09. | 35#576E, 35#578E | „Wenn sie nichts sagt oder stöhnt, ist es okay, und man kann weitermachen“ (auch bei Eskalation) | 🕰️ | Assistent 35#579: Sitzungsrahmen; Entwickler 35#580 „nicht zu streng“ |
 | E-XX-011 | 20.09. | 35#627E | „Man kann bei Adult richtig brutal sein … das muss sie nicht immer wollen, aber man muss mit den Konsequenzen rechnen, aber möglich sollte es sein“ | ⛔ | Assistent 35#628: Nicht-Einwilligung gehört ins Crime-System |
-| E-XX-012 | 20.09. | 35#629E, 35#631E | „Wenn sie vorher nicht gesagt hat, dass sowas nicht okay ist“, „man kann es trotzdem machen und die Reaktion sehen“ | ⛔ | Assistent 35#630/632: nicht auf „nicht verboten = erlaubt“ reduzieren |
-| E-XX-013 | 20.09. | 35#633E, 35#635E | „Markiere das als von mir festgelegt“; Weitermachen auch gegen den Willen („schlimmstenfalls Gefängnis“), nur in der Admin-Version | ⛔ | Assistent 35#634/636: „USER-LOCK“-Formulierung; nicht übernommen (K2) |
-| E-XX-014 | 20.09. | 35#637E, 35#639E | Admin-Version mit gleichem Funktionsumfang wie das normale Adult-System; Reaktionen „vermutlich anders, vielleicht auch nicht“ | ⛔ | Assistent 35#638/640: keine Non-Consent-Kataloge |
+| E-XX-012 | 20.09. | 35#629E, 35#631E | ‚Wenn sie vorher nicht gesagt hat, dass sowas nicht okay ist‘, „man kann es trotzdem machen und die Reaktion sehen“ | ⛔ | Assistent 35#630/632: nicht auf ‚nicht verboten = erlaubt‘ reduzieren |
+| E-XX-013 | 20.09. | 35#633E, 35#635E | „Markiere das als von mir festgelegt“; Weitermachen auch gegen den Willen (‚schlimmstenfalls Gefängnis‘), nur in der Admin-Version | ⛔ | Assistent 35#634/636: „USER-LOCK“-Formulierung; nicht übernommen (K2) |
+| E-XX-014 | 20.09. | 35#637E, 35#639E | Admin-Version mit gleichem Funktionsumfang wie das normale Adult-System; Reaktionen ‚vermutlich anders, vielleicht auch nicht‘ | ⛔ | Assistent 35#638/640: keine Non-Consent-Kataloge |
 | E-XX-015 | 20.09. | 35#653E | „Wenn die Frau beim Sex einschläft, kann man sie weiter…, das bleibt nur in der Admin-Version“ | ⛔ | Assistent 35#654/656 lehnt ab (auch Admin-Build) |
 | E-XX-016 | 20.09. | 35#655E, 35#657E | „Ich habe vorher Sachen geplant, die du nicht komplett willst, jetzt will ich das mit dem Schlafen auch. Also mache das so.“ → „Ja ok dann plane ich das dann halt mit Qwen.“ | ⛔ | Keine Zustimmung zur Alternative; K2, K9 |
 | E-XX-017 | 11.09. | 35#261E | „Keine Immigranten“ in der Bevölkerung | ❓ | siehe E-NP-014 |
 | E-XX-018 | 15.09. | 35#524E | Performerinnen seien „leichter zu bekommen“ (abwertende Verallgemeinerung) | 🕰️ | Assistent 35#525: Beruf ≠ Verfügbarkeit; keine Systemregel |
-| E-XX-019 | 15.09. | 35#532E | Politisch/gesellschaftlich „konservative Welt, Linksextremismus“ | 🕰️ | Assistent: nicht ideologisch hardcoden; Entwickler 35#534/536: „die Welt soll logisch denken“ |
+| E-XX-019 | 15.09. | 35#532E, 35#534E | Politisch/gesellschaftlich ‚konservative Welt, Linksextremismus‘ | 🕰️ | Assistent: nicht ideologisch hardcoden; Entwickler 35#534/536: ‚die Welt soll logisch denken‘ |
 | E-XX-020 | 28.08. | 23#545E | Entwickler-Mod als Fan-Mod ausgeben | ⛔ | siehe E-RC-003 |
 | E-XX-021 | 25.09. | 35#733E | KI-Nutzung verheimlichen | ❓ | siehe E-RC-007 |
 | E-XX-022 | 28.08. | 28#22E | Codierte Umschreibung konkreter Praktiken in der Taxonomie | 🕰️ | Assistent 28#23 lehnt ab; abstrakte Fassung |
 | E-XX-023 | 08.09. | 37#21E | Links zu einschlägigen Videos als Referenz für die Adult-Mod | 🕰️ | Assistent 37#22: analysiert/baut keine konkreten Sexualakte daraus nach |
+| E-XX-024 | 20.09. | 35#660A, 35#662A | Assistent: Das Master-ZIP vom 20.09. enthält die Richtung „Release = einvernehmlich; Internal QA: Shared Systems dürfen Boundary-/Crime-Konsequenzen testen; keine Non-Consent-Tutorial-/Combo-/Preference-Registry“, **nicht** die gewünschten expliziten Mechaniken; die Datei `01_ADULT/USER_REQUESTED_BUT_NOT_CANONICALIZED.md` sollte Wünsche (USER-LOCK/requested), PROJECT-CANON und OPEN trennen | ❓ | Etappe 2.2: Datei im Archiv **nicht auffindbar** (ZIP-Lieferungen sind nur als Chat-Beschreibung vorhanden); Einordnung zu [K2](19-Konflikt-und-Widerspruchsmatrix.md#k2-user-lock-vom-2009) |
 
 ---
 
@@ -527,22 +540,22 @@ Die Zählung bezieht sich auf **diese Datei in ihrem Stand zum Abschlussbericht*
 
 | Bereich | Einträge |
 |---|---:|
-| SK | 35 |
-| PA | 36 |
+| SK | 38 |
+| PA | 37 |
 | IA | 40 |
 | SO | 37 |
 | KO | 28 |
 | GE | 12 |
-| NP | 30 |
+| NP | 32 |
 | LE | 12 |
 | TA | 27 |
-| WE | 21 |
+| WE | 22 |
 | ST | 12 |
 | RP | 8 |
-| SP | 9 |
-| PR | 16 |
+| SP | 10 |
+| PR | 20 |
 | RC | 12 |
-| XX | 23 |
-| **Summe** | **358** |
+| XX | 24 |
+| **Summe** | **371** |
 
 Statusverteilung (ungefähr): bestätigt/Kanon 📋 überwiegt; Vorschläge 🧭 knapp ein Drittel; offene Punkte ❓ und nicht freigegeben ⛔ siehe [Modul 19](19-Konflikt-und-Widerspruchsmatrix.md) und [Modul 34](34-Offene-Entscheidungen-Katalog.md).

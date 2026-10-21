@@ -25,8 +25,8 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | **K5** | **Setting-Entscheidung zur Orientierung** (keine entsprechenden Inhalte in der Spielwelt) vs. **datengetriebenes Orientierungsmodell** (Fragen 151 bis 153). | Interview 15.09. | ❓ Entscheidung des Entwicklers ausstehend: Soll das Modell ausschließlich die vorgesehene Demografie abbilden (und Mods dürfen mehr), oder gibt es zusätzliche Vorgaben? ([Modul 05, Abschnitt 4](05-NPCs-Beziehungen-Praeferenzen.md#4-orientierung)). |
 | **K6** | **Langzeit-Begleitvertrag:** Wunsch, dass die Figur praktisch nie kündigt; Gegenposition, dass sie ihr Kündigungsrecht behalten muss. | Interview 15.09. | 🧭 Kompromiss: Figur kann kündigen („sehr selten“); Details offen ([Modul 08](08-Welt-Orte-Branche-Wirtschaft.md#52-langzeit-begleitvertrag)). |
 | **K7** | **KI-Nutzung „eher geheimhalten“** vs. wahrheitsgemäße Plattformangaben. | Interview 25.09. | ❓ Entscheidung vor Release. Angaben müssen korrekt sein. |
-| **K8** | **Frühe Annahme „Frauen sind bei den richtigen immer bereit“** (10.09.) vs. harte Grenzen jeder Figur. | Interview 10.09. | **Aufgelöst:** jede Figur hat eigene Grenzen; sehr weite Präferenzprofile sind möglich, aber partner- und situationsabhängig ([Modul 05](05-NPCs-Beziehungen-Praeferenzen.md#2-präferenzprofil)). |
-| **K9** | **Einvernehmlicher Schlaf-Zustand** (Vorschlag des Assistenten 20.09.) vs. Regel „Schlafende nehmen nicht aktiv teil“. | Interview 20.09. | ❓ Abgrenzung offen; ohne Entscheidung gilt die strengere Regel ([Modul 01, Abschnitt 5.1](01-Grundregeln-Alter-Zustimmung.md#51-endstand)). |
+| **K8** | **Frühe Annahme ‚Frauen sind bei den richtigen immer bereit‘** (10.09.) vs. harte Grenzen jeder Figur. | Interview 10.09. | **Aufgelöst:** jede Figur hat eigene Grenzen; sehr weite Präferenzprofile sind möglich, aber partner- und situationsabhängig ([Modul 05](05-NPCs-Beziehungen-Praeferenzen.md#2-präferenzprofil)). |
+| **K9** | **Einvernehmlicher Schlaf-Zustand** (Vorschlag des Assistenten 20.09.) vs. Regel ‚Schlafende nehmen nicht aktiv teil‘. | Interview 20.09. | ❓ Abgrenzung offen; ohne Entscheidung gilt die strengere Regel ([Modul 01, Abschnitt 5.1](01-Grundregeln-Alter-Zustimmung.md#51-endstand)). |
 
 ---
 
@@ -80,12 +80,12 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 
 | Frühere Planung | Nachfolgender Stand |
 |---|---|
-| Rahmenentwurf (28.08.): Erwachsenen-Darstellungsmodi (inklusive „voll erlaubt“) als Teil des Spielkerns | Seit dem 31.08. und den September-Runden: Der erweiterte Teil ist ein **getrenntes optionales Paket**; das Basisspiel zeigt nicht explizit. |
+| Rahmenentwurf (28.08.): Erwachsenen-Darstellungsmodi (inklusive ‚voll erlaubt‘) als Teil des Spielkerns | Seit dem 31.08. und den September-Runden: Der erweiterte Teil ist ein **getrenntes optionales Paket**; das Basisspiel zeigt nicht explizit. |
 | Rahmenentwurf: Anfrage-Fluss und Server-Architektur auch für großen Online-Betrieb | Der offizielle Online-Modus lädt keine Mods; das Paket ist dort nicht nutzbar. Der Netzwerkteil bleibt für Koop und als Architekturgrundsatz. |
 | Frühe Zwischenstände zur Zustimmung bei starker Trunkenheit (10.09.) | *Capacity Gate* ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#5-entscheidungsfähigkeit-alkohol-und-drogen)). |
-| „Schweigen oder Stöhnen heißt weitermachen“ (16.09.) | Sitzungsrahmen mit Mehrsignal-Bewertung ([Modul 01, Abschnitt 4](01-Grundregeln-Alter-Zustimmung.md#4-sitzungsrahmen-statt-dauerabfrage)). |
+| ‚Schweigen oder Stöhnen heißt weitermachen‘ (16.09.) | Sitzungsrahmen mit Mehrsignal-Bewertung ([Modul 01, Abschnitt 4](01-Grundregeln-Alter-Zustimmung.md#4-sitzungsrahmen-statt-dauerabfrage)). |
 | „Frauen tun nur so, als hätten sie kein Interesse“ (11.09.) | Ein aktuelles Nein bleibt ein Nein ([Modul 05](05-NPCs-Beziehungen-Praeferenzen.md#3-anziehung-und-beziehung)). |
-| Standardwert „Alter bestätigt = wahr“ in einem externen Entwurf | Ersetzt durch *fail closed* ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#2-altersgrenze-und-prüfung)). |
+| Standardwert ‚Alter bestätigt = wahr‘ in einem externen Entwurf | Ersetzt durch *fail closed* ([Modul 01](01-Grundregeln-Alter-Zustimmung.md#2-altersgrenze-und-prüfung)). |
 | Interner Entwurf mit versionsabhängigen IDs und Unreal-Typen im engine-unabhängigen Kern | Nicht übernommen: stabile, versionsfreie IDs; Kern engine-unabhängig. |
 | Ein einzelner globaler Intensitätsschalter (Entwurf mit Stufen von „aus“ bis „hardcore“) | Kein globaler Schalter: Paket an/aus, Kategorien und Presets einzeln ([Modul 02](02-Architektur-Pakete-Technik.md#3-paketstruktur)). |
 | „Fehlende Kategorien“ der Registry über Qwen sofort klären | Reihenfolge: eigener Audit → externer Lauf → Einfrieren ([Modul 03](03-Interaktion-Taxonomie-Ablauf.md#7-stand-der-registry-und-der-audits)). |

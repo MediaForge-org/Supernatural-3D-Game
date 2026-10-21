@@ -30,13 +30,13 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 - Die Rundenzählung folgt dem Gespräch. Sie ist **nicht überall als feste Überschrift gespeichert**; Abweichungen siehe [Modul 13, Abschnitt 8](13-Quelleninventar-und-Abdeckung.md#8-bekannte-abweichungen-innerhalb-der-quellen).
 - „Ja“ des Entwicklers auf eine Fragenliste bedeutet: Zustimmung zur Fragestellung bzw. zum Vorschlag in der Formulierung des Assistenten, **nicht** automatisch zu Zahlen oder Details, die der Assistent als Beispiel nannte.
 - Explizite Einzelheiten der Quellen werden **abstrakt** wiedergegeben. Die Quellen enthalten Aussagen, die diese Dokumentation nicht als Entwurf übernimmt; sie stehen im [Register, Abschnitt XX](14-Entscheidungsregister.md#17-xx-nicht-freigegeben-historisch-überholt) und in [Modul 09](09-Dunkle-Themen-und-Nicht-Uebernommenes.md).
-- Alle Aussagen: Nachweis `35#n` = Chat „Projektwissen nutzen“, Nachricht `n`.
+- Alle Aussagen: Nachweis `35#n` = Chat ‚Projektwissen nutzen‘, Nachricht `n`.
 
 ## 2. Vorphase 09.–10.09.
 
 | Nachricht | Inhalt | Status |
 |---|---|---|
-| 35#58 | Master-Prompt des Entwicklers (09.09.): Modmanager-Profile „Vanilla, Realism, Hardcore, Testing, Custom, evtl. Adult“. „Hardcore“ meint hier ein **Modding-Profil**, nicht die Adult-Intensität. | 📋 |
+| 35#58 | Master-Prompt des Entwicklers (09.09.): Modmanager-Profile ‚Vanilla, Realism, Hardcore, Testing, Custom, evtl. Adult‘. „Hardcore“ meint hier ein **Modding-Profil**, nicht die Adult-Intensität. | 📋 |
 | 35#60, 35#141 | Vorschlag: Inhaltsbewertung und Adult-Flag in den Mod-Metadaten, Nutzerfilter. Empfehlung „ja“. | 🧭 |
 | 35#63, 35#64 | Entwickler fragt, wann Adult genauer geplant wird. Assistent: eigener großer Block nach den Modding-Blöcken 1–7. | 🧭 |
 | 35#71, 35#72 | Entwickler (09.09.): Adult-Mod „richtig immersiv, hardcore“; Spielerin/Spieler wählt aus; der Partner muss sich teilweise an die Partnerin halten; manche Figuren wünschen härtere Praktiken. Assistent: Rollen-/Präferenzprofile, Intensitätsstufen, Hard/Soft Limits, individuelle Grenzen, vollständig separate Adult-Profile, komplette Deaktivierbarkeit; **keine explizite Einzelakt-Ausarbeitung**. | 📋 / 🧭 |
@@ -54,7 +54,7 @@ Nachrichten 35#186–187. Frage 1 bis 12.
 |---|---|---|
 | NPC mit NPC | ja; Zuschauen und Beitreten möglich | 📋 |
 | Häufigkeit | „komplett aussuchen“; Mod an/aus | 📋 |
-| Steam | „Steam gibt es nicht frei“ → Mod (35#187) | 📋, Rechtslage ungeprüft |
+| Steam | ‚Steam gibt es nicht frei‘ → Mod (35#187) | 📋, Rechtslage ungeprüft |
 | Globaler Intensitätsschalter | **nein**; stattdessen anderes Paket installieren | 📋 |
 | „Hardcore“ | Mehrdimensional: wie viel sich Figuren gefallen lassen, Tempo; als Preset | 📋 |
 | Harte Grenzen | können sich ändern (Beispiel: früher tabu → später ok; Einmalbegegnung eher weniger) | 📋, Grenze zu [E-SK-009](14-Entscheidungsregister.md#2-sk-sicherheitskern-alter-zustimmung) beachten |
@@ -63,7 +63,9 @@ Nachrichten 35#186–187. Frage 1 bis 12.
 
 ## 4. Runde 2: Dating und Rollen
 
-Nachrichten 35#188–190. Tiers: ja. Hardcore mehrdimensional: ja. Pro Person einstellbar. Rollenabhängige Grenzen („16 erklärt: ja“). Partnerabhängige Grenzen. Beobachterrolle; spontanes Beitreten und Verlassen; Öffentlichkeit als Ortseigenschaft; Eskalationsstufen als Zustände; Registry ohne C++ (Frage 24 genauer; Assistent: ja). 📋.
+Nachrichten 35#188–190. Tiers (13): ja. Hardcore mehrdimensional (14): ja. Einzeln einstellbar (15): „es kommt auf die Person an“. Partnerabhängige Grenzen (17): „ja sicher, so wie in echt“. Beobachterrolle (18), spontanes Beitreten (19), Verlassen (20), Öffentlichkeits-Eigenschaft (21): ja. 📋.
+
+**Rückfragen ohne ausdrückliche Bestätigung (Etappe 2.2):** Frage 16 (Rollenabhängige Grenzen): „verstehe ich nicht“ → vom Assistenten erklärt (35#190); eine Entwicklerantwort auf Frage 16 gibt es nicht, inhaltlich später durch Runde 3 Frage 2 „ja sicher“ (35#221) gedeckt. Frage 23 (Eskalationsstufen): „wie genau?“ → erklärt (35#190), vom Assistenten als gelockt geführt (35#220), nicht ausdrücklich bestätigt. Frage 24 (Registry ohne C++-Änderung): ‚genauer noch bitte‘ → erklärt, Assistentenempfehlung „ja“, nicht ausdrücklich bestätigt. Siehe [Register E-IA-001, E-IA-004, E-IA-005](14-Entscheidungsregister.md#4-ia-interaktion-taxonomie-ablauf). Frage 22 (Alkohol): Konfliktstelle [K1](11-Offene-Fragen-und-Konflikte.md). Die vollständige Frage-Antwort-Liste steht in [Modul 36](36-Frage-Antwort-Matrix-Runden-1-bis-9.md).
 
 ## 5. Zwischenphase: Zustimmung und Fähigkeit
 
@@ -76,7 +78,7 @@ Nachrichten 35#191–210. Hier entstanden die ersten, später mehrfach verworfen
 | 199 | „System blockiert nicht, wenn zu betrunken.“ | Fähigkeitsprüfung bleibt harte Voraussetzung. |
 | 201, 203 | Klarstellung: Er habe nicht gesagt, Passivität sei Zustimmung. | 204 korrigiert die eigene Darstellung. |
 | 205 | Vergewaltigung als Weltereignis; Retter werde belohnt. | 206: Verbrechen wird nicht erotisiert, kein Sex als Belohnung. |
-| 207 | Eine Variante ohne Zustimmungsprüfung (nicht in der normalen Mod; „weiß nicht, ob jemals veröffentlicht“). | 208: abgelehnt als Design. |
+| 207 | Eine Variante ohne Zustimmungsprüfung (nicht in der normalen Mod; ‚weiß nicht, ob jemals veröffentlicht‘). | 208: abgelehnt als Design. |
 | 210 | – | Gliederung in Pack A (Framework), B (hohe Intensität, einvernehmlich), C (dunkle Verbrechensthemen, kein Adult-Katalog). |
 
 Ergebnis: Capacity Gate und Session Intent Envelope ([Modul 01](01-Grundregeln-Alter-Zustimmung.md)).
@@ -112,7 +114,7 @@ Nachrichten 35#230–232. NPC-Initiative; Stile; Aussehen als erster Auslöser; 
 
 ## 10. Runde 7: Orte und Öffentlichkeit
 
-Nachrichten 35#232–236. Ortstags intern; ortsabhängige Reaktion; Sicht-/Hörweite echter NPCs; Beobachter-Reaktionen; Einladen; spontanes Beitreten; nicht unterstützte Konstellation → Abwechseln/Fallback (Entwickler 233: „ok aber logisch, dann wechselt man sich ab“); „Person A ok, B nein“; Orte mit eigenen Regeln; Adult-Hubs; Frage 14 (Security/Hausregeln): Entwickler „was hat das mit Adult zu tun“ → 235 „ok passt“ → World Rules/Venue Policy; Ort merkt sich Dinge. 📋.
+Nachrichten 35#232–236. Ortstags intern; ortsabhängige Reaktion; Sicht-/Hörweite echter NPCs; Beobachter-Reaktionen; Einladen; spontanes Beitreten; nicht unterstützte Konstellation → Abwechseln/Fallback (Entwickler 233: ‚ok aber logisch, dann wechselt man sich ab‘); ‚Person A ok, B nein‘; Orte mit eigenen Regeln; Adult-Hubs; Frage 14 (Security/Hausregeln): Entwickler „was hat das mit Adult zu tun“ → 235 „ok passt“ → World Rules/Venue Policy; Ort merkt sich Dinge. 📋.
 
 ## 11. Altersregel
 
@@ -141,11 +143,11 @@ Nachrichten 35#246–250. Basisframework; Packs; Fragen 2/3 abhängig von Größ
 
 ### 14.1 Runde 9A: Präferenz-DNA (35#260–263, 45 Fragen)
 
-- Präferenz-DNA aus Seed, an die globale NPC-ID gekoppelt (Entwickler 261/3: sonst Reset in Beziehung). 1 „kann sich ändern“, 2 „nur am Anfang generiert“.
+- Präferenz-DNA aus Seed, an die globale NPC-ID gekoppelt (Entwickler 261/3: sonst Reset in Beziehung). 1 ‚kann sich ändern‘, 2 „nur am Anfang generiert“.
 - Hierarchie Persönlichkeitskern > Sozial > Attraktion > Adult-Präferenz > situative Überschreibungen (5 ok). Archetyp nur als Bias (7, 8). 9 Plausibilitätsprüfung.
 - 10–20 ja (Dimensionen kontinuierlich; Stimmung kurzfristig). 21–23 Attraktionsprofil mehrkomponentig. 24 „bei Frauen kann das sehr schnell gehen“. 25–26 anfängliche Attraktion nur bei Dates, bei Einmalbegegnungen eher weniger (Assistent: auch dort beibehalten). Erregung ist ein Zustand, keine Zustimmung.
 - 27–38 ja (Styling, Hygiene, Stimme, Reputation, partnerspezifische Deltas, Chemistry bidirektional, Partner-Gedächtnisprofil). 39 ja; Bekanntschaft und Vorlieben bleiben gespeichert, außer die Person ist tot. 40 Einmalbegegnung genauso genau gespeichert wie Beziehung. Gedächtnisstufen Minimal/Known/Detailed/Full (Assistent). Daten Verstorbener nicht komplett löschen (Assistent).
-- 41–44 ja (Regionalität nur Bias). 45: Entwickler „leichte Unterschiede (Stimme/Aussehen), keine Immigranten, nur Leute von dort oder aus den USA“. Assistent widerspricht (einzelne Zugewanderte und Touristen seien glaubwürdig). Entwickler 263: „Ok“ ohne klare Zustimmung/Ablehnung → [E-NP-014](14-Entscheidungsregister.md#8-np-npc-präferenzen-beziehungen), ❓.
+- 41–44 ja (Regionalität nur Bias). 45: Entwickler ‚leichte Unterschiede (Stimme/Aussehen), keine Immigranten, nur Leute von dort oder aus den USA‘. Assistent widerspricht (einzelne Zugewanderte und Touristen seien glaubwürdig). Entwickler 263: „Ok“ ohne klare Zustimmung/Ablehnung → [E-NP-014](14-Entscheidungsregister.md#8-np-npc-präferenzen-beziehungen), ❓.
 
 ### 14.2 Runde 9B (35#268–274)
 
@@ -167,7 +169,7 @@ Körper-Seed; kontinuierliche Parameter; Asymmetrie (Entwickler 281: nie komplet
 
 ### 15.2 Runde 10B: Skelett und Kontakt (35#282–285, Fragen 36–70)
 
-Standardisiertes Skelett mit Proportionen/Morphs; Skelettfamilien; Messwerte links/rechts; Gang; poseabhängige Verformung; Korrektur-Morphs; Kontaktanker aus Maßen mit Toleranzen; Auswahl passender Varianten; Paar-Animationen für Hauptfiguren; Retargeting; Validator (Beispielwert 94 %); Kompatibilitätsgrenzen; Kleidungs-/Haarphysik; sichtbarer vs. simulierter Kontakt; Regel „Animation bestimmt Bewegung, IK korrigiert Kontakt, Physik nur sekundär“. Entwickler 283: „37–70 ja“; jede Person „realistisch nachgebaut“.
+Standardisiertes Skelett mit Proportionen/Morphs; Skelettfamilien; Messwerte links/rechts; Gang; poseabhängige Verformung; Korrektur-Morphs; Kontaktanker aus Maßen mit Toleranzen; Auswahl passender Varianten; Paar-Animationen für Hauptfiguren; Retargeting; Validator (Beispielwert 94 %); Kompatibilitätsgrenzen; Kleidungs-/Haarphysik; sichtbarer vs. simulierter Kontakt; Regel ‚Animation bestimmt Bewegung, IK korrigiert Kontakt, Physik nur sekundär‘. Entwickler 283: „37–70 ja“; jede Person „realistisch nachgebaut“.
 
 **Architektur-Lock des Entwicklers (35#283):** im ganzen Projekt kaum Blueprints (C++), eigenes Speichersystem wegen Unreal-Problemen mit Größe. → [E-PA-025](14-Entscheidungsregister.md#3-pa-pakete-builds-architektur), [E-LE-004](14-Entscheidungsregister.md#9-le-gedächtnis-leben-simulation-speicher).
 
@@ -176,14 +178,14 @@ Standardisiertes Skelett mit Proportionen/Morphs; Skelettfamilien; Messwerte lin
 - 286: Zwei Projekt-Locks vorgeschlagen (C++-first, eigenes engine-neutrales Persistenzsystem; Default-Welt nicht gespeichert, Delta gegenüber generiertem Ausgangszustand). Save-Ordner (Manifest, Spieler, Welt, Regionen, NPCs, Beziehungen, Fälle, Fahrzeuge, Eigentum, Wirtschaft, Zeitlinie, Mods). **Alles Vorschlag**, vom Entwickler in 283 sinngemäß befürwortet.
 - 287: Entwickler wünscht realistische Muskel-/Weichgewebebewegung im Akt und sehr explizite Anatomiedetails. Assistent 288: **keine Detailgestaltung expliziter Genital-/Analmechanik**; Unterbau technisch; Explizites später mit Qwen. → Block „High-Fidelity Body Response“ (20 Punkte).
 - 289–292: Antworten: 1–8 ja; 9 realistisch (Standard); 10 egal, Mods dürfen alles; 13 sichtbare Atmung anfangs nicht wichtig; 14 Herzschlag: eigener bei Extremstress, fremder nur in Nähe; 15 Schweiß ja; 16 Druckstellen kein Muss; 21 ja (90 % Realismus reicht); 31–32, 34–35 ja, aber nicht das wichtigste Feature; 39–40 ja: **Adult nutzt exakt dasselbe Körpersystem wie das Spiel.**
-- 293–302: Vorschläge zur Menschenpipeline (Human Master, Parameterraum statt Presets, Gesichtsraum, KI-gebaute Generatoren, Tier S/A/Population, MetaHuman/CC5 prüfen, Hybrid). Entwickler 295: Tier S = wichtige Story-Figuren; Spieler erstellt Figur zum Start; „kein extra Geld nur für ein Modell, keine 500 Euro“. 296: Spieler = Tier S dynamisch; Beförderung eines NPC ohne Neuwürfeln. 297 „Ok also einmal Generator“. 299–300: NPC Life DNA, Korrelationen statt harter Regeln (stark tätowiert ≠ Tätowierer), Neugeborene mit eigener ID, Genetik aus Eltern, Wachstumskurve, Gesicht altert, Lebensphasen; **das Adult-System sieht Minderjährige nicht** (Pipeline Alter/Eligibility). 301: Haar/Bart kontinuierlich grenzenlos; entfernte NPCs simulieren weiter. 302: nichtlineare Alterskurven, Delta-Ereignisse, „Simulation ja, volle Echtzeitsimulation nein“. 🧭 mit Entwickler-Bestätigungen.
+- 293–302: Vorschläge zur Menschenpipeline (Human Master, Parameterraum statt Presets, Gesichtsraum, KI-gebaute Generatoren, Tier S/A/Population, MetaHuman/CC5 prüfen, Hybrid). Entwickler 295: Tier S = wichtige Story-Figuren; Spieler erstellt Figur zum Start; ‚kein extra Geld nur für ein Modell, keine 500 Euro‘. 296: Spieler = Tier S dynamisch; Beförderung eines NPC ohne Neuwürfeln. 297 ‚Ok also einmal Generator‘. 299–300: NPC Life DNA, Korrelationen statt harter Regeln (stark tätowiert ≠ Tätowierer), Neugeborene mit eigener ID, Genetik aus Eltern, Wachstumskurve, Gesicht altert, Lebensphasen; **das Adult-System sieht Minderjährige nicht** (Pipeline Alter/Eligibility). 301: Haar/Bart kontinuierlich grenzenlos; entfernte NPCs simulieren weiter. 302: nichtlineare Alterskurven, Delta-Ereignisse, „Simulation ja, volle Echtzeitsimulation nein“. 🧭 mit Entwickler-Bestätigungen.
 
 ### 15.4 Runde 10 Szenensystem (35#440–446, 100 Fragen)
 
 Entwickler 444: 1–4 ja; **5 und 11 sind Konfliktstellen** (siehe [Modul 19, K1](19-Konflikt-und-Widerspruchsmatrix.md)); 12–38 ja; 39 ja, Jiggle-Physik realistisch wichtiger; 40–65 ja; 66 ja, spezialisierter für stark beanspruchte Körperteile, aber auch im Hauptspiel; 67–99 ja; 100 „jedes Mal anders“, komplette Freiheit der Position.
 
-Themen der 100 Fragen: Initiierung/Ablehnung/Grenzen; Orte und Privatsphäre (20 Tür abschließen); 29 spontan vs. Date; 31 keine starre Szene, sondern **Interaction Session aus modularen Aktionen**; 34 Intent/Action vs. Animation/IK/Physik; 36 jedes Mal leicht anders; 40 Alternative statt Clipping; 47–50 beliebig kurz/lang, kein Fortschrittsbalken, kann „nicht gut laufen“; 51–65 Präferenzen (58 keine sichtbare Checkliste); 66–80 Körper/Physik; 81–90 Audio/Dialog/Mimik/Blick; 91–100 Folgen (99 Gesundheit nur über das allgemeine Gesundheitssystem; 100 niemals Minispiel).
+Themen der 100 Fragen: Initiierung/Ablehnung/Grenzen; Orte und Privatsphäre (20 Tür abschließen); 29 spontan vs. Date; 31 keine starre Szene, sondern **Interaction Session aus modularen Aktionen**; 34 Intent/Action vs. Animation/IK/Physik; 36 jedes Mal leicht anders; 40 Alternative statt Clipping; 47–50 beliebig kurz/lang, kein Fortschrittsbalken, kann ‚nicht gut laufen‘; 51–65 Präferenzen (58 keine sichtbare Checkliste); 66–80 Körper/Physik; 81–90 Audio/Dialog/Mimik/Blick; 91–100 Folgen (99 Gesundheit nur über das allgemeine Gesundheitssystem; 100 niemals Minispiel).
 
-Assistenten-Antworten 445–454: Zustimmung bleibt in der laufenden Situation bis Widerruf oder wesentlicher Änderung; neue Begegnung wird neu berechnet. Leichte Trunkenheit okay, starke Beeinträchtigung keine Zustimmung, „komm mit zu mir“ ≠ pauschales Ja. Entwickler 446/448: Betrunkene sollen „genug Aussagekraft“ haben, wenn sie noch denken können. 447: Formel `Fähigkeit + Ansprechbarkeit + vorherige bejahende Absicht + aktuelles Verhalten`. 450–454: Bewusstlosigkeit beendet die Interaktion; eine kurze Erkennungsverzögerung (fehlende Eigenbewegung, Muskelspannung, Atem, Antworten) ist erlaubt, kein minutenlanges Weiterlaufen; Entwickler 454 **„Ja ok dann passt das“** → bestätigt ([E-SK-015 bis E-SK-018](14-Entscheidungsregister.md#2-sk-sicherheitskern-alter-zustimmung)).
+Assistenten-Antworten 445–454: Zustimmung bleibt in der laufenden Situation bis Widerruf oder wesentlicher Änderung; neue Begegnung wird neu berechnet. Leichte Trunkenheit okay, starke Beeinträchtigung keine Zustimmung, „komm mit zu mir“ ≠ pauschales Ja. Entwickler 446/448: Betrunkene sollen ‚genug Aussagekraft‘ haben, wenn sie noch denken können. 447: Formel `Fähigkeit + Ansprechbarkeit + vorherige bejahende Absicht + aktuelles Verhalten`. 450–454: Bewusstlosigkeit beendet die Interaktion; eine kurze Erkennungsverzögerung (fehlende Eigenbewegung, Muskelspannung, Atem, Antworten) ist erlaubt, kein minutenlanges Weiterlaufen; Entwickler 454 **„Ja ok dann passt das“** → bestätigt ([E-SK-015 bis E-SK-018](14-Entscheidungsregister.md#2-sk-sicherheitskern-alter-zustimmung)).
 
 Globale Locks, zusätzlich in 445/446 (nicht Adult): Horror-Ton früher Staffeln; Jäger-Hauptquartier unterirdisch, nicht von Beginn, Entdeckung nach einigen Stunden Story.

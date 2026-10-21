@@ -51,7 +51,7 @@ Vorschläge aus der Rechtsdiskussion vom 25. September (🧭, vom Entwickler nic
 - Die Altersregel als **Build-Validator**: Ein Build schlägt fehl, wenn eine Figur ohne eindeutiges Erwachsenen-Alter im Erwachsenen-Pfad erreichbar ist.
 - Keine Figur, die nach Lore „volljährig“, aber erkennbar kindlich gestaltet ist. Sehr junge Erwachsene sollen auch **visuell eindeutig erwachsen** wirken.
 
-Verworfen (🕰️): ein externer Entwurf mit dem Standardwert „Alter bestätigt = wahr“. Ersetzt durch *fail closed* mit explizitem Status.
+Verworfen (🕰️): ein externer Entwurf mit dem Standardwert ‚Alter bestätigt = wahr‘. Ersetzt durch *fail closed* mit explizitem Status.
 
 ---
 
@@ -120,7 +120,7 @@ Status: 📋
 - Der Abbruch soll **diegetisch** wirken (fehlende Reaktion, Körperspannung, Atmung) statt als großes Stopp-Fenster.
 - Dasselbe `Reaktionsfähigkeit`-System dient bei Verletzung, Ohnmacht und Schlaf.
 - Bei **starker Atem- oder Halskontrolle**, die ein Erwachsener einvernehmlich wünscht, bleibt das Gesundheitssystem voll aktiv (Bewusstseinsverlust, Verletzung bis zur Lebensgefahr). Kommt es zur Bewusstlosigkeit, greift die obige Regel: die Interaktion endet. Das Spiel liefert dafür **keine Anleitung und keine „optimale“ Mechanik**, nur Zustand und Folgen.
-- **Einvernehmlicher Schlaf-Zustand** (zuvor ausdrücklich vereinbart): ist als Zustand denkbar (Schlaf-State mit natürlicher Atmung, möglichem Aufwachen, reduzierter aktiver Beteiligung). 🧭 Vorschlag des Assistenten vom 20. September; **nicht vom Entwickler als Funktion bestätigt** und im Widerspruch zur Regel „Bewusstlose oder Schlafende nehmen nicht aktiv teil“, solange die Abgrenzung nicht entschieden ist. Siehe [Offene Fragen](11-Offene-Fragen-und-Konflikte.md).
+- **Einvernehmlicher Schlaf-Zustand** (zuvor ausdrücklich vereinbart): ist als Zustand denkbar (Schlaf-State mit natürlicher Atmung, möglichem Aufwachen, reduzierter aktiver Beteiligung). 🧭 Vorschlag des Assistenten vom 20. September; **nicht vom Entwickler als Funktion bestätigt** und im Widerspruch zur Regel ‚Bewusstlose oder Schlafende nehmen nicht aktiv teil‘, solange die Abgrenzung nicht entschieden ist. Siehe [Offene Fragen](11-Offene-Fragen-und-Konflikte.md).
 
 ### 5.2 Überholte Zwischenstände
 

@@ -129,7 +129,7 @@ Der Entwickler legte zuletzt fest (35#715): **Ladebildschirm und ein kleiner Kar
 
 ## 7. Zusammenhang mit der Entwicklungsphasenplanung
 
-Die Phasen in CLAUDE.md §4 (Phase 0 bis 4+) bleiben maßgeblich. Das Adult-Paket ist **kein** Phase-0-Element; es ist ein optionales Paket, dessen Unterbau (Menschensystem, Persistenz, Interaktion, Gesundheit, Mods) über die Phasen wächst. **Es wurde weder ein Phase-Tag noch eine Einordnung in Phase 1–3 beschlossen.** Die Quellen nennen nur: „Adult V1 klein, sehr früh implementiert und dann sehr viel erweitert“ (35#713) und „Adult kommt erst nach Grundlagen“ (35#715). Das ist ein Widerspruch in der Gewichtung ([K19](19-Konflikt-und-Widerspruchsmatrix.md#k19-zeitpunkt-von-adult)) und bleibt dem Entwickler überlassen.
+Die Phasen in CLAUDE.md §4 (Phase 0 bis 4+) bleiben maßgeblich. Das Adult-Paket ist **kein** Phase-0-Element; es ist ein optionales Paket, dessen Unterbau (Menschensystem, Persistenz, Interaktion, Gesundheit, Mods) über die Phasen wächst. **Es wurde weder ein Phase-Tag noch eine Einordnung in Phase 1–3 beschlossen.** Die Quellen nennen nur: „Adult V1 klein, sehr früh implementiert und dann sehr viel erweitert“ (35#713) und ‚Adult kommt erst nach Grundlagen‘ (35#715). Das ist ein Widerspruch in der Gewichtung ([K19](19-Konflikt-und-Widerspruchsmatrix.md#k19-zeitpunkt-von-adult)) und bleibt dem Entwickler überlassen.
 
 ## 8. Abhängigkeiten zwischen Spezifikationsmodulen
 

@@ -58,7 +58,7 @@ Mods:                   eigene Partitionen, gleiche öffentliche Schnittstellen
 
 - Orte (Clubs, Hotels, Wohnungen) gehören ins **Hauptspiel** (E-PA-017).
 - Das Paket ist ein **separates Content-Paket**; es ist niemals Teil von Konsolen-Cooks (E-PA-004).
-- Der Kern kennt keinen Check „Adult installiert“; ein **Presentation Resolver** löst Assets nach Konfiguration auf (E-PA-004).
+- Der Kern kennt keinen Check ‚Adult installiert‘; ein **Presentation Resolver** löst Assets nach Konfiguration auf (E-PA-004).
 - Kein versteckter, nur per Flag deaktivierter Adult-Content im Basis-Build (E-PA-032).
 - All-in-One-Paket als Standard, wenn nicht riesig; Teilpakete (Animation, Stimme, Orte, Charaktere) mit `requires/optional/incompatible/recommended` (E-PA-018/019).
 - Größenbeispiele des Assistenten (15–25 GB bzw. 50–100+ GB) sind **keine** Planwerte.
@@ -139,7 +139,7 @@ Replay-Datenpakete gehören zum Adult-Bereich, wenn sie Adult-Sitzungen betreffe
 | SM-LP-02 | **Simulations-LOD** und Importance-LOD; Graceful Degradation. | E-SP-001 |
 | SM-LP-03 | Entity-Stufen: Simulated Entity / Active Simulation Entity / Fully Materialized Actor. Größenordnungen (500.000 → ~5.000 → ~100–300) sind Hypothesen „zu messen“. | E-LE-006 |
 | SM-LP-04 | Physikqualität pro Stufe; Low darf nicht fake aussehen. | E-SO-014 |
-| SM-LP-05 | Zielhardware: nicht nur Spitzen-PCs („nicht jeder hat 5090/64 GB“). | E-PR-011 |
+| SM-LP-05 | Zielhardware: nicht nur Spitzen-PCs (‚nicht jeder hat 5090/64 GB‘). | E-PR-011 |
 | SM-LP-06 | Hintergrundjobs (Re-Render) mit Priorität „Gameplay zuerst“. | E-RP-008 |
 | SM-LP-07 | Tattoos: Bake zu Körperschichten, LOD. | [Modul 25](25-Spezifikation-Tattoo-und-Koerpermodifikation.md) |
 | SM-LP-08 | Late-Stage-Features hinter Feature Flags (Flüssigkeiten, VR, erweiterte Physik). | E-PA-030 |

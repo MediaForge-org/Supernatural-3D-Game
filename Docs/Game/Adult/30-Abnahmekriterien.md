@@ -40,7 +40,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | AK-ZU-11 | Gleiche Eingaben und Seed liefern gleiche Entscheidung. | Property-Tests | 10.000 Läufe ohne Abweichung (Wert vorgeschlagen) | T-ZU-044, T-QS-003 |
 | AK-ZU-12 | Das Gate schlägt bei Fehler/Timeout **geschlossen** fehl. | Fault-Injection | 100 % | T-ZU-051/052 |
 | AK-ZU-13 | Weder Dauer-Popups noch ständige Abfragen im Standardfluss; ein klares Nein wirkt sofort. | UX-Review + Test | Review bestanden | T-ZU-033/035/043 |
-| AK-ZU-14 | Die Gewichtung der Live-Signale ist im Prototyp mit Spielern erprobt und dokumentiert (Zufriedenheit „nicht zu streng, nicht zu lasch“). | Playtest | **festzulegen** (K1) | – |
+| AK-ZU-14 | Die Gewichtung der Live-Signale ist im Prototyp mit Spielern erprobt und dokumentiert (Zufriedenheit ‚nicht zu streng, nicht zu lasch‘). | Playtest | **festzulegen** (K1) | – |
 
 ## 2. Datenmodell
 
@@ -62,7 +62,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 | AK-IE-2 | Bei 1.000 zufälligen Konstellationen (Größe/Gewicht/Proportionen) kein Softlock und keine Durchdringung über Toleranz. | Massentest | 0 Softlocks, Toleranz festzulegen | T-IE-006 |
 | AK-IE-3 | Mikrovariation und Entscheidungen sind bei gleichem Seed reproduzierbar (nach Speichern/Laden). | Vergleich | Toleranz festzulegen | T-IE-004/005 |
 | AK-IE-4 | Qualitätsstufen ändern nur Genauigkeit, nicht Entscheidungen. | Vergleich Low/Cinematic | gleiche Entscheidungen | T-IE-027 |
-| AK-IE-5 | „Low sieht nicht fake aus“ (E-SO-014). | Playtest-Bewertung | Kriterienliste **festzulegen** | T-IE-028 |
+| AK-IE-5 | ‚Low sieht nicht fake aus‘ (E-SO-014). | Playtest-Bewertung | Kriterienliste **festzulegen** | T-IE-028 |
 | AK-IE-6 | Solver-Zeit und Speicher unter Budget auf Zielhardware. | Performance-Messung | **festzulegen** | T-IE-034, T-SM-012 |
 | AK-IE-7 | Nicht unterstützte Konstellationen führen zu Abwechseln/Beobachter, nie zu kaputter Animation. | Stichprobe | 0 kaputte Fälle | T-IE-022 |
 | AK-IE-8 | Es gibt keinen Fortschrittsbalken, keinen Zähler als Treiber, kein Minispiel. | UI-Scan | 0 Treffer | T-IE-023 |
