@@ -586,7 +586,7 @@ Alle Details: [Gameplay-Systeme](Docs/Game/Gameplay-Systeme.md#4-verletzungen-un
 
 ### 19.2 Umfang
 
-📋 Körpergröße und -bau, Proportionen, Muskelmasse, Fett und dessen Verteilung, Brust-, Gesäß- und Beinform, Hände und Füße, Haut mit Narben, Muttermalen und Sommersprossen, Gesicht, Haare, Bart, Augen, Körperbehaarung, Make-up, Nägel, Tattoos, Piercings, Stimme, dominante Hand und Startkleidung. Anatomische Merkmale Erwachsener sind dort einbezogen, wo das Nacktheits- und Körpersystem sie nutzt. **Kosmetische Anatomie ist von Spielstärke getrennt.** Kleidung, Animation und IK müssen über den ganzen unterstützten Körperbereich funktionieren; Regressionstests für extreme gültige Kombinationen sind vorgesehen. Tattoos (von keinem bis fast vollständiger Körperbedeckung, mit Heilung, Alterung und Cover-ups), Piercings, Körpermodifikation und kosmetische Eingriffe sind als Weltmechanik geplant ([Adult-System](Docs/Game/Adult-System.md#15-charakteranpassung-tattoos-piercings-körpermodifikation)).
+📋 Körpergröße und -bau, Proportionen, Muskelmasse, Fett und dessen Verteilung, Brust-, Gesäß- und Beinform, Hände und Füße, Haut mit Narben, Muttermalen und Sommersprossen, Gesicht, Haare, Bart, Augen, Körperbehaarung, Make-up, Nägel, Tattoos, Piercings, Stimme, dominante Hand und Startkleidung. Anatomische Merkmale Erwachsener sind dort einbezogen, wo das Nacktheits- und Körpersystem sie nutzt. **Kosmetische Anatomie ist von Spielstärke getrennt.** Kleidung, Animation und IK müssen über den ganzen unterstützten Körperbereich funktionieren; Regressionstests für extreme gültige Kombinationen sind vorgesehen. Tattoos (von keinem bis fast vollständiger Körperbedeckung, mit Heilung, Alterung und Cover-ups), Piercings, Körpermodifikation und kosmetische Eingriffe sind als Weltmechanik geplant ([Adult-System](Docs/Game/Adult/07-Charakteranpassung-Tattoos-Koerpermodifikation.md)).
 
 ### 19.3 NPC-Menschen
 
@@ -621,7 +621,7 @@ Die engine-unabhängige **Datengrundlage**: Datenmodell (`AppearanceSpec`), Kata
 ## 21. Das Adult-System: optional und modular
 
 > [!IMPORTANT]
-> **Nichts davon ist implementiert.** Dieses Kapitel beschreibt den **Planungsstand** eines optionalen Erwachsenen-Bereichs sachlich und technisch. Er richtet sich ausschließlich an erwachsene Spieler und erwachsene Figuren. Das ausführliche Dokument ist [Adult-System](Docs/Game/Adult-System.md).
+> **Nichts davon ist implementiert.** Dieses Kapitel beschreibt den **Planungsstand** eines optionalen Erwachsenen-Bereichs sachlich und technisch. Er richtet sich ausschließlich an erwachsene Spieler und erwachsene Figuren. Der Einstieg ist [Adult-System](Docs/Game/Adult-System.md), die zwölf Detaildokumente liegen in [Docs/Game/Adult/](Docs/Game/Adult/README.md).
 
 ### 21.1 Bedeutung und Stellung
 
@@ -664,7 +664,7 @@ Alle Beteiligten sind **eindeutig erwachsene** Figuren (Prüfung nach Geburtsdat
 
 ### 21.5 Quellenlage
 
-Die Detailplanung liegt überwiegend als Entwicklerinterview vor und wurde **noch nicht in die kanonischen Statusdokumente konsolidiert**. Sie ist deshalb als bestätigte Planung des Entwicklers geführt, mit offenen Audits. Vorschläge von Assistenten sind nicht übernommen. Genaue Statusangaben, offene Punkte und überholte Zwischenstände: [Adult-System](Docs/Game/Adult-System.md#22-offene-punkte-widersprüche-und-überholte-planung).
+Die Detailplanung liegt überwiegend als Entwicklerinterview vor und wurde **noch nicht in die kanonischen Statusdokumente konsolidiert**. Sie ist deshalb als bestätigte Planung des Entwicklers geführt, mit offenen Audits. Vorschläge von Assistenten sind nicht übernommen. Genaue Statusangaben, offene Punkte und überholte Zwischenstände: [Offene Fragen und Konflikte](Docs/Game/Adult/11-Offene-Fragen-und-Konflikte.md).
 
 ---
 
@@ -1154,7 +1154,7 @@ Supernatural-3D-Game/
 │   └── Core/                     doctest-Tests (181 Testfälle)
 │       └── Data/                 eingefrorene Golden-Spielstände (nie bearbeiten)
 ├── Docs/
-│   ├── Game/                    aufbereitete Spielplanung (Vision, Welt, Systeme, Adult-System, Entscheidungsstatus)
+│   ├── Game/                    aufbereitete Spielplanung (Vision, Welt, Systeme, Adult-System mit Detailordner `Adult/`, Entscheidungsstatus)
 │   ├── MasterIndex.md            Wegweiser in den Planungs-Master
 │   ├── Decisions/                technische Entscheidungen / Engineering-Notizen
 │   └── Proposals/                Vorschläge mit "Master basis"-Tabellen
@@ -1315,7 +1315,7 @@ Die Aufbereitung der Spielplanung erfolgt in Etappen. **Etappe 1** (diese README
 | Welt, Städte, Untergrund, Reiche | Kanon, Nachträge und Kartenanforderungen gelesen; Stadtteil-Namen nicht dokumentiert gefunden; Gesprächsprotokolle zur Kartenplanung nur teilweise gelesen | [Spielwelt und Untergrund](Docs/Game/Spielwelt-und-Untergrund.md) |
 | Story, Crew, Fälle, Kreaturen | Entscheidungsregister und Planungsbacklog gelesen; Hauptgeschichte ist inhaltlich kaum ausgearbeitet | [Spielvision](Docs/Game/Spielvision.md) |
 | Gameplay-Systeme | Entscheidungsregister, Baseline und Backlog gelesen; Fahrzeug-Spezifikation vom 15. Oktober gelesen | [Gameplay-Systeme](Docs/Game/Gameplay-Systeme.md) |
-| Adult-System | Rahmenentwurf und Konsolidierung gelesen; Interviewrunden 1–20 in ihren bestätigten Festlegungen gelesen, die Detailfragen der Runden 14–16 (rund 450 Einzelfragen) nur teilweise | [Adult-System](Docs/Game/Adult-System.md) |
+| Adult-System | Rahmenentwurf und Konsolidierung gelesen; Interviewrunden 1–20: alle Entwicklerantworten und die Lock-Zusammenfassungen gelesen, die Fragetexte der Runden 6–16 (rund 1000 Einzelfragen) nur teilweise; Quellenliste in `Docs/Game/Adult/12-Entscheidungsverlauf-und-Quellen.md` | [Adult-System](Docs/Game/Adult-System.md), [Adult-Detaildokumente](Docs/Game/Adult/README.md) |
 
 Nicht gelesen sind der überwiegende Teil des Archivs (Gesprächs-Rohexporte, historische Zwischenstände, Rohdaten, Bilder, Geodaten) und die Prompt-Entwürfe.
 

@@ -188,7 +188,7 @@ Diese Punkte standen in Planungspaketen als **Ingenieursvorschläge** oder als B
 
 ### 5.10 Adult-Bereich
 
-Siehe [Adult-System](Adult-System.md#22-offene-punkte-widersprüche-und-überholte-planung): Vertriebsweg und Altersfreigabe, Paketzuschnitt, Abschluss des Taxonomie-Audits und der externen Gegenprüfung, Inhaltskataloge, Stimmenproduktion, Steuerung (Direkt/Assistiert), Gesundheitswerte, zeitliche Einordnung.
+Siehe [Offene Fragen und Konflikte](Adult/11-Offene-Fragen-und-Konflikte.md) (Einstieg: [Adult-System](Adult-System.md)): Vertriebsweg und Altersfreigabe, Paketzuschnitt, Abschluss des Taxonomie-Audits und der externen Gegenprüfung, Inhaltskataloge, Stimmenproduktion, Steuerung (Direkt/Assistiert), Gesundheitswerte, zeitliche Einordnung.
 
 ### 5.11 Technik und Recht (Repository)
 
@@ -234,6 +234,7 @@ Eine ältere Zielbestimmung (31.08.2026) wünschte systemkritische Teile möglic
 
 - Ein Rahmenentwurf vom 28.08.2026 sah Darstellungsmodi inklusive „voll erlaubt“ und ein Online-Anfragesystem im Spielkern vor. Seit dem 31.08. und den September-Runden: erweiterter Teil ist ein **getrenntes optionales Paket**, das Basisspiel ist nicht explizit, der offizielle Online-Modus lädt keine Mods.
 - Die Detailplanung ist vor allem im Entwicklerinterview dokumentiert (Runden 1–20) und wurde **noch nicht in die Kanon-Dokumente konsolidiert**.
+- Frühe Entwickleräußerungen zu Zustimmung und Trunkenheit (10.–16.09.) sind durch spätere Festlegungen ersetzt; ein Wunsch nach einem internen Modus gegen den Willen von Figuren (20.09.) ist **nicht freigegeben** und wartet auf eine Entscheidung. Übersicht: [Offene Fragen und Konflikte](Adult/11-Offene-Fragen-und-Konflikte.md).
 
 ### 6.8 Sammelobjekte
 
