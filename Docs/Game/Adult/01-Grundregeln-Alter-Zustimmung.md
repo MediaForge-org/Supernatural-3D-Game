@@ -13,7 +13,7 @@ Teil der Adult-Dokumentation ([Einstieg](../Adult-System.md), [Index](README.md)
 4. [Sitzungsrahmen statt Dauerabfrage](#4-sitzungsrahmen-statt-dauerabfrage)
 5. [Entscheidungsfähigkeit, Alkohol und Drogen](#5-entscheidungsfähigkeit-alkohol-und-drogen)
 6. [Stopp, Unbehagen und Widerruf](#6-stopp-unbehagen-und-widerruf)
-7. [Grenzüberschreitung als Systemzustand](#7-grenzüberschreitung-als-systemzustand)
+7. [Grenzüberschreitung: nur als Konsequenz, nicht als Mechanik](#7-grenzüberschreitung-nur-als-konsequenz-nicht-als-mechanik)
 8. [Was Mods nicht ändern dürfen](#8-was-mods-nicht-ändern-dürfen)
 9. [Ableitbare Tests](#9-ableitbare-tests)
 
@@ -153,15 +153,16 @@ Detailregeln für Drogen und Medikamente: ❓ offen (siehe [Offene Fragen](11-Of
 
 ---
 
-## 7. Grenzüberschreitung als Systemzustand
+## 7. Grenzüberschreitung: nur als Konsequenz, nicht als Mechanik
 
-Am 20. September legte der Entwickler fest („markiere das als von mir festgelegt“), dass der Spieler technisch eine **neue oder weitergehende Handlung beginnen können** soll, auch wenn der NPC sie vorher nicht ausdrücklich bestätigt hat. Der Assistent ordnete das so ein, und der Entwickler stimmte zu:
+Am 20. September wollte der Entwickler („markiere das als von mir festgelegt“, 35#633), dass der Spieler technisch eine **neue oder weitergehende Handlung beginnen können** soll, auch wenn der NPC sie nicht bestätigt hat, und in einem internen Admin-Build auch gegen den erkennbaren Willen oder bei nicht entscheidungsfähigen Personen fortfahren kann. Der Assistent lehnte die Ausarbeitung dieser Handlungsmechanik ab und formulierte stattdessen einen Rahmen, den der Entwickler **nicht ausdrücklich bestätigte** (zuletzt: „Ja ok dann plane ich das dann halt mit Qwen“, 35#657). Der Stand ist daher:
 
-- 📋 Es gibt keine unsichtbare Gameplay-Wand. Die **NPC-Reaktion entsteht dynamisch** aus Charakter, Beziehung, Vorlieben und Situation: positiv, neutral oder negativ.
-- 📋 „Technisch möglich“ bedeutet **nicht** „einverstanden“. Fehlt die Zustimmung, wird die Handlung als **Grenzverletzung** (*Boundary Violation*) gewertet. Folgen laufen über Gedächtnis, Beziehung, Verletzung, Beweise und bei entsprechender Schwere über das **Kriminalitäts- und Justizsystem** (siehe [Dunkle Themen](09-Dunkle-Themen-und-Nicht-Uebernommenes.md)).
-- 📋 Kommt ein klares Stopp-Signal oder eine deutliche Abwehr, endet die Interaktion nach [Abschnitt 6](#6-stopp-unbehagen-und-widerruf). Das System arbeitet in dieser Stelle weiter mit dem Sicherheitskern.
+- ⛔ **Keine freigegebene Spielmechanik.** Es gibt keine Spezifikation, keine Tests und keine Abnahmekriterien für das Fortsetzen von Handlungen gegen erkennbaren Willen oder bei nicht entscheidungsfähigen Personen, weder im Spiel noch in einem Admin-Build. Das widerspricht den Regeln 2 und 3 des Sicherheitskerns.
+- 🧭 Was als **Konsequenzebene** vorgeschlagen wurde (Assistent, 35#634/636): „technisch möglich“ ist nicht „einverstanden“. Wo ein Spieler eine Grenze überschreitet, entstehen Folgen ausschließlich über bestehende Systeme: Gedächtnis und Beziehung der Figur, Verletzung, Beweise und bei Schwere das **Kriminalitäts- und Justizsystem** ([Modul 09](09-Dunkle-Themen-und-Nicht-Uebernommenes.md)). Ob und wie das ohne Handlungsmechanik darstellbar ist, ist offen ([K2, K3](19-Konflikt-und-Widerspruchsmatrix.md#3-sicherheitsrelevante-konflikte)).
+- 📋 Kommt ein klares Stopp-Signal oder eine deutliche Abwehr, endet die Interaktion nach [Abschnitt 6](#6-stopp-unbehagen-und-widerruf).
+- ⛔ Der Begriff „USER-LOCK“ aus den Quellen ist **keine** Entscheidung dieser Dokumentation.
 
-**Nicht übernommen (⛔):** Der Entwickler wünschte darüber hinaus einen internen Admin-/Entwicklerbuild, in dem Handlungen gegen den erkennbaren Willen oder bei nicht entscheidungsfähigen Personen fortgesetzt werden können. Das ist **keine freigegebene Spielmechanik** und steht im Widerspruch zu den Regeln 2 und 3 des Sicherheitskerns. Für diese Dokumentation und für die Implementierung gibt es dazu **keine Spezifikation** und keine abgeleiteten Tests. Einordnung und Entscheidungsbedarf: [Dunkle Themen und Nicht Übernommenes](09-Dunkle-Themen-und-Nicht-Uebernommenes.md#3-historische-entwicklerwünsche-nicht-freigegeben).
+Einordnung und Entscheidungsbedarf: [Dunkle Themen](09-Dunkle-Themen-und-Nicht-Uebernommenes.md#3-historische-entwicklerwünsche-nicht-freigegeben), [Konfliktmatrix](19-Konflikt-und-Widerspruchsmatrix.md).
 
 ---
 

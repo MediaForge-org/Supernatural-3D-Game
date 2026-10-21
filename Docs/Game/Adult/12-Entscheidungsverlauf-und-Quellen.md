@@ -71,14 +71,14 @@ Status-Klassen nach `CLAUDE.md` §11: **CONFIRMED / LOCKED**, **PROVISIONAL**, *
 **Gelesen (soweit aufgeführt):**
 
 - das vorhandene Dokument `Docs/Game/Adult-System.md` (Stand vor dieser Überarbeitung),
-- alle **Antworten des Entwicklers** im Interview (Chat 35, Nachrichten 185 bis 812; bei sehr langen Einzelnachrichten nur die ersten rund 800 Zeichen; Nachrichten 362 bis 440 behandeln andere Themen),
+- alle **Antworten des Entwicklers** im Interview (Chat 35, Nachrichten 185 bis 812; Nachrichten 305 bis 439 behandeln andere Themen und wurden nur nach Stichworten geprüft),
 - die Lock-Zusammenfassungen und Rückmeldungen des Assistenten zu den Runden 1, 5, 14, 17 bis 20 sowie zu den Konfliktstellen (Zustimmung, Admin-Build, Schlaf, Begleitvertrag, Orientierung, Kriminalität, Recht),
 - die Adult-Passagen der Dokumente in der Tabelle oben (Entscheidungsänderungen 31.08., Projektentscheidungen, offene Entscheidungen, Nachtrag 05.09., Pakete, Track 44).
 
 **Nur teilweise gelesen:**
 
-- die **Fragetexte** des Assistenten in den Runden 6 bis 16 (rund 1000 Einzelfragen); sie wurden über die Antworten, Zwischenzusammenfassungen und gezielte Stichproben erschlossen. Einzelne Detailfragen können daher in dieser Dokumentation fehlen.
-- der Rahmenentwurf (Chat 28) wurde nur über Gliederung und das bestehende Dokument erschlossen.
-- Chat 35 vor Nachricht 185 (Beginn des Interviews) und Chat 23/37, soweit sie Adult erwähnen, wurden nur gezielt nach Schlüsselbegriffen durchsucht.
+- **Stand Etappe 2.1:** Die Fragetexte der Runden 6 bis 16 (ca. 1.900 Einzelfragen insgesamt) wurden gelesen und in den Modulen [15](15-Interviewprotokoll-Runden-1-bis-10.md) bis [17](17-Interviewprotokoll-Runden-17-bis-20-und-Rahmenchats.md) ausgewertet. Die genaue Abdeckung steht in [Modul 13](13-Quelleninventar-und-Abdeckung.md).
+- Der Rahmenentwurf (Chat 28) wurde in der Endfassung (Nachricht 25) sowie in den Nachrichten 17, 19, 21 und 23 und den Nutzernachrichten gelesen, die früheren Fassungen nur über Gliederung und Stichproben.
+- Chat 35 vor Nachricht 185 (Beginn des Interviews) wurde nachgelesen (Adult-Passagen); Chat 23 und Chat 37 wurden, soweit sie Adult betreffen, gezielt gelesen. Genaue Bereiche: [Modul 13, Abschnitt 7](13-Quelleninventar-und-Abdeckung.md#7-nicht-oder-nur-teilweise-gelesen).
 
 **Nicht ausgewertet:** das 2.9 GB umfassende restliche Archiv; die später angekündigte, aber im Archiv fehlende Datei „vom Benutzer gewünscht, nicht kanonisiert“; die Ergebnisse der Missing-Family-/Qwen-Audits (stehen aus).

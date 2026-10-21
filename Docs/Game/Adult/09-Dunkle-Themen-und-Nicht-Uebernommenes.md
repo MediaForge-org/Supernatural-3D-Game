@@ -46,7 +46,7 @@ Das Spiel spielt in einer gefährlichen Welt mit Kriminalität. Der Entwickler w
 Status: 🧭
 
 - Der Entwickler wollte, dass auch der **Spieler** solche Taten begehen und dafür ins Gefängnis kommen kann, und dass das Spiel das nicht erklärt (15.09.). Der Assistent formulierte dies als „kann in der Welt vorkommen, auch durch den Spieler“. Das ist eine weitreichende Entscheidung (Einfluss auf Altersfreigabe, Plattformen, Recht), die **nicht abschließend geprüft** ist. Diese Dokumentation leitet daraus **keine** Spielhandlung und keinen Mechanikentwurf ab.
-- Die Verknüpfung mit [Modul 01, Abschnitt 7](01-Grundregeln-Alter-Zustimmung.md#7-grenzüberschreitung-als-systemzustand) (Grenzverletzung als Systemzustand mit Folgen) ist nur auf **Konsequenzebene** gedacht.
+- Die Verknüpfung mit [Modul 01, Abschnitt 7](01-Grundregeln-Alter-Zustimmung.md#7-grenzüberschreitung-nur-als-konsequenz-nicht-als-mechanik) (Grenzverletzung nur als Konsequenz) ist nur auf **Konsequenzebene** gedacht.
 - ❓ Alle Details (Umfang, Darstellung, Altersfreigabe, Plattformpolitik) liegen bei einer künftigen ausdrücklichen Entscheidung des Entwicklers mit Rechtsprüfung.
 
 ---

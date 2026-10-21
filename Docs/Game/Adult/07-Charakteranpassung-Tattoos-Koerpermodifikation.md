@@ -34,13 +34,16 @@ Alles Gestaltbare folgt der Grundregel: **so realistisch und logisch wie in der 
 - Maße und Formen sind **ohne feste Stufen** und ohne künstliche Obergrenze kontinuierlich, nur physikalisch und anatomisch plausibel gekoppelt. Das gilt auch für große Maße; der Entwickler wünscht ausdrücklich auch **sehr große** Varianten (nicht nur zehn Größenstufen), die sich mit dem Gewicht verändern, solange Form, Position, Asymmetrie und Physik konsistent bleiben.
 - Becken, Hüfte, Muskel- und Fettverteilung, Haltung, Asymmetrien und individuelle Anatomie sind getrennt einstellbar. Sport-Kleidung verändert die Physik (zum Beispiel stützende Wäsche).
 - Kosmetische Eingriffe und Training können Form verändern ([Abschnitt 6](#6-kosmetische-eingriffe)).
-- Intime Merkmale haben eine individuelle Vielfalt und können Gebrauchsspuren zeigen; das System behandelt sie wie jedes andere Körpermerkmal. Weitere Details liegen im Editor des Pakets und werden hier nicht beschrieben.
+- Intime Merkmale haben eine individuelle Vielfalt; das System behandelt sie wie jedes andere Körpermerkmal. Zustandsänderungen entstehen nur aus physiologischen Faktoren, Verletzung und Heilung, **nicht** aus einem Nutzungszähler (Assistent, 35#501). Weitere Details liegen im Editor des Pakets und werden hier nicht beschrieben.
 - Haare und Bart wachsen grenzenlos (zwei Meter wären theoretisch möglich); Frisuren folgen dem Haarwuchs (Entwickler, 11.09., 12.09.).
 - Zusätzliche anatomische Detailoptionen gehören zum erweiterten Editor-Menü des Pakets, nicht zum Basisspiel.
 
 ---
 
 ## 3. Tattoos
+
+> [!NOTE]
+> **Zuordnung:** Der vollständige Tattoo-Editor gehört nach Aussage des Entwicklers und des Assistenten **in das Hauptspiel**, auch mit Nacktheit; er ist kein Bestandteil des Erwachsenen-Pakets (35#749 Frage 20, 35#750). Das Paket ergänzt nur intime Detailoptionen. Offen bleibt die Einstufung durch Plattformen, siehe [Konflikt K17](19-Konflikt-und-Widerspruchsmatrix.md#k17-erst-bei-penetration-adult-only).
 
 Ziel des Entwicklers: Tattoos **extrem detailliert**, mit etwa 90 bis 95 Prozent des Planungsumfangs der Runde 17. 📋
 
