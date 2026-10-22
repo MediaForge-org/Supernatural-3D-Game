@@ -1,6 +1,7 @@
 #include "SupernaturalProt.h"
 #include "SpnWorldStateSubsystem.h"
 
+#include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "HAL/IConsoleManager.h"
@@ -88,6 +89,39 @@ namespace
 			}
 		}
 	}
+
+	void ListInventory(const TArray<FString>& Args, UWorld* World)
+	{
+		if (USpnWorldStateSubsystem* WorldState = FindWorldState(World, TEXT("Spn.Inventory")))
+		{
+			const FString Holder = Args.Num() > 0 ? Args[0] : USpnWorldStateSubsystem::DefaultHolder();
+			if (!USpnWorldStateSubsystem::IsValidHolderId(Holder))
+			{
+				UE_LOG(LogSupernaturalProt, Warning, TEXT("Spn.Inventory FAILED: invalid holder '%s' (allowed: [a-z][a-z0-9_.]*, at most 24 chars)"), *Holder);
+				return;
+			}
+			const TArray<FSpnInventoryEntry> Entries = WorldState->ListInventory(Holder);
+			FString Summary = FString::Printf(TEXT("Inventory of %s (PLACEHOLDER):"), *Holder);
+			if (Entries.IsEmpty())
+			{
+				Summary += TEXT(" empty");
+			}
+			for (const FSpnInventoryEntry& Entry : Entries)
+			{
+				Summary += FString::Printf(TEXT(" %s=%lld"), *Entry.Item, static_cast<long long>(Entry.Count));
+			}
+			UE_LOG(LogSupernaturalProt, Display, TEXT("Spn.Inventory OK: %s, revision %llu, in %s"), *Summary,
+				static_cast<unsigned long long>(WorldState->GetRevision()), *DescribeWorld(World));
+			if (GEngine != nullptr)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Cyan, Summary);
+			}
+		}
+	}
+
+	FAutoConsoleCommandWithWorldAndArgs InventoryCommand(TEXT("Spn.Inventory"),
+		TEXT("PLACEHOLDER debug: print the item counts of a holder. Usage: Spn.Inventory [holder] (default: player.local)"),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&ListInventory));
 
 	FAutoConsoleCommandWithWorldAndArgs SaveWorldCommand(TEXT("Spn.SaveWorld"),
 		TEXT("PLACEHOLDER debug: save the world state. Usage: Spn.SaveWorld [slot] (default slot: debug)"),

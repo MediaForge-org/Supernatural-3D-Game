@@ -70,6 +70,24 @@ struct FSpnInteractStatus
 };
 
 /**
+ * Authored initial values of a placed object, by name (Proposal 0007). Doors use Bools;
+ * pickups also use Ints (amount) and Strings (item). Used while the matching fact is absent.
+ */
+struct FSpnInteractDefaults
+{
+	TMap<FString, bool> Bools;
+	TMap<FString, int64> Ints;
+	TMap<FString, FString> Strings;
+};
+
+/** One item count of a holder (Proposal 0007, placeholder inventory). */
+struct FSpnInventoryEntry
+{
+	FString Item;
+	int64 Count = 0;
+};
+
+/**
  * Owns the world's WorldFacts store and the interaction registry for one game
  * instance, and saves/loads the store to named slots in WorldFacts format v1.
  * A failed load never changes the current store.
@@ -94,6 +112,20 @@ public:
 	FSpnInteractStatus TryInteract(const FString& Kind, const FString& StableId, ESpnInteractionVerb Verb,
 		const TMap<FString, bool>& BoolDefaults, const FString& Cause);
 
+	/**
+	 * As above, for objects that depend on who acts or need int/string defaults (pickups).
+	 * Holder is the actor's inventory id (DefaultHolder() in single player; co-op later passes
+	 * the player's own id). A malformed Holder gives InvalidId and changes nothing.
+	 */
+	FSpnInteractStatus TryInteract(const FString& Kind, const FString& StableId, ESpnInteractionVerb Verb,
+		const FSpnInteractDefaults& Defaults, const FString& Holder, const FString& Cause);
+
+	/** Count of Item held by Holder; 0 if none. Unset for a malformed id or a wrongly typed count fact. */
+	TOptional<int64> ReadInventoryCount(const FString& Holder, const FString& Item) const;
+
+	/** All items of Holder with a count, ordered by item id. Empty for a malformed Holder or a wrongly typed count. */
+	TArray<FSpnInventoryEntry> ListInventory(const FString& Holder) const;
+
 	/** Bool fact by key; unset if the fact is absent or not a bool. */
 	TOptional<bool> ReadFlag(const FString& Key) const;
 
@@ -114,6 +146,16 @@ public:
 
 	/** D2 stable id rule of the core (1..96 chars, [a-z][a-z0-9_.]*), for editor-side validation. */
 	static bool IsValidInteractableId(const FString& StableId);
+
+	/** Prototype id rules of the core (Proposal 0007): holder 1..24 chars [a-z][a-z0-9_.]*, item 1..48 chars [a-z][a-z0-9_]*. */
+	static bool IsValidHolderId(const FString& Holder);
+	static bool IsValidItemId(const FString& Item);
+	/** Holder used in single player ("player.local"). */
+	static FString DefaultHolder();
+
+	/** Kind and taken-fact key of the placeholder test pickup (spn::core Pickup). */
+	static FString TestPickupKind();
+	static FString TestPickupTakenKey(const FString& StableId);
 
 	/** Kind and fact key of the placeholder test door (spn::core TestDoor). */
 	static FString TestDoorKind();

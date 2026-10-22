@@ -15,6 +15,7 @@
 
 #include <spn/core/ContentId.h>
 #include <spn/core/Interaction.h>
+#include <spn/core/Pickup.h>
 #include <spn/core/TestDoor.h>
 #include <spn/core/WorldFacts.h>
 #include <string>
@@ -140,6 +141,11 @@ USpnWorldStateSubsystem::USpnWorldStateSubsystem()
 		UE_LOG(LogSpnCore, Error, TEXT("World state: registering the test door failed: %s"),
 			*ToFString(spn::core::ToString(Error->code)));
 	}
+	if (const auto Error = spn::core::RegisterTestPickup(State->Registry))
+	{
+		UE_LOG(LogSpnCore, Error, TEXT("World state: registering the test pickup failed: %s"),
+			*ToFString(spn::core::ToString(Error->code)));
+	}
 }
 
 USpnWorldStateSubsystem::~USpnWorldStateSubsystem() = default;
@@ -160,6 +166,14 @@ void USpnWorldStateSubsystem::Deinitialize()
 FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, const FString& StableId,
 	ESpnInteractionVerb Verb, const TMap<FString, bool>& BoolDefaults, const FString& Cause)
 {
+	FSpnInteractDefaults Defaults;
+	Defaults.Bools = BoolDefaults;
+	return TryInteract(Kind, StableId, Verb, Defaults, DefaultHolder(), Cause);
+}
+
+FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, const FString& StableId,
+	ESpnInteractionVerb Verb, const FSpnInteractDefaults& AuthoredDefaults, const FString& Holder, const FString& Cause)
+{
 	FSpnInteractStatus Status;
 
 	const std::optional<spn::core::ContentId> ParsedKind = spn::core::ContentId::Parse(ToUtf8(Kind));
@@ -171,9 +185,17 @@ FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, con
 	}
 
 	spn::core::InteractionDefaults Defaults;
-	for (const TPair<FString, bool>& Default : BoolDefaults)
+	for (const TPair<FString, bool>& Default : AuthoredDefaults.Bools)
 	{
-		Defaults.values.emplace(ToUtf8(Default.Key), Default.Value);
+		Defaults.values.emplace(ToUtf8(Default.Key), spn::core::FactValue(static_cast<bool>(Default.Value)));
+	}
+	for (const TPair<FString, int64>& Default : AuthoredDefaults.Ints)
+	{
+		Defaults.values.emplace(ToUtf8(Default.Key), spn::core::FactValue(static_cast<std::int64_t>(Default.Value)));
+	}
+	for (const TPair<FString, FString>& Default : AuthoredDefaults.Strings)
+	{
+		Defaults.values.emplace(ToUtf8(Default.Key), spn::core::FactValue(ToUtf8(Default.Value)));
 	}
 
 	spn::core::InteractionVerb CoreVerb = spn::core::InteractionVerb::Use;
@@ -182,8 +204,9 @@ FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, con
 	case ESpnInteractionVerb::Use: CoreVerb = spn::core::InteractionVerb::Use; break;
 	}
 
+	const std::string HolderUtf8 = ToUtf8(Holder);
 	const auto Outcome = State->Registry.Interact(State->Facts, spn::core::InteractableRef{*ParsedKind, ToUtf8(StableId)},
-		CoreVerb, Defaults, ToUtf8(Cause));
+		CoreVerb, Defaults, ToUtf8(Cause), HolderUtf8);
 	if (!Outcome)
 	{
 		const spn::core::InteractionError& Error = Outcome.Error();
@@ -196,6 +219,33 @@ FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, con
 	Status.Result = Outcome.Value().changes.empty() ? ESpnInteractResult::Unchanged : ESpnInteractResult::Changed;
 	Status.Feedback = ToFString(Outcome.Value().feedback.Value());
 	return Status;
+}
+
+TOptional<int64> USpnWorldStateSubsystem::ReadInventoryCount(const FString& Holder, const FString& Item) const
+{
+	const auto Count = spn::core::InventoryCount(State->Facts, ToUtf8(Holder), ToUtf8(Item));
+	if (!Count)
+	{
+		return {};
+	}
+	return static_cast<int64>(Count.Value());
+}
+
+TArray<FSpnInventoryEntry> USpnWorldStateSubsystem::ListInventory(const FString& Holder) const
+{
+	TArray<FSpnInventoryEntry> Entries;
+	const auto List = spn::core::ListInventory(State->Facts, ToUtf8(Holder));
+	if (!List)
+	{
+		UE_LOG(LogSpnCore, Warning, TEXT("World state [%s]: inventory of '%s' unavailable: %s (%s)"), *DescribeOwner(), *Holder,
+			*ToFString(spn::core::ToString(List.Error().code)), *ToFString(List.Error().subject));
+		return Entries;
+	}
+	for (const spn::core::InventoryEntry& Entry : List.Value())
+	{
+		Entries.Add({ToFString(Entry.item), static_cast<int64>(Entry.count)});
+	}
+	return Entries;
 }
 
 TOptional<bool> USpnWorldStateSubsystem::ReadFlag(const FString& Key) const
@@ -338,4 +388,29 @@ FString USpnWorldStateSubsystem::TestDoorOpenKey(const FString& StableId)
 FString USpnWorldStateSubsystem::TestDoorLockedKey(const FString& StableId)
 {
 	return ToFString(spn::core::TestDoorLockedKey(ToUtf8(StableId)));
+}
+
+bool USpnWorldStateSubsystem::IsValidHolderId(const FString& Holder)
+{
+	return spn::core::IsValidHolderId(ToUtf8(Holder));
+}
+
+bool USpnWorldStateSubsystem::IsValidItemId(const FString& Item)
+{
+	return spn::core::IsValidItemId(ToUtf8(Item));
+}
+
+FString USpnWorldStateSubsystem::DefaultHolder()
+{
+	return ToFString(spn::core::kDefaultInteractionHolder);
+}
+
+FString USpnWorldStateSubsystem::TestPickupKind()
+{
+	return ToFString(spn::core::TestPickupKind().Value());
+}
+
+FString USpnWorldStateSubsystem::TestPickupTakenKey(const FString& StableId)
+{
+	return ToFString(spn::core::TestPickupTakenKey(ToUtf8(StableId)));
 }

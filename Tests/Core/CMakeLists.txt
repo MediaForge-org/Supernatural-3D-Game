@@ -10,6 +10,7 @@ add_executable(spn_core_tests
     DetailTierTests.cpp
     DoorPersistenceTests.cpp
     InteractionTests.cpp
+    PickupTests.cpp
     WorldFactsTests.cpp
     WorldFactsCompatibilityTests.cpp)
 # Frozen golden save files used by the compatibility tests.

@@ -1,7 +1,7 @@
 # 0004 — Small universal interaction system and first persistent test door (Phase 0.3 preparation) — ENGINEERING PROPOSAL
 
 Status: proposal for developer review, written 2026-10-20; decisions D1 and D2 approved
-by the developer the same day (section 2.1). **Not master canon, nothing implemented yet.** The door is a **test object**, not a design for doors in the game.
+by the developer the same day (section 2.1). **Not master canon.** Implementation status (2026-10-22): increments 1 to 5 are done, see section 9. The door is a **test object**, not a design for doors in the game.
 No world size, map, story, lore, gameplay value or co-op/network decision is made here.
 
 Paths in section 1 are relative to
@@ -262,3 +262,12 @@ yet); the existing golden and limits fixtures of format v1 stay untouched.
 No inventory, keys, lockpicking, door sounds, AI use of doors, breakable doors, multiple
 verbs, replication, mod loading, segmented save system, UI, or final door assets. No
 change to `Planning/Master`, `WorldFacts` or the save format.
+
+## 9. Implementation status (2026-10-22)
+| Criterion (section 5.3) | State |
+|---|---|
+| 1. Cases 1–14 and all existing tests, four presets, no warnings | **Done on Fedora**: 181 of 181 tests pass in `fedora-gcc`, `fedora-clang`, `fedora-gcc-asan-ubsan`, `fedora-clang-asan-ubsan`, zero compiler warnings (the "currently 154" in 5.3 is historical) |
+| 2. No change to `WorldFacts`, format v1 or fixtures | Done (golden and limits tests unchanged and passing) |
+| 3. `Core` includes no Unreal headers | Done (grep over `Core` and `Tests` finds none) |
+| 4. Unreal part builds on Windows and the automation test passes | Last documented on Windows on 2026-10-20 (10 automation tests); **not re-run on 2026-10-22** (no Unreal on the Fedora machine) |
+| 5. Decision record, open points labelled | Engineering notes in `Docs/Decisions/0006-unreal-core-integration.md`; open points in section 7 stay open |

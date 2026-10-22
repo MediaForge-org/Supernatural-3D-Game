@@ -62,6 +62,11 @@ bool IsValidInteractableId(std::string_view id) noexcept {
     return true;
 }
 
+bool IsValidHolderId(std::string_view holder) noexcept {
+    // Same grammar as interactable ids, with the shorter holder limit.
+    return holder.size() <= kMaxHolderIdLength && IsValidInteractableId(holder);
+}
+
 std::string_view ToString(InteractionVerb verb) noexcept {
     switch (verb) {
     case InteractionVerb::Use:
@@ -92,7 +97,7 @@ std::string_view ToString(InteractionErrorCode code) noexcept {
 
 std::optional<InteractionError> InteractionRegistry::Register(ContentId kind,
                                                               InteractionHandler handler) {
-    if (kind.IsEmpty() || !handler.availableVerbs || !handler.plan) {
+    if (kind.IsEmpty() || !handler.availableVerbs || (!handler.plan && !handler.planForHolder)) {
         return MakeError(InteractionErrorCode::InvalidRegistration, kind.Value());
     }
     if (handlers_.contains(kind)) {
@@ -121,12 +126,17 @@ InteractionRegistry::Resolve(const InteractableRef& target) const {
 Result<InteractionOutcome, InteractionError>
 InteractionRegistry::Interact(WorldFacts& facts, const InteractableRef& target,
                               InteractionVerb verb, const InteractionDefaults& defaults,
-                              std::string_view cause) const {
+                              std::string_view cause, std::string_view holder) const {
     const auto handler = Resolve(target);
     if (!handler) {
         return handler.Error();
     }
-    auto plan = handler.Value()->plan(facts, target, verb, defaults);
+    if (!IsValidHolderId(holder)) {
+        return MakeError(InteractionErrorCode::InvalidId, std::string(holder));
+    }
+    const InteractionHandler& rules = *handler.Value();
+    auto plan = rules.planForHolder ? rules.planForHolder(facts, target, verb, defaults, holder)
+                                    : rules.plan(facts, target, verb, defaults);
     if (!plan) {
         return plan.Error();
     }

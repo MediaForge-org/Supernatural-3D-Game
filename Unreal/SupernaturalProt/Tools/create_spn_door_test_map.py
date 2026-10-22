@@ -1,7 +1,8 @@
 """Creates the PLACEHOLDER test map /Game/SpnTest/Lvl_SpnDoorTest (Docs/Proposals/0004, increment 4).
 
-Contents: a 40 x 40 m floor, sun, sky light and atmosphere, one Player Start and three
-ASpnTestDoor actors (door_a, door_b, door_locked [locked]). Only engine and existing project
+Contents: a 40 x 40 m floor, sun, sky light and atmosphere, one Player Start, three
+ASpnTestDoor actors (door_a, door_b, door_locked [locked]) and, since Phase 0.5
+(Docs/Proposals/0007), two ASpnTestPickup actors (pickup_a, pickup_b). Only engine and existing project
 assets are referenced; no other level is opened for editing or changed.
 
 Run headless from the repository root (Windows):
@@ -16,6 +17,7 @@ import unreal
 
 MAP_PATH = "/Game/SpnTest/Lvl_SpnDoorTest"
 DOOR_CLASS_PATH = "/Script/SupernaturalProt.SpnTestDoor"
+PICKUP_CLASS_PATH = "/Script/SupernaturalProt.SpnTestPickup"
 CUBE_PATH = "/Engine/BasicShapes/Cube.Cube"
 FLOOR_MATERIAL_PATH = "/Game/LevelPrototyping/Materials/MI_PrototypeGrid_Gray.MI_PrototypeGrid_Gray"
 
@@ -30,6 +32,14 @@ DOORS = [
     ("door_a", -300.0, False),
     ("door_b", 0.0, False),
     ("door_locked", 300.0, True),
+]
+# Two pickups of the same item between the Player Start and the doors (2.5 m ahead, 2 m apart):
+# taking both shows the count adding up.
+PICKUP_X = 250.0
+PICKUPS = [
+    # (stable id, Y, item id, amount)
+    ("pickup_a", -100.0, "test_item", 1),
+    ("pickup_b", 100.0, "test_item", 2),
 ]
 
 
@@ -87,6 +97,17 @@ def build_doors():
         door.set_editor_property("authored_locked", locked)
 
 
+def build_pickups():
+    pickup_class = unreal.load_class(None, PICKUP_CLASS_PATH)
+    if pickup_class is None:
+        fail("ASpnTestPickup not found; build SupernaturalProtEditor first")
+    for stable_id, y, item_id, amount in PICKUPS:
+        pickup = spawn(pickup_class, unreal.Vector(PICKUP_X, y, 0.0), label="SPN_TestPickup_" + stable_id)
+        pickup.set_editor_property("stable_id", stable_id)
+        pickup.set_editor_property("item_id", item_id)
+        pickup.set_editor_property("amount", amount)
+
+
 def main():
     force = "--force" in sys.argv[1:]
     levels = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
@@ -106,6 +127,7 @@ def main():
     build_lighting()
     spawn(unreal.PlayerStart, PLAYER_START_LOCATION, label="SPN_PlayerStart")
     build_doors()
+    build_pickups()
 
     if not levels.save_current_level():
         fail("could not save " + MAP_PATH)

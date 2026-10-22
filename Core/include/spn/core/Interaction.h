@@ -31,6 +31,13 @@ inline constexpr std::size_t kMaxInteractableIdLength = 96;
 /// first [a-z], rest [a-z0-9_.].
 [[nodiscard]] bool IsValidInteractableId(std::string_view id) noexcept;
 
+/// Who performs an interaction (Docs/Proposals/0007). A prototype rule, not a design for
+/// players, NPCs or co-op: 1..kMaxHolderIdLength chars, first [a-z], rest [a-z0-9_.].
+/// Single player uses kDefaultInteractionHolder; co-op later passes the player's own id.
+inline constexpr std::size_t kMaxHolderIdLength = 24;
+inline constexpr std::string_view kDefaultInteractionHolder = "player.local";
+[[nodiscard]] bool IsValidHolderId(std::string_view holder) noexcept;
+
 /// D1: only `Use` exists today. New values are appended, never reordered.
 enum class InteractionVerb : std::uint8_t {
     Use,
@@ -57,7 +64,7 @@ struct InteractionDefaults {
 // --- Errors -------------------------------------------------------------------
 
 enum class InteractionErrorCode : std::uint8_t {
-    InvalidId,           // id breaks the D2 rule
+    InvalidId,           // id (or holder) breaks its id rule
     UnknownKind,         // no handler registered for the kind
     StateCorrupt,        // a fact or default has an unexpected type
     Refused,             // the handler declined; see feedback
@@ -93,8 +100,16 @@ struct InteractionHandler {
         const WorldFacts&, const InteractableRef&, InteractionVerb, const InteractionDefaults&)>;
 
     /// Verbs offered right now. Offered means Interact either succeeds or is Refused.
+    /// Optional, for kinds whose rules depend on who acts (Proposal 0007). When set it is
+    /// used instead of `plan`; the holder is already validated. Kinds that do not care
+    /// (the test door) set only `plan` and are unchanged.
+    using HolderPlanFn = std::function<Result<InteractionPlan, InteractionError>(
+        const WorldFacts&, const InteractableRef&, InteractionVerb, const InteractionDefaults&,
+        std::string_view holder)>;
+
     VerbsFn availableVerbs;
     PlanFn plan;
+    HolderPlanFn planForHolder;
 };
 
 /// The result of a successful interaction.
@@ -116,7 +131,8 @@ public:
     /// so an unchanged state writes no journal record.
     [[nodiscard]] Result<InteractionOutcome, InteractionError>
     Interact(WorldFacts& facts, const InteractableRef& target, InteractionVerb verb,
-             const InteractionDefaults& defaults, std::string_view cause) const;
+             const InteractionDefaults& defaults, std::string_view cause,
+             std::string_view holder = kDefaultInteractionHolder) const;
 
     [[nodiscard]] Result<std::vector<InteractionVerb>, InteractionError>
     AvailableVerbs(const WorldFacts& facts, const InteractableRef& target,

@@ -122,10 +122,17 @@ Playing the map as a game (no editor world; injects the Interact action through 
 `UnrealEditor-Cmd.exe <uproject> /Game/SpnTest/Lvl_SpnDoorTest -game -nullrhi -unattended -ExecCmds="Automation RunTests SpnGame.TestMap.PlayDoors;Quit"`
 (from Git Bash prefix `MSYS_NO_PATHCONV=1`, or the `/Game/...` argument is rewritten).
 
+## Pickups and inventory (2026-10-22, Proposal 0007) — NOT BUILT OR RUN
+Written on the Fedora machine without Unreal; the Core side is tested (198 of 198 in four presets), the Unreal side needs a Windows build first.
+- `USpnWorldStateSubsystem`: registers the test pickup; new `TryInteract(Kind, Id, Verb, FSpnInteractDefaults, Holder, Cause)` (the old overload delegates with `DefaultHolder()` = `player.local`); `ReadInventoryCount`, `ListInventory`, `IsValidHolderId`, `IsValidItemId`, `TestPickupKind`, `TestPickupTakenKey`. `FSpnInteractDefaults` carries bool, int and string defaults.
+- `ASpnTestPickup` (`Spn/SpnTestPickup.*`): cube with a PLACEHOLDER label, `StableId`, `ItemId`, `Amount`; follows the fact `placeholder.pickup.<id>.taken` (hidden, no collision when taken), re-read after Use and after every load. Single player: the user is always `player.local`.
+- `Spn.Inventory [holder]`: prints the counts to the log and as on-screen debug text (non-Shipping).
+- Automation tests (`Spn/Tests/SpnTestPickupAutomation.cpp`): `SpnGame.TestPickup.TakeOnce`, `.HoldersAreSeparate`, `.SaveLoadRestoresInventory`, `SpnGame.TestMap.Pickups`.
+- Map: `create_spn_door_test_map.py` now also places `pickup_a` (test_item x1, Y -100) and `pickup_b` (test_item x2, Y +100) at X 250. The committed `.umap` is unchanged until regenerated on Windows with `--force`.
+- Manual test after regenerating: walk up to a box, press **E** (it disappears), `Spn.Inventory` shows `test_item=1`, take the other (`=3`), `Spn.SaveWorld`, restart PIE, `Spn.LoadWorld`: both gone, `Spn.Inventory` shows 3; before loading, the boxes are back.
+
 ## Open (needs developer decision)
 - Direct use of Core types from gameplay modules: either keep a bridge layer,
   or add an opt-in export macro to Core headers (empty in CMake). Not decided.
-- The Unreal project is not under version control yet; its location relative
-  to this repo (currently a sibling directory) is not decided.
-- Linux UE build of `SpnCore` untested; Linux CMake build of the doctest change
-  not run in this session (no Linux/WSL available on the Windows machine).
+- ~~The Unreal project is not under version control yet~~ Since commit `cd7d0da` the project lives in this repository (`Unreal/SupernaturalProt`).
+- Linux UE build of `SpnCore` untested. The Linux CMake build with the doctest change has been run: on 2026-10-22 all four Fedora presets pass 181 of 181 tests without warnings.

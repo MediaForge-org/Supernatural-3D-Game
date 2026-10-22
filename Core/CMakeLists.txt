@@ -7,6 +7,7 @@ add_library(spn_core STATIC
     src/ContentId.cpp
     src/DetailTiers.cpp
     src/Interaction.cpp
+    src/Pickup.cpp
     src/TestDoor.cpp
     src/WorldFacts.cpp)
 add_library(spn::core ALIAS spn_core)

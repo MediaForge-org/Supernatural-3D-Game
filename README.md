@@ -9,7 +9,7 @@
 |---|---|
 | **Entwicklungsstand** | Phase 0, Core Technology (Prototyp, noch kein Spiel im eigentlichen Sinn) |
 | **Technik** | Unreal Engine 5.8.3 (Windows) · C++20-Core mit CMake (Fedora und Windows) |
-| **Tests** | 181 Core-Testfälle (doctest), am 2026-10-20 unter Windows/MSVC Debug erneut bestanden · 10 Unreal-Automation-Tests (zuletzt dokumentierter Stand) |
+| **Tests** | 198 Core-Testfälle (doctest): am 2026-10-22 unter Fedora in allen vier Presets ohne Warnungen bestanden (181 davon am 2026-10-20 auch unter Windows/MSVC) · 10 Unreal-Automation-Tests (Windows, zuletzt dokumentierter Stand) und 4 neue für Phase 0.5, **noch nie in Unreal gebaut oder ausgeführt** |
 | **Lizenz** | **noch nicht festgelegt**, siehe [Kapitel 31](#31-open-source-lizenzstatus-drittanbieter-assets-und-rechteprüfung) |
 | **Stand dieser README** | 2026-10-20, auf Basis von Commit `dd47da8` |
 
@@ -903,7 +903,7 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 
 ### 26.3 Tests im Überblick
 
-**Core: 181 Testfälle (doctest) in 12 Testdateien**
+**Core: 198 Testfälle (doctest) in 13 Testdateien**
 
 | Testdatei | Testfälle |
 |---|---|
@@ -911,6 +911,7 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 | `WorldFactsTests.cpp` | 34 |
 | `WorldFactsCompatibilityTests.cpp` | 21 |
 | `InteractionTests.cpp` | 18 |
+| `PickupTests.cpp` | 17 |
 | `AppearanceRecipeTests.cpp` | 17 |
 | `AppearanceGeneratorTests.cpp` | 16 |
 | `AppearanceEditTests.cpp` | 11 |
@@ -920,9 +921,9 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 | `DetailTierTests.cpp` | 4 |
 | `ResultTests.cpp` | 3 |
 
-Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSVC in Debug und Release. Am 2026-10-20 wurde der Debug-Lauf erneut gebaut und ausgeführt: 181 von 181 Testfällen bestanden. Unter Fedora liefen die vier Presets zuletzt mit 172 Testfällen, also vor Inkrement 2; der Lauf mit 181 Testfällen unter Linux steht aus.
+Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSVC in Debug und Release. Am 2026-10-20 wurde der Debug-Lauf erneut gebaut und ausgeführt: 181 von 181 Testfällen bestanden. Unter Fedora liefen am 2026-10-22 alle vier Presets (`fedora-gcc`, `fedora-clang`, `fedora-gcc-asan-ubsan`, `fedora-clang-asan-ubsan`) mit 181 von 181 Testfällen und ohne Compilerwarnungen; ein sauberer Neubau mit `fedora-gcc` bestätigte das.
 
-**Unreal: 10 Automation-Tests**
+**Unreal: 10 Automation-Tests (dokumentierter Stand) plus 4 ungeprüfte aus Phase 0.5**
 
 | Test | Prüft |
 |---|---|
@@ -936,6 +937,8 @@ Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSV
 | `SpnGame.Interaction.TraceAndUse` | Zielerfassung und Benutzung |
 | `SpnGame.TestMap.Layout` | Testkarte: Player Start, IDs, Abstände, Spielfigur |
 | `SpnGame.TestMap.PlayDoors` | der manuelle Ablauf in **echtem PIE** bzw. im `-game`-Modus |
+| `SpnGame.TestPickup.TakeOnce` · `.HoldersAreSeparate` · `.SaveLoadRestoresInventory` | Phase 0.5 (**nicht ausgeführt**): einmal aufnehmen, Besitzertrennung, Speichern/Laden |
+| `SpnGame.TestMap.Pickups` | Phase 0.5 (**nicht ausgeführt**): zwei Pickups in der Testkarte; Warnung statt Fehler, solange die Karte nicht neu erzeugt wurde |
 
 ### 26.4 Bekannte Grenzen des Prototyps
 
@@ -978,13 +981,17 @@ Zeitangaben sind **Schätzungen, keine Termine** ([`CLAUDE.md`](CLAUDE.md) §4).
 | Phase 0.3, Inkrement 2 | Persistenztests der Tür (Fälle 11–14) | `986c1c2` | Proposal 0004 §5.1 |
 | Phase 0.3, Inkrement 3 | `USpnWorldStateSubsystem`, Save-Slots, atomares Schreiben | `0cd67f8` | 0006 |
 | Phase 0.3, Inkrement 4 | Sichtbare Testtür, E-Taste, Testkarte per Python, PIE-Spieltest, erweiterte Logs | `dd47da8` | 0006 |
+| Phase 0.5, Inkrement 1 | Aufnehmbare Gegenstände und Inventarzähler im Core, Besitzer-Parameter; 17 Tests, vier Fedora-Presets bestanden | (ungebucht) | [Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) |
+| Phase 0.5, Inkrement 2 bis 3 | `ASpnTestPickup`, `Spn.Inventory`, Brücke im Subsystem, Automationstests, Kartenskript mit zwei Pickups; **in Unreal nicht gebaut** | (ungebucht) | Proposal 0007, 0006 |
 
 ### 27.3 Nächste Schritte
 
 | Schritt | Status |
 |---|---|
-| Fedora: alle vier Presets mit den aktuellen 181 Testfällen ausführen | 🔧 ausstehend |
-| Inkrement 5: Entscheidungsnotiz zu Proposal 0004, Aktualisierung von `MasterIndex` | 🔧 nächster Schritt |
+| Fedora: alle vier Presets mit den aktuellen 181 Testfällen ausführen | ✅ erledigt am 2026-10-22 (181/181, keine Warnungen) |
+| Inkrement 5: Statusvermerk zu Proposal 0004, Aktualisierung von `MasterIndex` | ✅ erledigt am 2026-10-22 |
+| Phase 0.3 abschließen: Unreal-Automationstests und Spieltest erneut unter Windows ausführen | 🔧 offen (nur auf dem Windows-PC möglich) |
+| Phase 0.5 unter Windows abnehmen: `SpnCore`/Spiel-Modul bauen, Automationstests, Testkarte mit `--force` neu erzeugen, PIE-Spieltest ([Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) §4) | 🔧 offen (nur auf dem Windows-PC möglich) |
 | Weitere Phase-0-Systeme (Gegenstände/Inventar, Ermittlung/Beweise, Dialog, einfache NPCs, Gegnerverhalten, Fahren) | 📋 Reihenfolge nicht festgelegt |
 | Erster Meilenstein M1 aus [Proposal 0003](Docs/Proposals/0003-characters-test-map-and-first-visual-milestone.md): u. a. eigenständiger Build, gemessene Frame-Zeit, Einrichtungsanleitung | 🔧 teilweise erreicht (Charakter, Kamera, Testkarte); gepackter Build und Messung fehlen |
 | Spikes zur Menschen-Pipeline (MetaHuman, Blender/modular) | 📋 nach Lizenzprüfung |
@@ -1151,7 +1158,7 @@ Supernatural-3D-Game/
 │   ├── include/spn/core/         öffentliche Header
 │   └── src/                      Implementierung
 ├── Tests/
-│   └── Core/                     doctest-Tests (181 Testfälle)
+│   └── Core/                     doctest-Tests (198 Testfälle)
 │       └── Data/                 eingefrorene Golden-Spielstände (nie bearbeiten)
 ├── Docs/
 │   ├── Game/                    aufbereitete Spielplanung (Vision, Welt, Systeme, Adult-System mit Detailordner `Adult/`, Entscheidungsstatus)

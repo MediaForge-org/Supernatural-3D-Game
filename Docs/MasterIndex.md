@@ -82,7 +82,7 @@ Known inconsistency to keep in mind: world-size figures differ between dated fil
 
 ### Interactions and gameplay
 - `PD`: sections "Investigation modes", "Stealth, perception and horror AI", "Companion autonomy, planning and field commands", "Melee / grappling", "Gunplay / weapons", "Difficulty / configuration".
-- **No specification of a universal interaction system was found** (searched on 2026-10-20). Only single interactions exist as draft prompts, for example `LIB/prompts/09-vehicles-controls/012_create-engine-restart-interaction.md`. See `Docs/Proposals/0004-interaction-and-persistent-door.md`.
+- **No specification of a universal interaction system was found** (searched on 2026-10-20). Only single interactions exist as draft prompts, for example `LIB/prompts/09-vehicles-controls/012_create-engine-restart-interaction.md`. See `Docs/Proposals/0004-interaction-and-persistent-door.md` (implemented as a placeholder slice, status in its section 9).
 - Phase targets: `01_CURRENT_CANONICAL_STATE/MASTER_STATUS_2026-10-13.md`. Open gameplay choices: `OD`.
 
 ### WorldFacts and save games
@@ -90,7 +90,7 @@ Known inconsistency to keep in mind: world-size figures differ between dated fil
 - `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-06.md` (section "Realm traversal and persistence direction"), `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-05.md` (section "Time travel / historical world states").
 - Prompts (drafts, useful as topic lists): `LIB/prompts/11-persistence-worldstate/` (segmented saves, migration framework, old-version fixtures, crash recovery), `LIB/prompts/01-foundation-architecture/013_create-save-version-schema-version-constants.md`.
 - Reports about our own C++ (not canon, not reproduced): `99_DAILY_DELTAS/2026-10-19/SPN_DAILY_DELTA_2026-10-19/docs/specs/WORLDFACTS_PHASE_0_3_2026-10-19.md`, `99_DAILY_DELTAS/2026-10-18/SPN_DAILY_DELTA_2026-10-18/docs/status/CPP_PHASE_0_PROGRESS.md`. Co-op persistence: `LIB/planning-backlog/35-online-coop-lobby-persistence.md`.
-- Our own decisions live in `Docs/Decisions/` (0002, 0004).
+- Our own decisions live in `Docs/Decisions/` (0002, 0004, 0005, 0006); the interaction slice is in `Docs/Proposals/0004-interaction-and-persistent-door.md`.
 
 ### Vehicles and traffic
 - `PD`: sections "Vehicles", "Vehicles / racing". `LIB/planning-backlog/38-vehicle-physics-trims-racing.md`.
