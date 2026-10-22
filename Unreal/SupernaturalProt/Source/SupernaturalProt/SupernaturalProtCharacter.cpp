@@ -61,6 +61,8 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Interaction with SPN interactables (E by default, see DefaultInteractKey)
 	Interaction = CreateDefaultSubobject<USpnInteractionComponent>(TEXT("Interaction"));
 
@@ -86,10 +88,52 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Interacting
 		EnhancedInputComponent->BindAction(ResolveInteractAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoInteract);
+
+		// Sprinting (hold)
+		UInputAction* Sprint = ResolveSprintAction();
+		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoSprintStart);
+		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Completed, this, &ASupernaturalProtCharacter::DoSprintEnd);
+		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Canceled, this, &ASupernaturalProtCharacter::DoSprintEnd);
 	}
 	else
 	{
 		UE_LOG(LogSupernaturalProt, Error, TEXT("'%s' Failed to find an Enhanced Input component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void ASupernaturalProtCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (HideMeshCameraDistance > 0.f && CameraBoom != nullptr && FollowCamera != nullptr && GetMesh() != nullptr)
+	{
+		const float CameraDistance = FVector::Dist(FollowCamera->GetComponentLocation(), CameraBoom->GetComponentLocation());
+		GetMesh()->SetOwnerNoSee(CameraDistance < HideMeshCameraDistance);
+	}
+
+	// Camera arm: an obstacle shortens it at once (the spring arm's own collision result, so nothing is ever clipped),
+	// the way back out is rate-limited. Without this the arm jumps from a few cm to its full length as soon as the
+	// camera swings over the edge of a low obstacle.
+	if (CameraBoom != nullptr && FollowCamera != nullptr)
+	{
+		if (ConfiguredArmLength <= 0.f)
+		{
+			ConfiguredArmLength = CameraBoom->TargetArmLength;
+			ArmLimit = ConfiguredArmLength;
+		}
+		if (CameraArmRecoverySpeed > 0.f && ConfiguredArmLength > 0.f)
+		{
+			const float Actual = FVector::Dist(FollowCamera->GetComponentLocation(), CameraBoom->GetComponentLocation());
+			if (Actual < ArmLimit - 1.f)
+			{
+				ArmLimit = FMath::Max(Actual, 10.f);
+			}
+			else
+			{
+				ArmLimit = FMath::Min(ConfiguredArmLength, ArmLimit + CameraArmRecoverySpeed * DeltaSeconds);
+			}
+			CameraBoom->TargetArmLength = ArmLimit;
+		}
 	}
 }
 
@@ -103,7 +147,52 @@ void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 		}
 	}
 
+	if (RuntimeSprintMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimeSprintMappingContext);
+		}
+	}
+
 	Super::EndPlay(EndPlayReason);
+}
+
+UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
+{
+	if (RuntimeSprintAction == nullptr)
+	{
+		RuntimeSprintAction = NewObject<UInputAction>(this, TEXT("IA_SpnSprint_Runtime"), RF_Transient);
+		RuntimeSprintAction->ValueType = EInputActionValueType::Boolean;
+
+		RuntimeSprintMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnSprint_Runtime"), RF_Transient);
+		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintKey);
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimeSprintMappingContext, RuntimeInteractContextPriority);
+	}
+	return RuntimeSprintAction;
+}
+
+void ASupernaturalProtCharacter::DoSprintStart()
+{
+	UCharacterMovementComponent* Movement = GetCharacterMovement();
+	if (SpeedBeforeSprint <= 0.f)
+	{
+		SpeedBeforeSprint = Movement->MaxWalkSpeed;
+	}
+	Movement->MaxWalkSpeed = SprintSpeed;
+}
+
+void ASupernaturalProtCharacter::DoSprintEnd()
+{
+	if (SpeedBeforeSprint > 0.f)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = SpeedBeforeSprint;
+		SpeedBeforeSprint = 0.f;
+	}
 }
 
 UInputAction* ASupernaturalProtCharacter::ResolveInteractAction()

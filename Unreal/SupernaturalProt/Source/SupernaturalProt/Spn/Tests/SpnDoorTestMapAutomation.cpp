@@ -15,6 +15,7 @@
 #include "Misc/AutomationTest.h"
 #include "Misc/Paths.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/Tests/SpnTestPlayReset.h"
 #include "SpnWorldStateSubsystem.h"
 #include "SupernaturalProtCharacter.h"
 #include "Tests/AutomationCommon.h"
@@ -246,6 +247,10 @@ bool FSpnDoorTestMapPlayTest::RunTest(const FString& Parameters)
 		TestTrue(TEXT("test map is loaded"), World->GetOutermost()->GetName().EndsWith(TEXT("Lvl_SpnDoorTest")));
 		AddInfo(FString::Printf(TEXT("Playing in %s world %s"), World->WorldType == EWorldType::PIE ? TEXT("PIE") : TEXT("game"), *World->GetPathName()));
 		State->Controller = World->GetFirstPlayerController();
+		if (State->Controller != nullptr)
+		{
+			SpnTestPlay::ResetWorldState(*State->Controller); // the automation PIE sessions share one game instance
+		}
 		State->Character = State->Controller != nullptr ? Cast<ASupernaturalProtCharacter>(State->Controller->GetPawn()) : nullptr;
 		if (!TestNotNull(TEXT("third-person character spawned and possessed"), State->Character))
 		{

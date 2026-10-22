@@ -45,6 +45,20 @@ class ASupernaturalProtCharacter : public ACharacter
 	UPROPERTY(Transient)
 	UInputMappingContext* RuntimeInteractMappingContext;
 
+	/** Runtime sprint action and context (hold DefaultSprintKey), created in code like the interact fallback */
+	UPROPERTY(Transient)
+	UInputAction* RuntimeSprintAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimeSprintMappingContext;
+
+	/** Walk speed to return to when sprinting ends (read when sprinting starts) */
+	float SpeedBeforeSprint = 0.f;
+
+	/** The boom's arm length as authored (read on the first tick) and the current cap that CameraArmRecoverySpeed grows back */
+	float ConfiguredArmLength = 0.f;
+	float ArmLimit = 0.f;
+
 protected:
 
 	/** Jump Input Action */
@@ -71,6 +85,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultInteractKey = EKeys::E;
 
+	/** Key held to sprint (placeholder binding, mapped at runtime) */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultSprintKey = EKeys::LeftShift;
+
+	/** While the camera is closer than this to its pivot (squeezed by a wall behind the character), the character mesh is hidden
+	 *  in the owner's view so the camera does not look into the body. 0 disables it. Placeholder value, cm. */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0"))
+	float HideMeshCameraDistance = 70.f;
+
+	/** How fast the camera arm may grow back after an obstacle shortened it, cm/s. Shortening is never smoothed (collision
+	 *  safety first); only the way back out is, so the camera does not pop from "squeezed" to "far and high". 0 = instant. Placeholder value. */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0"))
+	float CameraArmRecoverySpeed = 300.f;
+
+	/** Max walk speed while sprinting, cm/s (placeholder test value, not a gameplay decision) */
+	UPROPERTY(EditAnywhere, Category="Movement", meta = (ClampMin = "0"))
+	float SprintSpeed = 800.f;
+
 public:
 
 	/** Constructor */
@@ -81,11 +113,17 @@ protected:
 	/** Initialize input action bindings */
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	/** Hides the mesh in the owner's view while the camera is squeezed against geometry (HideMeshCameraDistance) */
+	virtual void Tick(float DeltaSeconds) override;
+
 	/** Removes the runtime interact mapping again */
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	/** Returns the action bound to interact: InteractAction, or the runtime fallback (created and mapped on first use) */
 	UInputAction* ResolveInteractAction();
+
+	/** Creates (once) and maps the runtime sprint action */
+	UInputAction* ResolveSprintAction();
 
 protected:
 
@@ -117,7 +155,29 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoInteract();
 
+	/** Starts sprinting: raises max walk speed to SprintSpeed */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoSprintStart();
+
+	/** Ends sprinting: restores the walk speed */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoSprintEnd();
+
 public:
+
+	/** Rate limit of the camera arm growing back, cm/s **/
+	FORCEINLINE float GetCameraArmRecoverySpeed() const { return CameraArmRecoverySpeed; }
+	FORCEINLINE void SetCameraArmRecoverySpeed(float Speed) { CameraArmRecoverySpeed = Speed; } // 0 = instant (tests, tuning)
+
+	/** The authored camera arm length (0 until the first tick) **/
+	FORCEINLINE float GetConfiguredArmLength() const { return ConfiguredArmLength; }
+
+	/** Camera distance under which the mesh is hidden in the owner's view (0 = never) **/
+	FORCEINLINE float GetHideMeshCameraDistance() const { return HideMeshCameraDistance; }
+
+	/** Returns the runtime sprint action; null before input setup **/
+	FORCEINLINE UInputAction* GetBoundSprintAction() const { return RuntimeSprintAction; }
+
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

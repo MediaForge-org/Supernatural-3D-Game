@@ -3,6 +3,7 @@
 #include "Engine/Level.h"
 #include "Engine/World.h"
 #include "HAL/FileManager.h"
+#include "Misc/FileHelper.h"
 #include "Misc/AutomationTest.h"
 #include "Misc/Paths.h"
 #include "Spn/SpnTestPickup.h"
@@ -215,6 +216,58 @@ bool FSpnTestPickupLoadTest::RunTest(const FString& Parameters)
 		TestEqual(TEXT("untouched pickup can still be taken"), B->SpnUse(nullptr).Result, ESpnInteractResult::Changed);
 		TestEqual(TEXT("counts add up after the load"), CountOf(Game.WorldState(), TEXT("test_item")), int64{5});
 	}
+	return true;
+}
+
+// M1 audit regression: a missing or damaged save must leave inventory and placed pickups exactly as they are.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnTestPickupFailedLoadTest, "SpnGame.TestPickup.FailedLoadKeepsInventory", SpnPickupTestFlags)
+
+bool FSpnTestPickupFailedLoadTest::RunTest(const FString& Parameters)
+{
+	const FScopedTestSlot Slot(TEXT("spn_automation_pickup_bad"));
+	const FScopedTestSlot Missing(TEXT("spn_automation_pickup_missing"));
+
+	FScopedGameWorld Game;
+	ASpnTestPickup* A = Game.SpawnPickup(TEXT("crate_a"), TEXT("test_item"), 3, FVector::ZeroVector);
+	ASpnTestPickup* B = Game.SpawnPickup(TEXT("crate_b"), TEXT("test_item"), 2, FVector(200.f, 0.f, 0.f));
+	A->SpnUse(nullptr);
+	if (!TestTrue(TEXT("save succeeds"), Game.WorldState().SaveToSlot(Slot.Name).IsOk()))
+	{
+		return false;
+	}
+	B->SpnUse(nullptr); // live state differs from the save: both taken, count 5
+
+	const uint64 Revision = Game.WorldState().GetRevision();
+	const auto ExpectUntouched = [&](const FString& What)
+	{
+		TestEqual(What + TEXT(": revision kept"), Game.WorldState().GetRevision(), Revision);
+		TestEqual(What + TEXT(": inventory kept"), CountOf(Game.WorldState(), TEXT("test_item")), int64{5});
+		TestTrue(What + TEXT(": first pickup still taken"), A->IsTaken() && A->IsHidden());
+		TestTrue(What + TEXT(": second pickup still taken"), B->IsTaken() && B->IsHidden());
+		TestEqual(What + TEXT(": taken pickup gives nothing again"), A->SpnUse(nullptr).Result, ESpnInteractResult::Refused);
+		TestEqual(What + TEXT(": count still 5 after a refused use"), CountOf(Game.WorldState(), TEXT("test_item")), int64{5});
+	};
+
+	AddExpectedMessagePlain(TEXT("NOT loaded: no save in slot"), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 1);
+	AddExpectedMessagePlain(FString::Printf(TEXT("slot '%s' rejected ("), *Slot.Name), ELogVerbosity::Warning, EAutomationExpectedMessageFlags::Contains, 1);
+
+	TestEqual(TEXT("missing slot"), Game.WorldState().LoadFromSlot(Missing.Name).Result, ESpnSlotResult::SlotNotFound);
+	ExpectUntouched(TEXT("missing slot"));
+
+	// Damage the valid save (drop its second half) and try again.
+	const FString File = USpnWorldStateSubsystem::GetSlotFilePath(Slot.Name);
+	TArray<uint8> Bytes;
+	if (!TestTrue(TEXT("save readable"), FFileHelper::LoadFileToArray(Bytes, *File)))
+	{
+		return false;
+	}
+	Bytes.SetNum(Bytes.Num() / 2);
+	if (!TestTrue(TEXT("damaged file written"), FFileHelper::SaveArrayToFile(Bytes, *File)))
+	{
+		return false;
+	}
+	TestEqual(TEXT("damaged slot"), Game.WorldState().LoadFromSlot(Slot.Name).Result, ESpnSlotResult::CorruptData);
+	ExpectUntouched(TEXT("damaged slot"));
 	return true;
 }
 
