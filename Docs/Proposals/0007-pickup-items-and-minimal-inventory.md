@@ -1,6 +1,6 @@
 # 0007 — Phase 0.5: pickup items and a minimal inventory (placeholder slice) — ENGINEERING PROPOSAL
 
-Status: proposal written 2026-10-22; the four questions in section 5 were answered the same day (section 8). **Not master canon.** Core part implemented and tested on Fedora; Unreal part written but **not built or run** (no Unreal on that machine).
+Status: proposal written 2026-10-22; the four questions in section 5 were answered the same day (section 8). **Not master canon.** Core part implemented and tested on Fedora; Unreal part built on Windows and automated-tested (14 of 14 on 2026-10-22); the manual PIE test (section 4, criterion 2) is **still open**.
 Everything here is a **placeholder test slice**, not a design for items, inventory, weight, capacity or loot in the finished game.
 
 Naming: `README.md` §27.2 already uses "Phase 0.4" for the finished appearance foundation (Decision 0005). This slice is therefore called **Phase 0.5**.
@@ -71,6 +71,6 @@ Answers (technical prototype rules, not canon for the later inventory design): Q
 |---|---|
 | Core: `Pickup.h/.cpp`, optional `holder` in `InteractionRegistry::Interact` (new `planForHolder`; door handler and old call sites unchanged) | Done |
 | Core tests: `Tests/Core/PickupTests.cpp`, 17 cases | 198 of 198 pass on `fedora-gcc`, `fedora-clang`, `fedora-gcc-asan-ubsan`, `fedora-clang-asan-ubsan`, no warnings |
-| Unreal: `ASpnTestPickup`, bridge (`TryInteract` overload with holder and typed defaults, `ReadInventoryCount`, `ListInventory`), `Spn.Inventory`, 4 automation tests, map script with two pickups | Written, **not compiled or run** |
-| Test map `.umap` | Not regenerated (needs the Windows editor); `SpnGame.TestMap.Pickups` warns until it is |
+| Unreal: `ASpnTestPickup`, bridge (`TryInteract` overload with holder and typed defaults, `ReadInventoryCount`, `ListInventory`), `Spn.Inventory`, 4 automation tests, map script with two pickups | Built (UE 5.8.3, Windows); 4 automation tests pass (2026-10-22) |
+| Test map `.umap` | Regenerated with `--force` on Windows (2026-10-22); `SpnGame.TestMap.Pickups` passes. Manual PIE play test open |
 | Item ids | Deviation from the proposal: **no dots** in item ids (`[a-z][a-z0-9_]*`), because holder ids may contain dots and `holder.item` would be ambiguous in the key |

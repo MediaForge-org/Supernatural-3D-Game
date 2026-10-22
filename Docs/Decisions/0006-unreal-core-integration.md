@@ -122,13 +122,13 @@ Playing the map as a game (no editor world; injects the Interact action through 
 `UnrealEditor-Cmd.exe <uproject> /Game/SpnTest/Lvl_SpnDoorTest -game -nullrhi -unattended -ExecCmds="Automation RunTests SpnGame.TestMap.PlayDoors;Quit"`
 (from Git Bash prefix `MSYS_NO_PATHCONV=1`, or the `/Game/...` argument is rewritten).
 
-## Pickups and inventory (2026-10-22, Proposal 0007) — NOT BUILT OR RUN
-Written on the Fedora machine without Unreal; the Core side is tested (198 of 198 in four presets), the Unreal side needs a Windows build first.
+## Pickups and inventory (2026-10-22, Proposal 0007) — built and automated-tested, manual PIE test open
+Written on the Fedora machine without Unreal; the Core side is tested (198 of 198 in four presets). Status on Windows, 2026-10-22: `SupernaturalProtEditor` (UE 5.8.3) builds, the test map was regenerated with `--force` (three doors, two pickups), and `Automation RunTests SpnCore+SpnGame` passes 14 of 14 (`-unattended -nullrhi`). The manual PIE test below has **not** been done yet.
 - `USpnWorldStateSubsystem`: registers the test pickup; new `TryInteract(Kind, Id, Verb, FSpnInteractDefaults, Holder, Cause)` (the old overload delegates with `DefaultHolder()` = `player.local`); `ReadInventoryCount`, `ListInventory`, `IsValidHolderId`, `IsValidItemId`, `TestPickupKind`, `TestPickupTakenKey`. `FSpnInteractDefaults` carries bool, int and string defaults.
 - `ASpnTestPickup` (`Spn/SpnTestPickup.*`): cube with a PLACEHOLDER label, `StableId`, `ItemId`, `Amount`; follows the fact `placeholder.pickup.<id>.taken` (hidden, no collision when taken), re-read after Use and after every load. Single player: the user is always `player.local`.
 - `Spn.Inventory [holder]`: prints the counts to the log and as on-screen debug text (non-Shipping).
 - Automation tests (`Spn/Tests/SpnTestPickupAutomation.cpp`): `SpnGame.TestPickup.TakeOnce`, `.HoldersAreSeparate`, `.SaveLoadRestoresInventory`, `SpnGame.TestMap.Pickups`.
-- Map: `create_spn_door_test_map.py` now also places `pickup_a` (test_item x1, Y -100) and `pickup_b` (test_item x2, Y +100) at X 250. The committed `.umap` is unchanged until regenerated on Windows with `--force`.
+- Map: `create_spn_door_test_map.py` now also places `pickup_a` (test_item x1, Y -100) and `pickup_b` (test_item x2, Y +100) at X 250. The `.umap` was regenerated on Windows with `--force` on 2026-10-22 (working-tree change, not committed yet).
 - Manual test after regenerating: walk up to a box, press **E** (it disappears), `Spn.Inventory` shows `test_item=1`, take the other (`=3`), `Spn.SaveWorld`, restart PIE, `Spn.LoadWorld`: both gone, `Spn.Inventory` shows 3; before loading, the boxes are back.
 
 ## Open (needs developer decision)

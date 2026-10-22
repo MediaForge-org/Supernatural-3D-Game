@@ -3,15 +3,15 @@
 **Ein langfristig angelegtes, übernatürliches Open-World-Spiel: düsterer Monsterjäger-Horror in einer lebendigen, persistenten Welt, entwickelt mit Unreal Engine und einem eigenen, engine-unabhängigen C++20-Core.**
 
 > [!IMPORTANT]
-> Das Projekt befindet sich in **Phase 0 („Core Technology“)**. Spielbar ist derzeit ein **technischer Prototyp**: eine als Platzhalter gekennzeichnete Testkarte mit drei Testtüren, die per **E** geöffnet und geschlossen werden und deren Zustand gespeichert und geladen werden kann. **Alles, was in dieser README über Geschichte, Welt, Kreaturen, Fahrzeuge, Mehrspieler oder den optionalen Erwachsenen-Bereich steht, ist Planung oder Vision und kein spielbarer Inhalt.** Jede Aussage trägt eine Statuskennzeichnung (siehe unten).
+> Das Projekt befindet sich in **Phase 0 („Core Technology“)**. Spielbar ist derzeit ein **technischer Prototyp**: eine als Platzhalter gekennzeichnete Testkarte mit drei Testtüren und zwei aufnehmbaren Test-Pickups, die per **E** benutzt werden und deren Zustand gespeichert und geladen werden kann. Der Prototyp ist **automatisiert getestet, aber noch nicht manuell im Editor (PIE) abgenommen**. **Alles, was in dieser README über Geschichte, Welt, Kreaturen, Fahrzeuge, Mehrspieler oder den optionalen Erwachsenen-Bereich steht, ist Planung oder Vision und kein spielbarer Inhalt.** Jede Aussage trägt eine Statuskennzeichnung (siehe unten).
 
 | | |
 |---|---|
 | **Entwicklungsstand** | Phase 0, Core Technology (Prototyp, noch kein Spiel im eigentlichen Sinn) |
 | **Technik** | Unreal Engine 5.8.3 (Windows) · C++20-Core mit CMake (Fedora und Windows) |
-| **Tests** | 198 Core-Testfälle (doctest): am 2026-10-22 unter Fedora in allen vier Presets ohne Warnungen bestanden (181 davon am 2026-10-20 auch unter Windows/MSVC) · 10 Unreal-Automation-Tests (Windows, zuletzt dokumentierter Stand) und 4 neue für Phase 0.5, **noch nie in Unreal gebaut oder ausgeführt** |
+| **Tests** | 198 Core-Testfälle (doctest): am 2026-10-22 bestanden (Fedora: alle vier Presets ohne Warnungen; 181 davon am 2026-10-20 auch unter Windows/MSVC) · 198 von 198 auch unter Windows/MSVC (Debug) am 2026-10-22 · 19 von 19 Unreal-Automationstests (`SpnCore` + `SpnGame`) am 2026-10-22 bestanden (17 davon auch in einer sauberen Arbeitskopie), UE-5.8-Editor-Build erfolgreich · gepackter Development-Build erstellt und gestartet, Frame-Zeit einmalig gemessen ([§26.5](#265-gepackter-build-und-frame-zeit-2026-10-22)) · vom Entwickler im gepackten Build gespielt (Logs: Pickups, Türen, Speichern/Laden); **M1: CONDITIONAL PASS**, offen: Kamera an der Wand, `Spn.Inventory` nach dem Laden, Lauf im Editor-PIE ([Proposal 0008](Docs/Proposals/0008-m1-test-map-and-acceptance.md) §10) |
 | **Lizenz** | **noch nicht festgelegt**, siehe [Kapitel 31](#31-open-source-lizenzstatus-drittanbieter-assets-und-rechteprüfung) |
-| **Stand dieser README** | 2026-10-20, auf Basis von Commit `dd47da8` |
+| **Stand dieser README** | 2026-10-22, auf Basis von Commit `4c0f039` (Phase 0.5) |
 
 ---
 
@@ -460,9 +460,13 @@ Der Zugang ist selten (Story, Ritual, Portal, Tod, besondere Ereignisse), kein n
 
 📋 Kriminalität geschieht unabhängig vom Spieler; Polizei und Gerichte arbeiten auf Basis von Zeugen und Beweisen ([Kapitel 16](#16-wirtschaft-recht-und-smartphone)). Notdienste (Feuerwehr, Rettung, Abschleppdienst, Bergrettung, Wasserrettung) sind in angemessener Tiefe simuliert; Vorfälle können dauerhaften Schaden erzeugen, den NPC-Teams über realistische Zeiträume beheben.
 
-### 13.5 Stand
+### 13.5 Living World, Gedächtnis und Nemesis (verbindliche Vision)
 
-✅ Es existieren nur die **Aussehensdaten** für NPCs. NPC-Verhalten, Gedächtnis und Beziehungen sind nicht implementiert.
+📋 Verbindlicher Bestandteil der Langzeitvision (Entwickleraussage 2026-10-22), **kein M1-Feature**: ein tiefes, persistentes System aus dauerhaften NPC-Identitäten, Langzeitgedächtnis, Nemesis-/Rivalitätssystem (auch für intelligente übernatürliche Kreaturen), autonomen Fraktionen, persistenten Konsequenzen, eigenständiger Lebensentwicklung und einer skalierbaren Weltsimulation mit Detailstufen (volle Simulation nur in Spielnähe, ereignisbasierte Fortschreibung in der Ferne). Es muss mit WorldFacts, Ermittlung, Monster-KI, Verletzungen, Ruf, Polizei und Justiz, Dialog, Speichern/Laden und Koop widerspruchsfrei zusammenarbeiten. ❓ Datenmodell, Budgets, Reihenfolge und konkrete Fraktionen sind offen. Details: [Gameplay-Systeme §8](Docs/Game/Gameplay-Systeme.md#8-npcs-gedächtnis-und-beziehungen) und [Proposal 0010](Docs/Proposals/0010-living-world-npc-memory-and-nemesis.md).
+
+### 13.6 Stand
+
+✅ Es existieren nur die **Aussehensdaten** für NPCs. NPC-Verhalten, Gedächtnis, Beziehungen und das Living-World-System sind nicht implementiert.
 
 ---
 
@@ -869,12 +873,17 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 - 40 × 40 m Boden, Licht, Himmel
 - ein Player Start mit dem Third-Person-Charakter der Unreal-Vorlage
 - drei Testtüren `door_a`, `door_b` und `door_locked` (verriegelt)
+- zwei Test-Pickups `pickup_a` (`test_item` ×1) und `pickup_b` (`test_item` ×2), 2,5 m vor dem Player Start
+- M1-Testgeometrie hinter den Türen (Platzhalter): Rampe (15°), Treppe mit 10 Stufen und Podest, niedrige Wand (1 m, überspringbar)
+- Sprinten: **Shift** halten (Platzhalterwert 800 cm/s, Grundgeschwindigkeit 500 cm/s)
 
 **Bedienung im Editor (PIE):**
 
 | Eingabe | Wirkung |
 |---|---|
 | Tür anvisieren + **E** | Tür schwingt auf bzw. zu; die verriegelte Tür lehnt ab und zeigt `placeholder:feedback.door.locked` |
+| Pickup anvisieren + **E** | Der Gegenstand verschwindet einmalig, der Zähler `test_item` steigt |
+| Konsole: `Spn.Inventory` | Gibt die Inventarzähler aus (Log und Bildschirm-Debugtext) |
 | Konsole: `Spn.SaveWorld` | Speichert den Weltzustand in den Slot `debug` |
 | Konsole: `Spn.LoadWorld` | Lädt den Slot; die Türen springen sofort in den gespeicherten Zustand |
 
@@ -890,9 +899,9 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 | WorldFacts, Journal, Format v1, `StateAt` | ✅ | ✅ Subsystem | ✅ inkl. Golden-Dateien |
 | Save-Slots, atomares Schreiben, sicheres Laden | – | ✅ | ✅ |
 | Interaktion (`Use`) und Testtür | ✅ | ✅ Actor, Komponente, E-Taste | ✅ |
-| Automatisch erzeugte Testkarte | – | ✅ Python-Generator | ✅ Layout- und Spieltest |
+| Automatisch erzeugte Testkarte | – | ✅ Python-Generator (Türen und Pickups) | ✅ Layout- und Spieltest |
 | Aussehen, Generator, Rezepte, Editor-Grundlage, Detailstufen | ✅ | ❌ noch keine Darstellung | ✅ |
-| Gegenstände und Inventar | 📋 | 📋 | – |
+| Gegenstände und Inventar (Platzhalter: aufnehmen, Zähler; keine Kapazität, kein UI) | ✅ | ✅ Pickup-Actor, `Spn.Inventory` | ✅ (Gesamtdesign 📋) |
 | Ermittlung, Beweise, Caseboard | 📋 | 📋 | – |
 | Dialog | 📋 | 📋 | – |
 | Gegner- bzw. Monsterverhalten | 📋 | 📋 | – |
@@ -923,7 +932,7 @@ Die Speicherrichtlinie ([Entscheidung 0004](Docs/Decisions/0004-world-facts-save
 
 Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSVC in Debug und Release. Am 2026-10-20 wurde der Debug-Lauf erneut gebaut und ausgeführt: 181 von 181 Testfällen bestanden. Unter Fedora liefen am 2026-10-22 alle vier Presets (`fedora-gcc`, `fedora-clang`, `fedora-gcc-asan-ubsan`, `fedora-clang-asan-ubsan`) mit 181 von 181 Testfällen und ohne Compilerwarnungen; ein sauberer Neubau mit `fedora-gcc` bestätigte das.
 
-**Unreal: 10 Automation-Tests (dokumentierter Stand) plus 4 ungeprüfte aus Phase 0.5**
+**Unreal: 19 Automationstests, am 2026-10-22 alle bestanden** (`Automation RunTests SpnCore+SpnGame` im Editor, `-nullrhi`; automatisiert, nicht manuell abgenommen)
 
 | Test | Prüft |
 |---|---|
@@ -937,8 +946,13 @@ Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSV
 | `SpnGame.Interaction.TraceAndUse` | Zielerfassung und Benutzung |
 | `SpnGame.TestMap.Layout` | Testkarte: Player Start, IDs, Abstände, Spielfigur |
 | `SpnGame.TestMap.PlayDoors` | der manuelle Ablauf in **echtem PIE** bzw. im `-game`-Modus |
-| `SpnGame.TestPickup.TakeOnce` · `.HoldersAreSeparate` · `.SaveLoadRestoresInventory` | Phase 0.5 (**nicht ausgeführt**): einmal aufnehmen, Besitzertrennung, Speichern/Laden |
-| `SpnGame.TestMap.Pickups` | Phase 0.5 (**nicht ausgeführt**): zwei Pickups in der Testkarte; Warnung statt Fehler, solange die Karte nicht neu erzeugt wurde |
+| `SpnGame.TestPickup.TakeOnce` · `.HoldersAreSeparate` · `.SaveLoadRestoresInventory` | Phase 0.5: einmal aufnehmen, Besitzertrennung, Speichern/Laden |
+| `SpnGame.TestPickup.FailedLoadKeepsInventory` | M1-Audit: fehlender oder beschädigter Slot ändert Inventar und Pickups nicht |
+| `SpnGame.TestMap.M1Camera` | M1-Audit: Kamera mit echten Kollisionsabfragen an Wand und Treppe (über 1000 Messpunkte, schnelle Mausbewegungen), Ausblenden des Meshs bei sehr kurzem Abstand, kein Kamerasprung (weiches Zurückwachsen des Abstands) |
+| `SpnGame.TestMap.PlayPickups` | M1-Audit: Spieltest (auch im gepackten Build): Reichweite, wiederholtes E, `test_item = 3`, T�ren, `Spn.Inventory`, Speichern/Laden |
+| `SpnGame.TestMap.Pickups` | Phase 0.5: zwei Pickups in der Testkarte |
+| `SpnGame.TestMap.M1Layout` | M1: Rampe, Treppe, Wand, Maße und Lage |
+| `SpnGame.TestMap.M1Traversal` | M1: Treppe und Rampe hinauf, Wand blockiert, Sprung über die Wand, Sprint-Belegung, Kamera-Einstellungen (ohne Renderer) |
 
 ### 26.4 Bekannte Grenzen des Prototyps
 
@@ -946,7 +960,19 @@ Letzter dokumentierter Stand: Unter Windows bestehen alle 181 Testfälle mit MSV
 - Es gibt keine Prompt-UI und keine Gamepad-Belegung für die Interaktion.
 - Werte wie Reichweite, Winkel und Geschwindigkeit sind ungetunte Platzhalter.
 - Beim Kompilieren erscheinen bekannte Warnungen aus Engine-Headern von UE 5.8.3 (`Class.h`, `Character.h`); sie stammen nicht aus Projektcode (siehe [0006](Docs/Decisions/0006-unreal-core-integration.md)).
-- Der Linux-Build des Unreal-Moduls ist ungetestet; ein gepackter Build wurde noch nicht erstellt.
+- Der Linux-Build des Unreal-Moduls ist ungetestet.
+
+### 26.5 Gepackter Build und Frame-Zeit (2026-10-22)
+
+- **Gepackter Windows-Development-Build:** `BuildCookRun` erfolgreich, Ausgabe außerhalb des Repositorys. Die Standardkarte bleibt `Lvl_ThirdPerson`; die Testkarte wird per `-map` gecookt und per Startargument `/Game/SpnTest/Lvl_SpnDoorTest` geöffnet. Der Build startet, lädt die Karte und läuft mit der RTX 3090 (Log bestätigt). Beim Cook erscheinen `FText`-Warnungen zu den Platzhalter-Beschriftungen.
+- **Frame-Zeit (einmalige Messung, kein Zielwert):** 1920 × 1080 windowed, V-Sync aus, Figur steht am Player Start, 4000 Frames (die ersten 600 verworfen), CSV-Profiler. Zwei Läufe:
+
+| Lauf | Frame-Zeit Ø / Median / p99 / max | GPU Ø | Game-Thread Ø |
+|---|---|---|---|
+| 1 (`t.MaxFPS 0`) | 8,49 / 8,34 / 11,32 / 14,46 ms | 4,52 ms | 3,67 ms |
+| 2 (zusätzlich `r.VSync 0`) | 9,93 / 9,81 / 12,64 / 19,83 ms | 4,43 ms | 3,84 ms |
+
+  Das sind etwa 100 bis 118 Bilder pro Sekunde in einer fast leeren Testkarte. Die Frame-Zeit liegt über der GPU-Zeit; die Ursache (z. B. Präsentation im Fenstermodus) wurde **nicht untersucht**. Die Zahlen sagen nichts über echten Spielinhalt, Bewegung oder andere Auflösungen. Ablauf: [Windows-Setup und Tests](Docs/Setup/Windows-Setup-und-Tests.md).
 
 ---
 
@@ -981,8 +1007,9 @@ Zeitangaben sind **Schätzungen, keine Termine** ([`CLAUDE.md`](CLAUDE.md) §4).
 | Phase 0.3, Inkrement 2 | Persistenztests der Tür (Fälle 11–14) | `986c1c2` | Proposal 0004 §5.1 |
 | Phase 0.3, Inkrement 3 | `USpnWorldStateSubsystem`, Save-Slots, atomares Schreiben | `0cd67f8` | 0006 |
 | Phase 0.3, Inkrement 4 | Sichtbare Testtür, E-Taste, Testkarte per Python, PIE-Spieltest, erweiterte Logs | `dd47da8` | 0006 |
-| Phase 0.5, Inkrement 1 | Aufnehmbare Gegenstände und Inventarzähler im Core, Besitzer-Parameter; 17 Tests, vier Fedora-Presets bestanden | (ungebucht) | [Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) |
-| Phase 0.5, Inkrement 2 bis 3 | `ASpnTestPickup`, `Spn.Inventory`, Brücke im Subsystem, Automationstests, Kartenskript mit zwei Pickups; **in Unreal nicht gebaut** | (ungebucht) | Proposal 0007, 0006 |
+| Phase 0.5, Inkrement 1 | Aufnehmbare Gegenstände und Inventarzähler im Core, Besitzer-Parameter; 17 Tests, vier Fedora-Presets bestanden | `4c0f039` | [Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) |
+| Phase 0.5, Inkrement 2 bis 3 | `ASpnTestPickup`, `Spn.Inventory`, Brücke im Subsystem, Automationstests, Kartenskript mit zwei Pickups; am 2026-10-22 unter Windows gebaut, 14/14 Automationstests bestanden, Testkarte neu erzeugt (manueller PIE-Test offen) | `4c0f039` |
+| M1 | Rampe, Treppe, niedrige Wand in der Testkarte, Sprint (Shift), Layout-, Bewegungs- und Kameratests (19/19 im zweiten Audit), gepackter Development-Build, einmalige Frame-Zeit-Messung, [Windows-Anleitung](Docs/Setup/Windows-Setup-und-Tests.md); manueller PIE-Test offen | (ungebucht) | [Proposal 0008](Docs/Proposals/0008-m1-test-map-and-acceptance.md) | Proposal 0007, 0006 |
 
 ### 27.3 Nächste Schritte
 
@@ -990,10 +1017,11 @@ Zeitangaben sind **Schätzungen, keine Termine** ([`CLAUDE.md`](CLAUDE.md) §4).
 |---|---|
 | Fedora: alle vier Presets mit den aktuellen 181 Testfällen ausführen | ✅ erledigt am 2026-10-22 (181/181, keine Warnungen) |
 | Inkrement 5: Statusvermerk zu Proposal 0004, Aktualisierung von `MasterIndex` | ✅ erledigt am 2026-10-22 |
-| Phase 0.3 abschließen: Unreal-Automationstests und Spieltest erneut unter Windows ausführen | 🔧 offen (nur auf dem Windows-PC möglich) |
-| Phase 0.5 unter Windows abnehmen: `SpnCore`/Spiel-Modul bauen, Automationstests, Testkarte mit `--force` neu erzeugen, PIE-Spieltest ([Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) §4) | 🔧 offen (nur auf dem Windows-PC möglich) |
+| Phase 0.3: Unreal-Automationstests unter Windows | ✅ 2026-10-22 (14/14) |
+| Phase 0.5: Build, Automationstests, Testkarte mit Pickups | ✅ 2026-10-22 (14/14, Karte neu erzeugt) |
+| Phase 0.3 und 0.5 manuell abnehmen: PIE-Spieltest mit Türen, Pickups, `Spn.SaveWorld`/`Spn.LoadWorld`, `Spn.Inventory` ([0006](Docs/Decisions/0006-unreal-core-integration.md) „Manual test“, [Proposal 0007](Docs/Proposals/0007-pickup-items-and-minimal-inventory.md) §4) | 🔧 offen (nur durch den Entwickler am Rechner) |
 | Weitere Phase-0-Systeme (Gegenstände/Inventar, Ermittlung/Beweise, Dialog, einfache NPCs, Gegnerverhalten, Fahren) | 📋 Reihenfolge nicht festgelegt |
-| Erster Meilenstein M1 aus [Proposal 0003](Docs/Proposals/0003-characters-test-map-and-first-visual-milestone.md): u. a. eigenständiger Build, gemessene Frame-Zeit, Einrichtungsanleitung | 🔧 teilweise erreicht (Charakter, Kamera, Testkarte); gepackter Build und Messung fehlen |
+| Erster Meilenstein M1 aus [Proposal 0003](Docs/Proposals/0003-characters-test-map-and-first-visual-milestone.md): u. a. eigenständiger Build, gemessene Frame-Zeit, Einrichtungsanleitung | 🔧 **M1: CONDITIONAL PASS** (2026-10-22): Geometrie, Sprint, Tests, gepackter Build, Messung und Anleitung vorhanden; offen sind die Kamera an der Wand, `Spn.Inventory` nach dem Laden und ein Bau von einem echten Git-Klon, siehe [Proposal 0008](Docs/Proposals/0008-m1-test-map-and-acceptance.md) §10. Nächster Schritt: [Proposal 0009](Docs/Proposals/0009-traversal-jump-and-vault-direction.md) ist nur eine Richtung (aktiver Sprung, menschliche Sprungkraft, Hindernis-Bewegung später) |
 | Spikes zur Menschen-Pipeline (MetaHuman, Blender/modular) | 📋 nach Lizenzprüfung |
 
 ---
