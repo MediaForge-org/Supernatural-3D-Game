@@ -48,6 +48,8 @@ Das Projekt hat einen sehr umfangreichen **Planungsmaster** (rund 3 GB; mehrere 
 | [Spielvision](Docs/Game/Spielvision.md) | Ton, Hauptgeschichte, Protagonist und Crew, Fälle, Ermittlung, Hunter-Archiv, Kreaturen, Fortschritt, Modi, Dialog |
 | [Spielwelt und Untergrund](Docs/Game/Spielwelt-und-Untergrund.md) | Größenplanung, Geografie, Metropolis und Städte, Zeitreise, Natur, Aktivitäten, Verkehr, Untergrund, Reiche |
 | [Gameplay-Systeme](Docs/Game/Gameplay-Systeme.md) | Verletzung, Waffen, Nahkampf, Fahrzeuge, Tarn-KI, NPCs, Körper, Recht, Smartphone, Editor, Wirtschaft, Modding |
+| [Ermittlungs-Dokumentation](Docs/Game/Ermittlung/README.md) | Fallmodell, Ermittlungsmodi, Archiv und Journal, Spuren und Forensik, Recht und Polizei, Detektivpfad (Planungsstand, 28 Dateien mit Register, Konfliktliste und Testkatalog) |
+| [Kreaturen-Dokumentation](Docs/Game/Kreaturen/README.md) | Klassifikation, Anatomie und Schwächen, Geister und Besessenheit, Kosmologie, Ökologie, Monster-KI, Hunterwelt, Rituale, Containment, Bestiarium (Planungsstand, 24 Dateien mit Register, Konfliktliste und Testkatalog; keine Artenliste) |
 | [Adult-System](Docs/Game/Adult-System.md) | der optionale Erwachsenen-Bereich im Planungsstand |
 | [Entscheidungsstatus](Docs/Game/Entscheidungsstatus.md) | bestätigt, vorläufig, offen, überholt, Widersprüche |
 

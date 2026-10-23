@@ -243,6 +243,8 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 
 ## 10. Recht, Polizei und Beweise
 
+> Vertiefung: [Ermittlung, Modul 06](Ermittlung/06-Kriminalitaet-Polizei-und-Justiz.md) (Fahndung, Strafsystem, Haft, Rettung) und [Modul 05](Ermittlung/05-Spuren-Tracking-Forensik-und-Zeugen.md) (Beweise).
+
 📋
 
 - **Gesetz folgt tatsächlicher Information** und Beweislage über Zuständigkeiten hinweg (lokal, Bezirk, Bundesstaat, Bund), nicht omniszienter Fahndungslogik. Beweisquellen: Zeugen, Überwachungskameras, Kleidung, Gesicht, Fahrzeug und Kennzeichen, Waffen und Ballistik, Fingerabdrücke und DNA wo passend, digitale Beweise, Komplizen. Meldelatenz beim Notruf; Verarbeitungs- und Verteilungsverzögerungen; Vertrauensmodell der Verdächtigung.

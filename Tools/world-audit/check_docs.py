@@ -62,13 +62,14 @@ for f in files:
             if m.group(1) not in defined and not m.group(1).startswith(("M-W", "M-D")) or (m.group(1) not in defined): bad_k.append((os.path.basename(f), ln, m.group(1)))
 print("source keys defined", len(defined), "used", len(used), "undefined uses", len(bad_k)); [print("  ", b) for b in sorted(set(bad_k))[:40]]
 # 4 decision ids
+PFX = os.environ.get("SPN_ID_PREFIX", "W")  # W = World, E = Ermittlung
 reg = open(os.path.join(docs, "20-Entscheidungsregister.md"), encoding="utf8").read()
-ids = re.findall(r"^\| (W-[A-Z]{2}-\d{3}) \|", reg, flags=re.M)
+ids = re.findall(r"^\| (" + PFX + r"-[A-Z]{2}-\d{3}) \|", reg, flags=re.M)
 dups = sorted({i for i in ids if ids.count(i) > 1})
 refd = set(); missing = []
 for f in files:
     for ln, line in enumerate(open(f, encoding="utf8"), 1):
-        for m in re.finditer(r"\bW-[A-Z]{2}-\d{3}\b", line):
+        for m in re.finditer(r"\b" + PFX + r"-[A-Z]{2}-\d{3}\b", line):
             refd.add(m.group(0))
             if m.group(0) not in ids: missing.append((os.path.basename(f), ln, m.group(0)))
 print("register entries", len(ids), "duplicates", dups, "referenced", len(refd), "missing", len(missing)); [print("  ", b) for b in missing[:40]]

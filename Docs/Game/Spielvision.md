@@ -189,6 +189,8 @@ Konkrete Figurennamen, Handlungsstränge oder Kapitelinhalte gehören deshalb **
 
 ## 7. Fälle und Ermittlung
 
+> Vertiefung mit Gesprächsverlauf, Quellen und offenen Fragen: [Ermittlungs-Dokumentation](Ermittlung/README.md) (Module 02, 03, 05, 07).
+
 ### 7.1 Fälle
 
 📋 **Zahlreiche hochwertige Nebenfälle** sollen sich wie eigenständige „Monster der Woche“-Episoden anfühlen.
@@ -227,6 +229,8 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 ---
 
 ## 8. Das Hunter-Archiv
+
+> Vertiefung: [Ermittlung, Modul 04](Ermittlung/04-Archiv-Journal-und-Hunter-Record.md) (Archiv, Falljournal, Hunter Record, Anzeige von Unbekanntem).
 
 📋 Das Archiv ist ein zentraler **Wissens-, Ermittlungs- und Entdeckungsgraph**. Es verknüpft Orte, Regionen, relevante Straßen, Gebäude, Personen, Monster, Flüche, Rituale, Symbole, Artefakte, Waffen, Fälle, historische Fälle, Dokumente, Fotos, Audio und Video, Zeitungsartikel, Polizeiberichte, Zeugenaussagen, Ereignisse und Anomalien. Querverweise sind wichtig; der Spieler soll Zusammenhänge selbst erschließen.
 

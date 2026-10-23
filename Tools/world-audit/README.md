@@ -12,3 +12,23 @@ Reproduzierbare Hilfsskripte für Etappe 3 (Welt-Dokumentation). Nur Python-Stan
 | `render_chat35.py`, `chat35_read_log.json` | erzeugen Modul 27 (Abdeckungsprotokoll Chat 35) aus dem Lesenachweis |
 | `check_docs.py` | prüft Zitate, wörtliche Zitate, Quellenkürzel, Register-IDs |
 | `check_links.py` | prüft relative Links und Anker |
+
+## Ermittlungs-Dokumentation
+
+`check_docs.py` prüft auch `Docs/Game/Ermittlung` (Register-Kennungen `E-…` statt `W-…`):
+
+```text
+python3 Tools/world-audit/split_chats.py <Master> <Arbeitsordner> 23 35 27 29 40
+SPN_MASTER=<Master> SPN_WORLD_DOCS=Docs/Game/Ermittlung SPN_ID_PREFIX=E python3 Tools/world-audit/check_docs.py <Arbeitsordner>
+python3 Tools/world-audit/check_links.py Docs/Game
+```
+
+## Kreaturen-Dokumentation
+
+`check_docs.py` prüft auch `Docs/Game/Kreaturen` (Register-Kennungen `K-…`). Zusätzlich zu den Chats 23, 35 und 48 werden die Chats 19, 30 und 50 benötigt:
+
+```text
+python3 Tools/world-audit/split_chats.py <Master> <Arbeitsordner> 23 35 48 19 30 50
+SPN_MASTER=<Master> SPN_WORLD_DOCS=Docs/Game/Kreaturen SPN_ID_PREFIX=K python3 Tools/world-audit/check_docs.py <Arbeitsordner>
+python3 Tools/world-audit/check_links.py Docs/Game
+```
