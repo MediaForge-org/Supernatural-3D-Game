@@ -1,6 +1,6 @@
 # 0008 — M1: draft for ramp, stairs and wall in the test map, and the remaining M1 acceptance work — ENGINEERING PROPOSAL (DRAFT)
 
-Status: draft written 2026-10-22 for developer review. **Not master canon.** Sections 1 to 8 are the original draft (written before the map was changed); the implementation status after approval is in section 9. It refines Proposal 0003 section 5 (milestone M1) and adds no gameplay system. All shapes are PLACEHOLDER test values.
+Status: draft written 2026-10-22 for developer review. **Not master canon.** Sections 1 to 8 are the original draft (written before the map was changed); the implementation status after approval is in section 9; the final technical acceptance (**PASS**, 2026-10-23) is section 13. It refines Proposal 0003 section 5 (milestone M1) and adds no gameplay system. All shapes are PLACEHOLDER test values.
 
 ## 1. State of the six M1 criteria (Proposal 0003 section 5)
 
@@ -177,3 +177,28 @@ Rendered stills of the zoom-out (`SpnCam_recovery_0/1/2.png`, viewed with the RT
 
 ## 8. Non-goals
 No new gameplay system, no vehicles, NPCs, character editor, final assets, map candidate or geography.
+
+## 13. M1 technical acceptance (2026-10-23) — status: **Technical Acceptance: PASS**
+Result of a verification on Windows 11 from a **clean clone** at commit `c5a028a` (branch `main`, in sync with GitHub). This closes the open blocker of section 12 ("clone test after your commit"). The values below are the developer's reported results; this document records them and was not able to re-run them (the documentation work happens on the Fedora machine).
+
+| Check | Result |
+|---|---|
+| Clean clone of `c5a028a` | built from the clone (criterion 6 of section 1 now met by a real `git clone`) |
+| Core tests (MSVC) | **198 of 198** passed |
+| Unreal automation (`SpnCore+SpnGame`) | **19 of 19** passed |
+| Unreal editor build (`SupernaturalProtEditor`) | succeeded |
+| Windows Development package | succeeded |
+| Packaged build: start, pickup interactions, persistent save and load | tested successfully |
+| Errors, crash dumps | none |
+
+**Criteria of section 1:** 1 (starts and plays without errors) through 6 (clean checkout with a written note) are met on the technical side. "Technical acceptance" means automated tests, the packaged build and the save/load round trip; it is **not** a statement about feel, visual quality or final design (all shapes, values and the mannequin remain PLACEHOLDER).
+
+**Explicitly NOT checked** (not part of this acceptance and not claimed anywhere as passed):
+- the **manual editor PIE test** (steps in `Docs/Setup/Windows-Setup-und-Tests.md` section 8);
+- **formal performance measurements** (only the single informal series of README section 26.5 exists; no repeated or controlled measurement);
+- **Fedora/Linux builds of the Unreal project** (Core builds on Fedora were verified earlier, section 10; the Unreal part has no Linux build);
+- **Shipping builds** (only Development; `Spn.*` console commands are absent from Shipping by design).
+
+**Release status:** the package for `v0.1.0-alpha.1` is **prepared** but **not published on GitHub**. No tag and no release exist yet; creating them stays with the developer.
+
+Still open design points (unchanged, not blockers): camera arm growth rate and pitch limits (placeholder 300 cm/s), map boundary / kill height (finding 4), vault and mantle (Proposal 0009).

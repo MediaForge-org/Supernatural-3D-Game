@@ -1,6 +1,6 @@
-# Windows: Einrichtung, Tests, gepackter Build und Messung (Stand 2026-10-22)
+# Windows: Einrichtung, Tests, gepackter Build und Messung (Stand 2026-10-23)
 
-Technische Arbeitsnotiz, **kein Planungsmaster**. Alle Schritte wurden am 2026-10-22 auf dem Entwickler-PC (Windows 11, Ryzen 7 3700X, RTX 3090) ausgeführt, **nicht** an einem sauberen Klon (siehe „Nicht geprüft“). Pfade mit `<repo>` stehen für das Repository-Verzeichnis; es gibt keine festen Pfade im Quellcode.
+Technische Arbeitsnotiz, **kein Planungsmaster**. Alle Schritte wurden am 2026-10-22 auf dem Entwickler-PC (Windows 11, Ryzen 7 3700X, RTX 3090) ausgeführt, zunächst **nicht** an einem sauberen Klon; der Klon-Test folgte am 2026-10-23 (siehe letzter Abschnitt). Pfade mit `<repo>` stehen für das Repository-Verzeichnis; es gibt keine festen Pfade im Quellcode.
 
 ## 1. Voraussetzungen
 - Windows 11, Git und **Git LFS** (`.umap`/`.uasset` sind LFS-Dateien, siehe `.gitattributes`).
@@ -60,7 +60,7 @@ SupernaturalProt.exe /Game/SpnTest/Lvl_SpnDoorTest -windowed -ResX=1920 -ResY=10
 ```
 Das CSV liegt unter `<ausgabe>\Windows\SupernaturalProt\Saved\Profiling\CSV\`; die ersten 600 Frames gelten als Aufwärmphase. Die Figur steht dabei am Player Start (keine Bewegung). Ergebnisse und Einschränkungen: README §26.5.
 
-## 8. Manueller PIE-Test (steht aus — vom Entwickler auszuführen)
+## 8. Manueller PIE-Test (nicht geprüft — vom Entwickler auszuführen)
 Öffne `/Game/SpnTest/Lvl_SpnDoorTest`, Play (PIE):
 1. Türen: `E` auf `door_a`/`door_b` öffnet/schließt; `door_locked` lehnt ab.
 2. Pickups: `E` auf beide Kisten; `Spn.Inventory` zeigt `test_item=3`.
@@ -94,6 +94,11 @@ Dieser Test ist **nicht** durchgeführt; er wird nirgends als bestanden geführt
 - Letztes gepacktes Paket: `C:\Projekte\_SPN_Builds\M1_final` (außerhalb des Repositorys). Die Befehle aus Abschnitt 10 gelten dort unverändert.
 
 ## Nicht geprüft
-- Bau aus einem echten **`git clone` mit `git lfs pull`** (die M1-Änderungen sind noch nicht committet; geprüft wurde nur eine Kopie des Arbeitsbaums).
-- Packaging-Konfigurationen außer Development; Shipping-Build; Linux-Build.
+- Manueller Test im **Editor (PIE)**, Abschnitt 8.
+- **Formale Performance-Messungen** (nur die einmalige Serie aus README §26.5).
+- Fedora-/Linux-Build des Unreal-Projekts.
+- Packaging-Konfigurationen außer Development; Shipping-Build.
 - Manuelle Kamera-Qualität, Spielgefühl und Sprint-Geschwindigkeit (800 cm/s ist ein Platzhalterwert).
+
+## Stand 2026-10-23: sauberer Klon
+Ein Bau aus einem echten `git clone` von Commit `c5a028a` wurde unter Windows geprüft (Entwicklerangabe): Core 198/198, Unreal-Automation 19/19, Editor-Build und Development-Paket erfolgreich, Paketstart, Pickups und Speichern/Laden getestet, keine Errors oder Crash-Dumps. Damit ist die frühere Lücke „kein echter Klon“ geschlossen; Einzelheiten und Status in [Proposal 0008](../Proposals/0008-m1-test-map-and-acceptance.md) §13. `v0.1.0-alpha.1` ist vorbereitet, aber nicht veröffentlicht.
