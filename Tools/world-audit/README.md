@@ -32,3 +32,20 @@ python3 Tools/world-audit/split_chats.py <Master> <Arbeitsordner> 23 35 48 19 30
 SPN_MASTER=<Master> SPN_WORLD_DOCS=Docs/Game/Kreaturen SPN_ID_PREFIX=K python3 Tools/world-audit/check_docs.py <Arbeitsordner>
 python3 Tools/world-audit/check_links.py Docs/Game
 ```
+
+## NPC-Dokumentation
+
+`check_docs.py` prüft auch `Docs/Game/NPCs` (Register-Kennungen `N-…`, Registerdatei `26-Entscheidungsregister.md`). Zusätzlich zu den Chats 23, 35 und 48 wird Chat 19 benötigt:
+
+```text
+python3 Tools/world-audit/split_chats.py <Master> <Arbeitsordner> 23 35 48 19
+SPN_MASTER=<Master> SPN_WORLD_DOCS=Docs/Game/NPCs SPN_ID_PREFIX=N SPN_REGISTER_FILE=26-Entscheidungsregister.md python3 Tools/world-audit/check_docs.py <Arbeitsordner>
+python3 Tools/world-audit/check_links.py Docs/Game
+```
+
+| Skript | Aufgabe |
+|---|---|
+| `render_npc_register.py` | erzeugt `Docs/Game/NPCs/26-Entscheidungsregister.md` aus den Kennungstabellen der Module 02 bis 24, prüft Eindeutigkeit, Zellenzahl und alle Verweise `N-XX-nnn`, schreibt die erzeugten Zählblöcke in Modul 28 |
+| `render_npc_tests.py` | erzeugt den Regeltestteil von `Docs/Game/NPCs/29-Testkatalog-und-Abnahmekriterien.md` aus den Entwurfsregeln `N-EN-nnn` |
+
+Reihenfolge nach Änderungen an Modulen: erst `render_npc_tests.py`, dann `render_npc_register.py`, dann die Prüfungen.

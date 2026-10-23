@@ -63,7 +63,7 @@ for f in files:
 print("source keys defined", len(defined), "used", len(used), "undefined uses", len(bad_k)); [print("  ", b) for b in sorted(set(bad_k))[:40]]
 # 4 decision ids
 PFX = os.environ.get("SPN_ID_PREFIX", "W")  # W = World, E = Ermittlung
-reg = open(os.path.join(docs, "20-Entscheidungsregister.md"), encoding="utf8").read()
+reg = open(os.path.join(docs, os.environ.get("SPN_REGISTER_FILE", "20-Entscheidungsregister.md")), encoding="utf8").read()  # NPCs: 26-Entscheidungsregister.md
 ids = re.findall(r"^\| (" + PFX + r"-[A-Z]{2}-\d{3}) \|", reg, flags=re.M)
 dups = sorted({i for i in ids if ids.count(i) > 1})
 refd = set(); missing = []
