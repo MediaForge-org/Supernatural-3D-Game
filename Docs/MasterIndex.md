@@ -85,6 +85,12 @@ Known inconsistency to keep in mind: world-size figures differ between dated fil
 - **No specification of a universal interaction system was found** (searched on 2026-10-20). Only single interactions exist as draft prompts, for example `LIB/prompts/09-vehicles-controls/012_create-engine-restart-interaction.md`. See `Docs/Proposals/0004-interaction-and-persistent-door.md` (implemented as a placeholder slice, status in its section 9).
 - Phase targets: `01_CURRENT_CANONICAL_STATE/MASTER_STATUS_2026-10-13.md`. Open gameplay choices: `OD`.
 
+### Combat, injury, weapons and difficulty
+- `PD`: sections "Human anatomy, injury and medicine", "Death / failure — OPEN", "Difficulty / configuration", "Gunplay / weapons", "Ballistics", "Melee / grappling", "Multiple-opponent combat, improvised actions and surrender", "Stealth, perception and horror AI", "Body / physical response / recoil", "Gore / age presentation", "Cash / law / evidence".
+- `OD`: section "Combat / injury / gore" (open: Combat Focus, ballistic, tissue and armor parameters, gore thresholds, minor-NPC violence presentation, melee depth) and the death/rescue item in "Product / world / story".
+- Prompts (drafts, topic lists only): `LIB/prompts/06-survival-anatomy-medical/`, `07-gunplay-ballistics-ammo/`, `08-melee-grappling/`, `10-difficulty-hud-accessibility/`, and the weapon and animation parts of `14-assets-animation-gore/`.
+- Several combat decisions (death/checkpoint rule, learning of fighting techniques) exist only in chat transcripts (`99_RECONSTRUCTION_SOURCES/…/GESPRAECHE/`, chats 23 and 35), not in `PD`; they are collected with sources in `Docs/Game/Kampfsystem/` (planning documentation, not canon).
+
 ### WorldFacts and save games
 - `PD`: sections "World state and persistence", "Testing, tools and quality", "Testing philosophy".
 - `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-06.md` (section "Realm traversal and persistence direction"), `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-05.md` (section "Time travel / historical world states").
@@ -96,6 +102,7 @@ Known inconsistency to keep in mind: world-size figures differ between dated fil
 - `PD`: sections "Vehicles", "Vehicles / racing". `LIB/planning-backlog/38-vehicle-physics-trims-racing.md`.
 - `99_DAILY_DELTAS/2026-10-15/SPN_DAILY_DELTA_2026-10-15/docs/specs/ROAD_VEHICLES_2026-10-15.md`, `99_DAILY_DELTAS/2026-10-15/SPN_DAILY_DELTA_2026-10-15/docs/specs/RAILWAY_SYSTEM_2026-10-15.md` (contain proposals next to established preferences; the 2026-10-18 conflict list says to review individually).
 - Prompts (drafts): `LIB/prompts/09-vehicles-controls/`.
+- Traffic, parking, fuel, jobs, police checks and insurance rest almost entirely on chat 23 block 5 (`23#1024A` questions, `23#1025E` fifty numbered answers) and on `WORLD_DESIGN_BLOCKS_1_TO_7_CURRENT.md` / `…_8_TO_9_CURRENT.md`; `master-search.sh traffic|Verkehr|parking|garage` finds a single tier-1 hit (`CANONICAL_ADDENDUM_2026-09-05.md`, smartphone navigation and traffic apps). There is no traffic model, no traffic law and no vehicle list in the master. The decisions are collected with sources, conflicts and open questions in `Docs/Game/Fahrzeuge-und-Verkehr/` (planning documentation, not canon). The road-graph contract for the generated map lives outside this repository (`SPN_WorldForge`, `RC-01`, an M2 pre-contract).
 
 ### Supernatural beings and abilities
 - `PD`: sections "Creature / supernatural framework — expanded", "Peaceful supernatural beings and independent hunter agency", "Hunter Archive epistemology", "Wildlife / study / harvesting / monsters".

@@ -17,7 +17,7 @@ for f in glob.glob(os.path.join(work, "msgs*.json")):
     n = re.search(r"msgs(\d+)\.json", f).group(1)
     msgs[n] = {m[0]: m for m in json.load(open(f))}
 files = sorted(glob.glob(os.path.join(docs, "*.md")))
-GENERATED = ("25-",)
+GENERATED = tuple(os.environ.get("SPN_GENERATED", "25-").split(","))  # module prefixes skipped by checks 1-3 (generated files)
 # 1 citations
 bad_c = []; tot_c = 0
 cite = re.compile(r"\b(\d{2})#(\d+)([EA])?\b")

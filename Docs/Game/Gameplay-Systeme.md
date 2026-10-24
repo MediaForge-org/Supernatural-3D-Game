@@ -97,6 +97,8 @@ Eine **kleine, universelle Interaktion** mit einer einzigen Aktion `Use`, einem 
 
 ## 5. Waffen, Ballistik und Nahkampf
 
+> Vertiefung: [Kampfsystem-Dokumentation](Kampfsystem/README.md) (Quellen, Register, Konflikte, offene Fragen und Testkatalog zu Nahkampf, Fernkampf, Verletzung, Tod, Kreaturenkampf, Koop und Speicherung; Planungsstand, kein Kanon).
+
 ### 5.1 Waffen
 
 📋
@@ -138,6 +140,8 @@ Eine **kleine, universelle Interaktion** mit einer einzigen Aktion `Use`, einem 
 ---
 
 ## 6. Fahrzeuge und Fortbewegung
+
+> Vertiefung: [Dokumentation Fahrzeuge und Verkehr](Fahrzeuge-und-Verkehr/README.md) (Quellen, Register, Konflikte, offene Fragen und Testkatalog zu Fahrzeugdaten, Straßennetz, Verkehr, NPC-Fahrern, Unfällen, Polizei, Besitz, Persistenz, Koop, WorldForge-Schnittstelle und Leistung; Planungsstand, kein Kanon).
 
 ### 6.1 Rolle
 

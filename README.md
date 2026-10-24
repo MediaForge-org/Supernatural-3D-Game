@@ -50,6 +50,8 @@ Das Projekt hat einen sehr umfangreichen **Planungsmaster** (rund 3 GB; mehrere 
 | [Gameplay-Systeme](Docs/Game/Gameplay-Systeme.md) | Verletzung, Waffen, Nahkampf, Fahrzeuge, Tarn-KI, NPCs, Körper, Recht, Smartphone, Editor, Wirtschaft, Modding |
 | [Ermittlungs-Dokumentation](Docs/Game/Ermittlung/README.md) | Fallmodell, Ermittlungsmodi, Archiv und Journal, Spuren und Forensik, Recht und Polizei, Detektivpfad (Planungsstand, 28 Dateien mit Register, Konfliktliste und Testkatalog) |
 | [Kreaturen-Dokumentation](Docs/Game/Kreaturen/README.md) | Klassifikation, Anatomie und Schwächen, Geister und Besessenheit, Kosmologie, Ökologie, Monster-KI, Hunterwelt, Rituale, Containment, Bestiarium (Planungsstand, 24 Dateien mit Register, Konfliktliste und Testkatalog; keine Artenliste) |
+| [Kampfsystem-Dokumentation](Docs/Game/Kampfsystem/README.md) | Nahkampf, Fernkampf, Verteidigung, Waffen, Verletzung, Tod und Rettung, Kreaturenkampf, Fallen, Gegner-KI, Polizei und Folgen, Koop, Speicherung, Leistung (Planungsstand, 31 Dateien mit Register, Konfliktliste und Testkatalog) |
+| [Dokumentation Fahrzeuge und Verkehr](Docs/Game/Fahrzeuge-und-Verkehr/README.md) | Fahrzeugdaten, Fahrphysik, Zustand und Werkstatt, Straßennetz, Kreuzungen, Verkehrs-KI, NPC-Fahrer, Unfälle, Polizei, Besitz und Diebstahl, Persistenz, Koop, WorldForge-Schnittstelle, Unreal-Integration und Leistung (Planungsstand, 31 Dateien mit Register, Konfliktliste und Testkatalog) |
 | [Adult-System](Docs/Game/Adult-System.md) | der optionale Erwachsenen-Bereich im Planungsstand |
 | [Entscheidungsstatus](Docs/Game/Entscheidungsstatus.md) | bestätigt, vorläufig, offen, überholt, Widersprüche |
 
