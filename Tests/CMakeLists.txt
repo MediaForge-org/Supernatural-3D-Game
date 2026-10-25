@@ -33,3 +33,11 @@ endif()
 include(${doctest_SOURCE_DIR}/scripts/cmake/doctest.cmake)
 
 add_subdirectory(Core)
+
+# Layout checks of the movement test map (pure Python, no Unreal; Docs/Proposals/0011).
+find_package(Python3 COMPONENTS Interpreter)
+if(Python3_Interpreter_FOUND)
+    add_test(NAME movement_test_map_layout
+        COMMAND ${Python3_EXECUTABLE} -I
+            ${PROJECT_SOURCE_DIR}/Unreal/SupernaturalProt/Tools/test_spn_movement_map_layout.py)
+endif()

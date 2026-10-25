@@ -12,6 +12,7 @@
 #include "InputAction.h"
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
+#include "Spn/SpnCharacterMovementComponent.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "SupernaturalProt.h"
 
@@ -27,7 +28,8 @@ namespace
 	}
 }
 
-ASupernaturalProtCharacter::ASupernaturalProtCharacter()
+ASupernaturalProtCharacter::ASupernaturalProtCharacter(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<USpnCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -41,14 +43,13 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	// Note: For faster iteration times these variables, and many more, can be tweaked in the Character Blueprint
-	// instead of recompiling to adjust them
-	GetCharacterMovement()->JumpZVelocity = 500.f;
-	GetCharacterMovement()->AirControl = 0.35f;
-	GetCharacterMovement()->MaxWalkSpeed = 500.f;
+	// Speeds, accelerations, braking, turn friction, air control, step height and the jump velocity come from
+	// USpnCharacterMovementComponent::Settings (M2-A); they can be tuned there in the Character Blueprint.
 	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
-	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
-	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
+
+	// Jumping is an active input only: one jump, no jump held longer for more height, no double jump.
+	JumpMaxCount = 1;
+	JumpMaxHoldTime = 0.f;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -94,6 +95,9 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoSprintStart);
 		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Completed, this, &ASupernaturalProtCharacter::DoSprintEnd);
 		EnhancedInputComponent->BindAction(Sprint, ETriggerEvent::Canceled, this, &ASupernaturalProtCharacter::DoSprintEnd);
+
+		// Base gait (Walk -> Jog -> Run)
+		EnhancedInputComponent->BindAction(ResolveGaitAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoCycleGait);
 	}
 	else
 	{
@@ -155,7 +159,38 @@ void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 		}
 	}
 
+	if (RuntimeGaitMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimeGaitMappingContext);
+		}
+	}
+
 	Super::EndPlay(EndPlayReason);
+}
+
+USpnCharacterMovementComponent* ASupernaturalProtCharacter::GetSpnMovement() const
+{
+	return Cast<USpnCharacterMovementComponent>(GetCharacterMovement());
+}
+
+UInputAction* ASupernaturalProtCharacter::ResolveGaitAction()
+{
+	if (RuntimeGaitAction == nullptr)
+	{
+		RuntimeGaitAction = NewObject<UInputAction>(this, TEXT("IA_SpnGaitCycle_Runtime"), RF_Transient);
+		RuntimeGaitAction->ValueType = EInputActionValueType::Boolean;
+
+		RuntimeGaitMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnGaitCycle_Runtime"), RF_Transient);
+		RuntimeGaitMappingContext->MapKey(RuntimeGaitAction, DefaultGaitCycleKey);
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimeGaitMappingContext, RuntimeInteractContextPriority);
+	}
+	return RuntimeGaitAction;
 }
 
 UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
@@ -167,6 +202,7 @@ UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
 
 		RuntimeSprintMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnSprint_Runtime"), RF_Transient);
 		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintKey);
+		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, EKeys::Gamepad_LeftThumbstick); // L3
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -178,20 +214,25 @@ UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
 
 void ASupernaturalProtCharacter::DoSprintStart()
 {
-	UCharacterMovementComponent* Movement = GetCharacterMovement();
-	if (SpeedBeforeSprint <= 0.f)
+	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
 	{
-		SpeedBeforeSprint = Movement->MaxWalkSpeed;
+		Movement->SetSprintRequested(true);
 	}
-	Movement->MaxWalkSpeed = SprintSpeed;
 }
 
 void ASupernaturalProtCharacter::DoSprintEnd()
 {
-	if (SpeedBeforeSprint > 0.f)
+	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = SpeedBeforeSprint;
-		SpeedBeforeSprint = 0.f;
+		Movement->SetSprintRequested(false);
+	}
+}
+
+void ASupernaturalProtCharacter::DoCycleGait()
+{
+	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
+	{
+		Movement->CycleBaseGait();
 	}
 }
 

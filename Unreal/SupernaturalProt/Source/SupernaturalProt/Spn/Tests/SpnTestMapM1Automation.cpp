@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Misc/AutomationTest.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/SpnCharacterMovementComponent.h"
 #include "SupernaturalProtCharacter.h"
 #include "Tests/AutomationCommon.h"
 
@@ -122,7 +123,7 @@ bool FSpnTestMapM1LayoutTest::RunTest(const FString& Parameters)
 		TestTrue(TEXT("landing is level with the top tread"), FMath::Abs(Box.Max.Z - PreviousTop) < 1.f);
 	}
 
-	// Wall: solid and high enough to block, low enough to jump over (apex about 127 cm).
+	// Wall: solid and high enough to block (since M2-A also against the 45 cm human jump; the template jump of 127 cm used to clear it).
 	if (const AStaticMeshActor* const* Wall = Meshes.Find(TEXT("SPN_M1_Wall")); TestNotNull(TEXT("wall placed"), Wall != nullptr ? *Wall : nullptr))
 	{
 		const FBox Box = CheckSolidBehindDoors(TEXT("wall"), *Wall);
@@ -167,16 +168,20 @@ bool FSpnTestMapM1TraversalTest::RunTest(const FString& Parameters)
 			TestNotNull(TEXT("follow camera exists"), State->Character->GetFollowCamera());
 			TestTrue(TEXT("character jumps"), State->Character->GetCharacterMovement()->JumpZVelocity > 0.f);
 
-			// Sprint: Shift is mapped; sprinting raises the speed and ending it restores the walk speed.
+			// Sprint: Shift is mapped; DoSprintStart / DoSprintEnd set and clear the sprint request on the movement component
+			// (M2-A: the speed itself comes from the gait rule, not from MaxWalkSpeed; SpnGame.Movement.Gaits checks the speeds).
 			const UInputAction* Sprint = State->Character->GetBoundSprintAction();
 			const UEnhancedInputLocalPlayerSubsystem* Input = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Controller->GetLocalPlayer());
 			TestTrue(TEXT("Left Shift is mapped to sprint"), Sprint != nullptr && Input != nullptr && Input->QueryKeysMappedToAction(Sprint).Contains(EKeys::LeftShift));
-			UCharacterMovementComponent* Movement = State->Character->GetCharacterMovement();
-			const float WalkSpeed = Movement->MaxWalkSpeed;
-			State->Character->DoSprintStart();
-			TestTrue(TEXT("sprinting is faster than walking"), Movement->MaxWalkSpeed > WalkSpeed);
-			State->Character->DoSprintEnd();
-			TestEqual(TEXT("walk speed restored after sprinting"), Movement->MaxWalkSpeed, WalkSpeed);
+			USpnCharacterMovementComponent* GaitMovement = State->Character->GetSpnMovement();
+			if (TestNotNull(TEXT("character uses USpnCharacterMovementComponent"), GaitMovement))
+			{
+				TestFalse(TEXT("not sprinting at the start"), GaitMovement->IsSprintRequested());
+				State->Character->DoSprintStart();
+				TestTrue(TEXT("sprint is requested after DoSprintStart"), GaitMovement->IsSprintRequested());
+				State->Character->DoSprintEnd();
+				TestFalse(TEXT("sprint request cleared after DoSprintEnd"), GaitMovement->IsSprintRequested());
+			}
 		}
 		return true;
 	}));
@@ -259,7 +264,8 @@ bool FSpnTestMapM1TraversalTest::RunTest(const FString& Parameters)
 			TestTrue(TEXT("still on the floor in front of the wall"), FMath::Abs(End.Z - CharacterStandZ) < 20.f);
 		});
 
-	// Wall, jumping: with the existing jump the low wall can be crossed.
+	// Wall, jumping: since M2-A the jump is a human 45 cm jump (Proposal 0009 section 3), so the 1 m wall can no longer be
+	// jumped over. This used to assert the opposite (the template's 127 cm jump); the change is the expected follow-up.
 	Walk(FVector(WallFace - 300.f, WallY, CharacterStandZ), 4.f,
 		[State, WallFace](const FVector& Location)
 		{
@@ -269,13 +275,14 @@ bool FSpnTestMapM1TraversalTest::RunTest(const FString& Parameters)
 			}
 			return Location.X > WallX + WallThickness / 2.f + 60.f;
 		},
-		[this](const FVector& End, bool bReached)
+		[this, WallFace](const FVector& End, bool bReached)
 		{
-			TestTrue(FString::Printf(TEXT("jumped over the wall (end X %.0f)"), End.X), bReached);
+			TestFalse(FString::Printf(TEXT("the 1 m wall is not crossed by jumping (end X %.0f)"), End.X), bReached);
+			TestTrue(FString::Printf(TEXT("still in front of the wall (end X %.0f)"), End.X), End.X < WallFace);
 		});
 
 	// Wall, diagonal: walking into the wall at 45 degrees must slide along it, not stick.
-	Walk(FVector(WallFace - 300.f, WallY - 280.f, CharacterStandZ), 1.5f, [](const FVector&) { return false; },
+	Walk(FVector(WallFace - 300.f, WallY - 280.f, CharacterStandZ), 3.5f, [](const FVector&) { return false; },
 		[this, WallFace](const FVector& End, bool)
 		{
 			TestTrue(FString::Printf(TEXT("diagonal: stopped by the wall (end X %.0f)"), End.X), End.X < WallFace);

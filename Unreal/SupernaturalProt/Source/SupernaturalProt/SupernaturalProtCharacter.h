@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class USpnInteractionComponent;
+class USpnCharacterMovementComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -52,8 +53,12 @@ class ASupernaturalProtCharacter : public ACharacter
 	UPROPERTY(Transient)
 	UInputMappingContext* RuntimeSprintMappingContext;
 
-	/** Walk speed to return to when sprinting ends (read when sprinting starts) */
-	float SpeedBeforeSprint = 0.f;
+	/** Runtime action and context that cycle the base gait (Walk, Jog, Run), created in code like the sprint fallback */
+	UPROPERTY(Transient)
+	UInputAction* RuntimeGaitAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimeGaitMappingContext;
 
 	/** The boom's arm length as authored (read on the first tick) and the current cap that CameraArmRecoverySpeed grows back */
 	float ConfiguredArmLength = 0.f;
@@ -99,14 +104,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0"))
 	float CameraArmRecoverySpeed = 300.f;
 
-	/** Max walk speed while sprinting, cm/s (placeholder test value, not a gameplay decision) */
-	UPROPERTY(EditAnywhere, Category="Movement", meta = (ClampMin = "0"))
-	float SprintSpeed = 800.f;
+	/** Key that cycles the base gait Walk -> Jog -> Run (placeholder binding, mapped at runtime) */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultGaitCycleKey = EKeys::V;
 
 public:
 
-	/** Constructor */
-	ASupernaturalProtCharacter();	
+	/** Constructor: uses USpnCharacterMovementComponent (four gaits, configurable jump height) */
+	ASupernaturalProtCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 
@@ -124,6 +129,9 @@ protected:
 
 	/** Creates (once) and maps the runtime sprint action */
 	UInputAction* ResolveSprintAction();
+
+	/** Creates (once) and maps the runtime gait-cycle action */
+	UInputAction* ResolveGaitAction();
 
 protected:
 
@@ -155,13 +163,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoInteract();
 
-	/** Starts sprinting: raises max walk speed to SprintSpeed */
+	/** Requests the Sprint gait; it applies while the input points forward (predicted through the movement component) */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoSprintStart();
 
-	/** Ends sprinting: restores the walk speed */
+	/** Ends the sprint request: back to the base gait */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoSprintEnd();
+
+	/** Cycles the base gait Walk -> Jog -> Run */
+	UFUNCTION(BlueprintCallable, Category="Input")
+	virtual void DoCycleGait();
 
 public:
 
@@ -174,6 +186,9 @@ public:
 
 	/** Camera distance under which the mesh is hidden in the owner's view (0 = never) **/
 	FORCEINLINE float GetHideMeshCameraDistance() const { return HideMeshCameraDistance; }
+
+	/** The movement component with the gait logic; null only if a Blueprint swapped the component class **/
+	USpnCharacterMovementComponent* GetSpnMovement() const;
 
 	/** Returns the runtime sprint action; null before input setup **/
 	FORCEINLINE UInputAction* GetBoundSprintAction() const { return RuntimeSprintAction; }
