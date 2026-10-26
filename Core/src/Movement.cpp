@@ -13,6 +13,12 @@ bool Finite(double value) noexcept {
     return std::isfinite(value);
 }
 
+// An out-of-range enum (e.g. a corrupt wire value cast to Gait) must never index past the array.
+std::size_t GaitIndex(Gait gait) noexcept {
+    const auto index = static_cast<std::size_t>(gait);
+    return index < kGaitCount ? index : kGaitCount - 1;
+}
+
 } // namespace
 
 const char* GaitName(Gait gait) noexcept {
@@ -63,6 +69,22 @@ std::optional<std::string> Validate(const MovementConfig& config) {
     if (!Finite(config.sprintMaxAngleDegrees) || config.sprintMaxAngleDegrees < 0.0 || config.sprintMaxAngleDegrees > 180.0) {
         return std::string("sprint angle must be in [0, 180] degrees");
     }
+    if (!Finite(config.sprintSustainAngleDegrees) || config.sprintSustainAngleDegrees < config.sprintMaxAngleDegrees ||
+        config.sprintSustainAngleDegrees > 180.0) {
+        return std::string("sprint sustain angle must be in [sprint angle, 180] degrees");
+    }
+    if (!Finite(config.turnRateDegrees) || config.turnRateDegrees <= 0.0 || config.turnRateDegrees > 3600.0) {
+        return std::string("turn rate must be in (0, 3600] degrees per second");
+    }
+    if (!Finite(config.minAnalogSpeed) || config.minAnalogSpeed < 0.0 || config.minAnalogSpeed > config.gaits[0].speed) {
+        return std::string("minimum analog speed must be in [0, walk speed]");
+    }
+    if (!Finite(config.idleSpeed) || config.idleSpeed < 0.0 || config.idleSpeed >= config.gaits[0].speed) {
+        return std::string("idle speed must be in [0, walk speed)");
+    }
+    if (!Finite(config.landingSeconds) || config.landingSeconds < 0.0 || config.landingSeconds > 2.0) {
+        return std::string("landing time must be in [0, 2] seconds");
+    }
     if (!Finite(config.jumpHeight) || config.jumpHeight <= 0.0 || config.jumpHeight > 2.0) {
         return std::string("jump height must be in (0, 2] m");
     }
@@ -73,25 +95,75 @@ std::optional<std::string> Validate(const MovementConfig& config) {
 }
 
 double GaitSpeed(const MovementConfig& config, Gait gait) noexcept {
-    return config.gaits[static_cast<std::size_t>(gait)].speed;
+    return config.gaits[GaitIndex(gait)].speed;
 }
 
 double GaitAcceleration(const MovementConfig& config, Gait gait) noexcept {
-    return config.gaits[static_cast<std::size_t>(gait)].acceleration;
+    return config.gaits[GaitIndex(gait)].acceleration;
+}
+
+Gait ObservedGait(const MovementConfig& config, double horizontalSpeed) noexcept {
+    const double speed = (Finite(horizontalSpeed) && horizontalSpeed > 0.0) ? horizontalSpeed : 0.0;
+    Gait best = Gait::Walk;
+    double bestDelta = std::abs(config.gaits[0].speed - speed);
+    for (std::size_t i = 1; i < kGaitCount; ++i) {
+        const double delta = std::abs(config.gaits[i].speed - speed);
+        if (delta < bestDelta) { // strict: an exact tie keeps the lower gait
+            bestDelta = delta;
+            best = static_cast<Gait>(i);
+        }
+    }
+    return best;
+}
+
+const char* MovementStateName(MovementState state) noexcept {
+    switch (state) {
+    case MovementState::Idle: return "Idle";
+    case MovementState::Walk: return "Walk";
+    case MovementState::Jog: return "Jog";
+    case MovementState::Run: return "Run";
+    case MovementState::Sprint: return "Sprint";
+    case MovementState::Jumping: return "Jumping";
+    case MovementState::Falling: return "Falling";
+    case MovementState::Landing: return "Landing";
+    }
+    return "Unknown";
+}
+
+MovementState ClassifyMotion(const MovementConfig& config, const MotionSample& sample) noexcept {
+    if (!sample.onGround) {
+        return sample.verticalVelocity > 0.0 ? MovementState::Jumping : MovementState::Falling;
+    }
+    if (Finite(sample.secondsSinceLanding) && sample.secondsSinceLanding >= 0.0 &&
+        sample.secondsSinceLanding < config.landingSeconds) {
+        return MovementState::Landing;
+    }
+    if (!(sample.horizontalSpeed >= config.idleSpeed)) { // also true for NaN
+        return MovementState::Idle;
+    }
+    switch (ObservedGait(config, sample.horizontalSpeed)) {
+    case Gait::Walk: return MovementState::Walk;
+    case Gait::Jog: return MovementState::Jog;
+    case Gait::Run: return MovementState::Run;
+    case Gait::Sprint: return MovementState::Sprint;
+    }
+    return MovementState::Idle;
 }
 
 Gait ResolveGait(const MovementConfig& config, Gait base, bool sprintRequested, const GaitLimits& limits,
-                 MoveIntent intent) noexcept {
+                 MoveIntent intent, double currentSpeed) noexcept {
     const Gait walking = std::min(base == Gait::Sprint ? Gait::Run : base, limits.maxGait);
     if (!sprintRequested || limits.maxGait != Gait::Sprint) {
         return walking;
     }
 
     const double magnitude = std::hypot(intent.forward, intent.right);
-    if (magnitude > 1e-6 && intent.forward > 0.0) {
+    if (magnitude > 1e-6) {
         // Angle between the input direction and straight ahead.
         const double angle = std::atan2(std::abs(intent.right), intent.forward) * 180.0 / kPi;
-        if (angle <= config.sprintMaxAngleDegrees) {
+        const bool alreadySprinting = ObservedGait(config, currentSpeed) == Gait::Sprint;
+        const double allowed = alreadySprinting ? config.sprintSustainAngleDegrees : config.sprintMaxAngleDegrees;
+        if (angle <= allowed) {
             return Gait::Sprint;
         }
     }
@@ -115,7 +187,7 @@ double DirectionSpeedScale(const MovementConfig& config, MoveIntent intent) noex
 }
 
 double EffectiveSpeed(const MovementConfig& config, Gait gait, const GaitLimits& limits) noexcept {
-    const Gait capped = std::min(gait, limits.maxGait);
+    const Gait capped = std::min(gait, limits.maxGait); // an out-of-range maxGait is handled by GaitSpeed
     return GaitSpeed(config, capped) * limits.speedScale;
 }
 
@@ -136,19 +208,23 @@ double JumpApexHeight(double launchVelocity, double gravity) noexcept {
 const char* ObstacleClassName(ObstacleClass c) noexcept {
     switch (c) {
     case ObstacleClass::StepUp: return "StepUp";
-    case ObstacleClass::Jump: return "Jump";
+    case ObstacleClass::JumpCandidate: return "JumpCandidate";
     case ObstacleClass::Blocked: return "Blocked";
     }
     return "Unknown";
 }
 
 ObstacleClass ClassifyObstacle(const MovementConfig& config, double height) noexcept {
+    if (!Finite(height)) {
+        return ObstacleClass::Blocked; // NaN and +-inf: never claim an obstacle can be passed
+    }
     const double h = std::max(height, 0.0);
     if (h <= config.maxStepHeight) {
         return ObstacleClass::StepUp;
     }
-    if (h <= config.jumpHeight) {
-        return ObstacleClass::Jump;
+    // Strictly below the apex: the apex is reached for an instant only.
+    if (h < config.jumpHeight) {
+        return ObstacleClass::JumpCandidate;
     }
     return ObstacleClass::Blocked;
 }

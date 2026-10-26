@@ -1,9 +1,10 @@
 // PREPARED, NOT PART OF THE BUILD, NEVER COMPILED OR RUN (written on Fedora without Unreal Engine; Proposal 0011).
 //
 // Automated client/server sprint check: a listen server plus one client in one editor process (PIE), the client sprints
-// on the flat strip west of the start for 5 s, then the server's copy of the client's pawn is compared with the client's own.
+// on the speed lane (x = -125 m) for 5 s, then turns 90 degrees at full speed for 1.5 s; the server's copy of the client's pawn is
+// compared with the client's own throughout (position error, speed kept).
 //
-// To enable on Windows (see Docs/Setup/Windows-M2A-Handover.md, section 7):
+// To enable on Windows (see Docs/Setup/Windows-M2A-Handover.md, step 13):
 //   1. Copy this file to Source/SupernaturalProt/Spn/Tests/SpnMovementNetworkAutomation.cpp (drop ".txt").
 //   2. In SupernaturalProt.Build.cs add, for editor builds only:
 //        if (Target.bBuildEditor) { PrivateDependencyModuleNames.Add("UnrealEd"); }
@@ -89,8 +90,9 @@ bool FSpnMovementNetworkSprintTest::RunTest(const FString& Parameters)
 	{
 		if (Net->ServerCopy != nullptr && Net->ClientPawn != nullptr)
 		{
-			Net->ServerCopy->SetActorLocation(FVector(-300.f, 0.f, StandZ), false, nullptr, ETeleportType::TeleportPhysics);
-			Net->ClientPawn->GetController()->SetControlRotation(FRotator(0.f, 180.f, 0.f));
+			// The speed lane of Lvl_SpnMovementTest (free strip along +Y, Tools/spn_movement_map_layout.py).
+			Net->ServerCopy->SetActorLocation(FVector(-12500.f, -12000.f, StandZ), false, nullptr, ETeleportType::TeleportPhysics);
+			Net->ClientPawn->GetController()->SetControlRotation(FRotator(0.f, 90.f, 0.f));
 			Net->ClientPawn->DoSprintStart();
 		}
 		return true;
@@ -107,18 +109,21 @@ bool FSpnMovementNetworkSprintTest::RunTest(const FString& Parameters)
 		{
 			Net->Start = Now;
 		}
-		Net->ClientPawn->DoMove(0.f, 1.f);
+		// After 5 s of straight sprint the input turns 90 degrees to the side for 1.5 s: the sprint is kept (sustain angle), and the
+		// server must agree with the client about it (the velocity is predicted state, so the same rule gives the same answer).
+		const bool bTurning = Now - Net->Start > 5.0;
+		Net->ClientPawn->DoMove(bTurning ? 1.f : 0.f, bTurning ? 0.f : 1.f);
 		Net->WorstError = FMath::Max(Net->WorstError, static_cast<float>(FVector::Dist2D(Net->ClientPawn->GetActorLocation(), Net->ServerCopy->GetActorLocation())));
 		Net->ClientSpeed = Net->ClientPawn->GetVelocity().Size2D();
 		Net->ServerSpeed = Net->ServerCopy->GetVelocity().Size2D();
-		return Now - Net->Start > 5.0;
+		return Now - Net->Start > 6.5;
 	}));
 
 	ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand([this, Net]
 	{
 		// Expected: both sides reach the sprint speed; the pawns never drift far apart (smoothing/latency allowance).
-		TestTrue(FString::Printf(TEXT("client reaches sprint speed (%.0f cm/s)"), Net->ClientSpeed), Net->ClientSpeed > 700.f);
-		TestTrue(FString::Printf(TEXT("server copy reaches sprint speed (%.0f cm/s)"), Net->ServerSpeed), Net->ServerSpeed > 700.f);
+		TestTrue(FString::Printf(TEXT("client keeps the sprint through the turn (%.0f cm/s)"), Net->ClientSpeed), Net->ClientSpeed > 700.f);
+		TestTrue(FString::Printf(TEXT("server copy keeps the sprint through the turn (%.0f cm/s)"), Net->ServerSpeed), Net->ServerSpeed > 700.f);
 		TestTrue(FString::Printf(TEXT("client and server positions stay within 150 cm (worst %.0f)"), Net->WorstError), Net->WorstError < 150.f);
 		GEditor->RequestEndPlayMap();
 		return true;

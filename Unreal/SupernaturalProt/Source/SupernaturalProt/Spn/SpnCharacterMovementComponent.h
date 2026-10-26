@@ -73,6 +73,19 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Spn|Movement")
 	ESpnGait GetObservedGait() const;
 
+	/**
+	 * Idle, Walk, Jog, Run, Sprint, Jumping, Falling or Landing, from velocity, floor contact and the time of the last touch-down.
+	 * Computed on demand, nothing is stored or replicated, so it works on every proxy. The interface for animation blueprints
+	 * (read this instead of keeping a second state machine). Landing needs the movement-mode change to reach the machine
+	 * (see OnMovementModeChanged); on simulated proxies that is not verified in Unreal yet.
+	 */
+	UFUNCTION(BlueprintPure, Category = "Spn|Movement")
+	ESpnMovementState GetMovementState() const;
+
+	/** Seconds since the character last touched down after a fall or jump; negative if it has not (yet). */
+	UFUNCTION(BlueprintPure, Category = "Spn|Movement")
+	float GetSecondsSinceLanding() const;
+
 	/** Re-applies Settings to the Character Movement values it drives (braking, friction, step height, jump). Logs an error and keeps the old values if Settings are invalid. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Movement")
 	void ApplySettings();
@@ -88,6 +101,7 @@ public:
 	virtual float GetMaxAcceleration() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
@@ -104,6 +118,9 @@ protected:
 
 	ESpnGait MaxAllowedGait = ESpnGait::Sprint;
 	float SpeedScale = 1.f;
+
+	/** World time of the last touch-down (from the movement-mode change falling -> ground); negative if none yet. Not replicated. */
+	double LastLandedTime = -1.0;
 
 	/** Input direction in the character's frame (X forward, Y right, unit length or zero), from the current Acceleration. */
 	FVector2D GetLocalInput() const;

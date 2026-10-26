@@ -11,6 +11,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Misc/AutomationTest.h"
+#include "SpnMovement.h"
 #include "Spn/SpnTestDoor.h"
 #include "Spn/SpnCharacterMovementComponent.h"
 #include "SupernaturalProtCharacter.h"
@@ -102,7 +103,7 @@ bool FSpnTestMapM1LayoutTest::RunTest(const FString& Parameters)
 		TestTrue(TEXT("ramp starts at the M1 line"), FMath::Abs(Box.Min.X - M1X) < 20.f);
 	}
 
-	// Stairs: every tread at most 45 cm (default max step height) above the previous one; one landing.
+	// Stairs: every tread at most the walkable step height above the previous one (25 cm since M2-A.1); one landing.
 	float PreviousTop = 0.f;
 	for (int32 Index = 1; Index <= StairCount; ++Index)
 	{
@@ -114,7 +115,8 @@ bool FSpnTestMapM1LayoutTest::RunTest(const FString& Parameters)
 		}
 		const FBox Box = CheckSolidBehindDoors(Label, *Step);
 		const float Rise = Box.Max.Z - PreviousTop;
-		TestTrue(Label + TEXT(" rises 5-45 cm above the previous tread"), Rise > 5.f && Rise <= 45.f);
+		TestTrue(FString::Printf(TEXT("%s rises more than 5 cm and at most the max step height (%.0f cm) above the previous tread"), *Label, FSpnMovementSettings().MaxStepHeight),
+			Rise > 5.f && Rise <= FSpnMovementSettings().MaxStepHeight);
 		PreviousTop = Box.Max.Z;
 	}
 	if (const AStaticMeshActor* const* Landing = Meshes.Find(TEXT("SPN_M1_StairLanding")); TestNotNull(TEXT("stair landing placed"), Landing != nullptr ? *Landing : nullptr))

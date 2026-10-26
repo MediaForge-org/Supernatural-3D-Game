@@ -10,9 +10,6 @@ namespace
 	constexpr uint8 FlagBaseGaitBit0 = FSavedMove_Character::FLAG_Custom_1;
 	constexpr uint8 FlagBaseGaitBit1 = FSavedMove_Character::FLAG_Custom_2;
 
-	// Below this horizontal speed (cm/s) a character counts as standing.
-	constexpr float StandingSpeed = 5.f;
-
 	ESpnGait SanitizeBaseGait(ESpnGait Gait)
 	{
 		return Gait == ESpnGait::Sprint ? ESpnGait::Run : Gait;
@@ -63,29 +60,44 @@ FVector2D USpnCharacterMovementComponent::GetLocalInput() const
 
 ESpnGait USpnCharacterMovementComponent::GetEffectiveGait() const
 {
-	return SpnMovement::ResolveGait(Settings, BaseGait, bSprintRequested, MaxAllowedGait, GetLocalInput());
+	// The velocity is part of the predicted state, so the sprint-sustain test (a wider angle once at sprint speed)
+	// gives the same answer on the client and on the server.
+	return SpnMovement::ResolveGait(Settings, BaseGait, bSprintRequested, MaxAllowedGait, GetLocalInput(), Velocity.Size2D());
 }
 
 ESpnGait USpnCharacterMovementComponent::GetObservedGait() const
 {
 	const float Speed = Velocity.Size2D();
-	if (Speed < StandingSpeed)
+	if (Speed < Settings.IdleSpeed)
 	{
 		return BaseGait;
 	}
-	// The gait whose top speed is nearest to the observed speed.
-	ESpnGait Best = ESpnGait::Walk;
-	float BestDelta = TNumericLimits<float>::Max();
-	for (const ESpnGait Gait : {ESpnGait::Walk, ESpnGait::Jog, ESpnGait::Run, ESpnGait::Sprint})
+	return SpnMovement::ObservedGait(Settings, Speed);
+}
+
+float USpnCharacterMovementComponent::GetSecondsSinceLanding() const
+{
+	const UWorld* World = GetWorld();
+	if (World == nullptr || LastLandedTime < 0.0)
 	{
-		const float Delta = FMath::Abs(SpnMovement::GaitSpeed(Settings, Gait) - Speed);
-		if (Delta < BestDelta)
-		{
-			BestDelta = Delta;
-			Best = Gait;
-		}
+		return -1.f;
 	}
-	return Best;
+	return static_cast<float>(World->GetTimeSeconds() - LastLandedTime);
+}
+
+ESpnMovementState USpnCharacterMovementComponent::GetMovementState() const
+{
+	// Anything that is not falling counts as ground contact (walking, nav walking; swimming and flying do not exist yet).
+	return SpnMovement::ClassifyMotion(Settings, Velocity.Size2D(), Velocity.Z, !IsFalling(), GetSecondsSinceLanding());
+}
+
+void USpnCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+	if (PreviousMovementMode == MOVE_Falling && IsMovingOnGround() && GetWorld() != nullptr)
+	{
+		LastLandedTime = GetWorld()->GetTimeSeconds();
+	}
 }
 
 void USpnCharacterMovementComponent::ApplySettings()
@@ -106,6 +118,9 @@ void USpnCharacterMovementComponent::ApplySettings()
 	bUseSeparateBrakingFriction = true;
 	BrakingFriction = 0.f;
 	GroundFriction = Settings.TurnFriction;
+	RotationRate = FRotator(0.f, Settings.TurnRateDegrees, 0.f);
+	MinAnalogWalkSpeed = Settings.MinAnalogSpeed;
+	// Independent of the jump height: the step height only decides which ledges are walked up, JumpZVelocity only the apex.
 	MaxStepHeight = Settings.MaxStepHeight;
 	AirControl = Settings.AirControl;
 	BrakingDecelerationFalling = Settings.AirBrakingDeceleration;
@@ -114,6 +129,10 @@ void USpnCharacterMovementComponent::ApplySettings()
 
 void USpnCharacterMovementComponent::RefreshJumpVelocity()
 {
+	if (GetWorld() == nullptr)
+	{
+		return; // no world, no gravity: class default objects and detached components keep their JumpZVelocity
+	}
 	// GetGravityZ is negative (downwards) and already includes GravityScale.
 	const float Gravity = -GetGravityZ();
 	const float LaunchVelocity = SpnMovement::JumpVelocityForHeight(Settings.JumpHeight, Gravity);

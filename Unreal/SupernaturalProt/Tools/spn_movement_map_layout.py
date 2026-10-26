@@ -1,4 +1,4 @@
-"""Layout of the PLACEHOLDER movement test map /Game/SpnTest/Lvl_SpnMovementTest (Docs/Proposals/0011, M2-A).
+"""Layout of the PLACEHOLDER movement test map /Game/SpnTest/Lvl_SpnMovementTest (Docs/Proposals/0011, M2-A / M2-A.1).
 
 Pure Python, no Unreal import: it describes the map as data (boxes, cylinders, spheres, doors, one guard volume),
 so the geometry can be checked on any machine (Tools/test_spn_movement_map_layout.py) and is spawned in the editor
@@ -6,6 +6,11 @@ by create_spn_movement_test_map.py. Deterministic: the same code always gives th
 
 This map is a development and test environment. It is NOT a geographic excerpt of the later open world and implies
 no decision about terrain, roads, settlements or buildings of the real game. All sizes are throw-away test values.
+
+Areas (work order M2-A.1, section 11): A flat ground (plaza, speed lane), B slopes (ramps, hills), C stairs, D obstacles and
+walls, E uneven ground (terraces, rocks, surface patches), F camera tests (alley, pillar field), G buildings and interiors
+(hut, house, warehouse), H boundary and reset points (four walls, play-area guard, reset points). Every raised platform, ramp
+and staircase has rails or side walls: the map has no open drop edges.
 
 Units: centimetres (Unreal). X east, Y north, Z up. The ground surface is Z = 0. The map is 300 x 300 m.
 Rotation is (pitch, yaw, roll) in degrees as in Unreal; positive pitch raises the +X end.
@@ -18,21 +23,48 @@ HALF = 15000.0  # half edge of the playable square: 300 m x 300 m
 WALL_THICKNESS = 1000.0
 WALL_HEIGHT = 2000.0
 
-# Obstacle heights from the work order (section 4.2), cm.
-OBSTACLE_HEIGHTS = (20, 30, 40, 50, 60, 80, 100, 120, 150)
+# Obstacle heights, cm: 20/25/30/40/45/50/75/100/150 from the M2-A.1 work order (section 13) plus 60/80/120 from M2-A.
+# The character's step height is 25 cm and its jump apex 45 cm (defaults of FSpnMovementSettings): 20 is a step, 25 the
+# step limit, 30 and 40 are jump candidates, 45 is the jump apex, everything above is blocked until vault/mantle exist.
+OBSTACLE_HEIGHTS = (20, 25, 30, 40, 45, 50, 60, 75, 80, 100, 120, 150)
+MAX_STEP_HEIGHT = 25.0  # cm, default of FSpnMovementSettings::MaxStepHeight (the layout test compares the C++ default)
+JUMP_HEIGHT = 45.0      # cm, default of FSpnMovementSettings::JumpHeight
 RAMP_ANGLES = (5, 10, 15, 20, 30, 40, 50)  # degrees; the default walkable floor angle is ~44.8
-# (rise, run) per staircase, cm. 50 cm is above the 45 cm step height on purpose.
-STAIRCASES = ((15, 35), (18, 30), (22, 28), (30, 25), (40, 25), (50, 25))
+# (rise, run) per staircase, cm. 25 is the step limit, 30/40/50 are above it on purpose.
+STAIRCASES = ((15, 35), (18, 30), (22, 28), (25, 27), (30, 25), (40, 25), (50, 25))
 STAIR_STEPS = 10
+OBSTACLE_SPACING = 600.0     # between neighbouring obstacles along Y
+THIN_X, THIN_DEPTH = 3000.0, 40.0     # row 1: thin walls (step-up / jump / later vault)
+THICK_X, THICK_DEPTH = 5000.0, 200.0  # row 2: thick blocks (later mantle)
+RAMP_START_X = -9000.0
+RAMP_LENGTH = 1500.0
+RAMP_SPACING = 700.0
+STAIR_START_X = -9000.0
+STAIR_FIRST_Y = 4000.0
+STAIR_SPACING = 500.0
+RAIL_HEIGHT = 120.0   # above every walkable surface with a drop; more than the jump apex plus the step height
+RAIL_THICKNESS = 20.0
 
 PLAYER_START = (0.0, 0.0, 100.0)
+
+# Speed lane: a free strip along +Y for the speed tests (nothing but flat markers stands in it).
+LANE_X = -12500.0
+LANE_START_Y = -12000.0
+LANE_MARKER_SPACING = 1000.0
+LANE_MARKERS = 11
+
+# Capsule of the character (cm): used by the layout test to keep reset points free.
+CAPSULE_RADIUS = 42.0
+CAPSULE_HALF_HEIGHT = 96.0
 
 # Bounding rectangles (x0, x1, y0, y1) of the zones; the layout test checks they do not overlap.
 ZONES = {
     "plaza": (-1500.0, 1500.0, -1500.0, 1500.0),
-    "obstacles": (2500.0, 5800.0, -3000.0, 3000.0),
+    "speedlane": (-14000.0, -11000.0, -13000.0, 13000.0),
+    "obstacles": (2500.0, 5800.0, -3700.0, 3700.0),
     "ramps": (-9500.0, -6000.0, -2800.0, 2800.0),
-    "stairs": (-9500.0, -8300.0, 3500.0, 6800.0),
+    "stairs": (-9500.0, -8300.0, 3700.0, 7300.0),
+    "pillars": (-5500.0, -2500.0, -6500.0, -2500.0),
     "hills": (6000.0, 13500.0, -9800.0, -1200.0),
     "terraces": (7000.0, 11000.0, 2000.0, 6000.0),
     "rocks": (6500.0, 11500.0, 7000.0, 12000.0),
@@ -42,6 +74,36 @@ ZONES = {
     "house": (-1000.0, 1000.0, -10200.0, -8000.0),
     "warehouse": (2200.0, 5600.0, -12800.0, -10000.0),
 }
+
+# Work-order areas A..H and the zones that belong to them.
+AREAS = {
+    "A_flat": ("plaza", "speedlane"),
+    "B_slopes": ("ramps", "hills"),
+    "C_stairs": ("stairs",),
+    "D_obstacles": ("obstacles",),
+    "E_uneven": ("terraces", "rocks", "surfaces"),
+    "F_camera": ("alley", "pillars"),
+    "G_buildings": ("hut", "house", "warehouse"),
+    "H_boundary": ("boundary",),
+}
+
+# Reset points (name, x, y): one on open ground next to every area. The play-area guard puts a pawn back at the nearest one.
+RESET_POINTS = (
+    ("plaza", 0.0, 0.0),
+    ("speedlane", LANE_X, LANE_START_Y),
+    ("obstacles", 1800.0, 0.0),
+    ("ramps", -9900.0, 0.0),
+    ("stairs", -9900.0, 5500.0),
+    ("hills", 6500.0, 0.0),
+    ("terraces", 6300.0, 4000.0),
+    ("rocks", 6000.0, 9500.0),
+    ("surfaces", -2000.0, 8300.0),
+    ("alley", 0.0, 3000.0),
+    ("pillars", -4000.0, -2000.0),
+    ("hut", -4000.0, -7500.0),
+    ("house", 0.0, -7500.0),
+    ("warehouse", 3500.0, -9000.0),
+)
 
 MATERIAL_PATHS = {
     "grid_gray": "/Game/LevelPrototyping/Materials/MI_PrototypeGrid_Gray.MI_PrototypeGrid_Gray",
@@ -76,6 +138,7 @@ class Layout:
     def __init__(self):
         self.prims = []
         self.doors = []
+        self.openings = []
 
     def add(self, label, shape, center, size, zone, rot=(0.0, 0.0, 0.0), material="grid_gray"):
         """size = full extents in cm for cube; (diameter, diameter, height) for cylinder; diameter x3 for sphere."""
@@ -102,6 +165,11 @@ class Layout:
         index = 0
         pieces = []  # (c0, c1, zb, zt)
         for o0, o1, zb, zt in cuts:
+            self.openings.append({
+                "wall": label, "zone": zone, "axis": axis, "fixed": fixed, "from": o0, "to": o1,
+                "kind": "doorway" if zb <= z0 + 0.5 else "window",
+                "width": o1 - o0, "height": zt - zb, "sill": zb - z0,
+            })
             if o0 > cursor:
                 pieces.append((cursor, o0, z0, z0 + height))
             if zb > z0:
@@ -126,8 +194,12 @@ class Layout:
         """ASpnTestDoor in a wall plane x = const: hinge at the +Y edge of a 100 cm panel (as Lvl_SpnDoorTest)."""
         self.doors.append({"id": stable_id, "hinge": [x, y_centre + 50.0, 0.0], "yaw": -90.0, "zone": zone})
 
-    def ramp(self, label, zone, x_start, y, length, width, thickness, angle, landing_length, material="grid_gray"):
-        """Slab whose top face starts at the ground at x_start and rises towards +X, plus a solid landing at the top."""
+    def rail_box(self, label, zone, center, size, rot=(0.0, 0.0, 0.0)):
+        self.add(label, "cube", center, size, zone, rot=rot, material="grid_topdark")
+
+    def ramp(self, label, zone, x_start, y, length, width, thickness, angle, landing_length, material="grid_gray", rails=True):
+        """Slab whose top face starts at the ground at x_start and rises towards +X, a solid landing at the top and rails on
+        both sides of the slope and the landing and across the landing's far end (no open drop edge)."""
         a = math.radians(angle)
         half = length / 2.0
         centre = (
@@ -136,17 +208,44 @@ class Layout:
             half * math.sin(a) - thickness / 2.0 * math.cos(a),
         )
         self.add(label, "cube", centre, (length, width, thickness), zone, rot=(angle, 0.0, 0.0), material=material)
-        if landing_length <= 0.0:
-            return
         top = length * math.sin(a)
         end_x = x_start + length * math.cos(a)
+        if rails:
+            side = width / 2.0 - RAIL_THICKNESS / 2.0
+            for tag, sign in (("W", -1.0), ("E", 1.0)):
+                # Rail on the slope surface: same pitch, RAIL_HEIGHT above the surface along the slab normal.
+                centre_r = (
+                    x_start + half * math.cos(a) - RAIL_HEIGHT / 2.0 * math.sin(a),
+                    y + sign * side,
+                    half * math.sin(a) + RAIL_HEIGHT / 2.0 * math.cos(a),
+                )
+                self.rail_box("%s_Rail_%s" % (label, tag), zone, centre_r, (length, RAIL_THICKNESS, RAIL_HEIGHT), rot=(angle, 0.0, 0.0))
+        if landing_length <= 0.0:
+            return
         self.box_on_ground(label + "_Landing", end_x + landing_length / 2.0, y, landing_length, width, top, zone, material)
+        if rails:
+            self._landing_rails(label + "_Landing", zone, end_x, y, landing_length, width, top)
+
+    def _landing_rails(self, label, zone, x_near, y, length, width, top):
+        """Rails along both sides and across the far end of a platform whose near edge (x_near) is open for access."""
+        side = width / 2.0 - RAIL_THICKNESS / 2.0
+        for tag, sign in (("RailW", -1.0), ("RailE", 1.0)):
+            self.rail_box("%s_%s" % (label, tag), zone, (x_near + length / 2.0, y + sign * side, top + RAIL_HEIGHT / 2.0),
+                          (length, RAIL_THICKNESS, RAIL_HEIGHT))
+        self.rail_box(label + "_EndRail", zone, (x_near + length - RAIL_THICKNESS / 2.0, y, top + RAIL_HEIGHT / 2.0),
+                      (RAIL_THICKNESS, width, RAIL_HEIGHT))
 
     def stairs(self, label, zone, x_start, y, width, rise, run, steps, landing_length, material="grid_gray"):
-        for i in range(1, steps + 1):
-            self.box_on_ground("%s_Step_%02d" % (label, i), x_start + (i - 0.5) * run, y, run, width, i * rise, zone, material)
+        for k in range(1, steps + 1):
+            self.box_on_ground("%s_Step_%02d" % (label, k), x_start + (k - 0.5) * run, y, run, width, k * rise, zone, material)
         top = steps * rise
         self.box_on_ground(label + "_Landing", x_start + steps * run + landing_length / 2.0, y, landing_length, width, top, zone, material)
+        # Side walls (stringers) along the whole flight and the landing, RAIL_HEIGHT above the top; outside the clear width.
+        total = steps * run + landing_length
+        for tag, sign in (("W", -1.0), ("E", 1.0)):
+            self.box_on_ground("%s_Side_%s" % (label, tag), x_start + total / 2.0, y + sign * (width / 2.0 + RAIL_THICKNESS / 2.0),
+                               total, RAIL_THICKNESS, top + RAIL_HEIGHT, zone, "grid_topdark")
+        self.rail_box(label + "_EndRail", zone, (x_start + total - RAIL_THICKNESS / 2.0, y, top + RAIL_HEIGHT / 2.0), (RAIL_THICKNESS, width, RAIL_HEIGHT))
 
 
 def _build_base(layout):
@@ -162,23 +261,36 @@ def _build_base(layout):
     layout.add("SPN_MV_Boundary_West", "cube", (-centre, 0.0, z_centre), (WALL_THICKNESS, span, height), "boundary", material="grid_topdark")
 
 
+def obstacle_y(index):
+    """Y of the obstacle with this index in OBSTACLE_HEIGHTS (the Unreal tests use the same rule)."""
+    return (index - (len(OBSTACLE_HEIGHTS) - 1) / 2.0) * OBSTACLE_SPACING
+
+
+def ramp_y(index):
+    return (index - (len(RAMP_ANGLES) - 1) / 2.0) * RAMP_SPACING
+
+
+def stair_y(index):
+    return STAIR_FIRST_Y + index * STAIR_SPACING
+
+
 def _build_obstacles(layout):
     # Row 1: thin walls (40 cm deep) for step-up and vaulting. Row 2: thick blocks (200 cm deep) for mantling.
-    for row, (x, depth, name) in enumerate(((3000.0, 40.0, "Thin"), (5000.0, 200.0, "Thick"))):
+    for x, depth, name in ((THIN_X, THIN_DEPTH, "Thin"), (THICK_X, THICK_DEPTH, "Thick")):
         for i, height in enumerate(OBSTACLE_HEIGHTS):
-            y = (i - (len(OBSTACLE_HEIGHTS) - 1) / 2.0) * 600.0
+            y = obstacle_y(i)
             layout.box_on_ground("SPN_MV_Obstacle_%s_%03d" % (name, height), x, y, depth, 500.0, float(height), "obstacles")
 
 
 def _build_ramps(layout):
     for i, angle in enumerate(RAMP_ANGLES):
-        y = (i - (len(RAMP_ANGLES) - 1) / 2.0) * 700.0
-        layout.ramp("SPN_MV_Ramp_%02d" % angle, "ramps", -9000.0, y, 1500.0, 400.0, 20.0, float(angle), 400.0)
+        y = ramp_y(i)
+        layout.ramp("SPN_MV_Ramp_%02d" % angle, "ramps", RAMP_START_X, y, RAMP_LENGTH, 400.0, 20.0, float(angle), 400.0)
 
 
 def _build_stairs(layout):
     for i, (rise, run) in enumerate(STAIRCASES):
-        layout.stairs("SPN_MV_Stairs_R%02d" % rise, "stairs", -9000.0, 4000.0 + i * 500.0, 300.0, float(rise), float(run), STAIR_STEPS, 300.0)
+        layout.stairs("SPN_MV_Stairs_R%02d" % rise, "stairs", STAIR_START_X, stair_y(i), 300.0, float(rise), float(run), STAIR_STEPS, 300.0)
 
 
 def _build_hills(layout):
@@ -197,16 +309,16 @@ def _build_terraces(layout):
 
 
 def _build_rocks(layout):
-    # Uneven ground: 120 low tilted boxes (top at most about 36 cm), deterministic.
+    # Uneven ground: 80 low tilted boxes, half buried, every edge below the step height (top at most about 24 cm), deterministic.
     rng = _Lcg(20261025)
-    for i in range(120):
-        sx = rng.uniform(60.0, 220.0)
-        sy = rng.uniform(60.0, 220.0)
-        sz = rng.uniform(10.0, 25.0)
+    for i in range(80):
+        sx = rng.uniform(60.0, 180.0)
+        sy = rng.uniform(60.0, 180.0)
+        sz = rng.uniform(8.0, 16.0)
         x = rng.uniform(6700.0, 11300.0)
         y = rng.uniform(7200.0, 11800.0)
-        rot = (rng.uniform(-6.0, 6.0), rng.uniform(0.0, 360.0), rng.uniform(-6.0, 6.0))
-        layout.add("SPN_MV_Rock_%03d" % i, "cube", (x, y, sz / 2.0), (sx, sy, sz), "rocks", rot=rot, material="grid_gray_02")
+        rot = (rng.uniform(-3.0, 3.0), rng.uniform(0.0, 360.0), rng.uniform(-3.0, 3.0))
+        layout.add("SPN_MV_Rock_%03d" % i, "cube", (x, y, sz / 2.0 - 2.0), (sx, sy, sz), "rocks", rot=rot, material="grid_gray_02")
 
 
 def _build_surfaces(layout):
@@ -267,6 +379,8 @@ def _build_house(layout):
     layout.add("SPN_MV_House_Slab_West", "cube", (x0 + 5.0, (y0 + y1) / 2.0, slab_c), (10.0, y1 - y0, 20.0), z)
     layout.add("SPN_MV_House_Slab_Main", "cube", ((-560.0 + x1) / 2.0, (y0 + y1) / 2.0, slab_c), (x1 + 560.0, y1 - y0, 20.0), z)
     layout.add("SPN_MV_House_Slab_North", "cube", (-625.0, (hole_y1 + y1) / 2.0, slab_c), (130.0, y1 - hole_y1, 20.0), z)
+    # Rail along the open east edge of the stairwell (the north end is where the stairs arrive, the south end is the wall).
+    layout.rail_box("SPN_MV_House_StairRail", z, (-555.0, (y0 + hole_y1) / 2.0, slab_top + 50.0), (10.0, hole_y1 - y0, 100.0))
     # First floor shell and rooms.
     f0 = floor_h
     layout.wall("SPN_MV_House_F_West", z, "x", x0, y0, y1, f0, h, t, openings=[(-9100.0, -8980.0, f0 + 90.0, f0 + 210.0)])
@@ -287,13 +401,26 @@ def _build_warehouse(layout):
     layout.wall("SPN_MV_Warehouse_West", z, "x", x0, y0, y1, 100.0, h, t, openings=[(-12000.0, -11700.0, 100.0, 500.0)])
     layout.wall("SPN_MV_Warehouse_East", z, "x", x1, y0, y1, 100.0, h, t)
     layout.wall("SPN_MV_Warehouse_South", z, "y", y0, x0, x1, 100.0, h, t)
-    layout.wall("SPN_MV_Warehouse_North", z, "y", y1, x0, x1, 100.0, h, t, openings=[(3400.0, 3600.0, 100.0, 220.0), (4400.0, 4510.0, 100.0, 320.0)])
+    layout.wall("SPN_MV_Warehouse_North", z, "y", y1, x0, x1, 100.0, h, t, openings=[(3400.0, 3600.0, 190.0, 310.0), (4400.0, 4510.0, 190.0, 310.0)])  # windows with a sill; no opening to the 1 m drop outside
     layout.add("SPN_MV_Warehouse_Pillar_1", "cube", (3700.0, -11800.0, 100.0 + h / 2.0), (60.0, 60.0, h), z)
     layout.add("SPN_MV_Warehouse_Pillar_2", "cube", (4300.0, -11800.0, 100.0 + h / 2.0), (60.0, 60.0, h), z)
     layout.add("SPN_MV_Warehouse_Roof", "cube", (4000.0, -11800.0, 100.0 + h + 10.0), (x1 - x0 + 60.0, y1 - y0 + 60.0, 20.0), z)
     # Loading ramp on the west side: 100 cm rise over a 700 cm slope (about 8 degrees), ending at the dock edge.
     angle = math.degrees(math.asin(100.0 / 700.0))
-    layout.ramp("SPN_MV_Warehouse_DockRamp", z, x0 - 700.0 * math.cos(math.radians(angle)), -11850.0, 700.0, 300.0, 20.0, angle, 0.0)
+    layout.ramp("SPN_MV_Warehouse_DockRamp", z, x0 - 700.0 * math.cos(math.radians(angle)), -11850.0, 700.0, 300.0, 20.0, angle, 0.0, rails=True)
+
+
+def _build_pillars(layout):
+    # Camera test: a field of 5 x 5 pillars (80 cm across, 4 m high, 4 m apart) for fast direction changes between obstacles.
+    for ix in range(5):
+        for iy in range(5):
+            layout.add("SPN_MV_Pillar_%d%d" % (ix, iy), "cylinder", (-5300.0 + ix * 400.0, -6300.0 + iy * 400.0, 200.0), (80.0, 80.0, 400.0), "pillars", material="grid_round")
+
+
+def _build_speedlane(layout):
+    # Flat distance markers (1 cm high, 10 m apart) for the speed tests; the lane is otherwise empty and level.
+    for k in range(LANE_MARKERS):
+        layout.add("SPN_MV_Lane_Marker_%03d" % (k * 10), "cube", (LANE_X, LANE_START_Y + k * LANE_MARKER_SPACING, 0.5), (600.0, 20.0, 1.0), "speedlane")
 
 
 def build_layout():
@@ -310,13 +437,19 @@ def build_layout():
     _build_hut(layout)
     _build_house(layout)
     _build_warehouse(layout)
+    _build_pillars(layout)
+    _build_speedlane(layout)
     return {
         "map": "/Game/SpnTest/Lvl_SpnMovementTest",
         "half_extent_cm": HALF,
         "player_start": list(PLAYER_START),
-        "guard": {"center": [0.0, 0.0, 1000.0], "extent": [HALF, HALF, 5000.0], "safe_location": list(PLAYER_START)},
+        "guard": {"center": [0.0, 0.0, 1000.0], "extent": [HALF, HALF, 5000.0], "safe_location": list(PLAYER_START),
+                  "reset_points": [[x, y, PLAYER_START[2]] for _, x, y in RESET_POINTS]},
+        "reset_points": [{"name": name, "pos": [x, y, PLAYER_START[2]]} for name, x, y in RESET_POINTS],
+        "areas": {name: list(zones) for name, zones in AREAS.items()},
         "prims": layout.prims,
         "doors": layout.doors,
+        "openings": layout.openings,
     }
 
 

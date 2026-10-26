@@ -41,3 +41,13 @@ if(Python3_Interpreter_FOUND)
         COMMAND ${Python3_EXECUTABLE} -I
             ${PROJECT_SOURCE_DIR}/Unreal/SupernaturalProt/Tools/test_spn_movement_map_layout.py)
 endif()
+
+# Syntax check of the Unreal-side movement code against hand-written engine stand-ins (Linux/macOS only, needs bash and a C++ compiler).
+# It checks that these files agree with each other; it is NOT an Unreal build. See Docs/Setup/Windows-M2A-Handover.md.
+if(UNIX)
+    find_program(SPN_BASH bash)
+    if(SPN_BASH)
+        add_test(NAME unreal_stub_check
+            COMMAND ${SPN_BASH} ${PROJECT_SOURCE_DIR}/Unreal/SupernaturalProt/Tools/stubcheck/run_stub_check.sh)
+    endif()
+endif()

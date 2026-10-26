@@ -41,11 +41,9 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter(const FObjectInitializer&
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 500.0f, 0.0f);
 
-	// Speeds, accelerations, braking, turn friction, air control, step height and the jump velocity come from
-	// USpnCharacterMovementComponent::Settings (M2-A); they can be tuned there in the Character Blueprint.
-	GetCharacterMovement()->MinAnalogWalkSpeed = 20.f;
+	// Speeds, accelerations, braking, turn friction and turn rate, minimum analog speed, air control, step height and the
+	// jump velocity come from USpnCharacterMovementComponent::Settings (M2-A / M2-A.1); tune them there in the Character Blueprint.
 
 	// Jumping is an active input only: one jump, no jump held longer for more height, no double jump.
 	JumpMaxCount = 1;
@@ -202,7 +200,10 @@ UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
 
 		RuntimeSprintMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnSprint_Runtime"), RF_Transient);
 		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintKey);
-		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, EKeys::Gamepad_LeftThumbstick); // L3
+		if (DefaultSprintGamepadKey.IsValid())
+		{
+			RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintGamepadKey);
+		}
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))

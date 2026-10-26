@@ -23,6 +23,9 @@ bool FSpnMovementSettingsTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("run 5.0 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Run), 500.f);
 	TestEqual(TEXT("sprint 8.0 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Sprint), 800.f);
 	TestEqual(TEXT("default jump height 45 cm"), Defaults.JumpHeight, 45.f);
+	TestEqual(TEXT("default step height 25 cm (not the jump height)"), Defaults.MaxStepHeight, 25.f);
+	TestEqual(TEXT("default sprint start angle"), Defaults.SprintMaxAngleDegrees, 50.f);
+	TestTrue(TEXT("sprint sustain angle is not below the start angle"), Defaults.SprintSustainAngleDegrees >= Defaults.SprintMaxAngleDegrees);
 
 	// Engine default gravity is 980 cm/s^2; a 45 cm apex needs about 297 cm/s (the prototype's 500 cm/s gave 127 cm).
 	const float Launch = SpnMovement::JumpVelocityForHeight(Defaults.JumpHeight, 980.f);
@@ -47,9 +50,62 @@ bool FSpnMovementSettingsTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("sprint backwards falls back to the base gait"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(-1.0, 0.0)) == ESpnGait::Jog);
 	TestTrue(TEXT("a gait ceiling caps the sprint"), SpnMovement::ResolveGait(Defaults, ESpnGait::Run, true, ESpnGait::Jog, FVector2D(1.0, 0.0)) == ESpnGait::Jog);
 
-	// 50 cm is not a high jump: it is above step height (45) and jump height (45), so it is blocked for now.
-	TestTrue(TEXT("40 cm is a step"), SpnMovement::ClassifyObstacle(Defaults, 40.f) == ESpnObstacleClass::StepUp);
-	TestTrue(TEXT("50 cm is blocked"), SpnMovement::ClassifyObstacle(Defaults, 50.f) == ESpnObstacleClass::Blocked);
+	// Rejected new fields and the independence of step and jump height in the validation.
+	Broken = Defaults;
+	Broken.SprintSustainAngleDegrees = Defaults.SprintMaxAngleDegrees - 1.f;
+	TestFalse(TEXT("a sustain angle below the start angle is rejected"), SpnMovement::Validate(Broken, Error));
+	Broken = Defaults;
+	Broken.TurnRateDegrees = 0.f;
+	TestFalse(TEXT("zero turn rate is rejected"), SpnMovement::Validate(Broken, Error));
+	Broken = Defaults;
+	Broken.MaxStepHeight = Defaults.JumpHeight + 20.f;
+	TestTrue(TEXT("a step height above the jump height is valid (the two are independent)"), SpnMovement::Validate(Broken, Error));
+	Broken = Defaults;
+	Broken.JumpHeight = 100.f;
+	TestTrue(TEXT("a higher jump height leaves the step height alone and is valid"), SpnMovement::Validate(Broken, Error) && Broken.MaxStepHeight == Defaults.MaxStepHeight);
+
+	// Gait resolution through the bridge: sprint needs forward input; a refused sprint keeps the chosen base gait.
+	TestTrue(TEXT("sprint forward"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(1.0, 0.0)) == ESpnGait::Sprint);
+	TestTrue(TEXT("sprint backwards falls back to the base gait"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(-1.0, 0.0)) == ESpnGait::Jog);
+	TestTrue(TEXT("a gait ceiling caps the sprint"), SpnMovement::ResolveGait(Defaults, ESpnGait::Run, true, ESpnGait::Jog, FVector2D(1.0, 0.0)) == ESpnGait::Jog);
+
+	// Sprint through a sharp turn: refused when starting from a walk, kept at sprint speed.
+	TestTrue(TEXT("a 90 degree sprint start is refused"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(0.0, 1.0), 0.f) == ESpnGait::Jog);
+	TestTrue(TEXT("a 90 degree turn keeps the sprint at sprint speed"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(0.0, 1.0), 800.f) == ESpnGait::Sprint);
+	TestTrue(TEXT("a turn nearly back ends the sprint"), SpnMovement::ResolveGait(Defaults, ESpnGait::Jog, true, ESpnGait::Sprint, FVector2D(-0.866, 0.5), 800.f) == ESpnGait::Jog);
+
+	// Observed gait and movement states through the bridge (cm/s).
+	TestTrue(TEXT("observed gait at 310 cm/s is Jog"), SpnMovement::ObservedGait(Defaults, 310.f) == ESpnGait::Jog);
+	TestTrue(TEXT("observed gait at 790 cm/s is Sprint"), SpnMovement::ObservedGait(Defaults, 790.f) == ESpnGait::Sprint);
+	TestTrue(TEXT("standing is Idle"), SpnMovement::ClassifyMotion(Defaults, 0.f, 0.f, true, -1.f) == ESpnMovementState::Idle);
+	TestTrue(TEXT("500 cm/s on the ground is Run"), SpnMovement::ClassifyMotion(Defaults, 500.f, 0.f, true, -1.f) == ESpnMovementState::Run);
+	TestTrue(TEXT("rising in the air is Jumping"), SpnMovement::ClassifyMotion(Defaults, 0.f, 297.f, false, -1.f) == ESpnMovementState::Jumping);
+	TestTrue(TEXT("falling in the air is Falling"), SpnMovement::ClassifyMotion(Defaults, 300.f, -200.f, false, -1.f) == ESpnMovementState::Falling);
+	TestTrue(TEXT("0.1 s after touch-down is Landing"), SpnMovement::ClassifyMotion(Defaults, 300.f, 0.f, true, 0.1f) == ESpnMovementState::Landing);
+	TestTrue(TEXT("0.3 s after touch-down the gait state is back"), SpnMovement::ClassifyMotion(Defaults, 300.f, 0.f, true, 0.3f) == ESpnMovementState::Jog);
+
+	// The nine heights of the M2-A.1 work order against the 25 cm step height and the 45 cm jump apex. The classes are a rule of
+	// thumb about the height; "JumpCandidate" does not promise that a jump gets over the ledge.
+	struct FHeightCase
+	{
+		float Height;
+		ESpnObstacleClass Expected;
+	};
+	const FHeightCase HeightCases[] = {
+		{20.f, ESpnObstacleClass::StepUp},
+		{25.f, ESpnObstacleClass::StepUp},
+		{30.f, ESpnObstacleClass::JumpCandidate},
+		{40.f, ESpnObstacleClass::JumpCandidate},
+		{45.f, ESpnObstacleClass::Blocked}, // the apex itself is reached for an instant only
+		{50.f, ESpnObstacleClass::Blocked},
+		{75.f, ESpnObstacleClass::Blocked},
+		{100.f, ESpnObstacleClass::Blocked},
+		{150.f, ESpnObstacleClass::Blocked},
+	};
+	for (const FHeightCase& Case : HeightCases)
+	{
+		TestTrue(FString::Printf(TEXT("%.0f cm obstacle classification"), Case.Height), SpnMovement::ClassifyObstacle(Defaults, Case.Height) == Case.Expected);
+	}
 	return true;
 }
 
@@ -66,6 +122,11 @@ bool FSpnMovementCharacterDefaultsTest::RunTest(const FString& Parameters)
 	TestNotNull(TEXT("the character uses USpnCharacterMovementComponent"), Defaults->GetSpnMovement());
 	TestEqual(TEXT("one jump, no double jump"), Defaults->JumpMaxCount, 1);
 	TestEqual(TEXT("no variable jump height"), Defaults->JumpMaxHoldTime, 0.f);
+	if (const USpnCharacterMovementComponent* Movement = Defaults->GetSpnMovement())
+	{
+		TestEqual(TEXT("default jump height 45 cm"), Movement->Settings.JumpHeight, 45.f);
+		TestEqual(TEXT("default step height 25 cm"), Movement->Settings.MaxStepHeight, 25.f);
+	}
 	return true;
 }
 

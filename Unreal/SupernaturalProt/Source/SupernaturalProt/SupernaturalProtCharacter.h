@@ -94,6 +94,13 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultSprintKey = EKeys::LeftShift;
 
+	/**
+	 * Gamepad key held to sprint (placeholder binding, mapped at runtime; L3 is the left thumbstick press for Xbox-compatible pads and
+	 * the DualSense). The combat documentation has no sprint binding for pads yet (Kampfsystem 06); set this to "Invalid" to map none.
+	 */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultSprintGamepadKey = EKeys::Gamepad_LeftThumbstick;
+
 	/** While the camera is closer than this to its pivot (squeezed by a wall behind the character), the character mesh is hidden
 	 *  in the owner's view so the camera does not look into the body. 0 disables it. Placeholder value, cm. */
 	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0"))

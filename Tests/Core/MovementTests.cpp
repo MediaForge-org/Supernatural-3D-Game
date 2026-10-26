@@ -22,6 +22,7 @@ TEST_CASE("the default movement config is valid and holds the four work-order sp
     CHECK(GaitSpeed(config, Gait::Run) == doctest::Approx(5.0));
     CHECK(GaitSpeed(config, Gait::Sprint) == doctest::Approx(8.0));
     CHECK(config.jumpHeight == doctest::Approx(0.45));
+    CHECK(config.maxStepHeight == doctest::Approx(0.25)); // M2-A.1: a human step, not the jump height
     CHECK(config.defaultGait != Gait::Sprint);
 }
 
@@ -50,10 +51,26 @@ TEST_CASE("Validate rejects broken configs") {
     CHECK(invalid([](MovementConfig& c) { c.jumpHeight = 2.5; }));
     CHECK(invalid([](MovementConfig& c) { c.maxStepHeight = -0.1; }));
     CHECK(invalid([](MovementConfig& c) { c.maxStepHeight = 1.5; }));
+    CHECK(invalid([](MovementConfig& c) { c.maxStepHeight = std::numeric_limits<double>::quiet_NaN(); }));
+    CHECK(invalid([](MovementConfig& c) { c.jumpHeight = std::numeric_limits<double>::quiet_NaN(); }));
+    CHECK(invalid([](MovementConfig& c) { c.sprintSustainAngleDegrees = 40.0; })); // below the start angle (50)
+    CHECK(invalid([](MovementConfig& c) { c.sprintSustainAngleDegrees = 181.0; }));
+    CHECK(invalid([](MovementConfig& c) { c.turnRateDegrees = 0.0; }));
+    CHECK(invalid([](MovementConfig& c) { c.turnRateDegrees = 4000.0; }));
+    CHECK(invalid([](MovementConfig& c) { c.minAnalogSpeed = -0.1; }));
+    CHECK(invalid([](MovementConfig& c) { c.minAnalogSpeed = 2.0; })); // above the walk speed
+    CHECK(invalid([](MovementConfig& c) { c.idleSpeed = -0.01; }));
+    CHECK(invalid([](MovementConfig& c) { c.idleSpeed = 1.4; })); // must stay below the walk speed
+    CHECK(invalid([](MovementConfig& c) { c.landingSeconds = -0.1; }));
+    CHECK(invalid([](MovementConfig& c) { c.landingSeconds = 2.5; }));
+    CHECK(invalid([](MovementConfig& c) { c.gaits[0].acceleration = std::numeric_limits<double>::infinity(); }));
     // Boundary values that are still fine.
     CHECK_FALSE(invalid([](MovementConfig& c) { c.backwardSpeedFactor = 1.0; }));
     CHECK_FALSE(invalid([](MovementConfig& c) { c.maxStepHeight = 0.0; }));
-    CHECK_FALSE(invalid([](MovementConfig& c) { c.sprintMaxAngleDegrees = 180.0; }));
+    CHECK_FALSE(invalid([](MovementConfig& c) { c.sprintMaxAngleDegrees = 180.0; c.sprintSustainAngleDegrees = 180.0; }));
+    CHECK_FALSE(invalid([](MovementConfig& c) { c.sprintSustainAngleDegrees = c.sprintMaxAngleDegrees; })); // equal: no hysteresis
+    CHECK_FALSE(invalid([](MovementConfig& c) { c.landingSeconds = 0.0; }));
+    CHECK_FALSE(invalid([](MovementConfig& c) { c.idleSpeed = 0.0; }));
 }
 
 TEST_CASE("gait indices round-trip and out-of-range values are rejected") {
@@ -162,21 +179,207 @@ TEST_CASE("direction speed scale: forward 1, sideways strafe factor, backward fa
     }
 }
 
-TEST_CASE("obstacle classes follow the step and jump heights, and 50 cm is not a high jump") {
-    const MovementConfig config; // step 45 cm, jump 45 cm
-    for (const double h : {0.0, 0.20, 0.30, 0.40, 0.45}) {
-        CHECK(ClassifyObstacle(config, h) == ObstacleClass::StepUp);
+TEST_CASE("obstacle classes: step-up, jump candidate and blocked follow the two heights") {
+    const MovementConfig config; // step 25 cm, jump 45 cm
+    struct Expected { double height; ObstacleClass cls; };
+    // The nine heights of the M2-A.1 work order plus the boundaries.
+    const Expected table[] = {
+        {0.00, ObstacleClass::StepUp},        {0.20, ObstacleClass::StepUp},
+        {0.25, ObstacleClass::StepUp},        // exactly the step height: still a step
+        {0.2501, ObstacleClass::JumpCandidate},
+        {0.30, ObstacleClass::JumpCandidate}, {0.40, ObstacleClass::JumpCandidate},
+        {0.4499, ObstacleClass::JumpCandidate},
+        {0.45, ObstacleClass::Blocked},       // the jump apex is reached for an instant only
+        {0.50, ObstacleClass::Blocked},       {0.75, ObstacleClass::Blocked},
+        {1.00, ObstacleClass::Blocked},       {1.50, ObstacleClass::Blocked},
+    };
+    for (const Expected& e : table) {
+        CAPTURE(e.height);
+        CHECK(ClassifyObstacle(config, e.height) == e.cls);
     }
-    for (const double h : {0.50, 0.60, 0.80, 1.00, 1.20, 1.50}) {
-        // With equal step and jump heights nothing in between can be jumped: no high jump is required or allowed.
-        CHECK(ClassifyObstacle(config, h) == ObstacleClass::Blocked);
-    }
-    CHECK(ClassifyObstacle(config, -0.5) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(config, -0.5) == ObstacleClass::StepUp); // negative counts as 0
+}
 
-    MovementConfig lowStep = config;
-    lowStep.maxStepHeight = 0.30;
-    CHECK(ClassifyObstacle(lowStep, 0.30) == ObstacleClass::StepUp);
-    CHECK(ClassifyObstacle(lowStep, 0.40) == ObstacleClass::Jump);
-    CHECK(ClassifyObstacle(lowStep, 0.45) == ObstacleClass::Jump);
-    CHECK(ClassifyObstacle(lowStep, 0.46) == ObstacleClass::Blocked);
+TEST_CASE("obstacle classification never claims a jump clears every obstacle up to the jump height") {
+    // A candidate is only a candidate: the class names say so and no class is called "Jump".
+    CHECK(std::string(ObstacleClassName(ObstacleClass::JumpCandidate)) == "JumpCandidate");
+    CHECK(std::string(ObstacleClassName(ObstacleClass::StepUp)) == "StepUp");
+    CHECK(std::string(ObstacleClassName(ObstacleClass::Blocked)) == "Blocked");
+}
+
+TEST_CASE("step height and jump height are independent") {
+    MovementConfig base;
+
+    // Changing only the jump height leaves the step-up boundary where it was.
+    MovementConfig highJump = base;
+    highJump.jumpHeight = 0.90;
+    CHECK(highJump.maxStepHeight == base.maxStepHeight);
+    CHECK(ClassifyObstacle(highJump, 0.25) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(highJump, 0.26) == ObstacleClass::JumpCandidate);
+    CHECK(ClassifyObstacle(highJump, 0.80) == ObstacleClass::JumpCandidate); // moved with the jump height
+    CHECK(ClassifyObstacle(highJump, 0.90) == ObstacleClass::Blocked);
+    CHECK_FALSE(Validate(highJump).has_value());
+
+    // Changing only the step height leaves the jump apex where it was.
+    MovementConfig highStep = base;
+    highStep.maxStepHeight = 0.40;
+    CHECK(highStep.jumpHeight == base.jumpHeight);
+    CHECK(ClassifyObstacle(highStep, 0.40) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(highStep, 0.41) == ObstacleClass::JumpCandidate);
+    CHECK(ClassifyObstacle(highStep, 0.45) == ObstacleClass::Blocked); // the apex did not move
+    CHECK(JumpVelocityForHeight(highStep.jumpHeight, kGravity) == doctest::Approx(JumpVelocityForHeight(base.jumpHeight, kGravity)));
+
+    // A step height above the jump height is a valid (if odd) setting: walking up wins, nothing in between.
+    MovementConfig stepAboveJump = base;
+    stepAboveJump.maxStepHeight = 0.60;
+    CHECK_FALSE(Validate(stepAboveJump).has_value());
+    CHECK(ClassifyObstacle(stepAboveJump, 0.50) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(stepAboveJump, 0.60) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(stepAboveJump, 0.61) == ObstacleClass::Blocked);
+
+    // The step height does not enter the jump velocity at all.
+    for (const double step : {0.0, 0.10, 0.25, 0.45, 1.0}) {
+        MovementConfig c = base;
+        c.maxStepHeight = step;
+        CAPTURE(step);
+        CHECK(JumpApexHeight(JumpVelocityForHeight(c.jumpHeight, kGravity), kGravity) == doctest::Approx(0.45));
+    }
+}
+
+TEST_CASE("obstacle classification at numeric edges") {
+    const MovementConfig config;
+    CHECK(ClassifyObstacle(config, std::numeric_limits<double>::quiet_NaN()) == ObstacleClass::Blocked);
+    CHECK(ClassifyObstacle(config, std::numeric_limits<double>::infinity()) == ObstacleClass::Blocked);
+    CHECK(ClassifyObstacle(config, -std::numeric_limits<double>::infinity()) == ObstacleClass::Blocked);
+    CHECK(ClassifyObstacle(config, std::numeric_limits<double>::max()) == ObstacleClass::Blocked);
+    CHECK(ClassifyObstacle(config, std::numeric_limits<double>::denorm_min()) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(config, -0.0) == ObstacleClass::StepUp);
+
+    MovementConfig noStep = config;
+    noStep.maxStepHeight = 0.0;
+    CHECK(ClassifyObstacle(noStep, 0.0) == ObstacleClass::StepUp);
+    CHECK(ClassifyObstacle(noStep, 0.01) == ObstacleClass::JumpCandidate);
+}
+
+TEST_CASE("ResolveGait keeps the sprint through a sharp turn once at sprint speed") {
+    const MovementConfig config; // start 50, sustain 100 degrees; sprint speed range starts at 6.5 m/s
+    const GaitLimits none;
+    const auto resolve = [&](MoveIntent in, double speed) { return ResolveGait(config, Gait::Jog, true, none, in, speed); };
+
+    const MoveIntent turn90{0.0, 1.0};    // 90 degrees off the facing
+    const MoveIntent turn120{-0.5, 0.87}; // about 120 degrees
+    const MoveIntent behind{-1.0, 0.0};
+    // Starting a sprint still needs the narrow angle.
+    CHECK(resolve(turn90, 0.0) == Gait::Jog);
+    CHECK(resolve(turn90, 3.0) == Gait::Jog);
+    CHECK(resolve(turn90, 6.4) == Gait::Jog); // not yet at sprint speed
+    // At sprint speed the wider angle holds the sprint.
+    CHECK(resolve(turn90, 8.0) == Gait::Sprint);
+    CHECK(resolve(turn90, 6.6) == Gait::Sprint);
+    // Beyond the sustain angle the sprint ends, however fast the character is.
+    CHECK(resolve(turn120, 8.0) == Gait::Jog);
+    CHECK(resolve(behind, 8.0) == Gait::Jog);
+    // Forward input is unaffected.
+    CHECK(resolve({1.0, 0.0}, 0.0) == Gait::Sprint);
+
+    // No hysteresis when both angles are equal.
+    MovementConfig same = config;
+    same.sprintSustainAngleDegrees = same.sprintMaxAngleDegrees;
+    CHECK(ResolveGait(same, Gait::Jog, true, none, turn90, 8.0) == Gait::Jog);
+
+    // The limits still win: a gait ceiling stops the sprint at any speed or angle.
+    GaitLimits tired;
+    tired.maxGait = Gait::Run;
+    CHECK(ResolveGait(config, Gait::Jog, true, tired, {1.0, 0.0}, 8.0) == Gait::Jog);
+    // Garbage speeds behave like standing still.
+    CHECK(resolve(turn90, std::numeric_limits<double>::quiet_NaN()) == Gait::Jog);
+    CHECK(resolve(turn90, -8.0) == Gait::Jog);
+}
+
+TEST_CASE("ObservedGait picks the nearest gait speed") {
+    const MovementConfig config; // 1.4 / 3.0 / 5.0 / 8.0
+    CHECK(ObservedGait(config, 0.0) == Gait::Walk);
+    CHECK(ObservedGait(config, 1.4) == Gait::Walk);
+    CHECK(ObservedGait(config, 2.19) == Gait::Walk); // the midpoint between Walk and Jog is 2.2
+    CHECK(ObservedGait(config, 2.21) == Gait::Jog);
+    CHECK(ObservedGait(config, 3.0) == Gait::Jog);
+    CHECK(ObservedGait(config, 3.99) == Gait::Jog);  // midpoint Jog / Run is 4.0
+    CHECK(ObservedGait(config, 4.01) == Gait::Run);
+    CHECK(ObservedGait(config, 6.49) == Gait::Run);  // midpoint Run / Sprint is 6.5
+    CHECK(ObservedGait(config, 6.51) == Gait::Sprint);
+    CHECK(ObservedGait(config, 50.0) == Gait::Sprint);
+    CHECK(ObservedGait(config, -3.0) == Gait::Walk);
+    CHECK(ObservedGait(config, std::numeric_limits<double>::quiet_NaN()) == Gait::Walk);
+    CHECK(ObservedGait(config, std::numeric_limits<double>::infinity()) == Gait::Walk);
+}
+
+TEST_CASE("ClassifyMotion distinguishes idle, the four gaits, jumping, falling and landing") {
+    const MovementConfig config;
+    const auto state = [&](double speed, double vertical, bool ground, double sinceLanding = -1.0) {
+        return ClassifyMotion(config, MotionSample{speed, vertical, ground, sinceLanding});
+    };
+    CHECK(state(0.0, 0.0, true) == MovementState::Idle);
+    CHECK(state(0.04, 0.0, true) == MovementState::Idle);
+    CHECK(state(0.05, 0.0, true) == MovementState::Walk);
+    CHECK(state(1.4, 0.0, true) == MovementState::Walk);
+    CHECK(state(3.0, 0.0, true) == MovementState::Jog);
+    CHECK(state(5.0, 0.0, true) == MovementState::Run);
+    CHECK(state(8.0, 0.0, true) == MovementState::Sprint);
+
+    // In the air only the vertical direction matters, whatever the horizontal speed (a sprinting jump).
+    CHECK(state(0.0, 2.97, false) == MovementState::Jumping);
+    CHECK(state(8.0, 2.97, false) == MovementState::Jumping);
+    CHECK(state(8.0, 0.0, false) == MovementState::Falling); // the apex itself counts as falling
+    CHECK(state(0.0, -4.0, false) == MovementState::Falling);
+
+    // Landing lasts landingSeconds after the touch-down, then the ground states resume.
+    CHECK(state(0.0, 0.0, true, 0.0) == MovementState::Landing);
+    CHECK(state(5.0, 0.0, true, 0.10) == MovementState::Landing);
+    CHECK(state(5.0, 0.0, true, 0.2499) == MovementState::Landing);
+    CHECK(state(5.0, 0.0, true, 0.25) == MovementState::Run);
+    CHECK(state(0.0, 0.0, true, 0.25) == MovementState::Idle);
+    CHECK(state(0.0, 0.0, true, -1.0) == MovementState::Idle); // no recent landing
+    CHECK(state(0.0, 0.0, true, std::numeric_limits<double>::infinity()) == MovementState::Idle);
+    CHECK(state(0.0, 0.0, false, 0.0) == MovementState::Falling); // in the air again: not landing
+
+    // A jump sequence in order: idle, rising, falling, landing, idle.
+    MovementConfig noLanding = config;
+    noLanding.landingSeconds = 0.0;
+    CHECK(ClassifyMotion(noLanding, MotionSample{0.0, 0.0, true, 0.0}) == MovementState::Idle);
+
+    // Garbage in, a defined state out.
+    CHECK(state(std::numeric_limits<double>::quiet_NaN(), 0.0, true) == MovementState::Idle);
+    CHECK(state(0.0, std::numeric_limits<double>::quiet_NaN(), false) == MovementState::Falling);
+    for (std::size_t i = 0; i < kMovementStateCount; ++i) {
+        CHECK(std::string(MovementStateName(static_cast<MovementState>(i))) != "Unknown");
+    }
+}
+
+TEST_CASE("gait functions never index out of range") {
+    const MovementConfig config;
+    const auto corrupt = static_cast<Gait>(7);
+    CHECK(GaitSpeed(config, corrupt) == doctest::Approx(8.0));
+    CHECK(GaitAcceleration(config, corrupt) == doctest::Approx(4.0));
+    GaitLimits broken;
+    broken.maxGait = corrupt;
+    CHECK(EffectiveSpeed(config, Gait::Run, broken) == doctest::Approx(5.0));
+}
+
+TEST_CASE("acceleration parameters are per gait and positive, braking is one value") {
+    MovementConfig config;
+    for (std::size_t i = 0; i < kGaitCount; ++i) {
+        CHECK(GaitAcceleration(config, static_cast<Gait>(i)) > 0.0);
+    }
+    // Faster gaits accelerate at least as hard in the defaults (a tuning default, not a rule).
+    CHECK(GaitAcceleration(config, Gait::Sprint) >= GaitAcceleration(config, Gait::Walk));
+    // Time to reach the top speed from standing is finite and below 3 s at every gait (sanity of the defaults).
+    for (std::size_t i = 0; i < kGaitCount; ++i) {
+        const Gait gait = static_cast<Gait>(i);
+        CAPTURE(GaitName(gait));
+        CHECK(GaitSpeed(config, gait) / GaitAcceleration(config, gait) < 3.0);
+    }
+    // Braking from sprint speed takes the time v / a.
+    CHECK(GaitSpeed(config, Gait::Sprint) / config.brakingDeceleration == doctest::Approx(1.0));
+    config.gaits[2].acceleration = 1e-9;
+    CHECK_FALSE(Validate(config).has_value()); // tiny but positive is valid: the rule is "positive", not "plausible"
 }

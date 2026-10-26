@@ -30,8 +30,13 @@ namespace
 		Config.backwardSpeedFactor = S.BackwardSpeedFactor;
 		Config.strafeSpeedFactor = S.StrafeSpeedFactor;
 		Config.sprintMaxAngleDegrees = S.SprintMaxAngleDegrees;
+		Config.sprintSustainAngleDegrees = S.SprintSustainAngleDegrees;
+		Config.turnRateDegrees = S.TurnRateDegrees;
+		Config.minAnalogSpeed = S.MinAnalogSpeed * CmToM;
 		Config.jumpHeight = S.JumpHeight * CmToM;
 		Config.maxStepHeight = S.MaxStepHeight * CmToM;
+		Config.idleSpeed = S.IdleSpeed * CmToM;
+		Config.landingSeconds = S.LandingSeconds;
 		return Config;
 	}
 
@@ -63,11 +68,22 @@ float SpnMovement::GaitAcceleration(const FSpnMovementSettings& Settings, ESpnGa
 	return static_cast<float>(spn::core::GaitAcceleration(ToCore(Settings), ToCore(Gait)) / CmToM);
 }
 
-ESpnGait SpnMovement::ResolveGait(const FSpnMovementSettings& Settings, ESpnGait Base, bool bSprintRequested, ESpnGait MaxGait, FVector2D Input)
+ESpnGait SpnMovement::ResolveGait(const FSpnMovementSettings& Settings, ESpnGait Base, bool bSprintRequested, ESpnGait MaxGait, FVector2D Input, float CurrentSpeedCm)
 {
 	spn::core::GaitLimits Limits;
 	Limits.maxGait = ToCore(MaxGait);
-	return FromCore(spn::core::ResolveGait(ToCore(Settings), ToCore(Base), bSprintRequested, Limits, ToIntent(Input)));
+	return FromCore(spn::core::ResolveGait(ToCore(Settings), ToCore(Base), bSprintRequested, Limits, ToIntent(Input), CurrentSpeedCm * CmToM));
+}
+
+ESpnGait SpnMovement::ObservedGait(const FSpnMovementSettings& Settings, float HorizontalSpeedCm)
+{
+	return FromCore(spn::core::ObservedGait(ToCore(Settings), HorizontalSpeedCm * CmToM));
+}
+
+ESpnMovementState SpnMovement::ClassifyMotion(const FSpnMovementSettings& Settings, float HorizontalSpeedCm, float VerticalVelocityCm, bool bOnGround, float SecondsSinceLanding)
+{
+	const spn::core::MotionSample Sample{HorizontalSpeedCm * CmToM, VerticalVelocityCm * CmToM, bOnGround, SecondsSinceLanding};
+	return static_cast<ESpnMovementState>(static_cast<uint8>(spn::core::ClassifyMotion(ToCore(Settings), Sample)));
 }
 
 float SpnMovement::DirectionSpeedScale(const FSpnMovementSettings& Settings, FVector2D Input)
@@ -90,7 +106,7 @@ ESpnObstacleClass SpnMovement::ClassifyObstacle(const FSpnMovementSettings& Sett
 	switch (spn::core::ClassifyObstacle(ToCore(Settings), HeightCm * CmToM))
 	{
 	case spn::core::ObstacleClass::StepUp: return ESpnObstacleClass::StepUp;
-	case spn::core::ObstacleClass::Jump: return ESpnObstacleClass::Jump;
+	case spn::core::ObstacleClass::JumpCandidate: return ESpnObstacleClass::JumpCandidate;
 	default: return ESpnObstacleClass::Blocked;
 	}
 }

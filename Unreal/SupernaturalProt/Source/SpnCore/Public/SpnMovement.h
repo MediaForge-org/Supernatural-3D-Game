@@ -16,14 +16,36 @@ enum class ESpnGait : uint8
 	Sprint = 3
 };
 
+/**
+ * What the character is doing, derived from physical quantities only (M2-A.1). There is no stored state machine:
+ * the same velocity, floor contact and landing time always give the same state, on every client. Animation
+ * blueprints read this instead of keeping a second state machine. Values follow spn::core::MovementState.
+ */
+UENUM(BlueprintType)
+enum class ESpnMovementState : uint8
+{
+	Idle = 0,
+	Walk,
+	Jog,
+	Run,
+	Sprint,
+	/** In the air and moving up. */
+	Jumping,
+	/** In the air and not moving up (includes the apex and walking off a ledge). */
+	Falling,
+	/** On the ground, shortly after touching down (SpnMovementSettings::LandingSeconds). */
+	Landing
+};
+
+/** A rule of thumb about obstacle HEIGHT only. A JumpCandidate is not guaranteed to be passable. */
 UENUM(BlueprintType)
 enum class ESpnObstacleClass : uint8
 {
-	/** Walking up is enough (height <= max step height). */
+	/** Walking up is enough (height <= max step height), given suitable collision geometry. */
 	StepUp,
-	/** Above the step height, within the jump height. */
-	Jump,
-	/** Above both. No vault or mantle exists yet (Proposal 0009). */
+	/** Above the step height and below the jump apex: a jump MAY get over it. Run-up, timing and collision decide. */
+	JumpCandidate,
+	/** At or above the jump apex and above the step height. No vault or mantle exists yet (Proposal 0009). */
 	Blocked
 };
 
@@ -82,9 +104,24 @@ struct SPNCORE_API FSpnMovementSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Direction", meta = (ClampMin = "0.05", ClampMax = "1"))
 	float StrafeSpeedFactor = 0.85f;
 
-	/** Sprinting needs input within this angle of straight ahead, degrees. */
+	/** Starting a sprint needs input within this angle of straight ahead, degrees. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Direction", meta = (ClampMin = "0", ClampMax = "180"))
 	float SprintMaxAngleDegrees = 50.f;
+
+	/**
+	 * While already at sprint speed the sprint is kept up to this wider angle (not below SprintMaxAngleDegrees).
+	 * Without it, a sharp turn drops the sprint until the character has turned towards the new direction.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Direction", meta = (ClampMin = "0", ClampMax = "180"))
+	float SprintSustainAngleDegrees = 100.f;
+
+	/** How fast the character turns towards its movement direction, degrees/s (Character Movement "Rotation Rate" Yaw). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Direction", meta = (ClampMin = "1", ClampMax = "3600"))
+	float TurnRateDegrees = 500.f;
+
+	/** Speed of the smallest analog deflection that still moves the character, cm/s (Character Movement "Min Analog Walk Speed"). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Acceleration", meta = (ClampMin = "0"))
+	float MinAnalogSpeed = 20.f;
 
 	/** Vertical apex height of an active standing jump, cm. NOT the maximum obstacle height. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump", meta = (ClampMin = "1", ClampMax = "200"))
@@ -98,9 +135,20 @@ struct SPNCORE_API FSpnMovementSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump", meta = (ClampMin = "0"))
 	float AirBrakingDeceleration = 0.f;
 
-	/** Highest ledge walked up without jumping, cm (applied to the Character Movement "Max Step Height"). */
+	/**
+	 * Highest ledge walked up without jumping, cm (applied to the Character Movement "Max Step Height"). Independent of
+	 * JumpHeight. What can really be climbed also depends on the collision shapes (a step is only taken where the capsule fits).
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump", meta = (ClampMin = "0", ClampMax = "100"))
-	float MaxStepHeight = 45.f;
+	float MaxStepHeight = 25.f;
+
+	/** Below this horizontal speed the character counts as standing, cm/s. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", meta = (ClampMin = "0"))
+	float IdleSpeed = 5.f;
+
+	/** How long the Landing state lasts after touching down, seconds. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", meta = (ClampMin = "0", ClampMax = "2"))
+	float LandingSeconds = 0.25f;
 };
 
 /** Bridge to the engine-independent movement rules (spn/core/Movement.h). Core types stay behind this boundary. */
@@ -113,11 +161,17 @@ namespace SpnMovement
 	SPNCORE_API float GaitAcceleration(const FSpnMovementSettings& Settings, ESpnGait Gait);
 
 	/**
-	 * The gait actually used: the chosen base gait, or Sprint when requested, allowed by MaxGait and
-	 * input pointing forward within SprintMaxAngleDegrees. Input is the move vector in the character's frame
-	 * (X = forward, Y = right). Never above MaxGait.
+	 * The gait actually used: the chosen base gait, or Sprint when requested, allowed by MaxGait and input within
+	 * SprintMaxAngleDegrees of straight ahead (SprintSustainAngleDegrees once CurrentSpeedCm is at sprint speed).
+	 * Input is the move vector in the character's frame (X = forward, Y = right). Never above MaxGait.
 	 */
-	SPNCORE_API ESpnGait ResolveGait(const FSpnMovementSettings& Settings, ESpnGait Base, bool bSprintRequested, ESpnGait MaxGait, FVector2D Input);
+	SPNCORE_API ESpnGait ResolveGait(const FSpnMovementSettings& Settings, ESpnGait Base, bool bSprintRequested, ESpnGait MaxGait, FVector2D Input, float CurrentSpeedCm = 0.f);
+
+	/** The gait whose top speed is nearest to the horizontal speed (cm/s). For display and animation. */
+	SPNCORE_API ESpnGait ObservedGait(const FSpnMovementSettings& Settings, float HorizontalSpeedCm);
+
+	/** Movement state from physical quantities (cm/s; SecondsSinceLanding < 0 means no recent landing). */
+	SPNCORE_API ESpnMovementState ClassifyMotion(const FSpnMovementSettings& Settings, float HorizontalSpeedCm, float VerticalVelocityCm, bool bOnGround, float SecondsSinceLanding);
 
 	/** Speed factor (BackwardSpeedFactor..1) for an input direction (X = forward, Y = right). */
 	SPNCORE_API float DirectionSpeedScale(const FSpnMovementSettings& Settings, FVector2D Input);

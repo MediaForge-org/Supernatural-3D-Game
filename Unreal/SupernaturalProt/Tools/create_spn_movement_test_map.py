@@ -1,8 +1,9 @@
-"""Creates the PLACEHOLDER test map /Game/SpnTest/Lvl_SpnMovementTest (Docs/Proposals/0011, M2-A).
+"""Creates the PLACEHOLDER test map /Game/SpnTest/Lvl_SpnMovementTest (Docs/Proposals/0011, M2-A / M2-A.1).
 
-A 300 x 300 m movement test environment: obstacle rows (20-150 cm), ramps (5-50 degrees), staircases, domed hills,
-a terraced hill, a field of low rocks, surface patches, a camera-collision alley, three simple test buildings
-(hut, two-storey house with interior stairs, warehouse), four containment walls and a play-area guard volume.
+A 300 x 300 m movement test environment: a speed lane, obstacle rows (20-150 cm), ramps (5-50 degrees), staircases, domed hills,
+a terraced hill, a field of low rocks, surface patches, a camera-collision alley, a pillar field, three simple test buildings
+(hut, two-storey house with interior stairs, warehouse), rails on every raised edge, four containment walls and a play-area
+guard volume with reset points.
 It is NOT a geographic excerpt of the later open world. The geometry comes from spn_movement_map_layout.py
 (checked without Unreal by test_spn_movement_map_layout.py); this script only spawns it.
 
@@ -35,6 +36,8 @@ GUARD_CLASS_PATH = "/Script/SupernaturalProt.SpnPlayAreaGuard"
 
 _native_sizes = {}
 _materials = {}
+_meshes = {}
+_actor_subsystem = None
 
 
 def fail(message):
@@ -42,8 +45,15 @@ def fail(message):
     raise RuntimeError(message)
 
 
+def actor_subsystem():
+    global _actor_subsystem
+    if _actor_subsystem is None:
+        _actor_subsystem = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    return _actor_subsystem
+
+
 def spawn(actor_class, location, rotation=(0.0, 0.0, 0.0), label=None):
-    actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+    actors = actor_subsystem()
     pitch, yaw, roll = rotation
     actor = actors.spawn_actor_from_class(actor_class, unreal.Vector(*location), unreal.Rotator(roll=roll, pitch=pitch, yaw=yaw))
     if actor is None:
@@ -54,9 +64,12 @@ def spawn(actor_class, location, rotation=(0.0, 0.0, 0.0), label=None):
 
 
 def load_shape(shape):
+    if shape in _meshes:
+        return _meshes[shape]
     mesh = unreal.load_asset(layout_module.SHAPE_PATHS[shape])
     if mesh is None:
         fail("engine shape not found: " + layout_module.SHAPE_PATHS[shape])
+    _meshes[shape] = mesh
     if shape not in _native_sizes:
         # Scale = wanted size / native size, so it does not matter how big the engine shape is.
         extent = mesh.get_bounds().box_extent
@@ -124,6 +137,7 @@ def build_guard(data):
     guard = spawn(guard_class, spec["center"], label="SPN_MV_PlayAreaGuard")
     guard.set_editor_property("box_extent", unreal.Vector(*spec["extent"]))
     guard.set_editor_property("safe_location", unreal.Vector(*spec["safe_location"]))
+    guard.set_editor_property("reset_points", [unreal.Vector(*point) for point in spec["reset_points"]])
 
 
 def main():
@@ -137,7 +151,7 @@ def main():
             return
         if not levels.load_level(map_path):
             fail("could not open " + map_path)
-        actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
+        actors = actor_subsystem()
         actors.destroy_actors(actors.get_all_level_actors())
     elif not levels.new_level(map_path, False):
         fail("could not create " + map_path)
@@ -151,7 +165,10 @@ def main():
 
     if not levels.save_current_level():
         fail("could not save " + map_path)
-    unreal.log("SpnMovementTestMap: created %s with %d shapes, %d doors" % (map_path, len(data["prims"]), len(data["doors"])))
+    spawned = sum(1 for actor in actor_subsystem().get_all_level_actors() if actor.get_actor_label().startswith("SPN_MV_") and isinstance(actor, unreal.StaticMeshActor))
+    if spawned != len(data["prims"]):
+        fail("expected %d shapes in the level, found %d (map saved, but incomplete)" % (len(data["prims"]), spawned))
+    unreal.log("SpnMovementTestMap: created %s with %d shapes, %d doors, %d reset points" % (map_path, len(data["prims"]), len(data["doors"]), len(data["reset_points"])))
 
 
 main()

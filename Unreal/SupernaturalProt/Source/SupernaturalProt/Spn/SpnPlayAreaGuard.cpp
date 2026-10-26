@@ -39,6 +39,22 @@ bool ASpnPlayAreaGuard::IsInside(const AActor* Actor) const
 	return Actor != nullptr && Volume->Bounds.GetBox().IsInside(Actor->GetActorLocation());
 }
 
+FVector ASpnPlayAreaGuard::ChooseReturnLocation(const FVector& From) const
+{
+	FVector Best = SafeLocation;
+	double BestDistance = TNumericLimits<double>::Max();
+	for (const FVector& Point : ResetPoints)
+	{
+		const double Distance = FVector::DistSquared2D(From, Point);
+		if (Distance < BestDistance)
+		{
+			BestDistance = Distance;
+			Best = Point;
+		}
+	}
+	return Best;
+}
+
 bool ASpnPlayAreaGuard::ReturnToSafeLocation(APawn* Pawn)
 {
 	if (Pawn == nullptr || !HasAuthority())
@@ -50,9 +66,11 @@ bool ASpnPlayAreaGuard::ReturnToSafeLocation(APawn* Pawn)
 	{
 		Character->GetCharacterMovement()->StopMovementImmediately();
 	}
-	Pawn->TeleportTo(SafeLocation, Pawn->GetActorRotation(), /*bIsATest*/ false, /*bNoCheck*/ true);
+	const FVector Target = ChooseReturnLocation(Pawn->GetActorLocation());
+	Pawn->TeleportTo(Target, Pawn->GetActorRotation(), /*bIsATest*/ false, /*bNoCheck*/ true);
+	LastReturnLocation = Target;
 	++ReturnCount;
-	UE_LOG(LogSupernaturalProt, Warning, TEXT("'%s' left the play area and was put back at %s"), *GetNameSafe(Pawn), *SafeLocation.ToString());
+	UE_LOG(LogSupernaturalProt, Warning, TEXT("'%s' left the play area and was put back at %s"), *GetNameSafe(Pawn), *Target.ToString());
 	return true;
 }
 

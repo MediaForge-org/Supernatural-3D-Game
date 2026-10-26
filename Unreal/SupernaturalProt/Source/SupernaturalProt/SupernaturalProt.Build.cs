@@ -21,8 +21,9 @@ public class SupernaturalProt : ModuleRules
 			"Slate"
 		});
 
-		// SpnCore: integration layer to the engine-independent SPN C++20 core.
-		PrivateDependencyModuleNames.AddRange(new string[] { "SpnCore" });
+		// SpnCore: integration layer to the engine-independent SPN C++20 core. Public, because
+		// Spn/SpnCharacterMovementComponent.h (a public header of this module) includes SpnMovement.h.
+		PublicDependencyModuleNames.AddRange(new string[] { "SpnCore" });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"SupernaturalProt",
