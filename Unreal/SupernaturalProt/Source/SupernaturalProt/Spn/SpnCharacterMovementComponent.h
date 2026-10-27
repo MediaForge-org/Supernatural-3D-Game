@@ -101,6 +101,8 @@ public:
 	virtual float GetMaxAcceleration() const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
+	/** Replaying saved moves after a server correction must not leave the gait request of the last replayed move behind. */
+	virtual bool ClientUpdatePositionAfterServerUpdate() override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
 #if WITH_EDITOR

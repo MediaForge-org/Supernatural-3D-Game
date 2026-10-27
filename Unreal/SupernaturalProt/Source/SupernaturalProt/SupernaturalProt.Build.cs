@@ -42,6 +42,12 @@ public class SupernaturalProt : ModuleRules
 			"SupernaturalProt/Variant_SideScrolling/UI"
 		});
 
+		// Editor-only: the PIE-based network automation test (Spn/Tests/SpnMovementNetworkAutomation.cpp) starts a play session.
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.Add("UnrealEd");
+		}
+
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 

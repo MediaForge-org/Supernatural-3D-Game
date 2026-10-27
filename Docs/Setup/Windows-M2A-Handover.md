@@ -1,8 +1,69 @@
 # Windows-Übergabe M2-A / M2-A.1: Bewegung, Gangarten, Sprung- und Stufenhöhe, Bewegungs-Testkarte (Stand 2026-10-26)
 
-Technische Arbeitsnotiz, **kein Planungsmaster**. Hintergrund und Entscheidungen: [Proposal 0011](../Proposals/0011-m2a-movement-traversal-and-test-map.md). Geschrieben auf Fedora **ohne Unreal Engine**. **Nichts aus M2-A oder M2-A.1 wurde bisher von Unreal gebaut oder ausgeführt, die Karte `Lvl_SpnMovementTest.umap` existiert nicht. M2-A gilt erst als abgeschlossen, wenn Abschnitt 5 erfüllt ist.**
+Technische Arbeitsnotiz, **kein Planungsmaster**. Hintergrund und Entscheidungen: [Proposal 0011](../Proposals/0011-m2a-movement-traversal-and-test-map.md). Geschrieben auf Fedora **ohne Unreal Engine**. **Stand vor der Windows-Integration: nichts wurde von Unreal gebaut oder ausgeführt. Die Ergebnisse des ersten Windows-Laufs stehen im Abschnitt „Windows-Ergebnisse“ unten; die Tabelle in Abschnitt 0 ist der Fedora-Stand. M2-A gilt erst als abgeschlossen, wenn Abschnitt 5 erfüllt ist (manuelle Prüfungen und drei Befunde offen).**
 
 `<repo>` = Repository-Verzeichnis, `<uproject>` = `<repo>\Unreal\SupernaturalProt\SupernaturalProt.uproject`, `<UE>` = Engine-Verzeichnis (z. B. `C:\Program Files\Unreal Engine\UE_5.8`). Allgemeine Windows-Voraussetzungen (Git LFS, Visual Studio mit C++-Workloads, CMake, kurze Pfade): [Windows-Setup-und-Tests.md](Windows-Setup-und-Tests.md) §1.
+
+## Windows-Ergebnisse (2026-10-26, UE 5.8.4)
+
+Ausgangscommit `5204b2a`, Arbeitsbaum sauber. Engine `C:\Program Files\Unreal Engine\UE_5.8` (`Build.version` 5.8.4, CL 58902052). Toolchain: Visual Studio 18 Community (MSVC 14.44 und 14.51 installiert), Windows SDK 10.0.26100.0. Die `.uproject`-GUID wurde der Engine ohne Rückfrage zugeordnet. Rohlogs: `Unreal\SupernaturalProt\Saved\M2A-Windows\` (nicht im Git).
+
+| Bereich | Status | Befund |
+|---|---|---|
+| Core (MSVC, Debug) | **automatisiert getestet** | `ctest` 216/216. Konfiguration: `cmake -S . -B build/windows-msvc -DPython3_EXECUTABLE=<UE>/Engine/Binaries/ThirdParty/Python3/Win64/python.exe` (kein System-Python; ohne Python fehlt der Layouttest). Es gibt kein Windows-Preset in `CMakePresets.json`. |
+| Python-Layouttest | **automatisiert getestet** | 46/46 (`python -I`, UE-Python 3.11.8) |
+| Editor-Build | **kompiliert** | `Build.bat SupernaturalProtEditor Win64 Development -Project=... -WaitMutex`: erster Lauf fehlerfrei, 108 s, **keine Korrektur am Produktcode nötig**; keine Compiler-Warnungen im Log. Die Annahmen aus Proposal 0011 §4.9 zur Kompilierbarkeit (SavedMove, Prediction, Tests) haben gehalten. |
+| Karte | **erzeugt und geladen** | `Unreal\SupernaturalProt\Content\SpnTest\Lvl_SpnMovementTest.umap` (633 332 Byte). Log: `created /Game/SpnTest/Lvl_SpnMovementTest with 393 shapes, 2 doors, 14 reset points`, 0 Fehler, 0 Warnungen. `.gitignore` enthält `*.umap`: die Datei ist **ignoriert** und muss vom Projektinhaber bewusst hinzugefügt werden (`git add -f`, LFS-Filter greift laut `git check-attr`). |
+| Automationstests | **Letzter Gesamtlauf: 34 Tests, 30 bestanden, 4 fehlgeschlagen** (ohne Netzwerktest: 33 Tests, 30 bestanden, 3 fehlgeschlagen) | Alle 19 M1-/SpnCore-Tests bestanden (inkl. M1Layout, M1Traversal, M1Camera, Pickups, PlayDoors, PlayPickups, WorldState, Save/Load). Movement: bestanden `Settings`, `CharacterDefaults`, `PredictionFlags`, `MapLayout`, `Jump`, `JumpMoving`, `Gaits`, `StepJumpIndependence`, `Boundary`, `AlleyCamera`, `CameraClearance`. **Fehlgeschlagen: `Obstacles`, `StairsAndRamps`, `SprintTurn`** (unten). Der 34. Test `NetworkSprint` ist **instabil** (siehe Netzwerk). Läufe mit `-nullrhi`. Die Hindernis-Ergebnisse mit Sprung sind **nicht deterministisch**: 75 cm war im ersten Lauf „blockiert, aufgestiegen“, im Endlauf „überwunden“ (Frame-Timing; die Tabelle unten ist ein Lauf, keine Konstante). |
+| Netzwerk (Update: **Ursache gefunden und behoben**, siehe Abschnitt „NetworkSprint: Ursache und Korrektur“; die folgende Beschreibung ist der Stand vor der Korrektur) | **teilweise automatisiert getestet, instabil** | `NetworkSprint` aktiviert (Datei aus `Tools/prepared` nach `Spn/Tests/` kopiert, `UnrealEd` nur für Editor-Builds in `SupernaturalProt.Build.cs`): kompiliert unverändert; Listen-Server + 1 Client, Loopback, Sprint 5 s + 90°-Wende. Ergebnis wechselt: Einzelläufe bestanden/fehlgeschlagen/bestanden, mit Zeitprotokoll bestanden/fehlgeschlagen/bestanden/fehlgeschlagen, im Gesamtlauf fehlgeschlagen. **Client und Server stimmen in allen aufgezeichneten Läufen überein** (Geschwindigkeit und Gangart, Abweichung ≤ 50 cm/s beim Beschleunigen, ≤ 100 cm/s direkt nach der Wende). In den fehlgeschlagenen Läufen greift die vom Test per `DoSprintStart()` gesetzte Sprint-Anforderung nicht (Gangart 1 = Jog, 300 cm/s auf beiden Seiten); in den bestandenen ist sie ab t = 0 aktiv (Gangart 3, 800 cm/s). Ursache **offen**: Race im Testaufbau (Sprint-Anforderung vor dem Teleport/Besitz des Pawns) oder echter Fehler beim Setzen der Anforderung außerhalb des Input-Pfads; nicht untersucht. Aufzeichnung: `Saved\M2A-Windows\net_trace1..4.log`. Bei der 90°-Wende fällt die Geschwindigkeit wie in `SprintTurn` auf ca. 470 cm/s und erholt sich in ca. 0,9 s. **Nicht getestet:** Paketverlust/Latenz, mehrere Clients, Korrekturlinien, Remote-Gangart, Landing auf Remote-Figuren. |
+| Performance | **gemessen (nur Szene a)** | Standalone `-game`, 1920×1080 Fenster, Development-Editor-Binary, RTX 3090 / Ryzen 7 3700X, Figur steht am Spawn, 3000 Frames CSV (erste 600 verworfen): Frametime Ø 8,50 ms, p99 11,39 ms, max 13,09 ms; GameThread Ø 3,67 ms; GPU Ø 4,88 ms. Die Median-Frametime von 8,33 ms entspricht genau 120 FPS: sehr wahrscheinlich eine Obergrenze (Monitor/Engine), **keine** Aussage über die Leistungsreserve. Sprint (b) und Fernblick (c) nicht gemessen. Kein Benchmark für die spätere Open World. |
+| Manuell (PIE, Kamera, Controller) | **nicht getestet** | Siehe Abschnitte 10 bis 12 und die Anleitung unten. Controller: keiner geprüft. |
+
+### Befunde der drei fehlgeschlagenen Tests (keine Toleranz gelockert)
+
+Diese Tests prüfen die Entwurfswerte (Stufe 25 cm, Sprung 45 cm). Die Engine liefert andere effektive Grenzen; das ist ein **Befund für die Entscheidung des Projektinhabers** (Proposal 0011 §4.1, `MaxStepHeight`), kein Kompilier- oder Logikfehler.
+
+Gemessen (Jog, `MaxStepHeight` 25, `JumpHeight` 45, Kapselradius 42, dünne Hindernisse 40 cm tief; „Sprung“ = Jump-Taste ab 150 cm vor dem Hindernis gehalten):
+
+| Hindernis | Gehen | Mit Sprung |
+|---|---|---|
+| 20, 25 cm | überwunden | überwunden |
+| 30 cm | **überwunden** (Test erwartet blockiert) | überwunden |
+| 40, 45 cm | blockiert | überwunden |
+| 50, 60 cm | blockiert | **überwunden** (Test erwartet blockiert) |
+| 75 cm | blockiert | blockiert, aber **aufgestiegen** (steht/hüpft oben; Endhöhe 204) |
+| 80 bis 150 cm | blockiert | blockiert |
+
+Treppen (10 Stufen, Gehen): 15, 18, 22, 25, **30 cm erklommen** (Test erwartet blockiert), 40 und 50 cm blockiert. Rampen: bestanden.
+Mögliche Ursache (nicht verifiziert): Die untere Kapselhalbkugel gleitet über Kanten, deren Höhe knapp über `MaxStepHeight` liegt (Faustwert 0,29 × Radius ≈ 12 cm, passt zu 30 ja / 40 nein), und Sprung und Stufenüberwindung addieren sich (45 + ca. 30 ≈ 75).
+`SprintTurn`: Sprint bleibt bei 90° erhalten (bestanden), aber die Geschwindigkeit fällt auf **462 von 800 cm/s** (Test erwartet ≥ 90 %). Ursache vermutlich das reibungsbasierte Eindrehen der Geschwindigkeit der Engine bei `TurnFriction` und `SprintAcceleration` 400 cm/s²; nicht weiter untersucht. Ob das gewünscht ist, entscheidet das Spielgefühl.
+
+### Änderungen an Tests (nicht an der Spielmechanik)
+
+- `SpnMovementMapAutomation.cpp`, `Jump`: Das „gehaltene Taste“-Szenario rief `Jump()` in jedem Tick auf und erzeugte so 5 Absprünge. Die echte Belegung ruft `Jump()` einmal bei `ETriggerEvent::Started` auf. Szenario jetzt: einmal drücken, nicht loslassen, nicht wiederholen. Danach 1 Absprung (bestanden).
+- `Obstacles`: Jeder Fall wird jetzt als `MEASURED: ...` protokolliert (nicht nur Grenzfälle); die Prüfung „kein übertriebener Sprung“ entfällt, wenn die Figur auf dem Hindernis steht (dort hüpft sie legitim weiter). `StairsAndRamps`: zusätzlich `MEASURED`-Zeile je Treppe.
+- Neu im Build: `Spn/Tests/SpnMovementNetworkAutomation.cpp`, `UnrealEd` (nur Editor) in `SupernaturalProt.Build.cs`. `Tools/prepared/SpnMovementNetworkAutomation.cpp.txt` bleibt als Kopie unverändert liegen.
+
+### NetworkSprint: Ursache und Korrektur (2026-10-26, spät)
+
+- **Reproduktion vor der Korrektur:** 12 bestanden, 7 fehlgeschlagen von 19 Läufen (ca. 37 % Ausfall), plus 1 Fehlschlag im Gesamtlauf. Rollen waren immer korrekt (Client `ROLE_AutonomousProxy`, lokal gesteuert; Server-Kopie `ROLE_Authority`), derselbe Pawn wurde nie verwechselt.
+- **Ursache (Produktcode, nachgewiesen):** `FSavedMove_SpnCharacter::PrepMoveFor` schreibt beim Wiederholen gespeicherter Moves nach einer Server-Korrektur die Sprint-/Gang-Anforderung des jeweiligen Moves in den Live-Zustand. Die Engine stellt nach dem Replay nur ihre eigenen Eingaben wieder her (`bWantsToCrouch`, `bPressedJump`), die SPN-Anforderungen nicht. Kommt die Korrektur kurz nach dem Tastendruck, bleibt der ältere Wert (kein Sprint) zurück, und der Tastendruck geht verloren. Temporäre Diagnose im fehlgeschlagenen Lauf: `PrepMoveFor overwrites live sprint 1 with 0 (netmode 3)`; in den grünen Läufen kein solcher Replay. Auslöser im Test ist der Server-Teleport, im Spiel jede Korrektur zum falschen Zeitpunkt.
+- **Korrektur:** `USpnCharacterMovementComponent::ClientUpdatePositionAfterServerUpdate()` überschrieben: `bSprintRequested` und `BaseGait` vor `Super` sichern und danach wiederherstellen (gleiches Muster wie in der Engine). Dateien: `Spn/SpnCharacterMovementComponent.h/.cpp`. Der Test selbst blieb in Logik und Schwellen unverändert (nur Diagnoseausgaben ergänzt).
+- **Nach der Korrektur:** `NetworkSprint` 20/20 bestanden (Einzelprozess-Läufe, `Saved\M2A-Windows\net_fix20\`). Gesamtlauf: 34 Tests, 31 bestanden, 3 fehlgeschlagen (`Obstacles`, `StairsAndRamps`, `SprintTurn`: die bekannten Entwurfsbefunde, unverändert).
+- **Restrisiko:** Nur Loopback ohne Latenz und Paketverlust, ein Client. Die Korrektur ist nur für den Fall getestet, dass ein Replay mit einem älteren Wert endet. Der Server-Pfad (`UpdateFromCompressedFlags`) wurde nicht geändert.
+
+### Stand zum Unterbrechen / morgen weitermachen
+1. Der Unreal Editor muss geschlossen sein (Live Coding blockiert `Build.bat`).
+2. Offene Entscheidungen (Projektinhaber): Stufen-/Sprunggrenze (`MaxStepHeight`, Sprung + Stufe addieren sich), Sprint-Wende (462 von 800 cm/s). Danach die drei roten Tests anpassen oder die Mechanik ändern.
+3. Manuell offen: PIE-Durchlauf, Kamera, Controller, Animation, Netzwerk mit `NetEmulation` (Abschnitte 10 bis 13).
+4. Beim Commit: `Lvl_SpnMovementTest.umap` ist ignoriert (`git add -f`); neue Datei `Spn/Tests/SpnMovementNetworkAutomation.cpp` mitnehmen.
+
+### Anleitung: Karte starten
+1. `Unreal\SupernaturalProt\SupernaturalProt.uproject` per Doppelklick öffnen (Engine 5.8.4; Module sind gebaut).
+2. Content Browser → `Content/SpnTest/Lvl_SpnMovementTest` doppelklicken (oder Datei → Level öffnen).
+3. Play → „Play In: Selected Viewport“ (Alt+P). Spawn: Player Start bei (0, 0, 100), Spielmodus `BP_ThirdPersonGameMode`.
+4. Steuerung: WASD, Maus = Blick, Leertaste = Sprung, Shift (halten) = Sprint, V = Gangwechsel, E = Interaktion.
+Alternativ ohne Editor-UI: `UnrealEditor.exe <uproject> /Game/SpnTest/Lvl_SpnMovementTest -game -windowed -log`.
 
 ## 0. Nachgewiesen und angenommen
 

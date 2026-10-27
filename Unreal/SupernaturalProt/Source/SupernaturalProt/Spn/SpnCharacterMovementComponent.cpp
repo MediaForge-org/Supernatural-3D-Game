@@ -235,6 +235,19 @@ void USpnCharacterMovementComponent::UpdateFromCompressedFlags(uint8 Flags)
 	BaseGait = SanitizeBaseGait(static_cast<ESpnGait>(Encoded));
 }
 
+bool USpnCharacterMovementComponent::ClientUpdatePositionAfterServerUpdate()
+{
+	// PrepMoveFor writes the request of each replayed move into the live state. The engine restores its own live inputs
+	// (bWantsToCrouch, bPressedJump) after the replay; the SPN requests need the same treatment, otherwise a correction that
+	// arrives right after a key press leaves the older request behind and the press is lost (found with NetworkSprint).
+	const bool bRealSprintRequested = bSprintRequested;
+	const ESpnGait RealBaseGait = BaseGait;
+	const bool bResult = Super::ClientUpdatePositionAfterServerUpdate();
+	bSprintRequested = bRealSprintRequested;
+	BaseGait = RealBaseGait;
+	return bResult;
+}
+
 FSavedMove_SpnCharacter::FSavedMove_SpnCharacter()
 	: SavedBaseGait(static_cast<uint8>(ESpnGait::Jog))
 	, bSavedSprintRequested(false)

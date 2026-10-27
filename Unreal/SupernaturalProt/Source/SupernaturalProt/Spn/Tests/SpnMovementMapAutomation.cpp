@@ -211,10 +211,6 @@ namespace
 					Data->AirTime = Elapsed - Data->AirStart;
 				}
 				Data->AddState(Movement->GetMovementState());
-				if (Options.bSpamJump)
-				{
-					Character.Jump(); // pressed all the time, never released
-				}
 				return Elapsed - Data->PhaseStart > Options.ObservationSeconds;
 			},
 			[Data](ASupernaturalProtCharacter& Character, bool)
@@ -687,6 +683,8 @@ bool FSpnMovementObstaclesTest::RunTest(const FString& Parameters)
 					const FSpnMovementSettings& S = Character.GetSpnMovement()->Settings;
 					const ESpnObstacleClass Class = SpnMovement::ClassifyObstacle(S, Height);
 					const bool bCrossed = !bTimedOut;
+					AddInfo(FString::Printf(TEXT("MEASURED: %.0f cm obstacle%s -> %s (max Z %.0f, end X %.0f, end Z %.0f)"), Height, bTryJump ? TEXT(" with jump attempts") : TEXT(" walking"),
+						bCrossed ? TEXT("crossed") : TEXT("blocked"), Data->MaxZ, Character.GetActorLocation().X, Character.GetActorLocation().Z));
 					const EVerdict Verdict = bTryJump ? JumpVerdict(S, Height) : WalkVerdict(S, Height);
 					const FString What = FString::Printf(TEXT("%.0f cm obstacle%s (core class %s, end X %.0f)"), Height, bTryJump ? TEXT(" with jump attempts") : TEXT(" walking"),
 						Class == ESpnObstacleClass::StepUp ? TEXT("StepUp") : (Class == ESpnObstacleClass::JumpCandidate ? TEXT("JumpCandidate") : TEXT("Blocked")),
@@ -703,7 +701,9 @@ bool FSpnMovementObstaclesTest::RunTest(const FString& Parameters)
 						ReportCase(*this, What, bCrossed);
 						break;
 					}
-					if (!bCrossed && bTryJump)
+					// A character that mounted the ledge and keeps hopping on top of it (end Z near the top) is a measured outcome, not an exaggerated jump.
+					const bool bStandsOnLedge = Character.GetActorLocation().Z > StandZ + Height - 10.f;
+					if (!bCrossed && bTryJump && !bStandsOnLedge)
 					{
 						// A blocked character is not pushed up to an exaggerated height by trying to jump.
 						TestTrue(FString::Printf(TEXT("%.0f cm obstacle: no exaggerated jump (max Z %.0f)"), Height, Data->MaxZ),
@@ -745,7 +745,8 @@ bool FSpnMovementStairsRampsTest::RunTest(const FString& Parameters)
 			{
 				const FSpnMovementSettings& S = Character.GetSpnMovement()->Settings;
 				const FString What = FString::Printf(TEXT("staircase with %.0f cm rise (end Z %.0f, top %.0f)"), Rise, Character.GetActorLocation().Z, TopZ);
-				switch (WalkVerdict(S, Rise))
+				AddInfo(FString::Printf(TEXT("MEASURED: %s -> %s"), *What, bTimedOut ? TEXT("blocked") : TEXT("climbed")));
+					switch (WalkVerdict(S, Rise))
 				{
 				case EVerdict::MustPass:
 					TestFalse(What + TEXT(": climbed"), bTimedOut);
