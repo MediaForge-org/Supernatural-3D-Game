@@ -4,12 +4,19 @@ add_library(spn_core STATIC
     src/AppearanceEdit.cpp
     src/AppearanceGenerator.cpp
     src/AppearanceRecipe.cpp
+    src/CameraArm.cpp
     src/ContentId.cpp
     src/DetailTiers.cpp
+    src/GroundSteering.cpp
     src/Interaction.cpp
+    src/InteractionReach.cpp
+    src/JumpModel.cpp
+    src/Locomotion.cpp
     src/Movement.cpp
+    src/Npc.cpp
     src/Pickup.cpp
     src/TestDoor.cpp
+    src/Traversal.cpp
     src/WorldFacts.cpp)
 add_library(spn::core ALIAS spn_core)
 

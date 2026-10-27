@@ -37,9 +37,9 @@ struct GaitSettings {
 struct MovementConfig {
     /// Indexed by Gait.
     std::array<GaitSettings, kGaitCount> gaits{{
-        {1.4, 2.0}, // Walk
-        {3.0, 3.0}, // Jog
-        {5.0, 3.5}, // Run
+        {1.8, 2.0}, // Walk
+        {3.5, 3.0}, // Jog
+        {5.5, 3.5}, // Run
         {8.0, 4.0}, // Sprint
     }};
     /// Gait used while no other gait is requested.
@@ -141,7 +141,7 @@ struct MotionSample {
 /// when the character does not rotate towards its movement. Zero input gives 1.
 [[nodiscard]] double DirectionSpeedScale(const MovementConfig& config, MoveIntent intent) noexcept;
 
-/// Final top speed in m/s: gait speed * limits.speedScale. Directional scale is separate.
+/// Final top speed in m/s: gait speed * limits.speedScale (scale clamped to [0, 1], NaN = 1; corrupt gaits count as Sprint). Directional scale is separate.
 [[nodiscard]] double EffectiveSpeed(const MovementConfig& config, Gait gait, const GaitLimits& limits) noexcept;
 
 /// Launch velocity (m/s) so that a jump reaches `jumpHeight` under `gravity` (m/s^2, positive).

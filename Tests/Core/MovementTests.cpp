@@ -17,9 +17,9 @@ constexpr double kGravity = 9.8; // m/s^2, engine default 980 cm/s^2
 TEST_CASE("the default movement config is valid and holds the four work-order speeds") {
     const MovementConfig config;
     CHECK_FALSE(Validate(config).has_value());
-    CHECK(GaitSpeed(config, Gait::Walk) == doctest::Approx(1.4));
-    CHECK(GaitSpeed(config, Gait::Jog) == doctest::Approx(3.0));
-    CHECK(GaitSpeed(config, Gait::Run) == doctest::Approx(5.0));
+    CHECK(GaitSpeed(config, Gait::Walk) == doctest::Approx(1.8));
+    CHECK(GaitSpeed(config, Gait::Jog) == doctest::Approx(3.5));
+    CHECK(GaitSpeed(config, Gait::Run) == doctest::Approx(5.5));
     CHECK(GaitSpeed(config, Gait::Sprint) == doctest::Approx(8.0));
     CHECK(config.jumpHeight == doctest::Approx(0.45));
     CHECK(config.maxStepHeight == doctest::Approx(0.25)); // M2-A.1: a human step, not the jump height
@@ -60,7 +60,7 @@ TEST_CASE("Validate rejects broken configs") {
     CHECK(invalid([](MovementConfig& c) { c.minAnalogSpeed = -0.1; }));
     CHECK(invalid([](MovementConfig& c) { c.minAnalogSpeed = 2.0; })); // above the walk speed
     CHECK(invalid([](MovementConfig& c) { c.idleSpeed = -0.01; }));
-    CHECK(invalid([](MovementConfig& c) { c.idleSpeed = 1.4; })); // must stay below the walk speed
+    CHECK(invalid([](MovementConfig& c) { c.idleSpeed = 1.8; })); // must stay below the walk speed
     CHECK(invalid([](MovementConfig& c) { c.landingSeconds = -0.1; }));
     CHECK(invalid([](MovementConfig& c) { c.landingSeconds = 2.5; }));
     CHECK(invalid([](MovementConfig& c) { c.gaits[0].acceleration = std::numeric_limits<double>::infinity(); }));
@@ -116,8 +116,8 @@ TEST_CASE("gait limits cap the gait and scale the speed") {
     GaitLimits hurt;
     hurt.maxGait = Gait::Jog;
     hurt.speedScale = 0.5;
-    CHECK(EffectiveSpeed(config, Gait::Sprint, hurt) == doctest::Approx(1.5)); // capped to Jog, halved
-    CHECK(EffectiveSpeed(config, Gait::Walk, hurt) == doctest::Approx(0.7));
+    CHECK(EffectiveSpeed(config, Gait::Sprint, hurt) == doctest::Approx(1.75)); // capped to Jog, halved
+    CHECK(EffectiveSpeed(config, Gait::Walk, hurt) == doctest::Approx(0.9));
 }
 
 TEST_CASE("ResolveGait: without a sprint request the base gait is used, clamped by the limits") {
@@ -262,7 +262,7 @@ TEST_CASE("obstacle classification at numeric edges") {
 }
 
 TEST_CASE("ResolveGait keeps the sprint through a sharp turn once at sprint speed") {
-    const MovementConfig config; // start 50, sustain 100 degrees; sprint speed range starts at 6.5 m/s
+    const MovementConfig config; // start 50, sustain 100 degrees; sprint speed range starts at 6.75 m/s
     const GaitLimits none;
     const auto resolve = [&](MoveIntent in, double speed) { return ResolveGait(config, Gait::Jog, true, none, in, speed); };
 
@@ -275,7 +275,7 @@ TEST_CASE("ResolveGait keeps the sprint through a sharp turn once at sprint spee
     CHECK(resolve(turn90, 6.4) == Gait::Jog); // not yet at sprint speed
     // At sprint speed the wider angle holds the sprint.
     CHECK(resolve(turn90, 8.0) == Gait::Sprint);
-    CHECK(resolve(turn90, 6.6) == Gait::Sprint);
+    CHECK(resolve(turn90, 6.8) == Gait::Sprint);
     // Beyond the sustain angle the sprint ends, however fast the character is.
     CHECK(resolve(turn120, 8.0) == Gait::Jog);
     CHECK(resolve(behind, 8.0) == Gait::Jog);
@@ -297,16 +297,16 @@ TEST_CASE("ResolveGait keeps the sprint through a sharp turn once at sprint spee
 }
 
 TEST_CASE("ObservedGait picks the nearest gait speed") {
-    const MovementConfig config; // 1.4 / 3.0 / 5.0 / 8.0
+    const MovementConfig config; // 1.8 / 3.5 / 5.5 / 8.0
     CHECK(ObservedGait(config, 0.0) == Gait::Walk);
-    CHECK(ObservedGait(config, 1.4) == Gait::Walk);
-    CHECK(ObservedGait(config, 2.19) == Gait::Walk); // the midpoint between Walk and Jog is 2.2
-    CHECK(ObservedGait(config, 2.21) == Gait::Jog);
-    CHECK(ObservedGait(config, 3.0) == Gait::Jog);
-    CHECK(ObservedGait(config, 3.99) == Gait::Jog);  // midpoint Jog / Run is 4.0
-    CHECK(ObservedGait(config, 4.01) == Gait::Run);
-    CHECK(ObservedGait(config, 6.49) == Gait::Run);  // midpoint Run / Sprint is 6.5
-    CHECK(ObservedGait(config, 6.51) == Gait::Sprint);
+    CHECK(ObservedGait(config, 1.8) == Gait::Walk);
+    CHECK(ObservedGait(config, 2.64) == Gait::Walk); // the midpoint between Walk and Jog is 2.65
+    CHECK(ObservedGait(config, 2.66) == Gait::Jog);
+    CHECK(ObservedGait(config, 3.5) == Gait::Jog);
+    CHECK(ObservedGait(config, 4.49) == Gait::Jog);  // midpoint Jog / Run is 4.5
+    CHECK(ObservedGait(config, 4.51) == Gait::Run);
+    CHECK(ObservedGait(config, 6.74) == Gait::Run);  // midpoint Run / Sprint is 6.75
+    CHECK(ObservedGait(config, 6.76) == Gait::Sprint);
     CHECK(ObservedGait(config, 50.0) == Gait::Sprint);
     CHECK(ObservedGait(config, -3.0) == Gait::Walk);
     CHECK(ObservedGait(config, std::numeric_limits<double>::quiet_NaN()) == Gait::Walk);
@@ -321,9 +321,9 @@ TEST_CASE("ClassifyMotion distinguishes idle, the four gaits, jumping, falling a
     CHECK(state(0.0, 0.0, true) == MovementState::Idle);
     CHECK(state(0.04, 0.0, true) == MovementState::Idle);
     CHECK(state(0.05, 0.0, true) == MovementState::Walk);
-    CHECK(state(1.4, 0.0, true) == MovementState::Walk);
-    CHECK(state(3.0, 0.0, true) == MovementState::Jog);
-    CHECK(state(5.0, 0.0, true) == MovementState::Run);
+    CHECK(state(1.8, 0.0, true) == MovementState::Walk);
+    CHECK(state(3.5, 0.0, true) == MovementState::Jog);
+    CHECK(state(5.5, 0.0, true) == MovementState::Run);
     CHECK(state(8.0, 0.0, true) == MovementState::Sprint);
 
     // In the air only the vertical direction matters, whatever the horizontal speed (a sprinting jump).
@@ -362,7 +362,7 @@ TEST_CASE("gait functions never index out of range") {
     CHECK(GaitAcceleration(config, corrupt) == doctest::Approx(4.0));
     GaitLimits broken;
     broken.maxGait = corrupt;
-    CHECK(EffectiveSpeed(config, Gait::Run, broken) == doctest::Approx(5.0));
+    CHECK(EffectiveSpeed(config, Gait::Run, broken) == doctest::Approx(5.5));
 }
 
 TEST_CASE("acceleration parameters are per gait and positive, braking is one value") {

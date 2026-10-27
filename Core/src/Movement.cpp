@@ -19,6 +19,10 @@ std::size_t GaitIndex(Gait gait) noexcept {
     return index < kGaitCount ? index : kGaitCount - 1;
 }
 
+Gait SaneGait(Gait gait) noexcept {
+    return static_cast<std::size_t>(gait) < kGaitCount ? gait : Gait::Sprint;
+}
+
 } // namespace
 
 const char* GaitName(Gait gait) noexcept {
@@ -152,8 +156,12 @@ MovementState ClassifyMotion(const MovementConfig& config, const MotionSample& s
 
 Gait ResolveGait(const MovementConfig& config, Gait base, bool sprintRequested, const GaitLimits& limits,
                  MoveIntent intent, double currentSpeed) noexcept {
-    const Gait walking = std::min(base == Gait::Sprint ? Gait::Run : base, limits.maxGait);
-    if (!sprintRequested || limits.maxGait != Gait::Sprint) {
+    // Corrupt enum values (a bad wire value cast to Gait) are treated like Sprint, as GaitSpeed does: a base of Sprint counts as Run
+    // and a ceiling of Sprint restricts nothing. The result is therefore always a valid gait.
+    const Gait baseGait = SaneGait(base);
+    const Gait ceiling = SaneGait(limits.maxGait);
+    const Gait walking = std::min(baseGait == Gait::Sprint ? Gait::Run : baseGait, ceiling);
+    if (!sprintRequested || ceiling != Gait::Sprint) {
         return walking;
     }
 
@@ -187,8 +195,10 @@ double DirectionSpeedScale(const MovementConfig& config, MoveIntent intent) noex
 }
 
 double EffectiveSpeed(const MovementConfig& config, Gait gait, const GaitLimits& limits) noexcept {
-    const Gait capped = std::min(gait, limits.maxGait); // an out-of-range maxGait is handled by GaitSpeed
-    return GaitSpeed(config, capped) * limits.speedScale;
+    const Gait capped = std::min(SaneGait(gait), SaneGait(limits.maxGait));
+    // The documented range of the scale is (0, 1]; NaN counts as "no restriction", values outside are clamped.
+    const double scale = std::isnan(limits.speedScale) ? 1.0 : std::clamp(limits.speedScale, 0.0, 1.0);
+    return GaitSpeed(config, capped) * scale;
 }
 
 double JumpVelocityForHeight(double jumpHeight, double gravity) noexcept {

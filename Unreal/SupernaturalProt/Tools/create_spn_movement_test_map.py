@@ -13,6 +13,14 @@ Run headless from the repository root (Windows), after building the editor targe
     UnrealEditor-Cmd.exe Unreal/SupernaturalProt/SupernaturalProt.uproject -run=pythonscript
         -script="<abs path>/create_spn_movement_test_map.py" -unattended -nullrhi
 An existing map is kept unless "--force" follows the script path inside -script="...".
+"--v2" builds /Game/SpnTest/Lvl_SpnMovementTestV2 (v1 plus the district from spn_district_layout.py: roads, enterable buildings,
+vegetation, lamps and interior lights) instead; the v1 map is never touched by it.
+"--force" removes ONLY actors this script created: actors carrying the tag SPN_GEN (set by spawn()). Actors without the tag stay,
+including hand-placed ones that happen to be named SPN_*. A map made by an older generator version (SPN_MV_/SPN_D_ labels, no tag)
+makes --force stop without deleting anything; add --adopt-legacy to treat those labels as generated.
+"--instancing" (with --v2) draws the district primitives as instanced static mesh groups (fewer actors); the editor calls this needs
+are UNCONFIRMED without an engine, so a group that cannot be built falls back to one actor per primitive.
+If generation fails half-way the level is NOT saved; close it without saving.
 
 STATUS: written on a machine without Unreal Engine; never executed. Check the log for "SpnMovementTestMap:".
 """
@@ -30,6 +38,10 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 
 import spn_movement_map_layout as layout_module  # noqa: E402
+import spn_district_layout as district_module  # noqa: E402
+import spn_instancing  # noqa: E402
+import spn_map_extras  # noqa: E402
+import spn_map_validate  # noqa: E402
 
 DOOR_CLASS_PATH = "/Script/SupernaturalProt.SpnTestDoor"
 GUARD_CLASS_PATH = "/Script/SupernaturalProt.SpnPlayAreaGuard"
@@ -60,6 +72,7 @@ def spawn(actor_class, location, rotation=(0.0, 0.0, 0.0), label=None):
         fail("could not spawn " + str(actor_class))
     if label:
         actor.set_actor_label(label)
+    spn_map_extras.tag_actor(actor)
     return actor
 
 
@@ -140,35 +153,85 @@ def build_guard(data):
     guard.set_editor_property("reset_points", [unreal.Vector(*point) for point in spec["reset_points"]])
 
 
-def main():
-    data = layout_module.build_layout()
-    map_path = data["map"]
-    force = "--force" in sys.argv[1:]
-    levels = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
-    if unreal.EditorAssetLibrary.does_asset_exist(map_path):
-        if not force:
-            unreal.log_warning("SpnMovementTestMap: " + map_path + " exists; kept unchanged (pass --force to rebuild it)")
-            return
-        if not levels.load_level(map_path):
-            fail("could not open " + map_path)
-        actors = actor_subsystem()
-        actors.destroy_actors(actors.get_all_level_actors())
-    elif not levels.new_level(map_path, False):
-        fail("could not create " + map_path)
+def preflight(data, groups):
+    """Everything that can be checked before the level is touched: layout data, engine shapes, classes, materials. Raises on the first
+    hard problem; a missing material only warns (the shape default is used)."""
+    problems = spn_map_validate.validate_layout_data(data)
+    if problems:
+        fail("layout data invalid, nothing was changed: " + "; ".join(problems[:5]))
+    for shape in sorted({p["shape"] for p in data["prims"]}):
+        load_shape(shape)
+    for material in sorted({p["material"] for p in data["prims"]}):
+        load_material(material)
+    for path in (DOOR_CLASS_PATH, GUARD_CLASS_PATH):
+        if unreal.load_class(None, path) is None:
+            fail("class not found, build the editor target first: " + path)
+    if data.get("lights") and not hasattr(unreal, "PointLight"):
+        fail("unreal.PointLight is not available")
 
-    build_lighting()
-    spawn(unreal.PlayerStart, tuple(data["player_start"]), label="SPN_PlayerStart")
-    for prim in data["prims"]:
-        spawn_prim(prim)
-    build_doors(data)
-    build_guard(data)
+
+def main():
+    args = sys.argv[1:]
+    v2 = "--v2" in args
+    data = district_module.build_layout_v2() if v2 else layout_module.build_layout()
+    map_path = data["map"]
+    force = "--force" in args
+    adopt_legacy = "--adopt-legacy" in args
+    instancing = "--instancing" in args and v2
+    spn_map_extras.set_generator(map_path, district_module.GENERATOR_VERSION)
+    grouped = spn_instancing.plan_instancing(data["prims"])[1] if instancing else []
+    preflight(data, grouped)
+
+    levels = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
+    exists = unreal.EditorAssetLibrary.does_asset_exist(map_path)
+    if exists and force and not levels.load_level(map_path):
+        fail("could not open " + map_path)
+    actors = actor_subsystem()
+    plan = spn_map_extras.rebuild_plan(actors.get_all_level_actors() if exists and force else [], exists, force, adopt_legacy)
+    unreal.log("SpnMovementTestMap: %s: %s" % (plan.action, plan.reason))
+    if plan.action == "keep":
+        unreal.log_warning("SpnMovementTestMap: " + map_path + " exists; kept unchanged (pass --force to rebuild it)")
+        return
+    if plan.action == "abort":
+        fail(plan.reason + ". Nothing was deleted or changed.")
+    if plan.action == "create":
+        if not levels.new_level(map_path, False):
+            fail("could not create " + map_path)
+    else:
+        actors.destroy_actors(plan.remove)
+
+    try:
+        build_lighting()
+        spawn(unreal.PlayerStart, tuple(data["player_start"]), label="SPN_PlayerStart")
+        in_group = spn_instancing.instanced_ids(grouped)
+        individual = 0
+        for prim in data["prims"]:
+            if id(prim) not in in_group:
+                spawn_prim(prim)
+                individual += 1
+        for group in grouped:
+            individual += spn_map_extras.spawn_instance_group(spawn, load_shape, load_material, _native_sizes, group, spawn_prim)
+        build_doors(data)
+        build_guard(data)
+        spn_map_extras.build_lights(spawn, data)
+        # Verify BEFORE saving: a level that does not match the layout is never written to disk.
+        expected = spn_map_extras.expected_counts(data, [g for g in grouped if _group_actor_exists(g)], individual)
+        problems = spn_map_extras.verify_level(actors.get_all_level_actors(), expected)
+        if problems:
+            fail("the generated level does not match the layout, NOT saved: " + "; ".join(problems[:6]))
+    except Exception as error:  # the level is left UNSAVED so the file on disk stays as it was
+        unreal.log_error("SpnMovementTestMap: generation failed, the level was NOT saved: %s" % error)
+        raise
 
     if not levels.save_current_level():
         fail("could not save " + map_path)
-    spawned = sum(1 for actor in actor_subsystem().get_all_level_actors() if actor.get_actor_label().startswith("SPN_MV_") and isinstance(actor, unreal.StaticMeshActor))
-    if spawned != len(data["prims"]):
-        fail("expected %d shapes in the level, found %d (map saved, but incomplete)" % (len(data["prims"]), spawned))
-    unreal.log("SpnMovementTestMap: created %s with %d shapes, %d doors, %d reset points" % (map_path, len(data["prims"]), len(data["doors"]), len(data["reset_points"])))
+    unreal.log("SpnMovementTestMap: created %s with %d shape actors for %d primitives (%d instance groups), %d doors, %d reset points"
+               % (map_path, individual, len(data["prims"]), len(grouped), len(data["doors"]), len(data["reset_points"])))
+
+
+def _group_actor_exists(group):
+    """A group counts as instanced when its actor exists (the fallback destroys it)."""
+    return any(a.get_actor_label() == spn_instancing.group_label(group) for a in actor_subsystem().get_all_level_actors())
 
 
 main()

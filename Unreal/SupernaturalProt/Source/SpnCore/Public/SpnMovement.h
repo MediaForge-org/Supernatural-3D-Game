@@ -61,13 +61,13 @@ struct SPNCORE_API FSpnMovementSettings
 
 	/** Top speed per gait, cm/s. Must be strictly ascending Walk < Jog < Run < Sprint. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gaits", meta = (ClampMin = "1"))
-	float WalkSpeed = 140.f;
+	float WalkSpeed = 180.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gaits", meta = (ClampMin = "1"))
-	float JogSpeed = 300.f;
+	float JogSpeed = 350.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gaits", meta = (ClampMin = "1"))
-	float RunSpeed = 500.f;
+	float RunSpeed = 550.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Gaits", meta = (ClampMin = "1"))
 	float SprintSpeed = 800.f;

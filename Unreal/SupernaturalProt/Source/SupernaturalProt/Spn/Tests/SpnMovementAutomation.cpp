@@ -18,9 +18,9 @@ bool FSpnMovementSettingsTest::RunTest(const FString& Parameters)
 	FString Error;
 	TestTrue(TEXT("default settings are valid"), SpnMovement::Validate(Defaults, Error));
 
-	TestEqual(TEXT("walk 1.4 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Walk), 140.f);
-	TestEqual(TEXT("jog 3.0 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Jog), 300.f);
-	TestEqual(TEXT("run 5.0 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Run), 500.f);
+	TestEqual(TEXT("walk 1.8 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Walk), 180.f);
+	TestEqual(TEXT("jog 3.5 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Jog), 350.f);
+	TestEqual(TEXT("run 5.5 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Run), 550.f);
 	TestEqual(TEXT("sprint 8.0 m/s"), SpnMovement::GaitSpeed(Defaults, ESpnGait::Sprint), 800.f);
 	TestEqual(TEXT("default jump height 45 cm"), Defaults.JumpHeight, 45.f);
 	TestEqual(TEXT("default step height 25 cm (not the jump height)"), Defaults.MaxStepHeight, 25.f);
