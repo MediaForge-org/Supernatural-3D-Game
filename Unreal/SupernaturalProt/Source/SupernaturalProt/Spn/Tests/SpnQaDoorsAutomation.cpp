@@ -41,7 +41,9 @@ namespace
 		{TEXT("d_office_door"), TEXT("Office1"), {13800, 3500}, {13290, 3500}},
 		{TEXT("d_cottage3_door"), TEXT("Cottage3"), {3700, 11160}, {3190, 11160}},
 		{TEXT("mv_hut_door"), TEXT("TestHut"), {-5250, -9195}, {-4550, -9195}},
-		{TEXT("mv_house_door"), TEXT("TestHouse"), {-1150, -9200}, {-450, -9200}},
+		// The V2 copy of this door swings outward (spn_district_layout.fix_v1_house_door): its open leaf stands 100 cm outside the wall, so the inside
+		// point is 180 cm behind the wall plane (was 250) to keep the leaf within the 250 cm interaction reach for close_from_inside.
+		{TEXT("mv_house_door"), TEXT("TestHouse"), {-1150, -9200}, {-520, -9200}},
 	};
 
 	ASpnTestDoor* FindDoorById(UWorld& World, const FString& Id)

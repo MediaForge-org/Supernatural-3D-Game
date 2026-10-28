@@ -183,7 +183,7 @@ class SnapshotTest(unittest.TestCase):
     handover). v1 must never change without the Windows tests being updated, because they are written against that exact layout."""
 
     V1_SHA256 = "619b792d46dc577ecc9d5a90d997826250543681d8f010b314f55377b450c3ad"
-    V2_SHA256 = "980f8dc9309935bdcfe67e98979ecbaef285e3e4c6a1f1ca04a0c6b41b86d3f8"
+    V2_SHA256 = "4df2a460da9fa6a1e66c12887979a0c4992c5d4b7ad4b05cded24f77e5fd6dab"
 
     def test_v1_layout_snapshot(self):
         self.assertEqual(hashlib.sha256(L.to_json(L.build_layout()).encode()).hexdigest(), self.V1_SHA256)

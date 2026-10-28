@@ -434,7 +434,10 @@ def door_open_angle(door):
     """Hinge yaw change when the door actor opens (ASpnTestDoor::OpenAngle, +90 rotates the leaf from -Y towards +X). District doors swing
     OUTWARD: an open leaf must never stand in the entrance hall (the stair halls of the two-storey houses are only 140 cm wide; found in
     Unreal: the +90 swing of a west door blocked the hall and the stair foot). West entrance -> -90, east entrance -> +90. Doors that do not
-    belong to a district building (the v1 hut and house) keep the actor default +90."""
+    belong to a district building (the v1 hut) keep the actor default +90; a door that carries its own "open_angle" (the v2 copy of the v1
+    house, see fix_v1_house_door) uses that."""
+    if "open_angle" in door:
+        return float(door["open_angle"])
     import spn_building_roles as roles
     for prefix, template, params, _, _ in BUILDINGS:
         if door["zone"] == "d_" + prefix.lower():
@@ -533,10 +536,20 @@ def fix_v1_house_stairs(prims):
     rail["size"][1] = round(hole_y1 - y0, 3)
 
 
+def fix_v1_house_door(doors):
+    """V1 house entrance (V2 only): with the leaf swinging +90 into the hall it stands along the north jamb for 100 cm right next to the
+    stair block, a 100 cm wide, 100 cm long pinch for an 84 cm capsule (spn_map_validate.door_pinch: 108 cm; every other door has 14 cm, the wall
+    thickness). The leaf swings outward instead, like the district doors. The V1 door data and its snapshot hash stay untouched."""
+    for door in doors:
+        if door["id"] == "mv_house_door":
+            door["open_angle"] = -90.0
+
+
 def build_layout_v2():
     """v1 data + the district. All new primitives are in `d_*` zones; v1 primitives, doors, openings and reset points are kept as they are."""
     data = v1.build_layout()
     fix_v1_house_stairs(data["prims"])
+    fix_v1_house_door(data["doors"])
     district = v1.Layout()
     district.lights = []
     build_roads(district)

@@ -188,6 +188,7 @@ public:
 	virtual float GetGravityZ() const { return -980.f; }
 	virtual FNetworkPredictionData_Client* GetPredictionData_Client() const { return nullptr; }
 	virtual void UpdateFromCompressedFlags(uint8) {}
+	virtual bool ClientUpdatePositionAfterServerUpdate() { return false; }
 	virtual void OnMovementModeChanged(EMovementMode, uint8) {}
 	bool IsCrouching() const { return false; }
 	bool IsFalling() const { return MovementMode == MOVE_Falling; }

@@ -30,6 +30,8 @@ Ergebnis: `Unreal/SupernaturalProt/Saved/GameplayQA/<Zeitstempel>/` (Pfad des le
 | `shots/` | Screenshot je FAIL/BLOCKED (Spielansicht mit Overlay) |
 | `automation/index.json` | Unreal-eigener Testbericht, `game.log` Spiellog, `run_info.json` Laufdaten |
 
+Vergleich und Datenprüfung: `spn_qa_report.py` vergleicht jeden Lauf automatisch mit dem neuesten früheren Lauf im selben Ordner (Abschnitt "Compared with the previous run": Regressionen, behoben, weiterhin fehlschlagend, verschwundene und neue Checks; `--compare <Ordner>` / `--no-compare`). Ungültige Statuswerte werden BLOCKED, doppelte Checks, fehlendes Video/Clips/`records.jsonl` stehen unter "Problems with this run's data".
+
 Videostelle: `epoch` der Prüfung minus Startzeit von FFmpeg (+0,5 s Anlaufzeit); typische Abweichung unter 1 s. Der aktuell laufende Test steht zusätzlich als Text im Bild.
 
 ## Status

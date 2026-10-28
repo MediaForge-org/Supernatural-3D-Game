@@ -70,12 +70,15 @@ class DistrictTest(unittest.TestCase):
         cls.all = cls.data["prims"]
 
     def test_v1_is_kept_unchanged(self):
-        # The only deliberate V2 deviation: the V1 house stair block, shortened so the entrance doorway is free (fix_v1_house_stairs).
+        # The only deliberate V2 deviations: the V1 house stair block, shortened so the entrance doorway is free (fix_v1_house_stairs), and its door swing.
         changed = {p["label"] for p in self.v1["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])} | {"SPN_MV_House_Slab_North", "SPN_MV_House_StairRail"}
         keep = lambda prims: [p for p in prims if p["label"] not in changed]  # noqa: E731
         self.assertEqual(keep(self.data["prims"][:self.v1_count]), keep(self.v1["prims"]))
         self.assertEqual([p["label"] for p in self.data["prims"][:self.v1_count]], [p["label"] for p in self.v1["prims"]])
-        self.assertEqual(self.data["doors"][:len(self.v1["doors"])], self.v1["doors"])
+        # ... and the V1 house door, which swings outward in V2 (fix_v1_house_door); everything else about the doors is identical
+        strip = lambda doors: [{k: v for k, v in d.items() if k != "open_angle"} for d in doors]  # noqa: E731
+        self.assertEqual(strip(self.data["doors"][:len(self.v1["doors"])]), self.v1["doors"])
+        self.assertEqual([d["id"] for d in self.data["doors"][:len(self.v1["doors"])] if "open_angle" in d], ["mv_house_door"])
         self.assertEqual(L.build_layout()["prims"], self.v1["prims"])  # building v2 does not touch v1 state
         self.assertEqual(self.data["half_extent_cm"], L.HALF)
         self.assertNotEqual(self.data["map"], self.v1["map"])
@@ -348,8 +351,11 @@ class DistrictTest(unittest.TestCase):
             spec, (x0, y0) = D.building_spec(prefix)
             inside = x0 < tip_x < x0 + spec.size[0]
             self.assertFalse(inside, "door %s opens into the building (leaf tip x %.0f)" % (door["id"], tip_x))
-        v1_doors = [d for d in self.data["doors"] if not d["zone"].startswith("d_")]
+        v1_doors = [d for d in L.build_layout()["doors"]]
         self.assertTrue(all(D.door_open_angle(d) == 90.0 for d in v1_doors))   # the v1 map is not changed
+        v2_house = next(d for d in self.data["doors"] if d["id"] == "mv_house_door")
+        self.assertEqual(D.door_open_angle(v2_house), -90.0)   # V2 only, see fix_v1_house_door
+        self.assertEqual(D.door_open_angle(next(d for d in self.data["doors"] if d["id"] == "mv_hut_door")), 90.0)
 
     def test_v1_house_stairs_leave_the_entrance_doorway_free(self):
         """Found by the Unreal QA (SpnQA.Doors, TestHouse): the stair block ended at y -9204 right behind the door (opening y -9255..-9145), so an
@@ -365,6 +371,37 @@ class DistrictTest(unittest.TestCase):
         self.assertAlmostEqual(top, 320.0, places=1)
         v1 = [p for p in L.build_layout()["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])]
         self.assertAlmostEqual(max(p["center"][1] + p["size"][1] / 2.0 for p in v1), -9204.0, places=2)
+
+    @staticmethod
+    def _inward(door):
+        if not door["zone"].startswith("d_"):
+            return 1.0   # the v1 buildings lie east of their west wall
+        prefix = next(p for p, *_ in D.BUILDINGS if "d_" + p.lower() == door["zone"])
+        return 1.0 if R.entrance(D.building_spec(prefix)[0]).side == "W" else -1.0
+
+    def test_every_open_door_lets_the_capsule_through_without_a_long_pinch(self):
+        """Regression for SpnQA Doors.TestHouse.walk_through: the open leaf and the stair block behind the door left a 100 cm wide, 108 cm long
+        pinch for the 84 cm capsule. Every door must be passable (slack >= 0) and hold the pinch to the wall thickness (<= 40 cm)."""
+        for door in self.data["doors"]:
+            angle = D.door_open_angle(door)
+            inward = self._inward(door)
+            passage = V.door_passage(self.data, door, angle, inward)
+            pinch = V.door_pinch(self.data, door, angle, inward)
+            self.assertGreaterEqual(passage["slack"], 5.0, "%s: capsule slack %.1f cm (limited by %s)" % (door["id"], passage["slack"], passage["limiting"]))
+            self.assertLessEqual(pinch["length"], 40.0, "%s: pinch %.0f cm long (min gap %.0f)" % (door["id"], pinch["length"], pinch["min_gap"]))
+
+    def test_passage_check_sees_the_original_house_defects(self):
+        """The checker itself: it must flag the two geometries that failed in Unreal, otherwise the regression test above proves nothing."""
+        v1 = L.build_layout()
+        door = next(d for d in v1["doors"] if d["id"] == "mv_house_door")
+        stairs_28 = V.door_passage(v1, door, 90.0, 1.0)
+        self.assertLess(stairs_28["slack"], 0.0, "28 cm treads end 59 cm beside the open leaf: the capsule cannot pass")
+        # stair face -9204 to the leaf's south face -9155 = 49 cm; the 59 cm of the Unreal report is stair to jamb (-9145) without the 10 cm leaf
+        self.assertAlmostEqual(stairs_28["clearance"] * 2.0, 49.0, delta=8.0)
+        inward = V.door_pinch(self.data, next(d for d in self.data["doors"] if d["id"] == "mv_house_door"), 90.0, 1.0)
+        self.assertGreater(inward["length"], 80.0, "the leaf swinging into the hall is a long pinch")
+        outward = V.door_pinch(self.data, next(d for d in self.data["doors"] if d["id"] == "mv_house_door"), -90.0, 1.0)
+        self.assertLessEqual(outward["length"], 40.0)
 
 
 if __name__ == "__main__":

@@ -34,6 +34,25 @@ def read_records(path):
     return records
 
 
+def normalize_records(records):
+    """Returns (records, issues). A record without a valid status is a recorder bug, not a pass: it becomes BLOCKED with the reason in front of
+    its detail. Duplicate suite.id pairs are reported (the same check recorded twice hides a flaky or doubled test) but both are kept."""
+    issues, seen, out = [], {}, []
+    for index, record in enumerate(records):
+        record = dict(record)
+        name = "%s.%s" % (record.get("suite", "?"), record.get("id", "?"))
+        if record.get("status") not in STATUSES:
+            issues.append("record %d (%s) has invalid status %r; counted as BLOCKED" % (index + 1, name, record.get("status")))
+            record["detail"] = "invalid status %r. %s" % (record.get("status"), record.get("detail", ""))
+            record["status"] = "BLOCKED"
+        if "suite" not in record or "id" not in record:
+            issues.append("record %d lacks suite or id" % (index + 1))
+        seen[name] = seen.get(name, 0) + 1
+        out.append(record)
+    issues += ["check %s recorded %d times" % (name, count) for name, count in seen.items() if count > 1]
+    return out, issues
+
+
 def video_offset(record, video_start_epoch):
     if not video_start_epoch or not record.get("epoch"):
         return None
@@ -79,6 +98,7 @@ def parse_performance(records):
 
 
 def build_results(records, run_info, automation_tests=None):
+    records, record_issues = normalize_records(records)
     counts, missing = summarize(records, run_info)
     start = run_info.get("video_start_epoch")
     entries = []
@@ -90,10 +110,101 @@ def build_results(records, run_info, automation_tests=None):
         "run": run_info,
         "counts": counts,
         "suites_without_records": missing,
+        "record_issues": record_issues,
         "performance": parse_performance(records),
         "checks": entries,
         "automation_tests": automation_tests or [],
     }
+
+
+def check_key(check):
+    return "%s.%s" % (check.get("suite"), check.get("id"))
+
+
+def worst_status(statuses):
+    """One status per check key even when it was recorded several times (the worst wins)."""
+    for status in ("FAIL", "BLOCKED", "NOT_IMPLEMENTED", "NOT_TESTED", "PASS"):
+        if status in statuses:
+            return status
+    return "NOT_TESTED"
+
+
+def compare_runs(previous, current):
+    """What changed between two results.json documents (dicts). Keys are suite.id.
+    regressions: PASS (or absent as FAIL-free) before, FAIL/BLOCKED now; fixed: FAIL/BLOCKED before, PASS now; still_failing; new_checks;
+    disappeared: present before, absent now (a check that vanished is suspicious, never silently fine); other: any other status change."""
+    def table(results):
+        grouped = {}
+        for check in results.get("checks", []):
+            grouped.setdefault(check_key(check), []).append(check.get("status"))
+        return {key: worst_status(values) for key, values in grouped.items()}
+    before, after = table(previous), table(current)
+    bad = ("FAIL", "BLOCKED")
+    out = {"regressions": [], "fixed": [], "still_failing": [], "new_checks": [], "disappeared": [], "other": []}
+    for key in sorted(set(before) | set(after)):
+        old, new = before.get(key), after.get(key)
+        if old is None:
+            out["new_checks"].append((key, new))
+        elif new is None:
+            out["disappeared"].append((key, old))
+        elif old == new:
+            if new in bad:
+                out["still_failing"].append((key, new))
+        elif new in bad:
+            out["regressions"].append((key, old, new))
+        elif old in bad and new == "PASS":
+            out["fixed"].append((key, old, new))
+        else:
+            out["other"].append((key, old, new))
+    return out
+
+
+def render_comparison(comparison, previous_name):
+    lines = ["## Compared with the previous run (%s)" % previous_name, ""]
+    sections = (("regressions", "Regressions (was not failing, fails now)"), ("fixed", "Fixed"), ("still_failing", "Still failing"),
+                ("disappeared", "Checks that disappeared (investigate: test no longer runs or crashed earlier)"), ("new_checks", "New checks"),
+                ("other", "Other status changes"))
+    empty = True
+    for key, title in sections:
+        items = comparison[key]
+        if not items:
+            continue
+        empty = False
+        lines.append("**%s (%d)**" % (title, len(items)))
+        lines += ["- %s: %s" % (item[0], " -> ".join(str(v) for v in item[1:])) for item in items]
+        lines.append("")
+    if empty:
+        lines += ["no differences", ""]
+    return lines
+
+
+def artifact_problems(run_dir, run_info):
+    """Files the run claims to have produced that are missing or empty. Never raises."""
+    problems = []
+    video = run_info.get("video")
+    if video:
+        path = video if os.path.isabs(video) else os.path.join(run_dir, video)
+        if not os.path.isfile(path):
+            problems.append("video listed in run_info but missing: %s" % video)
+        elif os.path.getsize(path) == 0:
+            problems.append("video is empty: %s" % video)
+    for clip in run_info.get("clips") or []:
+        path = clip if os.path.isabs(clip) else os.path.join(run_dir, clip)
+        if not os.path.isfile(path):
+            problems.append("clip listed but missing: %s" % clip)
+    if not os.path.isfile(os.path.join(run_dir, "records.jsonl")):
+        problems.append("records.jsonl missing: no SpnQA check wrote anything (crash before the first check?)")
+    elif os.path.getsize(os.path.join(run_dir, "records.jsonl")) == 0:
+        problems.append("records.jsonl is empty")
+    return problems
+
+
+def previous_run_dir(run_dir):
+    """Newest sibling directory named before run_dir (run names are timestamps) that has a results.json."""
+    run_dir = os.path.abspath(run_dir)
+    parent, name = os.path.split(run_dir)
+    candidates = sorted(d for d in os.listdir(parent) if d < name and os.path.isfile(os.path.join(parent, d, "results.json"))) if os.path.isdir(parent) else []
+    return os.path.join(parent, candidates[-1]) if candidates else None
 
 
 def load_automation_tests(index_path):
@@ -132,6 +243,11 @@ def render_markdown(results, shots_dir_listing=None):
         "", "## Result", "",
         "PASS %d, FAIL %d, BLOCKED %d, NOT_IMPLEMENTED %d, NOT_TESTED %d" % tuple(counts.get(s, 0) for s in STATUSES), "",
     ]
+    problems_found = list(results.get("record_issues", [])) + list(results.get("artifact_problems", []))
+    if problems_found:
+        lines += ["## Problems with this run's data (%d)" % len(problems_found), ""] + ["- %s" % p for p in problems_found] + [""]
+    if results.get("comparison_lines"):
+        lines += results["comparison_lines"]
     if results["suites_without_records"]:
         lines += ["Suites that produced no record (counted as NOT_TESTED): %s" % ", ".join(results["suites_without_records"]), ""]
     perf = results.get("performance") or {}
@@ -183,6 +299,8 @@ def failing_suites(results_path):
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("run_dir")
+    parser.add_argument("--compare", metavar="PREVIOUS_RUN_DIR", help="compare with this earlier run (default: the newest earlier run next to run_dir)")
+    parser.add_argument("--no-compare", action="store_true", help="skip the comparison with an earlier run")
     parser.add_argument("--failing-suites", action="store_true", help="print the failing test names of an earlier run_dir/results.json and exit")
     args = parser.parse_args(argv)
     if args.failing_suites:
@@ -195,6 +313,15 @@ def main(argv=None):
             run_info = json.load(handle)
     records = read_records(os.path.join(args.run_dir, "records.jsonl"))
     results = build_results(records, run_info, load_automation_tests(os.path.join(args.run_dir, "automation", "index.json")))
+    results["artifact_problems"] = artifact_problems(args.run_dir, run_info)
+    previous = None if args.no_compare else (args.compare or previous_run_dir(args.run_dir))
+    regressions = 0
+    if previous and os.path.isfile(os.path.join(previous, "results.json")):
+        with open(os.path.join(previous, "results.json"), encoding="utf-8") as handle:
+            comparison = compare_runs(json.load(handle), results)
+        results["comparison"] = comparison
+        results["comparison_lines"] = render_comparison(comparison, os.path.basename(os.path.abspath(previous)))
+        regressions = len(comparison["regressions"])
     shots = sorted(os.listdir(os.path.join(args.run_dir, "shots"))) if os.path.isdir(os.path.join(args.run_dir, "shots")) else []
     with open(os.path.join(args.run_dir, "results.json"), "w", encoding="utf-8") as handle:
         json.dump(results, handle, indent=2)
@@ -202,6 +329,10 @@ def main(argv=None):
         handle.write(render_markdown(results, shots))
     counts = results["counts"]
     print("QA result: PASS %d, FAIL %d, BLOCKED %d, NOT_IMPLEMENTED %d, NOT_TESTED %d" % tuple(counts.get(s, 0) for s in STATUSES))
+    if regressions:
+        print("REGRESSIONS since the previous run: %d (see report.md)" % regressions)
+    for problem in results["record_issues"] + results["artifact_problems"]:
+        print("DATA PROBLEM: " + problem)
     return 1 if counts.get("FAIL", 0) or counts.get("BLOCKED", 0) else 0
 
 

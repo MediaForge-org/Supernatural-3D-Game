@@ -1,5 +1,6 @@
 #include <doctest.h>
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -171,4 +172,78 @@ TEST_CASE("standing start and sprint abort follow the gait rates") {
     Vec2 w{8.0, 0.0};
     w = SteerVelocity(kSteer, w, SteeringInput{{1.0, 0.0}, 3.5, 3.0, 8.0}, dt);
     CHECK(Speed(w) == doctest::Approx(8.0 - 8.0 * dt));
+}
+
+// ---------------------------------------------------------------------------------------------------------------------------------
+// Explanation of the sprint-turn measurement of the Windows run (M2A2-Windows-Integration-Report.md section 4: 800 -> 461..464 cm/s,
+// back at 95 % after about 1.02 s). This is a MODEL of Unreal's UCharacterMovementComponent::CalcVelocity as written down from the engine
+// source (friction blend of the velocity towards "input direction * current speed", constant braking above the gait's top speed, rotation
+// to the input at a constant rate). It is not run against the engine; the Unreal side stays "pending" until the QA is repeated.
+
+namespace {
+
+struct EngineTurn {
+    double minSpeed = 0.0;
+    double timeTo95 = -1.0;
+    double secondsWithoutSprint = 0.0;
+};
+
+// 8 m/s along +X, input switched to `side` * 90 degrees. `holdSprint` = the sprint is never dropped (isolates the friction effect).
+EngineTurn EngineFrictionTurn(double side, bool holdSprint, double dt = 1.0 / 120.0) {
+    constexpr double kTurnFriction = 8.0;     // FSpnMovementSettings::TurnFriction (GroundFriction)
+    constexpr double kRotationRate = 500.0;   // deg/s, FSpnMovementSettings::TurnRateDegrees
+    Vec2 v{8.0, 0.0};
+    double yaw = 0.0;                          // degrees, the capsule orientation (bOrientRotationToMovement)
+    const double inputDeg = side * 90.0;
+    const Vec2 dir{std::cos(inputDeg * kPi / 180.0), std::sin(inputDeg * kPi / 180.0)};
+    EngineTurn r{8.0, -1.0, 0.0};
+    for (double t = 0.0; t < 2.0; t += dt) {
+        const double rel = (inputDeg - yaw) * kPi / 180.0;   // input in the capsule's frame, as GetLocalInput() computes it
+        const Gait g = holdSprint ? Gait::Sprint
+                                  : ResolveGait(kMove, Gait::Jog, true, GaitLimits{}, MoveIntent{std::cos(rel), std::sin(rel)}, Speed(v));
+        if (g != Gait::Sprint) r.secondsWithoutSprint += dt;
+        const double top = GaitSpeed(kMove, g);
+        const double speed = Speed(v);
+        const bool over = speed > top * 1.01;
+        if (over) {
+            const double s = std::max(speed - kMove.brakingDeceleration * dt, top);   // braking never goes below the limit
+            v = {v.x / speed * s, v.y / speed * s};
+        } else {
+            const double k = std::min(dt * kTurnFriction, 1.0);
+            v = {v.x - (v.x - dir.x * speed) * k, v.y - (v.y - dir.y * speed) * k};
+        }
+        v = {v.x + dir.x * GaitAcceleration(kMove, g) * dt, v.y + dir.y * GaitAcceleration(kMove, g) * dt};
+        if (!over && Speed(v) > top) {
+            const double s = Speed(v);
+            v = {v.x / s * top, v.y / s * top};
+        }
+        yaw += std::clamp(inputDeg - yaw, -kRotationRate * dt, kRotationRate * dt);
+        r.minSpeed = std::min(r.minSpeed, Speed(v));
+        if (r.timeTo95 < 0.0 && t > 0.2 && Speed(v) >= 0.95 * 8.0) r.timeTo95 = t;
+    }
+    return r;
+}
+
+} // namespace
+
+TEST_CASE("the engine's friction blend alone explains the measured sprint-turn speed dip; losing the sprint gait is a second-order effect") {
+    const EngineTurn real = EngineFrictionTurn(+1.0, false);
+    const EngineTurn kept = EngineFrictionTurn(+1.0, true);
+    // Measured on Windows: minimum 461..464 of 800 (57.6..58 %), back at 95 % after about 1.02 s.
+    CHECK(real.minSpeed / 8.0 > 0.55);
+    CHECK(real.minSpeed / 8.0 < 0.62);
+    CHECK(real.timeTo95 > 0.9);
+    CHECK(real.timeTo95 < 1.15);
+    // Even with the sprint held the whole time the dip is nearly as deep: the cause is the friction formula, not the gait switch.
+    CHECK(kept.minSpeed / 8.0 > 0.55);
+    CHECK(real.minSpeed - kept.minSpeed > -0.05);
+    CHECK(kept.minSpeed - real.minSpeed < 0.4);
+    // The model is mirror symmetric: the left/right difference seen in Unreal (sprint ends only to the left) is NOT explained by it.
+    const EngineTurn left = EngineFrictionTurn(-1.0, false);
+    CHECK(left.minSpeed == doctest::Approx(real.minSpeed).epsilon(1e-9));
+    CHECK(left.secondsWithoutSprint == doctest::Approx(real.secondsWithoutSprint).epsilon(1e-9));
+    // The sprint gait is only dropped briefly (the input angle falls below the 50 degree start angle as the capsule turns at 500 deg/s).
+    // This is also why SpnQA.Turns logged a 'local input angle' of 41..44 degrees: it samples the angle in the ACTOR frame 30..100 ms after the
+    // key press, when the capsule has already turned by up to 50 degrees. The input itself was a real 90 degrees.
+    CHECK(real.secondsWithoutSprint < 0.15);
 }
