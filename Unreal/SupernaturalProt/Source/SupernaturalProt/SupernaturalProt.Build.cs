@@ -25,6 +25,9 @@ public class SupernaturalProt : ModuleRules
 		// Spn/SpnCharacterMovementComponent.h (a public header of this module) includes SpnMovement.h.
 		PublicDependencyModuleNames.AddRange(new string[] { "SpnCore" });
 
+		// Frame statistics (GGameThreadTime, draw calls, GPU time) of the map performance report test.
+		PrivateDependencyModuleNames.AddRange(new string[] { "RenderCore", "RHI" });
+
 		PublicIncludePaths.AddRange(new string[] {
 			"SupernaturalProt",
 			"SupernaturalProt/Variant_Platforming",

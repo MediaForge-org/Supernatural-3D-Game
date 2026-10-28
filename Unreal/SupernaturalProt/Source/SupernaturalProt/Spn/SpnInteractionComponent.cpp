@@ -1,14 +1,38 @@
 #include "Spn/SpnInteractionComponent.h"
 
 #include "CollisionQueryParams.h"
+#include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "GameFramework/Pawn.h"
 #include "GameFramework/Actor.h"
 #include "Spn/SpnInteractable.h"
 #include "SupernaturalProt.h"
 
 USpnInteractionComponent::USpnInteractionComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	const APawn* Pawn = Cast<APawn>(GetOwner());
+	if (!bShowPrompt || Pawn == nullptr || !Pawn->IsLocallyControlled())
+	{
+		CurrentPrompt.Reset();
+		return;
+	}
+
+	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(FindTarget());
+	const FString Verb = Interactable != nullptr ? Interactable->SpnPromptText(Pawn) : FString();
+	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("[%s] %s"), *PromptKey.GetDisplayName().ToString(), *Verb);
+#if !UE_BUILD_SHIPPING
+	if (GEngine != nullptr && !CurrentPrompt.IsEmpty())
+	{
+		GEngine->AddOnScreenDebugMessage(static_cast<uint64>(0x5350'4E50), 0.f, FColor::White, CurrentPrompt, false, FVector2D(2.f, 2.f));
+	}
+#endif
 }
 
 AActor* USpnInteractionComponent::FindTarget() const

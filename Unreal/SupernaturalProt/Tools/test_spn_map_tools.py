@@ -35,6 +35,16 @@ class _ISM:
 
 fake.Vector = fake.Rotator = fake.Transform = _Rec
 fake.Actor = _Actor
+fake.EditorActorSubsystem = type("EditorActorSubsystem", (), {})
+
+
+class _ActorSubsystem:
+    def destroy_actor(self, actor):
+        return actor.destroy_actor()
+
+
+fake.load_class = lambda outer, path: object()  # the SpnInstancedGroup holder class exists
+fake.get_editor_subsystem = lambda cls: _ActorSubsystem()
 fake.InstancedStaticMeshComponent = _ISM
 sys.modules.setdefault("unreal", fake)
 
@@ -55,10 +65,12 @@ class FakeActor:
     def get_actor_label(self):
         return self.label
 
-    def add_component_by_class(self, cls, *args):
-        comp = FakeISM(self)
-        self.components.append(comp)
-        return comp
+    def get_editor_property(self, name):
+        """ASpnInstancedGroup.instances: the holder actor's instanced component."""
+        assert name == "instances"
+        if not self.components:
+            self.components.append(FakeISM(self))
+        return self.components[0]
 
     def destroy_actor(self):
         if self.refuse_destroy:
@@ -171,7 +183,7 @@ class SnapshotTest(unittest.TestCase):
     handover). v1 must never change without the Windows tests being updated, because they are written against that exact layout."""
 
     V1_SHA256 = "619b792d46dc577ecc9d5a90d997826250543681d8f010b314f55377b450c3ad"
-    V2_SHA256 = "12cd5b7a50d4bf2ccb9229a92bc2ae2656cc879c2695bf97162cfdaea1e39756"
+    V2_SHA256 = "980f8dc9309935bdcfe67e98979ecbaef285e3e4c6a1f1ca04a0c6b41b86d3f8"
 
     def test_v1_layout_snapshot(self):
         self.assertEqual(hashlib.sha256(L.to_json(L.build_layout()).encode()).hexdigest(), self.V1_SHA256)

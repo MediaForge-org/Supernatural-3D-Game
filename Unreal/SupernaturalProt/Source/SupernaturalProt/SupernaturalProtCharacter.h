@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class USpnInteractionComponent;
+class USpnMovementDiagnostics;
 class USpnCharacterMovementComponent;
 struct FInputActionValue;
 
@@ -38,6 +39,10 @@ class ASupernaturalProtCharacter : public ACharacter
 	/** Finds and uses interactables in front of the character (SPN placeholder interaction) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpnInteractionComponent* Interaction;
+
+	/** Opt-in movement recorder (inactive until spn.MoveDiag 1 / bEnabled): frame data for the jump and step-up investigation */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpnMovementDiagnostics* MovementDiagnostics;
 
 	/** Runtime fallback used while InteractAction is not set: an Enhanced Input action and context mapping DefaultInteractKey */
 	UPROPERTY(Transient)

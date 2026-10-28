@@ -148,6 +148,15 @@ FSpnInteractStatus ASpnTestDoor::SpnUse(AActor* User)
 	return Status;
 }
 
+FString ASpnTestDoor::SpnPromptText(const AActor* User) const
+{
+	if (IsOpen())
+	{
+		return TEXT("Close door");
+	}
+	return bAuthoredLocked ? TEXT("Door (locked)") : TEXT("Open door");
+}
+
 bool ASpnTestDoor::IsOpen() const
 {
 	const USpnWorldStateSubsystem* WorldState = GetWorldState();

@@ -121,9 +121,26 @@ def verify_level(actors, expected):
     return problems
 
 
+INSTANCE_HOLDER_CLASS_PATH = "/Script/SupernaturalProt.SpnInstancedGroup"
+
+
+def ensure_instancing_usage(material):
+    """Instanced draws need the material flag "Used with Instanced Static Meshes" on the BASE material; without it a packaged or -game
+    build shows the default material on every instance (found in Unreal: the LevelPrototyping materials lack it). Sets the flag, recompiles
+    and saves the base material once; a no-op when it is already set. Touches only the material assets the generator itself uses."""
+    base = material.get_base_material() if hasattr(material, "get_base_material") else material
+    if base is None or base.get_editor_property("used_with_instanced_static_meshes"):
+        return
+    base.set_editor_property("used_with_instanced_static_meshes", True)
+    unreal.MaterialEditingLibrary.recompile_material(base)
+    if not unreal.EditorAssetLibrary.save_loaded_asset(base):
+        raise RuntimeError("could not save the material flag on " + base.get_path_name())
+    unreal.log("SpnMovementTestMap: set 'used with instanced static meshes' on " + base.get_path_name())
+
+
 def _destroy(actor):
     """Remove a half-built instance actor; raises when the engine refuses (then the run must stop and not save)."""
-    if not actor.destroy_actor():
+    if not unreal.get_editor_subsystem(unreal.EditorActorSubsystem).destroy_actor(actor):
         raise RuntimeError("could not remove the partially built instance actor %s" % actor.get_actor_label())
 
 
@@ -135,8 +152,11 @@ def spawn_instance_group(spawn, load_shape, load_material, native_sizes, group, 
     try:
         mesh = load_shape(group["shape"])
         native = native_sizes[group["shape"]]
-        actor = spawn(unreal.Actor, group["instances"][0]["center"], label=group["id"])
-        component = actor.add_component_by_class(unreal.InstancedStaticMeshComponent, False, unreal.Transform(), False)
+        holder_class = unreal.load_class(None, INSTANCE_HOLDER_CLASS_PATH)
+        if holder_class is None:
+            raise RuntimeError("class not found, build the editor target first: " + INSTANCE_HOLDER_CLASS_PATH)
+        actor = spawn(holder_class, (0.0, 0.0, 0.0), label=group["id"])
+        component = actor.get_editor_property("instances")
         component.set_static_mesh(mesh)
         material = load_material(group["material"])
         if material is not None:

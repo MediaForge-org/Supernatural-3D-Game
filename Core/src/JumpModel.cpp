@@ -1,5 +1,6 @@
 #include <spn/core/JumpModel.h>
 
+#include <algorithm>
 #include <cmath>
 
 namespace spn::core {

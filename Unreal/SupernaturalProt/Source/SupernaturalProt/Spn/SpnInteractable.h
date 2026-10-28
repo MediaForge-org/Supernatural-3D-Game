@@ -25,4 +25,10 @@ public:
 	 * USpnWorldStateSubsystem, which the host owns (co-op direction, no replication yet).
 	 */
 	virtual FSpnInteractStatus SpnUse(AActor* User) = 0;
+
+	/**
+	 * Short verb phrase for the on-screen prompt ("Open door"), empty for no prompt. PLACEHOLDER text, not localized; the real UI maps
+	 * feedback/prompt ids later. Called every frame for the object in front of the local player, so it must be cheap.
+	 */
+	virtual FString SpnPromptText(const AActor* User) const { return FString(); }
 };

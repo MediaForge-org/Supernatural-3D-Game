@@ -8,6 +8,7 @@ They do not replace walking the map in the engine: collision shapes, capsule beh
 import json
 import math
 import os
+import re
 import subprocess
 import sys
 import unittest
@@ -69,7 +70,11 @@ class DistrictTest(unittest.TestCase):
         cls.all = cls.data["prims"]
 
     def test_v1_is_kept_unchanged(self):
-        self.assertEqual(self.data["prims"][:self.v1_count], self.v1["prims"])
+        # The only deliberate V2 deviation: the V1 house stair block, shortened so the entrance doorway is free (fix_v1_house_stairs).
+        changed = {p["label"] for p in self.v1["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])} | {"SPN_MV_House_Slab_North", "SPN_MV_House_StairRail"}
+        keep = lambda prims: [p for p in prims if p["label"] not in changed]  # noqa: E731
+        self.assertEqual(keep(self.data["prims"][:self.v1_count]), keep(self.v1["prims"]))
+        self.assertEqual([p["label"] for p in self.data["prims"][:self.v1_count]], [p["label"] for p in self.v1["prims"]])
         self.assertEqual(self.data["doors"][:len(self.v1["doors"])], self.v1["doors"])
         self.assertEqual(L.build_layout()["prims"], self.v1["prims"])  # building v2 does not touch v1 state
         self.assertEqual(self.data["half_extent_cm"], L.HALF)
@@ -330,6 +335,36 @@ class DistrictTest(unittest.TestCase):
 
     def test_json_round_trip(self):
         self.assertEqual(json.loads(L.to_json(self.data))["district"]["buildings"]["Workshop"]["kind"], "workshop")
+
+    def test_open_district_doors_swing_outward_and_never_into_the_hall(self):
+        """Found in Unreal: a west door opened by +90 put its leaf across the 140 cm stair hall (leaf along +X at the hinge row)."""
+        district_doors = [d for d in self.data["doors"] if d["zone"].startswith("d_")]
+        self.assertEqual(len(district_doors), 8)
+        for door in district_doors:
+            angle = D.door_open_angle(door)
+            yaw = math.radians(door["yaw"] + angle)   # open leaf direction (UE yaw: 0 = +X, +90 = +Y)
+            tip_x = door["hinge"][0] + 110.0 * math.cos(yaw)
+            prefix = next(p for p, *_ in D.BUILDINGS if "d_" + p.lower() == door["zone"])
+            spec, (x0, y0) = D.building_spec(prefix)
+            inside = x0 < tip_x < x0 + spec.size[0]
+            self.assertFalse(inside, "door %s opens into the building (leaf tip x %.0f)" % (door["id"], tip_x))
+        v1_doors = [d for d in self.data["doors"] if not d["zone"].startswith("d_")]
+        self.assertTrue(all(D.door_open_angle(d) == 90.0 for d in v1_doors))   # the v1 map is not changed
+
+    def test_v1_house_stairs_leave_the_entrance_doorway_free(self):
+        """Found by the Unreal QA (SpnQA.Doors, TestHouse): the stair block ended at y -9204 right behind the door (opening y -9255..-9145), so an
+        84 cm capsule could not enter. V2 shortens the treads; the V1 layout itself is unchanged (its snapshot hash is pinned elsewhere)."""
+        steps = [p for p in self.data["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])]
+        self.assertEqual(len(steps), 17)
+        north_end = max(p["center"][1] + p["size"][1] / 2.0 for p in steps)
+        opening_south_edge = -9255.0
+        self.assertLessEqual(north_end, opening_south_edge + 0.01)
+        top = max(p["center"][2] + p["size"][2] / 2.0 for p in steps)
+        slab = next(p for p in self.data["prims"] if p["label"] == "SPN_MV_House_Slab_North")
+        self.assertAlmostEqual(slab["center"][1] - slab["size"][1] / 2.0, north_end, places=2)   # the first-floor slab starts where the stairs end
+        self.assertAlmostEqual(top, 320.0, places=1)
+        v1 = [p for p in L.build_layout()["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])]
+        self.assertAlmostEqual(max(p["center"][1] + p["size"][1] / 2.0 for p in v1), -9204.0, places=2)
 
 
 if __name__ == "__main__":

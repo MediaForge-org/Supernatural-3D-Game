@@ -48,6 +48,7 @@ public:
 
 	//~ ISpnInteractable
 	virtual FSpnInteractStatus SpnUse(AActor* User) override;
+	virtual FString SpnPromptText(const AActor* User) const override;
 
 	/** Open according to the world state (or bAuthoredOpen while no fact exists). */
 	bool IsOpen() const;

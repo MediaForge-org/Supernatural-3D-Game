@@ -19,7 +19,7 @@ import spn_building_templates as tpl
 import spn_movement_map_layout as v1
 
 MAP_V2 = "/Game/SpnTest/Lvl_SpnMovementTestV2"
-GENERATOR_VERSION = "m2a2-p2"  # bump when the layout or ownership rules change; written into the SPN_GEN_VER tag of every actor
+GENERATOR_VERSION = "m2a2-w2"  # bump when the layout or ownership rules change; written into the SPN_GEN_VER tag of every actor
 HALF = v1.HALF
 CELL = 200.0
 ROAD_W = 800.0
@@ -430,6 +430,19 @@ def building_spec(name):
     raise KeyError(name)
 
 
+def door_open_angle(door):
+    """Hinge yaw change when the door actor opens (ASpnTestDoor::OpenAngle, +90 rotates the leaf from -Y towards +X). District doors swing
+    OUTWARD: an open leaf must never stand in the entrance hall (the stair halls of the two-storey houses are only 140 cm wide; found in
+    Unreal: the +90 swing of a west door blocked the hall and the stair foot). West entrance -> -90, east entrance -> +90. Doors that do not
+    belong to a district building (the v1 hut and house) keep the actor default +90."""
+    import spn_building_roles as roles
+    for prefix, template, params, _, _ in BUILDINGS:
+        if door["zone"] == "d_" + prefix.lower():
+            spec, _ = building_spec(prefix)
+            return -90.0 if roles.entrance(spec).side == "W" else 90.0
+    return 90.0
+
+
 def front_point(name):
     """World point 150 cm outside the entrance of a district building."""
     import spn_building_roles as roles
@@ -497,9 +510,33 @@ def check_routes(data, grid):
 
 # --- assembly ---------------------------------------------------------------------------------------------------------------------
 
+V1_HOUSE_STAIR_RUN = 25.0
+
+
+def fix_v1_house_stairs(prims):
+    """V1 house (zone "house"): the 17-step stair block ran along +Y up to y = -9204 right behind the entrance door (opening y -9255 .. -9145),
+    leaving 59 cm beside it for an 84 cm capsule; found in the Unreal QA run (SpnQA.Doors, capsule sweep hit SPN_MV_House_Stair_17 behind
+    the open door). V2 only: a 25 cm tread (V1 has 28) ends the block at y = -9255, flush with the south edge of the opening. The V1 layout
+    data and its snapshot hash stay untouched."""
+    y0, y1, steps = -9700.0, -8700.0, 17
+    by_label = {p["label"]: p for p in prims}
+    for i in range(1, steps + 1):
+        stair = by_label["SPN_MV_House_Stair_%02d" % i]
+        stair["center"][1] = round(y0 + 20.0 + (i - 0.5) * V1_HOUSE_STAIR_RUN, 3)
+        stair["size"][1] = V1_HOUSE_STAIR_RUN
+    hole_y1 = y0 + 20.0 + steps * V1_HOUSE_STAIR_RUN
+    slab = by_label["SPN_MV_House_Slab_North"]
+    slab["center"][1] = round((hole_y1 + y1) / 2.0, 3)
+    slab["size"][1] = round(y1 - hole_y1, 3)
+    rail = by_label["SPN_MV_House_StairRail"]
+    rail["center"][1] = round((y0 + hole_y1) / 2.0, 3)
+    rail["size"][1] = round(hole_y1 - y0, 3)
+
+
 def build_layout_v2():
     """v1 data + the district. All new primitives are in `d_*` zones; v1 primitives, doors, openings and reset points are kept as they are."""
     data = v1.build_layout()
+    fix_v1_house_stairs(data["prims"])
     district = v1.Layout()
     district.lights = []
     build_roads(district)

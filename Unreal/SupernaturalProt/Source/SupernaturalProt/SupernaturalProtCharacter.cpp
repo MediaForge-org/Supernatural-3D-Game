@@ -14,6 +14,7 @@
 #include "InputMappingContext.h"
 #include "Spn/SpnCharacterMovementComponent.h"
 #include "Spn/SpnInteractionComponent.h"
+#include "Spn/SpnMovementDiagnostics.h"
 #include "SupernaturalProt.h"
 
 namespace
@@ -65,6 +66,8 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter(const FObjectInitializer&
 	// Interaction with SPN interactables (E by default, see DefaultInteractKey)
 	Interaction = CreateDefaultSubobject<USpnInteractionComponent>(TEXT("Interaction"));
 
+	MovementDiagnostics = CreateDefaultSubobject<USpnMovementDiagnostics>(TEXT("MovementDiagnostics"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -87,6 +90,7 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Interacting
 		EnhancedInputComponent->BindAction(ResolveInteractAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoInteract);
+		Interaction->PromptKey = DefaultInteractKey; // the on-screen prompt names the key that is actually mapped
 
 		// Sprinting (hold)
 		UInputAction* Sprint = ResolveSprintAction();

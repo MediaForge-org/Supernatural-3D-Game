@@ -91,11 +91,13 @@ def load_shape(shape):
     return mesh
 
 
-def load_material(key):
+def load_material(key, for_instancing=False):
     if key not in _materials:
         material = unreal.load_asset(layout_module.MATERIAL_PATHS[key])
         if material is None:
             unreal.log_warning("SpnMovementTestMap: material missing, using the shape default: " + layout_module.MATERIAL_PATHS[key])
+        elif for_instancing:
+            spn_map_extras.ensure_instancing_usage(material)
         _materials[key] = material
     return _materials[key]
 
@@ -140,6 +142,7 @@ def build_doors(data):
         actor = spawn(door_class, door["hinge"], (0.0, door["yaw"], 0.0), "SPN_MV_Door_" + door["id"])
         actor.set_editor_property("stable_id", door["id"])
         actor.set_editor_property("authored_locked", False)
+        actor.set_editor_property("open_angle", district_module.door_open_angle(door))
 
 
 def build_guard(data):
@@ -162,8 +165,8 @@ def preflight(data, groups):
     for shape in sorted({p["shape"] for p in data["prims"]}):
         load_shape(shape)
     for material in sorted({p["material"] for p in data["prims"]}):
-        load_material(material)
-    for path in (DOOR_CLASS_PATH, GUARD_CLASS_PATH):
+        load_material(material, for_instancing=bool(groups))
+    for path in (DOOR_CLASS_PATH, GUARD_CLASS_PATH) + ((spn_map_extras.INSTANCE_HOLDER_CLASS_PATH,) if groups else ()):
         if unreal.load_class(None, path) is None:
             fail("class not found, build the editor target first: " + path)
     if data.get("lights") and not hasattr(unreal, "PointLight"):

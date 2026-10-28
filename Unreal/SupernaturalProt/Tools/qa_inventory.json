@@ -1,0 +1,125 @@
+{
+  "_comment": "Gameplay QA inventory. Every gameplay system must be listed here with at least one automated test or an explicit gap; Tools/check_qa_inventory.py scans the sources (UCLASS/UINTERFACE classes, Core headers, Spn.* console commands, Default*Key bindings) and fails when something is not listed. Add new features here when you add them (the QA script refuses to run otherwise). Regenerate Docs/Development/Gameplay-QA-Inventory.md with: check_qa_inventory.py --write",
+  "ignore_source_dirs": ["Variant_Combat", "Variant_Platforming", "Variant_SideScrolling"],
+  "ignore_note": "Variant_* are the Unreal template sample variants (Combat, Platforming, SideScrolling): not SPN gameplay, not part of the SPN game modes, neither used nor tested here.",
+  "entries": [
+    {
+      "id": "movement.gaits",
+      "title": "Gaits Walk/Jog/Run/Sprint, acceleration, braking, gait cycle and sprint keys",
+      "classes": ["USpnCharacterMovementComponent"],
+      "core_headers": ["Movement.h", "Locomotion.h"],
+      "keys": ["DefaultSprintKey", "DefaultGaitCycleKey", "DefaultSprintGamepadKey"],
+      "tests": ["SpnGame.Movement.Gaits", "SpnGame.Movement.Settings", "SpnGame.Movement.CharacterDefaults", "SpnQA.Movement", "core:Tests/Core/MovementTests.cpp", "core:Tests/Core/LocomotionTests.cpp"],
+      "gap": "Gamepad sprint (DefaultSprintGamepadKey) and analog stick magnitudes through a real gamepad are not tested; speeds are the current placeholder values, not approved tuning."
+    },
+    {
+      "id": "movement.turns",
+      "title": "Direction changes, 90/180 degree turns, sprint left/right",
+      "core_headers": ["GroundSteering.h"],
+      "tests": ["SpnGame.Movement.SprintTurn", "SpnQA.Turns", "core:Tests/Core/GroundSteeringTests.cpp"],
+      "gap": "The steering model of the Core (GroundSteering) is not wired into the Unreal movement yet; SprintTurn fails until that decision is made (see Docs/Development/M2A2-Windows-Integration-Report.md)."
+    },
+    {
+      "id": "movement.jump",
+      "title": "Jump: standing, moving, sprint, ledges, collisions, landing",
+      "core_headers": ["JumpModel.h"],
+      "tests": ["SpnGame.Movement.Jump", "SpnGame.Movement.JumpMoving", "SpnGame.Movement.StepJumpIndependence", "SpnQA.Jump", "core:Tests/Core/JumpModelTests.cpp"],
+      "gap": "Jump key is bound by the template's IMC_Default asset (Space), exercised through SpnQA.Jump but not inventoried as a C++ binding; coyote time / jump buffering do not exist."
+    },
+    {
+      "id": "movement.obstacles",
+      "title": "Obstacles, steps, stairs and ramps",
+      "core_headers": ["Traversal.h"],
+      "tests": ["SpnGame.Movement.Obstacles", "SpnGame.Movement.StairsAndRamps", "SpnQA.Jump", "SpnQA.Buildings", "core:Tests/Core/TraversalTests.cpp"],
+      "gap": "Obstacles and StairsAndRamps fail today (walking over 30 cm ledges, 30 cm stairs); a capsule/step decision by the developer is open."
+    },
+    {
+      "id": "movement.network",
+      "title": "Sprint/gait prediction and replay for network play",
+      "tests": ["SpnGame.Movement.NetworkSprint", "SpnGame.Movement.PredictionFlags"],
+      "gap": "No real multi-client session with latency is run; co-op networking is not designed yet."
+    },
+    {
+      "id": "movement.diagnostics",
+      "title": "Opt-in movement frame recorder (spn.MoveDiag)",
+      "classes": ["USpnMovementDiagnostics"],
+      "tests": ["SpnGame.MapV2Capture.JumpApproachReport", "SpnGame.MapV2Capture.StepLimitReport"],
+      "gap": "Developer tool; measured through the report tests, no pass/fail assertion on the recorder format itself."
+    },
+    {
+      "id": "movement.boundary",
+      "title": "Play-area guard and reset points",
+      "classes": ["ASpnPlayAreaGuard"],
+      "tests": ["SpnGame.Movement.Boundary", "SpnQA.Spawn"]
+    },
+    {
+      "id": "camera",
+      "title": "Follow camera: collision, arm recovery, mesh hiding, tight spaces",
+      "core_headers": ["CameraArm.h"],
+      "tests": ["SpnGame.Movement.AlleyCamera", "SpnGame.Movement.CameraClearance", "SpnGame.TestMap.M1Camera", "SpnQA.Camera", "core:Tests/Core/CameraArmTests.cpp"],
+      "gap": "Camera look input (mouse/stick sensitivity) and field-of-view behaviour are not tested; there is no automated visual comparison of what the camera shows."
+    },
+    {
+      "id": "interaction",
+      "title": "Interaction trace, reach and the E key",
+      "classes": ["USpnInteractionComponent", "USpnInteractable"],
+      "core_headers": ["Interaction.h", "InteractionReach.h"],
+      "keys": ["DefaultInteractKey"],
+      "tests": ["SpnGame.Interaction.TraceAndUse", "SpnQA.DoorReach", "SpnQA.Doors", "core:Tests/Core/InteractionTests.cpp", "core:Tests/Core/InteractionReachTests.cpp"],
+      "gap": "No on-screen prompt or highlight exists, so nothing visible to test; interaction through a gamepad button is not bound."
+    },
+    {
+      "id": "doors",
+      "title": "Doors: open/close via E, swing, collision, persistence",
+      "classes": ["ASpnTestDoor"],
+      "core_headers": ["TestDoor.h"],
+      "tests": ["SpnGame.TestDoor.UseAndSwing", "SpnGame.TestDoor.LoadShowsSavedState", "SpnGame.TestMap.PlayDoors", "SpnQA.Doors", "SpnQA.Buildings", "SpnQA.SaveLoad", "core:Tests/Core/DoorPersistenceTests.cpp"],
+      "gap": "Locked doors have no key model; door sound/animation are placeholders; doors vs NPCs and doors blocked by objects are not tested."
+    },
+    {
+      "id": "pickups",
+      "title": "Pickups and inventories",
+      "classes": ["ASpnTestPickup"],
+      "core_headers": ["Pickup.h"],
+      "console": ["Spn.Inventory"],
+      "tests": ["SpnGame.TestPickup.TakeOnce", "SpnGame.TestPickup.HoldersAreSeparate", "SpnGame.TestPickup.SaveLoadRestoresInventory", "SpnGame.TestPickup.FailedLoadKeepsInventory", "SpnGame.TestMap.Pickups", "SpnGame.TestMap.PlayPickups", "core:Tests/Core/PickupTests.cpp"],
+      "gap": "The V2 level contains no pickups (they live in the M1 test maps); there is no inventory UI."
+    },
+    {
+      "id": "worldstate",
+      "title": "World state (facts), save and load",
+      "classes": ["USpnWorldStateSubsystem"],
+      "core_headers": ["WorldFacts.h"],
+      "console": ["Spn.SaveWorld", "Spn.LoadWorld"],
+      "tests": ["SpnCore.WorldFacts.SetAndRead", "SpnCore.WorldState.Initialize", "SpnCore.WorldState.SaveAndLoadSlot", "SpnCore.WorldState.SlotNames", "SpnCore.WorldState.FailedLoadKeepsState", "SpnQA.SaveLoad", "core:Tests/Core/WorldFactsTests.cpp", "core:Tests/Core/WorldFactsCompatibilityTests.cpp"],
+      "gap": "Player position/character state, a save menu, quick-save and autosave do not exist (reported as NOT_IMPLEMENTED by SpnQA.SaveLoad)."
+    },
+    {
+      "id": "spawn",
+      "title": "Game mode, player controller, PlayerStart and single player pawn",
+      "classes": ["ASupernaturalProtGameMode", "ASupernaturalProtPlayerController", "ASupernaturalProtCharacter"],
+      "tests": ["SpnQA.Spawn", "SpnGame.MapV2.Spawn"],
+      "gap": "NPC pawns do not exist in the Unreal project yet (SpnQA.Spawn reports npc_vs_player as NOT_IMPLEMENTED); local split-screen/co-op spawning is not designed."
+    },
+    {
+      "id": "level.v2",
+      "title": "Map V2 generator output, instancing and buildings",
+      "classes": ["ASpnInstancedGroup"],
+      "tests": ["SpnGame.MapV2.Walkthrough", "SpnGame.TestMap.Layout", "SpnGame.Movement.MapLayout", "SpnQA.Buildings", "SpnGame.MapV2Capture.Screenshots"],
+      "gap": "Window gaps, street crossings and lighting are only checked visually (screenshots/video); load time and editor viewport performance are not measured."
+    },
+    {
+      "id": "performance",
+      "title": "Frame time, draw calls, memory",
+      "tests": ["SpnQA.Performance", "SpnGame.MapV2Capture.PerformanceReport"],
+      "gap": "No approved performance budget exists; SpnQA.Performance uses a placeholder (30 FPS average, worst frame below 100 ms)."
+    },
+    {
+      "id": "core.npc_and_content",
+      "title": "NPC, appearance, detail tiers and content ids (engine-independent Core only)",
+      "core_headers": ["Npc.h", "Appearance.h", "AppearanceEdit.h", "AppearanceGenerator.h", "AppearanceRecipe.h", "DetailTiers.h", "ContentId.h", "StrongId.h", "DeterministicRandom.h", "Result.h", "Vec.h"],
+      "tests": ["core:Tests/Core/NpcTests.cpp", "core:Tests/Core/AppearanceTests.cpp", "core:Tests/Core/AppearanceEditTests.cpp", "core:Tests/Core/AppearanceGeneratorTests.cpp", "core:Tests/Core/AppearanceRecipeTests.cpp", "core:Tests/Core/DetailTierTests.cpp", "core:Tests/Core/ContentIdTests.cpp", "core:Tests/Core/StrongIdTests.cpp", "core:Tests/Core/PropertyTests.cpp", "core:Tests/Core/ResultTests.cpp"],
+      "gap": "These Core modules are not integrated in the Unreal game, so there is no in-game test; the Core tests are CMake/CTest tests (Fedora) and are NOT run by the Windows QA script."
+    }
+  ]
+}

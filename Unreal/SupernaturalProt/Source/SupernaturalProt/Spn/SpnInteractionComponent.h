@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Engine/EngineTypes.h"
+#include "InputCoreTypes.h"
 
 #include "SpnInteractionComponent.generated.h"
 
@@ -30,6 +31,20 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
+	/** Shows "[E] Open door" (debug text, PLACEHOLDER for a real prompt widget) while a local player looks at something usable. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
+	bool bShowPrompt = true;
+
+	/** Key named in the prompt; the character copies its interact key here. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
+	FKey PromptKey = EKeys::E;
+
+	/** The prompt text shown right now ("[E] Open door"), empty when nothing usable is in range. Read by the QA tests. */
+	UFUNCTION(BlueprintPure, Category = "Spn|Interaction")
+	const FString& GetCurrentPrompt() const { return CurrentPrompt; }
+
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	/** The interactable in front of the owner's eyes, or nullptr. */
 	AActor* FindTarget() const;
 
@@ -39,4 +54,7 @@ public:
 	/** Uses the target in front of the owner. Authority only. Returns true if a target was used. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
 	bool TryInteract();
+
+private:
+	FString CurrentPrompt;
 };
