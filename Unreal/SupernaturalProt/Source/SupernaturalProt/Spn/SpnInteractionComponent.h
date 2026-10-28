@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Engine/EngineTypes.h"
 #include "InputCoreTypes.h"
+#include "Widgets/SWidget.h"
 
 #include "SpnInteractionComponent.generated.h"
 
@@ -31,7 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
-	/** Shows "[E] Open door" (debug text, PLACEHOLDER for a real prompt widget) while a local player looks at something usable. */
+	/** Shows the prompt ("E – Tür öffnen") in a small Slate widget in the lower third of the view (PLACEHOLDER look, not the final HUD) while a local player looks at something usable. */
 	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
 	bool bShowPrompt = true;
 
@@ -44,6 +45,7 @@ public:
 	const FString& GetCurrentPrompt() const { return CurrentPrompt; }
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	/** The interactable in front of the owner's eyes, or nullptr. */
 	AActor* FindTarget() const;
@@ -56,5 +58,10 @@ public:
 	bool TryInteract();
 
 private:
+	void ShowPromptWidget(const FString& Text);
+	void HidePromptWidget();
+
 	FString CurrentPrompt;
+	TSharedPtr<SWidget> PromptWidget;
+	TSharedPtr<class STextBlock> PromptTextBlock;
 };

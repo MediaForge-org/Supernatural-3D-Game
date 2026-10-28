@@ -19,7 +19,7 @@ using namespace SpnMovementTest;
 
 namespace
 {
-	const TCHAR* MapV2Path() { return TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2"); }
+	FString MapV2Path() { return SpnQa::QaMapPath(); }
 	constexpr float LaneX = -12500.f;
 	constexpr float LaneStartY = -12000.f;
 	constexpr float CapsuleRadius = 42.f;
@@ -29,7 +29,7 @@ namespace
 	{
 		if (!FPackageName::DoesPackageExist(MapV2Path()))
 		{
-			Test.AddError(TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2 does not exist: run create_spn_movement_test_map.py --v2 first."));
+			Test.AddError(*FString::Printf(TEXT("%s does not exist: run create_spn_movement_test_map.py first."), *MapV2Path()));
 			return false;
 		}
 		AutomationOpenMap(MapV2Path());

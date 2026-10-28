@@ -6,6 +6,7 @@
 
 #include "SpnTestDoor.generated.h"
 
+class UMaterialInterface;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class USpnWorldStateSubsystem;
@@ -45,6 +46,32 @@ public:
 	/** Swing speed in degrees per second (placeholder motion). */
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Motion", meta = (ClampMin = "1"))
 	float SwingSpeed = 180.f;
+
+	/**
+	 * Optional look (M2A3 V3 level): leaf material, handle and hinge details and the leaf size. The defaults reproduce the original placeholder door
+	 * (100 x 10 x 200 cm cube, no handle). The leaf is never wider than the clear doorway of the building kit (110 cm); a pawn can pass the opening
+	 * whatever the style. Collision is the leaf box only; handles and hinges have none.
+	 */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look")
+	TObjectPtr<UMaterialInterface> LeafMaterial = nullptr;
+
+	/** Material of the handle bars and hinge barrels (metal/brass look). Empty = engine default. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look")
+	TObjectPtr<UMaterialInterface> HardwareMaterial = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look")
+	bool bShowHandle = false;
+
+	/** Three hinge barrels on the hinge edge of the leaf. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look")
+	bool bShowHinges = false;
+
+	/** Leaf width in cm (hinge edge to free edge) and thickness; the hinge stays at the actor origin. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look", meta = (ClampMin = "60", ClampMax = "108"))
+	float LeafWidth = 100.f;
+
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Look", meta = (ClampMin = "3", ClampMax = "10"))
+	float LeafThickness = 10.f;
 
 	//~ ISpnInteractable
 	virtual FSpnInteractStatus SpnUse(AActor* User) override;
@@ -93,6 +120,17 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> Panel;
+
+	/** Handle bars on the two faces of the leaf, visible only with bShowHandle; no collision. */
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> HandleFront;
+
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> HandleBack;
+
+	/** Hinge barrels (cylinders) on the hinge edge, visible only with bShowHinges; no collision. */
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TArray<TObjectPtr<UStaticMeshComponent>> HingeBarrels;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UTextRenderComponent> Label;

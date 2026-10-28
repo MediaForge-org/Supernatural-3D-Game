@@ -20,7 +20,7 @@ using namespace SpnMovementTest;
 
 namespace
 {
-	const TCHAR* MapV2() { return TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2"); }
+	FString MapV2() { return SpnQa::QaMapPath(); }
 
 	struct FDoorSpec
 	{
@@ -199,8 +199,8 @@ namespace
 				{
 					const USpnInteractionComponent* Interaction = Character.FindComponentByClass<USpnInteractionComponent>();
 					const FString Prompt = Interaction != nullptr ? Interaction->GetCurrentPrompt() : FString();
-					Record(Character, "prompt_shown", Prompt == TEXT("[E] Open door") ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
-						FString::Printf(TEXT("on-screen prompt while looking at the closed door: '%s' (expected '[E] Open door')"), *Prompt));
+					Record(Character, "prompt_shown", Prompt == TEXT("E \u2013 T\u00fcr \u00f6ffnen") ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
+						FString::Printf(TEXT("on-screen prompt while looking at the closed door: '%s' (expected E - Tuer oeffnen)"), *Prompt));
 				}
 				if (PressFrames == 0) Record(Character, "interact_target", bTarget ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
 					FString::Printf(TEXT("%.0f cm from the door: %s; interactable found: %s"), FVector::Dist2D(Character.GetActorLocation(), ClosedCenter), *Aim, bTarget ? TEXT("yes") : TEXT("no")));
@@ -346,7 +346,7 @@ bool FSpnQaDoorsTest::RunTest(const FString& Parameters)
 {
 	if (!FPackageName::DoesPackageExist(MapV2()))
 	{
-		AddError(TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2 does not exist: run create_spn_movement_test_map.py --v2 first."));
+		AddError(*FString::Printf(TEXT("%s does not exist: run create_spn_movement_test_map.py first."), *MapV2()));
 		return false;
 	}
 	AutomationOpenMap(MapV2());

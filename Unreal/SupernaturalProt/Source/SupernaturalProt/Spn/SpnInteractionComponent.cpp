@@ -2,6 +2,12 @@
 
 #include "CollisionQueryParams.h"
 #include "Engine/Engine.h"
+#include "Engine/GameViewportClient.h"
+#include "Framework/Application/SlateApplication.h"
+#include "Styling/CoreStyle.h"
+#include "Widgets/Layout/SBorder.h"
+#include "Widgets/Layout/SBox.h"
+#include "Widgets/Text/STextBlock.h"
 #include "Engine/World.h"
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Actor.h"
@@ -26,13 +32,67 @@ void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(FindTarget());
 	const FString Verb = Interactable != nullptr ? Interactable->SpnPromptText(Pawn) : FString();
-	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("[%s] %s"), *PromptKey.GetDisplayName().ToString(), *Verb);
-#if !UE_BUILD_SHIPPING
-	if (GEngine != nullptr && !CurrentPrompt.IsEmpty())
+	// "E - Verb": the key name comes from PromptKey (the character copies its interact key here), so a gamepad key shows its own name later.
+	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("%s \u2013 %s"), *PromptKey.GetDisplayName().ToString(), *Verb);
+	if (CurrentPrompt.IsEmpty())
 	{
-		GEngine->AddOnScreenDebugMessage(static_cast<uint64>(0x5350'4E50), 0.f, FColor::White, CurrentPrompt, false, FVector2D(2.f, 2.f));
+		HidePromptWidget();
 	}
-#endif
+	else
+	{
+		ShowPromptWidget(CurrentPrompt);
+	}
+}
+
+void USpnInteractionComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	HidePromptWidget();
+	Super::EndPlay(EndPlayReason);
+}
+
+void USpnInteractionComponent::ShowPromptWidget(const FString& Text)
+{
+	if (GEngine == nullptr || GEngine->GameViewport == nullptr || !FSlateApplication::IsInitialized())
+	{
+		return;
+	}
+	if (!PromptWidget.IsValid())
+	{
+		// A dark translucent plate with a bold white text, centred horizontally, in the lower third: not over the crosshair/centre of the view.
+		PromptWidget = SNew(SBox)
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Bottom)
+			.Padding(FMargin(0.f, 0.f, 0.f, 190.f))
+			.Visibility(EVisibility::HitTestInvisible)
+			[
+				SNew(SBorder)
+				.BorderImage(FCoreStyle::Get().GetBrush("WhiteBrush"))
+				.BorderBackgroundColor(FLinearColor(0.f, 0.f, 0.f, 0.62f))
+				.Padding(FMargin(22.f, 9.f))
+				[
+					SAssignNew(PromptTextBlock, STextBlock)
+					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 30))
+					.ColorAndOpacity(FLinearColor::White)
+					.ShadowOffset(FVector2D(1.f, 1.f))
+					.ShadowColorAndOpacity(FLinearColor::Black)
+				]
+			];
+		GEngine->GameViewport->AddViewportWidgetContent(PromptWidget.ToSharedRef(), 50);
+	}
+	PromptTextBlock->SetText(FText::FromString(Text));
+}
+
+void USpnInteractionComponent::HidePromptWidget()
+{
+	if (PromptWidget.IsValid())
+	{
+		if (GEngine != nullptr && GEngine->GameViewport != nullptr)
+		{
+			GEngine->GameViewport->RemoveViewportWidgetContent(PromptWidget.ToSharedRef());
+		}
+		PromptWidget.Reset();
+		PromptTextBlock.Reset();
+	}
 }
 
 AActor* USpnInteractionComponent::FindTarget() const

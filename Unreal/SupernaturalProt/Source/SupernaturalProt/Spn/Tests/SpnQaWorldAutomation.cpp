@@ -24,13 +24,13 @@ using namespace SpnMovementTest;
 namespace
 {
 	constexpr EAutomationTestFlags QaFlags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter;
-	const TCHAR* MapV2Path() { return TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2"); }
+	FString MapV2Path() { return SpnQa::QaMapPath(); }
 
 	bool OpenV2(FAutomationTestBase& Test)
 	{
 		if (!FPackageName::DoesPackageExist(MapV2Path()))
 		{
-			Test.AddError(TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2 does not exist: run create_spn_movement_test_map.py --v2 first."));
+			Test.AddError(*FString::Printf(TEXT("%s does not exist: run create_spn_movement_test_map.py first."), *MapV2Path()));
 			return false;
 		}
 		AutomationOpenMap(MapV2Path());

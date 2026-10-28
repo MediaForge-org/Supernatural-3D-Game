@@ -50,6 +50,18 @@ namespace SpnQa
 		return FPaths::ConvertRelativePathToFull(Dir);
 	}
 
+	/** Level the SpnQA walk-throughs run on: -SpnQaMap=<package path> (set by the wrapper's -Map), else the plain V2 level. */
+	inline FString QaMapPath()
+	{
+		FString Map;
+		if (!FParse::Value(FCommandLine::Get(), TEXT("SpnQaMap="), Map) || Map.IsEmpty())
+		{
+			return TEXT("/Game/SpnTest/Lvl_SpnMovementTestV2");
+		}
+		Map.ReplaceInline(TEXT("\""), TEXT(""));
+		return Map;
+	}
+
 	inline double NowEpoch() { return (FDateTime::UtcNow() - FDateTime(1970, 1, 1)).GetTotalSeconds(); }
 
 	inline FString JsonEscape(const FString& In)

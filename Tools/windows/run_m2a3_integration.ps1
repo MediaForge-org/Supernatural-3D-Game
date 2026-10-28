@@ -16,8 +16,14 @@ param(
     [switch]$SkipMap,
     [switch]$SkipQa,
     [switch]$Yes,   # confirms regenerating an EXISTING enriched level without asking
-    [ValidateSet('Doors', 'Quick', 'Movement', 'Full')]
+    [ValidateSet('Doors', 'Quick', 'Movement', 'Full', 'Access', 'Traversal')]
     [string]$Suite = 'Doors',
+    # Which generated level this run rebuilds. V2Env = the original M2A3 target. V3 = /Game/SpnTest/Lvl_SpnMovementTestV3Interiors (the QA then runs on V3).
+    # Every other level file must be byte-identical after the run (integrity stage).
+    [ValidateSet('V2Env', 'V3')]
+    [string]$Level = 'V2Env',
+    # Test hook: a different generator script (e.g. one that fails) to prove that a failed commandlet is reported as FAILED, never as OK.
+    [string]$ScriptPath = '',
     [string]$EnginePath = $(if ($env:UE_ROOT) { $env:UE_ROOT } else { 'C:\Program Files\Unreal Engine\UE_5.8' })
 )
 $ErrorActionPreference = 'Stop'
@@ -31,8 +37,27 @@ $buildBat = Join-Path $EnginePath 'Engine\Build\BatchFiles\Build.bat'
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $workDir = Join-Path $projectDir "Saved\M2A3-Integration\$stamp"
 $mapDir = Join-Path $projectDir 'Content\SpnTest'
-$maps = [ordered]@{ V1 = Join-Path $mapDir 'Lvl_SpnMovementTest.umap'; V2 = Join-Path $mapDir 'Lvl_SpnMovementTestV2.umap'; V2Env = Join-Path $mapDir 'Lvl_SpnMovementTestV2Env.umap' }
-$python = if (Get-Command python -ErrorAction SilentlyContinue) { 'python' } else { 'python3' }
+$maps = [ordered]@{ V1 = Join-Path $mapDir 'Lvl_SpnMovementTest.umap'; V2 = Join-Path $mapDir 'Lvl_SpnMovementTestV2.umap'; V2Env = Join-Path $mapDir 'Lvl_SpnMovementTestV2Env.umap'; V3 = Join-Path $mapDir 'Lvl_SpnMovementTestV3Interiors.umap' }
+$targetMap = $maps[$Level]
+$generatorArgs = if ($Level -eq 'V3') { '--v3 --instancing --force' } else { '--v2 --enrich --instancing --force' }
+$qaMap = if ($Level -eq 'V3') { '/Game/SpnTest/Lvl_SpnMovementTestV3Interiors' } else { '/Game/SpnTest/Lvl_SpnMovementTestV2' }
+
+# clang++, cmake and ninja ship with Visual Studio but are usually not on the PATH of a plain shell. A configure without clang++ aborts half-way and
+# leaves build/clang without CMakeFiles/rules.ninja ("ninja: error: build.ninja:35: loading 'CMakeFiles/rules.ninja'"). Add them for this run when missing.
+foreach ($vs in @('C:\Program Files\Microsoft Visual Studio\18\Community', 'C:\Program Files\Microsoft Visual Studio\2022\Community', 'C:\Program Files\Microsoft Visual Studio\2022\Professional', 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise')) {
+    foreach ($sub in @('VC\Tools\Llvm\x64\bin', 'Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin', 'Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja')) {
+        $dir = Join-Path $vs $sub
+        if ((Test-Path $dir) -and ($env:Path -notlike "*$dir*")) { $env:Path = "$dir;$env:Path" }
+    }
+}
+# A "python" that only prints "Python was not found" (the Microsoft Store shortcut) must not be used; fall back to the Python that ships with the engine.
+$python = $null
+foreach ($candidate in @('python', 'python3', (Join-Path $EnginePath 'Engine\Binaries\ThirdParty\Python3\Win64\python.exe'))) {
+    if (-not (Get-Command $candidate -ErrorAction SilentlyContinue)) { continue }
+    try { $probe = & $candidate -c "print(1)" 2>$null } catch { continue }
+    if ($LASTEXITCODE -eq 0 -and "$probe".Trim() -eq '1') { $python = $candidate; break }
+}
+if (-not $python) { $python = 'python' }
 $stages = [System.Collections.Generic.List[object]]::new()
 $qaExit = $null
 
@@ -45,7 +70,8 @@ function Stage([string]$name, [string]$class, [string]$command, [scriptblock]$bo
     Write-Host ""; Write-Host "=== $name ($class)"; Write-Host "    $command"
     if ($DryRun) { Add-Stage $name $class 'DRYRUN'; return }
     $global:LASTEXITCODE = 0
-    & $body
+    $previousPreference = $ErrorActionPreference; $ErrorActionPreference = 'Continue'   # native tools write progress to stderr; the exit code decides
+    try { & $body } finally { $ErrorActionPreference = $previousPreference }
     if ($LASTEXITCODE -ne 0) { Add-Stage $name $class 'FAILED' "exit $LASTEXITCODE"; throw "stage failed: $name (class $class, exit $LASTEXITCODE)" }
     Add-Stage $name $class 'OK'
 }
@@ -84,41 +110,48 @@ try {
 
     if (-not $SkipMap) {
         $backup = Join-Path $projectDir "Saved\M2A3-Backup\$stamp"
-        if ((Test-Path $maps.V2Env) -and -not $Yes -and -not $DryRun) {
-            $answer = Read-Host "The enriched level $($maps.V2Env) exists and will be regenerated (only its own SPN_GEN actors are replaced; a copy goes to $backup). Continue? [y/N]"
+        if ((Test-Path $targetMap) -and -not $Yes -and -not $DryRun) {
+            $answer = Read-Host "The level $targetMap exists and will be regenerated (only its own SPN_GEN actors are replaced; a copy goes to $backup). Continue? [y/N]"
             if ($answer -notin @('y', 'Y', 'yes')) { Add-Stage 'map-v2env' 'GENERATE' 'SKIPPED' 'declined by the user'; throw 'declined: enriched level not regenerated' }
         }
-        Stage 'map-v2env-backup' 'GENERATE' "Copy-Item (existing V2Env) -> $backup   (copy only)" {
-            if (Test-Path $maps.V2Env) { New-Item -ItemType Directory -Force $backup | Out-Null; Copy-Item $maps.V2Env $backup }
+        Stage 'map-v2env-backup' 'GENERATE' "Copy-Item (existing $Level) -> $backup   (copy only)" {
+            if (Test-Path $targetMap) { New-Item -ItemType Directory -Force $backup | Out-Null; Copy-Item $targetMap $backup; Write-Host "Backup: $backup (SHA256 $(Hash-Or-Null (Join-Path $backup (Split-Path $targetMap -Leaf))))" }
             $global:LASTEXITCODE = 0
         }
         $genLog = Join-Path $workDir 'generator.log'
-        $script = Join-Path $toolsPy 'create_spn_movement_test_map.py'
-        Stage 'map-v2env-generate' 'GENERATE' "$editorCmd $uproject -run=pythonscript -script=`"$script --v2 --enrich --instancing --force`" -unattended -nullrhi" {
-            & $editorCmd $uproject -run=pythonscript "-script=`"$script --v2 --enrich --instancing --force`"" -unattended -nullrhi "-abslog=$genLog" 2>&1 | Out-Host
-            $global:LASTEXITCODE = 0   # the verdict below decides; the editor's exit code is not reliable for scripts
+        $script = if ($ScriptPath) { $ScriptPath } else { Join-Path $toolsPy 'create_spn_movement_test_map.py' }
+        $genStart = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
+        $genExit = $null
+        # ONE argument "-script=<path> <script args>": no embedded quotes. Wrapping the value in literal quotes made the commandlet see
+        # no script at all ("LogPythonScriptCommandlet: Error: -Script argument not specified", result -1) while this runner reported success.
+        $scriptArg = "-script=$script $generatorArgs"
+        Stage 'map-v2env-generate' 'GENERATE' "$editorCmd $uproject -run=pythonscript `"$scriptArg`" -unattended -nullrhi" {
+            & $editorCmd $uproject '-run=pythonscript' $scriptArg '-unattended' '-nullrhi' "-abslog=$genLog" 2>&1 | Out-Host
+            $script:genExit = $LASTEXITCODE
+            $global:LASTEXITCODE = 0   # the verdict stage below turns the exit code, the commandlet log and the level file into the result
         }
-        Stage 'map-v2env-verdict' 'GENERATE' "$python spn_log_tools.py generator $genLog   (exit 0 = saved or unchanged)" {
-            & $python (Join-Path $toolsPy 'spn_log_tools.py') generator $genLog 2>&1 | Out-Host
-            if ($LASTEXITCODE -ne 0) { Write-Host "The enriched level was NOT saved correctly. Read $genLog. Backup (if any): $backup" }
+        Stage 'map-v2env-verdict' 'GENERATE' "$python spn_log_tools.py generator $genLog --exit-code <editor exit> --map <V2Env.umap> --started <run start>   (exit 0 = saved or kept)" {
+            if (-not (Test-Path $genLog)) { Write-Host "No generator log was written: $genLog"; $global:LASTEXITCODE = 1; return }
+            & $python (Join-Path $toolsPy 'spn_log_tools.py') generator $genLog --exit-code "$($script:genExit)" --map $targetMap --started "$genStart" 2>&1 | Out-Host
+            if ($LASTEXITCODE -ne 0) { Write-Host "The enriched level was NOT generated correctly (editor exit $($script:genExit)). Read $genLog. Backup (if any): $backup" }
         }
     }
 
     if (-not $SkipQa) {
         # The QA runs on the plain V2 level (its tests are written against it); the enriched level is for the visual and gate checks of the checklist.
         Stage "qa-$Suite" 'RUNTIME' "powershell -File Tools\run_gameplay_qa.ps1 -Suite $Suite -NoBuild   (exit 0 ok, 1 failures, 2 incomplete)" {
-            & powershell -File (Join-Path $repo 'Tools\run_gameplay_qa.ps1') -Suite $Suite -NoBuild 2>&1 | Out-Host
+            & powershell -File (Join-Path $repo 'Tools\run_gameplay_qa.ps1') -Suite $Suite -NoBuild -Map $qaMap 2>&1 | Out-Host
             $script:qaExit = $LASTEXITCODE
             $global:LASTEXITCODE = 0
             if ($script:qaExit -ne 0) { Add-Stage "qa-$Suite-result" 'RUNTIME' 'FINDING' "QA exit code $($script:qaExit)" }
         }
     }
 
-    Stage 'integrity' 'INTEGRITY' 'Get-FileHash of V1 and V2 map files (before == after)' {
+    Stage 'integrity' 'INTEGRITY' 'Get-FileHash of every level file except the rebuilt one (before == after)' {
         $changed = @()
-        foreach ($k in @('V1', 'V2')) { if ((Hash-Or-Null $maps[$k]) -ne $before[$k]) { $changed += $k } }
+        foreach ($k in @($maps.Keys | Where-Object { $maps[$_] -ne $targetMap })) { if ((Hash-Or-Null $maps[$k]) -ne $before[$k]) { $changed += $k } }
         if ($changed) { Write-Host "MAP FILES CHANGED: $($changed -join ', '). Do not commit them; restore from Git. (This script never writes them: find out who did.)"; $global:LASTEXITCODE = 1 }
-        else { Write-Host "V1 and V2 map files unchanged." }
+        else { Write-Host "All other level files unchanged." }
     }
 
     $latest = Join-Path $projectDir 'Saved\GameplayQA\latest.txt'

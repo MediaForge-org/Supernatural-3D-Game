@@ -17,7 +17,7 @@
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Failed')]
+    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Failed')]
     [string]$Suite = 'Full',
     [switch]$NoBuild,
     [switch]$NoVideo,
@@ -27,6 +27,7 @@ param(
     [int]$Width = 1920,
     [int]$Height = 1080,
     [int]$TimeoutMinutes = 25,
+    [string]$Map = '/Game/SpnTest/Lvl_SpnMovementTestV2',   # level the SpnQA tests walk through (passed as -SpnQaMap=)
     [string]$EnginePath = $env:SPN_UE_ROOT,
     [string]$FfmpegPath = $env:SPN_FFMPEG
 )
@@ -36,7 +37,7 @@ $repo = Split-Path -Parent $PSScriptRoot
 $projDir = Join-Path $repo 'Unreal\SupernaturalProt'
 $uproject = Join-Path $projDir 'SupernaturalProt.uproject'
 $qaRoot = Join-Path $projDir 'Saved\GameplayQA'
-$mapPath = '/Game/SpnTest/Lvl_SpnMovementTestV2'
+$mapPath = $Map
 $python = $null
 
 function Find-Engine {
@@ -96,6 +97,8 @@ $groups = @{
     Doors       = 'SpnQA.Doors+SpnQA.DoorReach+SpnQA.Buildings'
     Camera      = 'SpnQA.Camera'
     Performance = 'SpnQA.Performance'
+    Traversal   = 'SpnQA.ContinuousTraversal'   # one uninterrupted walk through two buildings, no repositioning (use -Map ...V3Interiors)
+    Access      = 'SpnQA.BuildingAccess'   # one recorded visit of a building: approach, open, enter, explore, leave, close (use -Map ...V3Interiors)
 }
 $expected = @{
     Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Camera', 'SaveLoad', 'Performance')
@@ -104,6 +107,8 @@ $expected = @{
     Doors       = @('Doors', 'DoorReach', 'Buildings')
     Camera      = @('Camera')
     Performance = @('Performance')
+    Traversal   = @('ContinuousTraversal')
+    Access      = @('BuildingAccess')
 }
 if ($Suite -eq 'Failed') {
     $last = Get-ChildItem $qaRoot -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'results.json') } | Sort-Object Name -Descending | Select-Object -First 1
@@ -158,7 +163,7 @@ public static class SpnWin {
 # --- start the game
 $gameLog = Join-Path $runDir 'game.log'
 $execCmds = "Automation RunTests $filter"
-$gameArgs = @("`"$uproject`"", $mapPath, '-game', "-ExecCmds=`"$execCmds`"", '-TestExit="Automation Test Queue Empty"', "-SpnQaOut=`"$runDir`"",
+$gameArgs = @("`"$uproject`"", $mapPath, '-game', "-ExecCmds=`"$execCmds`"", '-TestExit="Automation Test Queue Empty"', "-SpnQaOut=`"$runDir`"", "-SpnQaMap=$mapPath",
     "-ReportExportPath=`"$(Join-Path $runDir 'automation')`"", "-abslog=`"$gameLog`"", '-unattended', '-nosplash', '-NoVerifyGC',
     "-ini:Engine:[SystemSettings]:t.MaxFPS=$Fps", '-ini:Engine:[SystemSettings]:r.VSync=0')
 # Quick: a small window without video. -nullrhi was tried and drops key events unreliably (doors/walking flaked), so every suite renders.
