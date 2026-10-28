@@ -7,13 +7,17 @@ add_library(spn_core STATIC
     src/CameraArm.cpp
     src/ContentId.cpp
     src/DetailTiers.cpp
+    src/Devices.cpp
+    src/GameEvents.cpp
     src/GroundSteering.cpp
     src/Interaction.cpp
+    src/InteractionSystem.cpp
     src/InteractionReach.cpp
     src/JumpModel.cpp
     src/Locomotion.cpp
     src/Movement.cpp
     src/Npc.cpp
+    src/ObjectPersistence.cpp
     src/Pickup.cpp
     src/TestDoor.cpp
     src/Traversal.cpp

@@ -129,5 +129,47 @@ LogPython: SpnMovementTestMap: created /Game/SpnTest/Lvl_SpnMovementTestV2 with 
         self.assertEqual(T.generator_verdict("LogPython: SpnMovementTestMap: abort: 2 SPN_ actors")["status"], "failed")
 
 
+CFG_LINE = ("LogSupernaturalProt: Display: SpnMoveDiagCfg,maxStep=25.00,jumpZ=297.0,gravityZ=-980.0,airControl=0.350,groundFriction=8.00,"
+            "brakingWalking=800.0,capsuleR=42.0,capsuleHH=96.0,walkableZ=0.7100,perchRadius=0.0,perchExtra=40.0,flatBase=0,maxAccel=400.0")
+
+
+def hit_line(t, nx, ny, nz, iz, walk, comp="SPN_Block_30"):
+    return "LogSupernaturalProt: Display: SpnMoveDiagHit,%.4f,%.3f,%.3f,%.3f,10.0,20.0,%.1f,%d,%s" % (t, nx, ny, nz, iz, walk, comp)
+
+
+class MetaTest(unittest.TestCase):
+    def test_config_and_hits_belong_to_the_next_dump_and_old_logs_still_parse(self):
+        dump = simulate_jump()
+        text = "\n".join([CFG_LINE, hit_line(1.0, -1, 0, 0.0, 15, 0), hit_line(1.1, -0.5, 0, 0.88, 30, 1, "Wall With, Comma"), HEADER]
+                         + [diag_line(f) for f in dump] + [HEADER] + [diag_line(f) for f in dump])
+        dumps, metas = T.parse_diag(text), T.parse_diag_meta(text)
+        self.assertEqual(len(dumps), 2)
+        self.assertEqual(len(metas), 2)
+        self.assertEqual(metas[0]["config"]["maxStep"], 25.0)
+        self.assertEqual(metas[0]["config"]["walkableZ"], 0.71)
+        self.assertEqual([h["component"] for h in metas[0]["hits"]], ["SPN_Block_30", "Wall With, Comma"])
+        self.assertIsNone(metas[1]["config"])           # the second dump had none
+        self.assertEqual(metas[1]["hits"], [])
+        # the new lines do not disturb the frame parser, and a log without them gives empty meta
+        self.assertEqual(len(dumps[0]), len(dump))
+        self.assertEqual(T.parse_diag_meta(log_of(dump))[0], {"config": None, "hits": []})
+
+    def test_hit_classes(self):
+        self.assertEqual(T.classify_hit({"nz": 0.0}), "wall_face")
+        self.assertEqual(T.classify_hit({"nz": 0.3}), "steep_corner_contact")
+        self.assertEqual(T.classify_hit({"nz": 0.88}), "walkable_corner_contact")       # the capsule bottom on a corner a few cm above its lowest point
+        self.assertEqual(T.classify_hit({"nz": 1.0}), "top_face")
+        self.assertEqual(T.classify_hit({"nz": 0.8}, walkable_z=0.9), "steep_corner_contact")   # uses the engine's walkable Z when the log has it
+
+    def test_summary_names_the_first_walkable_corner_contact(self):
+        hits = [dict(time=1.0, nx=-1, ny=0, nz=0.0, ix=0, iy=0, iz=15, walkable=0, component="A"),
+                dict(time=1.1, nx=-0.5, ny=0, nz=0.88, ix=0, iy=0, iz=30, walkable=1, component="B")]
+        summary = T.summarize_hits([], hits)
+        self.assertEqual(summary["classes"], {"wall_face": 1, "walkable_corner_contact": 1})
+        self.assertEqual(summary["first_walkable_corner_contact"]["impact_z"], 30)
+        self.assertEqual(summary["components"], ["A", "B"])
+        self.assertEqual(T.summarize_hits([], [])["hits"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()

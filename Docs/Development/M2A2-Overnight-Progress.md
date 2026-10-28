@@ -1,5 +1,43 @@
 # M2-A.2 Overnight Progress
 
+## Sitzung 3 / M2A3 (Startcommit `b69eb90`; Arbeitsbaum mit den unbestätigten M2A2-Änderungen der Vornacht, unverändert übernommen)
+Details und Windows-Schritte: `M2A3-Next-Windows-Integration.md`. Verifiziert auf Fedora (Core, Python, pwsh-Parser); Unreal nie.
+
+| Workstream | Stand |
+|---|---|
+| A Interaktion V2 | `InteractionSystem` (Auswahl mit Raster, Status, Cooldown, Wiedereintritt, Block-Regeln); 25 Tests; Zielauswahl 10 000 Objekte: 0,96 ms -> 1,2 us (Debug) |
+| B Tür V2 | `disabled`, Sperr-Helfer, Schließ-Hindernisregel im Core; Unreal: Pawn-Overlap + Prompt aus Weltzustand **ungebaut** |
+| C Geräte | Schalter/Taster/Hebel im Core, getestet; **kein** Unreal-Actor |
+| D/F Zustand + Persistenz | Katalog, geänderter Zustand, `SPN-OBJECTS 1`, Dirty-Tracking, Regionen, Waisen, atomare Dateien; Property-/Truncation-/Fuzz-Tests |
+| E Ereignisse | `GameEventBus` mit festgelegter Semantik (Reihenfolge, Queue, Unsubscribe im Dispatch) |
+| G Traversal | `MoveToStart` (keine Auto-Sprünge/-Vaults); Physik unverändert |
+| H/I QA + Szenarien | Inventar um 4 Core-Header erweitert; `env_scenarios.txt` -> `EnvScenarioTests.cpp` führt 5 Gate-Szenarien gegen den echten Core aus |
+| J Windows | `Tools/windows/run_m2a3_integration.ps1` (Fehlerklassen, summary.json, Bestätigung vor Neuerzeugung, V1/V2-Hashvergleich), pwsh-Parse + Dry-Run + Fehlerpfad (Exit 1) auf Fedora |
+| K Umgebung | `spn_env_enrichment.py` opt-in `--enrich`: 698 Primitive (Gehwegmöbel, Briefkästen, Markierungen, Einfahrten, Autos, Vegetationsgruppen, 5 Gehöfte mit Tor + Gerät), Level `...V2Env`, Validierung, 17 Tests; Instancing 1869 -> 578 Actors |
+
+Echte Fehler, die Tests fanden: Button-Zähler ohne Default wurde beim Laden verworfen (jetzt Pflicht-Defaults + Validierung); 4 Treffer zwischen Zaun/Vegetation durch Dach-Überhang (Überkopf-Prims zählen nicht als Hindernis); Quadrat- statt Rechteckprüfung machte lange Zaunbretter unplatzierbar.
+Unbestätigte Vermutung: `GameEventBus.Publish` wurde durch den Wegfall der Listener-Kopie im Debug-Build nicht messbar schneller (2,1 -> 2,6 us, Rauschen); Kosten stammen aus Event-Strings.
+
+---
+
+## Sitzung 2 (Startcommit `b69eb90`, Fedora, keine Commits, kein Push)
+Alles unten ist auf Fedora verifiziert (Python/Core/pwsh-Parser) oder ausdrücklich als **nur Quelltext / Unreal ausstehend** markiert.
+
+| Arbeit | Stand |
+|---|---|
+| A1 Sprint-Asymmetrie | **Ursache im Quelltext nicht gefunden** (Gait-/Winkel-/Richtungscode ist symmetrisch; Lane-Geometrie links/rechts frei). Keine Codeänderung. Stattdessen Messung: `SpnQA.Turns` schreibt je Versuch einen 0,5-s-Frame-Trace (`traces.jsonl`: Tempo, Gait, lokaler Winkel, Akteur-Yaw, Geschwindigkeitskurs, Eingaberichtung); `spn_trace_tools.mirrored_turns` vergleicht Links/Rechts und benennt die Art der Asymmetrie (Rotation/Eingabe vs. Gait-Schwelle vs. Rauschen). Bericht zeigt Abschnitt "Mirrored sprint turns". Unreal ausstehend |
+| A2 Sprung-/Stufen-Diagnose | `USpnMovementDiagnostics` zusätzlich: Konfigurationszeile (`SpnMoveDiagCfg`: MaxStepHeight, JumpZ, Gravitation, AirControl, Reibung, Kapsel, WalkableFloorZ, Perch-Werte), Kapsel-Treffer (`SpnMoveDiagHit`: Normale, Aufprallpunkt, begehbar, Komponente; begrenzt auf `MaxHits`, nur beim Dump geloggt). `SpnQA.Jump` schreibt je Fall einen Trace (Abstand zur Kante, z, vy, vz, Modus, FloorDist). Python: `parse_diag_meta`, `classify_hit` (Wand / steiler Eckkontakt / begehbarer Eckkontakt / Oberseite), `jump_facts` (klassifiziert: `vertical_climb_in_air`, `climbed_by_walking_after_contact`, `cleared_in_air`, `blocked`) beantwortet die offene Frage Luft-Block vs. Einrasten an der Kante. Keine Gameplay-Parameter geändert. Nicht kompiliert (Windows) |
+| B Interaktion/Tür | Echter Fehler im Core: `CheckReach` mit NaN-Konfiguration meldete "Ok" (alle Vergleiche false) -> jetzt `InvalidInput`, Test. Türcode (`SpnTestDoor`, `SpnInteractionComponent`) durchgesehen: kein reproduzierbarer Defekt gefunden; Lücken (Tür schließt auf Spieler, Schloss-Prompt aus Authoring statt Weltzustand) sind Designfragen, nicht geändert |
+| C Runner/QA | Neues Lauf-Urteil: Timeout, fehlende Suiten, fehlende/leere `records.jsonl`, keine Checks -> **INCOMPLETE, Exit-Code 2** (vorher Exit 0 bei lauter PASS und abgestürztem Spiel). 1 = abgeschlossen mit FAIL/BLOCKED. Bericht-Kopf zeigt "Run verdict". Gefundener Windows-Fallstrick: der Wrapper startet `python -I` (Skriptordner nicht im `sys.path`); neuer Test startet den Bericht isoliert |
+| D Generator | `validate_door_passages` (V2-Preflight des Editor-Skripts, bricht vor jeder Änderung ab; V1-Daten ausgenommen, V1 bleibt unverändert). `door_inward_sign` im Distriktmodul. Tests: V2 ok, V1-Haustür wird gemeldet, 28-cm-Tritt und nach innen schwingender Flügel werden gefangen |
+| E Qualität | Latenter Fehler im statischen Unreal-Test (`//[^\n]` statt `//.*` mit DOTALL: ein Kommentar verschluckte den Rest der Datei beim Klammerzählen) behoben |
+| F Windows | `Tools/windows/run_m2a2_integration.ps1` (Python-Tests, Core, Editor-Build, V2-Backup, V2-only-Neuerzeugung, Generator-Verdikt, QA, V1-Hash-Vergleich, Trace-Analyse; `-DryRun`). PowerShell-Syntax mit `pwsh` geparst, `-DryRun` auf Fedora ausgeführt; Unreal-/Windows-Schritte nie gelaufen |
+
+### Endstand Fedora
+CTest `fedora-gcc`, `-clang`, `-gcc-asan-ubsan`, `-clang-asan-ubsan`: je 280/280. Python `unittest discover Tools "test_*.py"`: 198/198. `RunToolChecks.sh` (Syntax, 192 Tests, Stub-Check, Benchmark) ok. `check_qa_inventory.py --check`: 0 Probleme. `git diff --check` sauber.
+
+---
+
 ## Sitzung 2026-10-28 (Fedora, autonom, keine Commits, kein Push)
 Startcommit `f59604a`. Umgebung: Fedora 44, Python 3.14.8, CMake 4.3.0, GCC 16.2.1 / Clang; Windows/Unreal 5.8.4 nicht verfügbar. `Planning/Master` nicht eingehängt (CLAUDE.md §11: keine Master-Anforderung übernommen; nur Test-/Generator-/Werkzeugfehler behoben, keine Gameplay-Entscheidung).
 

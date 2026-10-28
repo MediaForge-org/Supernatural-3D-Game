@@ -113,7 +113,8 @@ def _curve_points(curve):
     return pts
 
 
-def build_roads(layout):
+def ground_cells():
+    """(road_cells, sidewalk_cells) on the 200 cm grid: straight roads plus turnaround discs, and the sidewalk ring around them."""
     road_cells = set()
     for r in road_rects():
         road_cells |= _rect_cells(*r)
@@ -126,7 +127,11 @@ def build_roads(layout):
                 if math.hypot((i + 0.5) * CELL - tx, (j + 0.5) * CELL - ty) <= TURN_RADIUS}
         road_cells |= disc
         inflated |= disc
-    sidewalk_cells = inflated - road_cells
+    return road_cells, inflated - road_cells
+
+
+def build_roads(layout):
+    road_cells, sidewalk_cells = ground_cells()
     for n, (x0, x1, y0, y1) in enumerate(_merge_cells(road_cells)):
         layout.add("SPN_D_Road_%02d" % n, "cube", ((x0 + x1) / 2.0, (y0 + y1) / 2.0, ROAD_TOP / 2.0), (x1 - x0, y1 - y0, ROAD_TOP), ZONE_ROADS, material="grid_topdark")
     for n, (x0, x1, y0, y1) in enumerate(_merge_cells(sidewalk_cells)):
@@ -444,6 +449,18 @@ def door_open_angle(door):
             spec, _ = building_spec(prefix)
             return -90.0 if roles.entrance(spec).side == "W" else 90.0
     return 90.0
+
+
+def door_inward_sign(door):
+    """+1 when the building lies at +X of the door's wall plane (west entrances and the v1 buildings), -1 for east entrances."""
+    import spn_building_roles as roles
+    if "inward" in door:   # doors that are not a building entrance (enrichment gates) say it themselves
+        return float(door["inward"])
+    for prefix, template, params, _, _ in BUILDINGS:
+        if door["zone"] == "d_" + prefix.lower():
+            spec, _ = building_spec(prefix)
+            return 1.0 if roles.entrance(spec).side == "W" else -1.0
+    return 1.0
 
 
 def front_point(name):

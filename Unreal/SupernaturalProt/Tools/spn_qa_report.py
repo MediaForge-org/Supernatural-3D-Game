@@ -240,12 +240,20 @@ def render_markdown(results, shots_dir_listing=None):
         "| Date | %s |" % md_escape(run.get("date", "?")),
         "| Video | %s |" % md_escape(run.get("video") or "none (%s)" % run.get("video_note", "not recorded")),
         "| Game exit code | %s%s |" % (run.get("exit_code", "?"), " (timeout, process stopped by the wrapper)" if run.get("timed_out") else ""),
+        "| Run verdict | %s%s |" % (results.get("verdict", "?"), (" - " + "; ".join(results.get("incomplete_reasons", []))) if results.get("incomplete_reasons") else ""),
         "", "## Result", "",
         "PASS %d, FAIL %d, BLOCKED %d, NOT_IMPLEMENTED %d, NOT_TESTED %d" % tuple(counts.get(s, 0) for s in STATUSES), "",
     ]
     problems_found = list(results.get("record_issues", [])) + list(results.get("artifact_problems", []))
     if problems_found:
         lines += ["## Problems with this run's data (%d)" % len(problems_found), ""] + ["- %s" % p for p in problems_found] + [""]
+    turns = results.get("trace_analysis")
+    if turns:
+        lines += ["## Mirrored sprint turns (traces.jsonl)", "", "Verdict: **%s**" % turns["verdict"]]
+        lines += ["- trial %d: %s" % (p["trial"], "; ".join(p["flags"]) or "mirror symmetric") for p in turns["pairs"]]
+        lines += ["- hint: %s" % h for h in turns["hints"]] + [""]
+    if results.get("trace_problems"):
+        lines += ["## Problems with traces.jsonl", ""] + ["- %s" % p for p in results["trace_problems"]] + [""]
     if results.get("comparison_lines"):
         lines += results["comparison_lines"]
     if results["suites_without_records"]:
@@ -287,6 +295,22 @@ def render_markdown(results, shots_dir_listing=None):
     return "\n".join(lines)
 
 
+def run_verdict(results):
+    """("COMPLETE" | "INCOMPLETE", reasons). A run that was stopped by the timeout, never wrote a record, or lacks expected suites cannot be
+    judged by its PASS lines: crashed or interrupted runs must not look successful. A non-zero game exit code alone is only noted (Unreal
+    also returns non-zero when automation tests failed)."""
+    run = results.get("run", {})
+    reasons = []
+    if run.get("timed_out"):
+        reasons.append("the wrapper stopped the game after the timeout")
+    if results.get("suites_without_records"):
+        reasons.append("no record from: %s" % ", ".join(results["suites_without_records"]))
+    reasons += [p for p in results.get("artifact_problems", []) if "records.jsonl" in p]
+    if not results.get("checks"):
+        reasons.append("the run produced no checks at all")
+    return ("INCOMPLETE" if reasons else "COMPLETE"), reasons
+
+
 def failing_suites(results_path):
     """Test names (SpnQA.<suite>) with at least one FAIL/BLOCKED check or no record, for the wrapper's -Suite Failed."""
     with open(results_path, encoding="utf-8") as handle:
@@ -314,6 +338,13 @@ def main(argv=None):
     records = read_records(os.path.join(args.run_dir, "records.jsonl"))
     results = build_results(records, run_info, load_automation_tests(os.path.join(args.run_dir, "automation", "index.json")))
     results["artifact_problems"] = artifact_problems(args.run_dir, run_info)
+    # next to this file; the wrapper runs python with -I, which leaves the script directory off sys.path. Traces are optional evidence.
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    import spn_trace_tools
+    traces, results["trace_problems"] = spn_trace_tools.read_traces(args.run_dir)
+    if traces:
+        analysis = spn_trace_tools.mirrored_turns(traces)
+        results["trace_analysis"] = analysis if analysis["verdict"] != "no_data" else None
     previous = None if args.no_compare else (args.compare or previous_run_dir(args.run_dir))
     regressions = 0
     if previous and os.path.isfile(os.path.join(previous, "results.json")):
@@ -322,6 +353,7 @@ def main(argv=None):
         results["comparison"] = comparison
         results["comparison_lines"] = render_comparison(comparison, os.path.basename(os.path.abspath(previous)))
         regressions = len(comparison["regressions"])
+    results["verdict"], results["incomplete_reasons"] = run_verdict(results)
     shots = sorted(os.listdir(os.path.join(args.run_dir, "shots"))) if os.path.isdir(os.path.join(args.run_dir, "shots")) else []
     with open(os.path.join(args.run_dir, "results.json"), "w", encoding="utf-8") as handle:
         json.dump(results, handle, indent=2)
@@ -333,6 +365,9 @@ def main(argv=None):
         print("REGRESSIONS since the previous run: %d (see report.md)" % regressions)
     for problem in results["record_issues"] + results["artifact_problems"]:
         print("DATA PROBLEM: " + problem)
+    if results["verdict"] == "INCOMPLETE":
+        print("INCOMPLETE RUN: " + "; ".join(results["incomplete_reasons"]))
+        return 2
     return 1 if counts.get("FAIL", 0) or counts.get("BLOCKED", 0) else 0
 
 

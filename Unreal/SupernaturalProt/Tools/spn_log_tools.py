@@ -78,6 +78,73 @@ def parse_diag(text):
     return dumps
 
 
+CFG = re.compile(r"SpnMoveDiagCfg,(.*)$")
+HIT = re.compile(r"SpnMoveDiagHit,(.*)$")
+HIT_COLUMNS = ("time", "nx", "ny", "nz", "ix", "iy", "iz", "walkable")
+
+
+def parse_diag_meta(text):
+    """Per dump (same order as parse_diag): {"config": {name: float} | None, "hits": [dict]}. The C++ writes the config and hit lines BEFORE the
+    frame header of their dump, so they belong to the next header."""
+    metas, pending = [], {"config": None, "hits": []}
+    for line in text.splitlines():
+        m = CFG.search(line)
+        if m:
+            config = {}
+            for item in m.group(1).strip().split(","):
+                key, _, value = item.partition("=")
+                try:
+                    config[key.strip()] = float(value)
+                except ValueError:
+                    pass
+            pending["config"] = config or None
+            continue
+        m = HIT.search(line)
+        if m:
+            parts = m.group(1).strip().split(",", len(HIT_COLUMNS))
+            if len(parts) == len(HIT_COLUMNS) + 1:
+                try:
+                    hit = dict(zip(HIT_COLUMNS, (float(p) for p in parts[:len(HIT_COLUMNS)])))
+                except ValueError:
+                    continue
+                hit["component"] = parts[-1].strip()
+                pending["hits"].append(hit)
+            continue
+        m = DIAG.search(line)
+        if m and m.group(1).strip().startswith("time"):
+            metas.append(pending)
+            pending = {"config": None, "hits": []}
+    return metas
+
+
+def classify_hit(hit, walkable_z=0.71):
+    """Face of the obstacle (wall, normal.z ~ 0), a rounded contact (capsule bottom on a corner: 0 < nz < walkable), a walkable contact
+    (nz >= walkable_z: the engine treats it as floor and can walk or perch on it) or a top face."""
+    nz = hit["nz"]
+    if nz >= 0.99:
+        return "top_face"
+    if nz >= walkable_z:
+        return "walkable_corner_contact"
+    if nz > 0.05:
+        return "steep_corner_contact"
+    return "wall_face"
+
+
+def summarize_hits(frames, hits, walkable_z=0.71):
+    """Hits during a jump/step window summarised for the Windows analysis: count per class and the first walkable corner contact."""
+    classes = {}
+    first_walkable = None
+    for hit in hits:
+        name = classify_hit(hit, walkable_z)
+        classes[name] = classes.get(name, 0) + 1
+        if name == "walkable_corner_contact" and first_walkable is None:
+            first_walkable = hit
+    out = {"hits": len(hits), "classes": classes, "components": sorted({h["component"] for h in hits})}
+    if first_walkable is not None:
+        out["first_walkable_corner_contact"] = {"time": first_walkable["time"], "nz": first_walkable["nz"], "impact_z": first_walkable["iz"]}
+    return out
+
+
 def summarize_jump(frames, ledge_cm=None, distance_cm=None, gravity_cm=980.0):
     """Facts about the first jump in a dump. With ledge/distance given, also the kinematic prediction (see Core JumpModel)."""
     jump = next((i for i, f in enumerate(frames) if int(f["events"]) & EVENT_JUMP), None)
@@ -133,7 +200,18 @@ def main(argv):
     opts = {argv[i]: argv[i + 1] for i in range(3, len(argv) - 1, 2)}
     ledge = float(opts["--ledge-cm"]) if "--ledge-cm" in opts else None
     dist = float(opts["--distance-cm"]) if "--distance-cm" in opts else None
-    print(json.dumps([summarize_jump(d, ledge, dist) for d in parse_diag(text)], indent=1))
+    dumps, metas = parse_diag(text), parse_diag_meta(text)
+    result = []
+    for index, dump in enumerate(dumps):
+        item = summarize_jump(dump, ledge, dist)
+        meta = metas[index] if index < len(metas) else {"config": None, "hits": []}
+        if meta["config"]:
+            item["config"] = meta["config"]
+            item["hit_summary"] = summarize_hits(dump, meta["hits"], meta["config"].get("walkableZ", 0.71))
+        elif meta["hits"]:
+            item["hit_summary"] = summarize_hits(dump, meta["hits"])
+        result.append(item)
+    print(json.dumps(result, indent=1))
     return 0
 
 

@@ -5,8 +5,12 @@
 #include <chrono>
 #include <cstdio>
 
+#include <spn/core/Devices.h>
+#include <spn/core/GameEvents.h>
 #include <spn/core/GroundSteering.h>
 #include <spn/core/InteractionReach.h>
+#include <spn/core/InteractionSystem.h>
+#include <spn/core/ObjectPersistence.h>
 #include <spn/core/JumpModel.h>
 #include <spn/core/Locomotion.h>
 #include <spn/core/Npc.h>
@@ -58,5 +62,74 @@ int main() {
         q.targetCentre = {(i % 40) * 0.1, 0.5, 1.4};
         return static_cast<double>(CheckReach(reach, q));
     });
+
+    // --- M2A3: event dispatch, selection, interaction, persistence (Debug-build numbers; scale tests below measure growth, not a promise)
+    GameEventBus bus;
+    int sink = 0;
+    for (int i = 0; i < 8; ++i) (void)bus.Subscribe([&](const GameEvent& e) { sink += static_cast<int>(e.sequence & 1); });
+    Bench("GameEventBus.Publish(8 listeners)", 1000000, [&](int) {
+        GameEvent e;
+        e.type = GameEventType::DeviceStateChanged;
+        bus.Publish(std::move(e));
+        return static_cast<double>(sink);
+    });
+
+    InteractionRegistry registry;
+    (void)RegisterDevices(registry);
+    WorldFacts facts;
+    InteractionSystem system(registry, facts, nullptr);
+    for (int n : {100, 10000}) {
+        InteractionSystem big(registry, facts, nullptr);
+        for (int i = 0; i < n; ++i) {
+            InteractableDescriptor d;
+            d.id = "sw_" + std::to_string(i);
+            d.kind = SwitchKind();
+            d.centre = {1.0 + (i % 100) * 4.0, (i / 100) * 4.0, 1.6};
+            (void)big.AddInteractable(std::move(d));
+        }
+        ActorView actor;
+        actor.eye = {0.0, 0.0, 1.6};
+        char label[64];
+        std::snprintf(label, sizeof label, "SelectTarget(%d objects)", n);
+        Bench(label, n >= 10000 ? 2000 : 20000, [&](int) { return static_cast<double>(big.SelectTarget(actor).has_value()); });
+    }
+    {
+        InteractableDescriptor d;
+        d.id = "sw_bench";
+        d.kind = SwitchKind();
+        d.centre = {1.0, 0.0, 1.6};
+        (void)system.AddInteractable(std::move(d));
+        InteractionRequest req;
+        req.actor.eye = {0.0, 0.0, 1.6};
+        req.targetId = "sw_bench";
+        Bench("Interact(switch toggle)", 200000, [&](int) { return static_cast<double>(system.Interact(req).status); });
+    }
+    for (int n : {1000, 100000}) {
+        WorldObjectCatalog catalog;
+        WorldFacts world;
+        for (int i = 0; i < n; ++i) {
+            ObjectConfig c;
+            c.id = "sw_" + std::to_string(i);
+            c.kind = SwitchKind();
+            c.region = "cell_" + std::to_string(i / 1000);
+            c.defaults = {{"on", false}};
+            (void)catalog.Add(std::move(c));
+        }
+        // 1 % of the objects changed
+        for (int i = 0; i < n; i += 100) (void)world.Apply(SetFact{SwitchOnKey("sw_" + std::to_string(i)), true}, "bench");
+        char label[96];
+        std::snprintf(label, sizeof label, "CaptureChanged(%d objects, 1%% changed)", n);
+        Bench(label, n >= 100000 ? 20 : 200, [&](int) { return static_cast<double>(CaptureChanged(world, catalog).size()); });
+        const auto records = CaptureChanged(world, catalog);
+        std::snprintf(label, sizeof label, "Serialize+Parse(%zu records)", records.size());
+        Bench(label, n >= 100000 ? 20 : 200, [&](int) {
+            auto parsed = ParseRecords(SerializeRecords(records));
+            return static_cast<double>(parsed.HasValue() ? parsed.Value().size() : 0);
+        });
+        std::snprintf(label, sizeof label, "DirtyObjects(%d objects, 10 new)", n);
+        const std::uint64_t mark = world.Revision();
+        for (int i = 1; i <= 10; ++i) (void)world.Apply(SetFact{SwitchOnKey("sw_" + std::to_string(i)), true}, "bench");
+        Bench(label, 20000, [&](int) { return static_cast<double>(DirtyObjects(world, catalog, mark).size()); });
+    }
     return 0;
 }

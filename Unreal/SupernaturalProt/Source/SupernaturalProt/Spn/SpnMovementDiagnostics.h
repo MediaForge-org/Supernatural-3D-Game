@@ -11,6 +11,10 @@
  * While enabled it keeps the last MaxSamples frames in a ring buffer and writes ONE compact CSV block to the log (category
  * LogSupernaturalProt, prefix "SpnMoveDiag,") when it is stopped or, with bDumpOnLanding, on every landing. No permanent logging.
  *
+ * Besides the frame CSV a dump holds "SpnMoveDiagCfg," (one line: the movement configuration in force: max step height, jump velocity,
+ * gravity, air control, friction, capsule size, walkable floor Z, perch values) and "SpnMoveDiagHit," lines (time, hit normal, impact point,
+ * walkable, hit component) from the capsule's blocking hits. Tools/spn_log_tools.py reads all three.
+ *
  * Columns: time, x, y, z, vx, vy, vz, mode, floorDist, walkableFloor, events. events is a bit set: 1 jump start, 2 landed,
  * 4 step-up (z gain in one walking frame above StepUpMinDeltaZ), 8 horizontal speed collapse while airborne (the face of a ledge
  * took the speed: compare with Core JumpModel, BlockedRising).
@@ -50,6 +54,16 @@ public:
 	void DumpAndClear();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	/** Capsule blocking hits while recording (not a per-frame log: at most MaxHits are kept, written at the next dump as "SpnMoveDiagHit,..."). */
+	UFUNCTION()
+	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+
+	/** Upper bound of the kept hit records between two dumps. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Diagnostics", meta = (ClampMin = "8", ClampMax = "512"))
+	int32 MaxHits = 64;
 
 private:
 	struct FSample
@@ -63,6 +77,16 @@ private:
 		uint8 Events = 0;
 	};
 
+	struct FHitSample
+	{
+		double Time = 0.0;
+		FVector Normal = FVector::ZeroVector;
+		FVector Impact = FVector::ZeroVector;
+		FString Component;
+		bool bWalkable = false;
+	};
+
+	TArray<FHitSample> Hits;
 	TArray<FSample> Samples;
 	int32 Head = 0;
 	bool bHavePrevious = false;

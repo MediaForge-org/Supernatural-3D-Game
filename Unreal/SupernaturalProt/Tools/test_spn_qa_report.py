@@ -105,6 +105,77 @@ class ReportTest(unittest.TestCase):
             with open(os.path.join(root, "20261002-1000", "report.md"), encoding="utf-8") as handle:
                 self.assertIn("Doors.x: PASS -> FAIL", handle.read())
 
+    def test_report_includes_trace_analysis_and_bad_trace_lines(self):
+        import io
+        import json
+        import tempfile
+        from contextlib import redirect_stdout
+        import test_spn_trace_tools as TT
+        with tempfile.TemporaryDirectory() as root:
+            with open(os.path.join(root, "records.jsonl"), "w") as handle:
+                handle.write(json.dumps({"suite": "Turns", "id": "sprint_left_90", "status": "FAIL", "detail": "d", "epoch": 1.0}) + "\n")
+            TT.write(os.path.join(root, "traces.jsonl"), [("sprint_left_90#1", TT.turn_rows(-1, lose_sprint_at=0.05)), ("sprint_right_90#1", TT.turn_rows(1))])
+            with open(os.path.join(root, "traces.jsonl"), "a") as handle:
+                handle.write("garbage\n")
+            with redirect_stdout(io.StringIO()):
+                report.main([root, "--no-compare"])
+            with open(os.path.join(root, "report.md"), encoding="utf-8") as handle:
+                text = handle.read()
+        self.assertIn("Mirrored sprint turns", text)
+        self.assertIn("Verdict: **asymmetric**", text)
+        self.assertIn("Problems with traces.jsonl", text)
+
+    def test_runs_under_isolated_python_like_the_windows_wrapper(self):
+        """run_gameplay_qa.ps1 starts `python -I`: the script directory is not on sys.path there, so sibling imports must not depend on it."""
+        import subprocess
+        import tempfile
+        with tempfile.TemporaryDirectory() as root:
+            run = os.path.join(root, "20261001-1000")
+            os.makedirs(run)
+            with open(os.path.join(run, "records.jsonl"), "w") as handle:
+                handle.write('{"suite":"Doors","id":"x","status":"PASS","detail":"d","epoch":1}\n')
+            done = subprocess.run([sys.executable, "-I", "-B", os.path.join(os.path.dirname(os.path.abspath(__file__)), "spn_qa_report.py"), run],
+                                  capture_output=True, text=True, cwd=root)
+            self.assertEqual(done.returncode, 0, done.stderr)
+            self.assertIn("PASS 1", done.stdout)
+
+    def _run_main(self, records, run_info):
+        import io
+        import json
+        import tempfile
+        from contextlib import redirect_stdout
+        with tempfile.TemporaryDirectory() as root:
+            run = os.path.join(root, "20261001-1000")
+            os.makedirs(run)
+            if records is not None:
+                with open(os.path.join(run, "records.jsonl"), "w") as handle:
+                    for r in records:
+                        handle.write(json.dumps(r) + "\n")
+            with open(os.path.join(run, "run_info.json"), "w") as handle:
+                json.dump(run_info, handle)
+            with redirect_stdout(io.StringIO()) as out:
+                code = report.main([run, "--no-compare"])
+            with open(os.path.join(run, "report.md"), encoding="utf-8") as handle:
+                return code, out.getvalue(), handle.read()
+
+    def test_interrupted_or_crashed_runs_are_incomplete_never_successful(self):
+        ok = [{"suite": "Doors", "id": "x", "status": "PASS", "detail": "d", "epoch": 1.0}]
+        code, _, text = self._run_main(ok, {"expected_suites": ["Doors"]})
+        self.assertEqual(code, 0)
+        self.assertIn("Run verdict | COMPLETE", text)
+        code, out, text = self._run_main(ok, {"expected_suites": ["Doors", "Jump"]})        # the game died before Jump
+        self.assertEqual(code, 2)
+        self.assertIn("INCOMPLETE RUN", out)
+        self.assertIn("no record from: Jump", text)
+        code, _, text = self._run_main(ok, {"expected_suites": ["Doors"], "timed_out": True})
+        self.assertEqual(code, 2)
+        self.assertIn("after the timeout", text)
+        code, _, _ = self._run_main(None, {"expected_suites": ["Doors"]})                    # no records.jsonl at all
+        self.assertEqual(code, 2)
+        fail = [{"suite": "Doors", "id": "x", "status": "FAIL", "detail": "d", "epoch": 1.0}]
+        self.assertEqual(self._run_main(fail, {"expected_suites": ["Doors"]})[0], 1)         # complete with failures stays 1
+        self.assertEqual(self._run_main(ok, {"expected_suites": ["Doors"], "exit_code": 1})[0], 0)   # Unreal's own non-zero code alone is only a note
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -17,7 +17,7 @@ def group_id(shape, material, ix, iy):
     return "SPN_D_ISM_%s_%s_%d_%d" % (shape, material, ix, iy)
 
 
-def plan_instancing(prims, prefix="SPN_D_"):
+def plan_instancing(prims, prefix=("SPN_D_", "SPN_E_")):
     """Split `prims` into (actors, groups). actors: prims that stay individual actors (every prim without the prefix). groups: list of
     {"id", "shape", "material", "cell", "instances": [prim, ...]} sorted by id; instances keep their order in `prims`."""
     actors, groups = [], {}

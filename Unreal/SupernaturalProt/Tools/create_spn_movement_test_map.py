@@ -39,6 +39,7 @@ if _HERE not in sys.path:
 
 import spn_movement_map_layout as layout_module  # noqa: E402
 import spn_district_layout as district_module  # noqa: E402
+import spn_env_enrichment  # noqa: E402
 import spn_instancing  # noqa: E402
 import spn_map_extras  # noqa: E402
 import spn_map_validate  # noqa: E402
@@ -160,6 +161,8 @@ def preflight(data, groups):
     """Everything that can be checked before the level is touched: layout data, engine shapes, classes, materials. Raises on the first
     hard problem; a missing material only warns (the shape default is used)."""
     problems = spn_map_validate.validate_layout_data(data)
+    if not problems and "district" in data:   # V2 only; the v1 data keeps its known tight house door
+        problems = spn_map_validate.validate_door_passages(data)
     if problems:
         fail("layout data invalid, nothing was changed: " + "; ".join(problems[:5]))
     for shape in sorted({p["shape"] for p in data["prims"]}):
@@ -177,11 +180,19 @@ def main():
     args = sys.argv[1:]
     v2 = "--v2" in args
     data = district_module.build_layout_v2() if v2 else layout_module.build_layout()
+    if "--enrich" in args:
+        # Opt-in M2A3 environment layer: its own level path (Lvl_SpnMovementTestV2Env), the plain V2 level is never touched by it.
+        if not v2:
+            fail("--enrich needs --v2")
+        spn_env_enrichment.enrich(data)
+        problems = spn_env_enrichment.validate_enrichment(data)
+        if problems:
+            fail("enrichment invalid, nothing was changed: " + "; ".join(problems[:5]))
     map_path = data["map"]
     force = "--force" in args
     adopt_legacy = "--adopt-legacy" in args
     instancing = "--instancing" in args and v2
-    spn_map_extras.set_generator(map_path, district_module.GENERATOR_VERSION)
+    spn_map_extras.set_generator(map_path, data.get("generator_version", district_module.GENERATOR_VERSION))
     grouped = spn_instancing.plan_instancing(data["prims"])[1] if instancing else []
     preflight(data, grouped)
 

@@ -262,3 +262,63 @@ TEST_CASE("abort during a traversal: approach can be cancelled, an active move c
     released = AdvanceTraversal(released, t, 1.0);
     CHECK(CanStartTraversal(released, TraversalMove::Vault, MovementState::Jog));
 }
+
+TEST_CASE("nothing starts without the matching explicit press: no automatic jump, vault, mantle or climb") {
+    const TraversalState idle;
+    const MovementState ground = MovementState::Run;
+    const TraversalIntent none;
+    for (const TraversalMove move : {TraversalMove::None, TraversalMove::StepUp, TraversalMove::Jump, TraversalMove::Vault, TraversalMove::Mantle, TraversalMove::Climb, TraversalMove::Blocked}) {
+        CHECK(MoveToStart(move, none, idle, ground) == TraversalMove::None);
+    }
+    CHECK(RequiredInput(TraversalMove::Jump) == TraversalInput::Jump);
+    CHECK(RequiredInput(TraversalMove::Vault) == TraversalInput::Traverse);
+    CHECK(RequiredInput(TraversalMove::StepUp) == TraversalInput::None);
+    CHECK(RequiredInput(TraversalMove::Blocked) == TraversalInput::NotStartable);
+}
+
+TEST_CASE("the jump key starts only a Jump; the traversal key starts only vault, mantle or climb; wrong keys start nothing") {
+    const TraversalState idle;
+    const MovementState ground = MovementState::Run;
+    TraversalIntent jump;
+    jump.jumpPressed = true;
+    TraversalIntent traverse;
+    traverse.traversePressed = true;
+    CHECK(MoveToStart(TraversalMove::Jump, jump, idle, ground) == TraversalMove::Jump);
+    CHECK(MoveToStart(TraversalMove::Vault, jump, idle, ground) == TraversalMove::None);      // jump key does not vault
+    CHECK(MoveToStart(TraversalMove::Mantle, jump, idle, ground) == TraversalMove::None);
+    CHECK(MoveToStart(TraversalMove::Jump, traverse, idle, ground) == TraversalMove::None);   // traversal key does not leap
+    for (const TraversalMove move : {TraversalMove::Vault, TraversalMove::Mantle, TraversalMove::Climb}) {
+        CHECK(MoveToStart(move, traverse, idle, ground) == move);
+    }
+    CHECK(MoveToStart(TraversalMove::Blocked, traverse, idle, ground) == TraversalMove::None);
+    CHECK(MoveToStart(TraversalMove::StepUp, jump, idle, ground) == TraversalMove::None);     // step-up is walking, never a started move
+}
+
+TEST_CASE("in the air or inside a running traversal nothing new starts, even with the right key") {
+    TraversalIntent both;
+    both.jumpPressed = both.traversePressed = true;
+    const TraversalState idle;
+    CHECK(MoveToStart(TraversalMove::Jump, both, idle, MovementState::Falling) == TraversalMove::None);
+    CHECK(MoveToStart(TraversalMove::Jump, both, idle, MovementState::Jumping) == TraversalMove::None);
+    CHECK(MoveToStart(TraversalMove::Vault, both, idle, MovementState::Falling) == TraversalMove::None);
+    const TraversalState running = AdvanceTraversal(StartTraversal(TraversalMove::Vault), TraversalTimings{}, 0.3);
+    REQUIRE(running.phase != TraversalPhase::Idle);
+    CHECK(MoveToStart(TraversalMove::Mantle, both, running, MovementState::Run) == TraversalMove::None);
+    CHECK(MoveToStart(TraversalMove::Jump, both, running, MovementState::Run) == TraversalMove::None);
+}
+
+TEST_CASE("end to end with the safety classifier: an unsafe obstacle stays blocked even when the traversal key is pressed") {
+    TraversalProbe probe;
+    probe.obstacle = TraversalObstacle{1.0, 0.3, 10.0, 4.0, false};
+    probe.obstacleSpeed = 2.0; // a moving obstacle: refused by the safety rules
+    TraversalIntent traverse;
+    traverse.traversePressed = true;
+    const TraversalDecision decision = ClassifyTraversalChecked(kMove, kTrav, TraversalSafety{}, probe);
+    CHECK(decision.move == TraversalMove::Blocked);
+    CHECK(MoveToStart(decision.move, traverse, TraversalState{}, MovementState::Run) == TraversalMove::None);
+    probe.obstacleSpeed = 0.0;
+    const TraversalDecision ok = ClassifyTraversalChecked(kMove, kTrav, TraversalSafety{}, probe);
+    CHECK(ok.move == TraversalMove::Vault);
+    CHECK(MoveToStart(ok.move, TraversalIntent{}, TraversalState{}, MovementState::Run) == TraversalMove::None); // offered, not requested
+    CHECK(MoveToStart(ok.move, traverse, TraversalState{}, MovementState::Run) == TraversalMove::Vault);
+}

@@ -9,14 +9,19 @@ add_executable(spn_core_tests
     AppearanceGeneratorTests.cpp
     AppearanceRecipeTests.cpp
     DetailTierTests.cpp
+    DevicesTests.cpp
+    GameEventsTests.cpp
     DoorPersistenceTests.cpp
+    EnvScenarioTests.cpp
     InteractionTests.cpp
     InteractionReachTests.cpp
+    InteractionSystemTests.cpp
     JumpModelTests.cpp
     GroundSteeringTests.cpp
     LocomotionTests.cpp
     MovementTests.cpp
     NpcTests.cpp
+    ObjectPersistenceTests.cpp
     PickupTests.cpp
     PropertyTests.cpp
     TraversalTests.cpp

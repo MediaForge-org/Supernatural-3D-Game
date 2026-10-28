@@ -5,7 +5,9 @@
 #include "Engine/CollisionProfile.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
+#include "CollisionQueryParams.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/World.h"
 #include "EngineUtils.h"
 #include "SpnWorldStateSubsystem.h"
 #include "SupernaturalProt.h"
@@ -110,8 +112,52 @@ void ASpnTestDoor::Tick(float DeltaSeconds)
 	}
 }
 
+bool ASpnTestDoor::IsLocked() const
+{
+	const USpnWorldStateSubsystem* WorldState = GetWorldState();
+	const TOptional<bool> Fact = WorldState != nullptr ? WorldState->ReadFlag(USpnWorldStateSubsystem::TestDoorLockedKey(StableId)) : TOptional<bool>();
+	return Fact.Get(bAuthoredLocked);
+}
+
+bool ASpnTestDoor::IsClosingObstructed() const
+{
+	const UWorld* World = GetWorld();
+	const UStaticMesh* Mesh = Panel != nullptr ? Panel->GetStaticMesh() : nullptr;
+	if (World == nullptr || Mesh == nullptr || Hinge == nullptr || Root == nullptr)
+	{
+		return false;
+	}
+	const FVector HalfExtent = Mesh->GetBounds().BoxExtent * Panel->GetRelativeScale3D().GetAbs();
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(SpnDoorClosing), /*bTraceComplex*/ false, this);
+	const FCollisionObjectQueryParams Pawns(ECC_Pawn);
+	const float StepDegrees = 10.f;
+	const int32 Steps = FMath::Max(1, FMath::CeilToInt(FMath::Abs(CurrentAngle) / StepDegrees));
+	for (int32 Step = 0; Step <= Steps; ++Step)
+	{
+		// From the current leaf position (Step 0) to the closed one (angle 0).
+		const float Angle = CurrentAngle * (1.f - static_cast<float>(Step) / static_cast<float>(Steps));
+		const FTransform HingeWorld = FTransform(FRotator(0.f, Angle, 0.f), Hinge->GetRelativeLocation()) * Root->GetComponentTransform();
+		const FTransform PanelWorld = FTransform(Panel->GetRelativeRotation(), Panel->GetRelativeLocation()) * HingeWorld;
+		if (World->OverlapAnyTestByObjectType(PanelWorld.GetLocation(), PanelWorld.GetRotation(), Pawns, FCollisionShape::MakeBox(HalfExtent), Params))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 FSpnInteractStatus ASpnTestDoor::SpnUse(AActor* User)
 {
+	if (IsOpen() && IsClosingObstructed())
+	{
+		// A closing door must never be pushed into a pawn: refuse, change no state. Feedback id = spn::core::TestDoorBlockedFeedback().
+		FSpnInteractStatus Blocked;
+		Blocked.Result = ESpnInteractResult::Refused;
+		Blocked.Feedback = TEXT("placeholder:feedback.door.blocked");
+		Blocked.Detail = TEXT("a pawn is in the swing of the door");
+		UE_LOG(LogSupernaturalProt, Log, TEXT("%s (%s): closing refused, a pawn is in the way"), *GetName(), *StableId);
+		return Blocked;
+	}
 	USpnWorldStateSubsystem* WorldState = GetWorldState();
 	if (WorldState == nullptr)
 	{
@@ -154,7 +200,7 @@ FString ASpnTestDoor::SpnPromptText(const AActor* User) const
 	{
 		return TEXT("Close door");
 	}
-	return bAuthoredLocked ? TEXT("Door (locked)") : TEXT("Open door");
+	return IsLocked() ? TEXT("Door (locked)") : TEXT("Open door");
 }
 
 bool ASpnTestDoor::IsOpen() const

@@ -53,6 +53,16 @@ public:
 	/** Open according to the world state (or bAuthoredOpen while no fact exists). */
 	bool IsOpen() const;
 
+	/** Lock state as the game sees it: the world-state fact if one exists, else the authored default (bAuthoredLocked). */
+	bool IsLocked() const;
+
+	/**
+	 * True if a pawn is inside the leaf's current volume or anywhere on its way to the closed position (sampled every 10 degrees,
+	 * object-type query ECC_Pawn). Closing is refused while this is true; opening is never refused by it.
+	 * UNVERIFIED: written without an Unreal build; the overlap result must be checked on Windows (door closing onto a standing player).
+	 */
+	bool IsClosingObstructed() const;
+
 	/** Hinge yaw shown right now, and the yaw it is swinging to. */
 	float GetCurrentAngle() const { return CurrentAngle; }
 	float GetTargetAngle() const { return TargetAngle; }

@@ -1,5 +1,6 @@
 #include "Spn/SpnMovementDiagnostics.h"
 
+#include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -41,12 +42,73 @@ void USpnMovementDiagnostics::Push(const FSample& Sample)
 	Head = (Head + 1) % Samples.Num();
 }
 
+void USpnMovementDiagnostics::BeginPlay()
+{
+	Super::BeginPlay();
+	const ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (Character != nullptr && Character->GetCapsuleComponent() != nullptr)
+	{
+		Character->GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &USpnMovementDiagnostics::OnCapsuleHit);
+	}
+}
+
+void USpnMovementDiagnostics::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	const ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (Character != nullptr && Character->GetCapsuleComponent() != nullptr)
+	{
+		Character->GetCapsuleComponent()->OnComponentHit.RemoveDynamic(this, &USpnMovementDiagnostics::OnCapsuleHit);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
+void USpnMovementDiagnostics::OnCapsuleHit(UPrimitiveComponent*, AActor*, UPrimitiveComponent* OtherComponent, FVector, const FHitResult& Hit)
+{
+	if (!IsRecording() || GetWorld() == nullptr)
+	{
+		return;
+	}
+	const ACharacter* Character = Cast<ACharacter>(GetOwner());
+	const UCharacterMovementComponent* Movement = Character != nullptr ? Character->GetCharacterMovement() : nullptr;
+	FHitSample Sample;
+	Sample.Time = GetWorld()->GetTimeSeconds();
+	Sample.Normal = Hit.ImpactNormal;
+	Sample.Impact = Hit.ImpactPoint;
+	Sample.Component = OtherComponent != nullptr ? OtherComponent->GetName() : FString(TEXT("none"));
+	Sample.bWalkable = Movement != nullptr && Movement->IsWalkable(Hit);
+	if (Hits.Num() >= MaxHits)
+	{
+		Hits.RemoveAt(0, 1, EAllowShrinking::No); // keep the newest hits; MaxHits is small
+	}
+	Hits.Add(Sample);
+}
+
 void USpnMovementDiagnostics::DumpAndClear()
 {
 	if (Samples.Num() == 0)
 	{
+		Hits.Reset();
 		return;
 	}
+	if (const ACharacter* Owner = Cast<ACharacter>(GetOwner()))
+	{
+		const UCharacterMovementComponent* M = Owner->GetCharacterMovement();
+		const UCapsuleComponent* Capsule = Owner->GetCapsuleComponent();
+		if (M != nullptr && Capsule != nullptr)
+		{
+			UE_LOG(LogSupernaturalProt, Display,
+				TEXT("SpnMoveDiagCfg,maxStep=%.2f,jumpZ=%.1f,gravityZ=%.1f,airControl=%.3f,groundFriction=%.2f,brakingWalking=%.1f,capsuleR=%.1f,capsuleHH=%.1f,walkableZ=%.4f,perchRadius=%.1f,perchExtra=%.1f,flatBase=%d,maxAccel=%.1f"),
+				M->MaxStepHeight, M->JumpZVelocity, M->GetGravityZ(), M->AirControl, M->GroundFriction, M->BrakingDecelerationWalking,
+				Capsule->GetScaledCapsuleRadius(), Capsule->GetScaledCapsuleHalfHeight(), M->GetWalkableFloorZ(), M->PerchRadiusThreshold,
+				M->PerchAdditionalHeight, M->bUseFlatBaseForFloorChecks ? 1 : 0, M->GetMaxAcceleration());
+		}
+	}
+	for (const FHitSample& H : Hits)
+	{
+		UE_LOG(LogSupernaturalProt, Display, TEXT("SpnMoveDiagHit,%.4f,%.3f,%.3f,%.3f,%.1f,%.1f,%.1f,%d,%s"), H.Time, H.Normal.X, H.Normal.Y, H.Normal.Z,
+			H.Impact.X, H.Impact.Y, H.Impact.Z, H.bWalkable ? 1 : 0, *H.Component);
+	}
+	Hits.Reset();
 	UE_LOG(LogSupernaturalProt, Display, TEXT("SpnMoveDiag,time,x,y,z,vx,vy,vz,mode,floorDist,walkable,events"));
 	for (int32 i = 0; i < Samples.Num(); ++i)
 	{

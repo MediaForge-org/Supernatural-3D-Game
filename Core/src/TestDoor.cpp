@@ -37,6 +37,7 @@ InteractionError Corrupt(std::string subject) {
 struct DoorState {
     bool open = false;
     bool locked = false;
+    bool disabled = false;
 };
 
 Result<DoorState, InteractionError> ReadDoor(const WorldFacts& facts, std::string_view id,
@@ -51,7 +52,12 @@ Result<DoorState, InteractionError> ReadDoor(const WorldFacts& facts, std::strin
     if (!locked) {
         return Corrupt(lockedKey);
     }
-    return DoorState{*open, *locked};
+    const std::string disabledKey = TestDoorDisabledKey(id);
+    const auto disabled = ReadFlag(facts, disabledKey, defaults, kTestDoorDisabledState);
+    if (!disabled) {
+        return Corrupt(disabledKey);
+    }
+    return DoorState{*open, *locked, *disabled};
 }
 
 } // namespace
@@ -64,6 +70,30 @@ const ContentId& TestDoorKind() {
 const ContentId& TestDoorLockedFeedback() {
     static const ContentId feedback = MustParse("placeholder:feedback.door.locked");
     return feedback;
+}
+
+const ContentId& TestDoorDisabledFeedback() {
+    static const ContentId feedback = MustParse("placeholder:feedback.door.disabled");
+    return feedback;
+}
+
+const ContentId& TestDoorBlockedFeedback() {
+    static const ContentId feedback = MustParse("placeholder:feedback.door.blocked");
+    return feedback;
+}
+
+std::string TestDoorDisabledKey(std::string_view id) {
+    return std::string(kKeyPrefix).append(id).append(".disabled");
+}
+
+std::optional<FactError> SetTestDoorLocked(WorldFacts& facts, std::string_view id, bool locked, std::string_view cause) {
+    auto applied = facts.Apply(SetFact{TestDoorLockedKey(id), locked}, cause);
+    return applied ? std::nullopt : std::optional<FactError>(applied.Error());
+}
+
+std::optional<FactError> SetTestDoorDisabled(WorldFacts& facts, std::string_view id, bool disabled, std::string_view cause) {
+    auto applied = facts.Apply(SetFact{TestDoorDisabledKey(id), disabled}, cause);
+    return applied ? std::nullopt : std::optional<FactError>(applied.Error());
 }
 
 std::string TestDoorOpenKey(std::string_view id) {
@@ -98,6 +128,10 @@ InteractionHandler MakeTestDoorHandler() {
         switch (verb) {
         case InteractionVerb::Use:
             break;
+        }
+        if (door.Value().disabled) {
+            return InteractionError{InteractionErrorCode::Refused, target.id,
+                                    TestDoorDisabledFeedback(), std::nullopt};
         }
         if (door.Value().locked) {
             return InteractionError{InteractionErrorCode::Refused, target.id,

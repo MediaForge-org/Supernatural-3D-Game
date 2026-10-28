@@ -261,3 +261,24 @@ def door_passage(data, door, open_angle, inward=1.0):
             narrowest, limiting = d, label
         cell = parent.get(cell)
     return {"clearance": value, "slack": value - L.CAPSULE_RADIUS, "limiting": limiting}
+
+
+MIN_DOOR_SLACK_CM = 5.0     # placeholder: the capsule must clear the open door by at least this much per side-pair (the widest doors have 16 cm)
+MAX_DOOR_PINCH_CM = 40.0    # placeholder: the narrow stretch may be at most about a wall thickness long
+
+
+def validate_door_passages(data):
+    """Problems as short strings (empty = every door passable). Used by the V2 pre-flight: a door the capsule cannot get through, or that
+    needs a long straight squeeze, must stop the generator before the level is touched (found in Unreal: SpnQA Doors.TestHouse.walk_through).
+    Not applied to the v1 layout, whose house door is known to be tight and which must never be regenerated."""
+    import spn_district_layout as D
+    problems = []
+    for door in data.get("doors", []):
+        angle, inward = D.door_open_angle(door), D.door_inward_sign(door)
+        passage = door_passage(data, door, angle, inward)
+        if passage["slack"] < MIN_DOOR_SLACK_CM:
+            problems.append("door %s: capsule slack %.1f cm (limited by %s)" % (door["id"], passage["slack"], passage["limiting"]))
+        pinch = door_pinch(data, door, angle, inward)
+        if pinch["length"] > MAX_DOOR_PINCH_CM:
+            problems.append("door %s: %.0f cm long squeeze (min gap %.0f cm)" % (door["id"], pinch["length"], pinch["min_gap"]))
+    return problems

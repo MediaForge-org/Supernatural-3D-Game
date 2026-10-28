@@ -52,3 +52,11 @@ Obstacles (30 cm gehend), StairsAndRamps (30-cm-Stufen), Sprünge 50/60 und Spä
 
 ## 7. Zurückgestellt (Roadmap, nichts davon begonnen)
 Inventarsystem (eigener späterer Meilenstein) und interaktive Weltkarte (Darstellung, Interaktion und Gestaltung sind unentschieden und werden hier nicht festgelegt).
+
+## 8. Nachtrag Sitzung 2 (Startcommit `b69eb90`)
+* **Ein Aufruf statt vieler Schritte:** `powershell -File Tools\windows\run_m2a2_integration.ps1 -EnginePath "C:\Program Files\Unreal Engine\UE_5.8"` (zuerst mit `-DryRun`). Er sichert die V2-Karte nach `Saved\M2A2-Backup\<Zeit>`, erzeugt nur V2 neu, prüft das Generator-Log, startet `-Suite Doors` (Parameter `-Suite Quick|Movement|Full`), vergleicht den Hash der V1-Karte vorher/nachher und wertet die Traces aus. Core-Erwartung jetzt **280** Tests, Python **198**.
+* **Neue Exit-Codes von `spn_qa_report.py` / `run_gameplay_qa.ps1`:** 0 vollständig ohne Fehler, 1 vollständig mit FAIL/BLOCKED, **2 unvollständig** (Timeout, Suite ohne Record, keine `records.jsonl`). Ein nicht-null Exit-Code von Unreal allein ist nur ein Hinweis.
+* **Neue Artefakte:** `traces.jsonl` im QA-Ordner (Turns-Traces, Jump-Traces). Auswertung: `python Tools\spn_trace_tools.py <QA-Ordner>` (Exit 1 bei Asymmetrie). Im Bericht: "Mirrored sprint turns".
+* **Neuer Build-Risikopunkt (zuerst nachsehen, falls der Build scheitert):** `SpnMovementDiagnostics.{h,cpp}` (Bindung `OnComponentHit` am Kapselcomponent, `EAllowShrinking::No`, `GetWalkableFloorZ`, `PerchRadiusThreshold`, `PerchAdditionalHeight`, `bUseFlatBaseForFloorChecks`, `IsWalkable(Hit)`), `SpnQaRecorder.h` (`SpnQa::Trace`), `SpnQaMovementAutomation.cpp` (Trace-Aufnahme in Turns und Jump, gemischte `TArray<double>`-Initialisierer).
+* **Messläufe für die offenen Bewegungsfehler:** In einer Sitzung `spn.MoveDiag 1` setzen, `-Suite Movement` laufen lassen. Dann `python Tools\spn_log_tools.py diag <game.log> --ledge-cm 30 --distance-cm 10` (liefert `config`, `hit_summary`: ein `walkable_corner_contact` ab Kantenhöhe bestätigt die Einrast-Hypothese) und `python Tools\spn_trace_tools.py <QA-Ordner>` (`jumps.<fall>.classification`, `turns.verdict`).
+* **Generator:** Das Editor-Skript bricht V2 im Preflight ab, wenn eine Tür nicht passierbar ist oder eine lange Engstelle hat (`validate_door_passages`); V1 ist davon ausgenommen.

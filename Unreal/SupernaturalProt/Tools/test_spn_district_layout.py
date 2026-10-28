@@ -372,23 +372,33 @@ class DistrictTest(unittest.TestCase):
         v1 = [p for p in L.build_layout()["prims"] if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"])]
         self.assertAlmostEqual(max(p["center"][1] + p["size"][1] / 2.0 for p in v1), -9204.0, places=2)
 
-    @staticmethod
-    def _inward(door):
-        if not door["zone"].startswith("d_"):
-            return 1.0   # the v1 buildings lie east of their west wall
-        prefix = next(p for p, *_ in D.BUILDINGS if "d_" + p.lower() == door["zone"])
-        return 1.0 if R.entrance(D.building_spec(prefix)[0]).side == "W" else -1.0
-
     def test_every_open_door_lets_the_capsule_through_without_a_long_pinch(self):
         """Regression for SpnQA Doors.TestHouse.walk_through: the open leaf and the stair block behind the door left a 100 cm wide, 108 cm long
         pinch for the 84 cm capsule. Every door must be passable (slack >= 0) and hold the pinch to the wall thickness (<= 40 cm)."""
         for door in self.data["doors"]:
             angle = D.door_open_angle(door)
-            inward = self._inward(door)
+            inward = D.door_inward_sign(door)
             passage = V.door_passage(self.data, door, angle, inward)
             pinch = V.door_pinch(self.data, door, angle, inward)
             self.assertGreaterEqual(passage["slack"], 5.0, "%s: capsule slack %.1f cm (limited by %s)" % (door["id"], passage["slack"], passage["limiting"]))
             self.assertLessEqual(pinch["length"], 40.0, "%s: pinch %.0f cm long (min gap %.0f)" % (door["id"], pinch["length"], pinch["min_gap"]))
+
+    def test_preflight_door_validation_accepts_v2_and_rejects_the_known_bad_geometries(self):
+        self.assertEqual(V.validate_door_passages(self.data), [])
+        v1 = L.build_layout()
+        problems = V.validate_door_passages(v1)
+        self.assertTrue(any("mv_house_door" in p and "slack" in p for p in problems), problems)   # v1's tight house door is reported, not hidden
+        # a stair block back at the old 28 cm tread in the V2 data must be caught by the generator pre-flight
+        broken = json.loads(L.to_json(self.data))
+        for p in broken["prims"]:
+            if re.fullmatch(r"SPN_MV_House_Stair_\d\d", p["label"]):
+                p["size"][1] = 28.0
+                p["center"][1] = -9700.0 + 20.0 + (int(p["label"][-2:]) - 0.5) * 28.0
+        self.assertTrue(any("mv_house_door" in p for p in V.validate_door_passages(broken)))
+        # a door swung back inward next to the stair block is a long squeeze
+        inward = json.loads(L.to_json(self.data))
+        next(d for d in inward["doors"] if d["id"] == "mv_house_door")["open_angle"] = 90.0
+        self.assertTrue(any("squeeze" in p for p in V.validate_door_passages(inward)))
 
     def test_passage_check_sees_the_original_house_defects(self):
         """The checker itself: it must flag the two geometries that failed in Unreal, otherwise the regression test above proves nothing."""

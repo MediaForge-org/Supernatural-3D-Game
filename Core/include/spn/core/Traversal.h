@@ -135,4 +135,21 @@ struct TraversalSafety {
 /// True while the move owns the character's movement (Approach and Active); normal input must not move it then.
 [[nodiscard]] bool TraversalOwnsMovement(const TraversalState& state) noexcept;
 
+/// Explicit player input of this frame. A traversal never starts without the matching press (M2A3 rule: no automatic leaps, vaults or
+/// mantles; the ordinary jump stays the jump key).
+struct TraversalIntent {
+    bool jumpPressed = false;      ///< the jump key (edge, this frame)
+    bool traversePressed = false;  ///< a future dedicated traversal/context key (edge, this frame); nothing binds it yet
+};
+
+/// Which input a move needs: StepUp none (walking up is the ordinary ground movement, never a "move"), Jump the jump key, Vault, Mantle and
+/// Climb the traversal key, None and Blocked never start.
+enum class TraversalInput : std::uint8_t { NotStartable, None, Jump, Traverse };
+[[nodiscard]] TraversalInput RequiredInput(TraversalMove move) noexcept;
+
+/// The move to start NOW, or None. Starts only when the decision's move is the one the pressed input asks for, the character is not
+/// already in a traversal (CanStartTraversal) and the movement state allows it. For StepUp/Jump it returns the move only on the matching press
+/// (the engine performs step-up and jump itself; this is the gate for "was it requested"). Deterministic, no side effects.
+[[nodiscard]] TraversalMove MoveToStart(TraversalMove offered, const TraversalIntent& intent, const TraversalState& state, MovementState current) noexcept;
+
 } // namespace spn::core

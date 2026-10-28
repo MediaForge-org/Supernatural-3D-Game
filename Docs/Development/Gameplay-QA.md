@@ -32,6 +32,10 @@ Ergebnis: `Unreal/SupernaturalProt/Saved/GameplayQA/<Zeitstempel>/` (Pfad des le
 
 Vergleich und Datenprüfung: `spn_qa_report.py` vergleicht jeden Lauf automatisch mit dem neuesten früheren Lauf im selben Ordner (Abschnitt "Compared with the previous run": Regressionen, behoben, weiterhin fehlschlagend, verschwundene und neue Checks; `--compare <Ordner>` / `--no-compare`). Ungültige Statuswerte werden BLOCKED, doppelte Checks, fehlendes Video/Clips/`records.jsonl` stehen unter "Problems with this run's data".
 
+Lauf-Urteil und Traces: `INCOMPLETE` (Exit 2) bei Timeout, fehlenden Suiten oder fehlender `records.jsonl`. `traces.jsonl` enthält Messreihen (Turns, Jump) ohne Status; `spn_trace_tools.py` wertet sie aus (Links/Rechts-Symmetrie der Sprint-Wende, Sprung-Klassifikation).
+
+Nachweisklassen (M2A3): (1) Core-Tests auf Fedora (`ctest`), (2) statische Integrationsprüfungen (`test_spn_unreal_static.py`), (3) braucht Unreal-Build, (4) braucht Unreal-Laufzeit. Eine Zeile aus Klasse 1-2 sagt nie, dass Klasse 3-4 bestanden ist. `env_scenarios` der angereicherten Karte stehen auf `PENDING_UNREAL_ADAPTER`.
+
 Videostelle: `epoch` der Prüfung minus Startzeit von FFmpeg (+0,5 s Anlaufzeit); typische Abweichung unter 1 s. Der aktuell laufende Test steht zusätzlich als Text im Bild.
 
 ## Status

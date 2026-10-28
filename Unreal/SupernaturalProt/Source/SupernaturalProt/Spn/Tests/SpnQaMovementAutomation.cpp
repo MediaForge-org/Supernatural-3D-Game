@@ -216,7 +216,7 @@ bool FSpnQaMovementTest::RunTest(const FString& Parameters)
 
 namespace
 {
-	struct FTurnResult { float Before = 0, MinSpeed = 0, GaitSprint = 0, Final = 0, TimeToRecover = -1; bool bValid = false; float LocalAngle = 0; };
+	struct FTurnResult { float Before = 0, MinSpeed = 0, GaitSprint = 0, Final = 0, TimeToRecover = -1; bool bValid = false; float LocalAngle = 0; TArray<TArray<double>> Trace; };
 	struct FTurnShared { TMap<FString, TArray<FTurnResult>> Results; };
 }
 
@@ -264,6 +264,16 @@ bool FSpnQaTurnsTest::RunTest(const FString& Parameters)
 						return false;
 					}
 					const double Since = Elapsed - *Phase1;
+					if (Since < 0.5 && R->Trace.Num() < 80)
+					{
+						// Mirror-symmetry diagnostics (left vs right sprint turn): one row per frame in the first 0.5 s after the key change.
+						const FVector Accel = Character.GetCharacterMovement()->GetCurrentAcceleration().GetSafeNormal2D();
+						const FVector Local = Character.GetActorQuat().UnrotateVector(Accel);
+						const FVector Vel = Character.GetVelocity();
+						R->Trace.Add({Since, Speed, static_cast<double>(static_cast<int32>(Character.GetSpnMovement()->GetEffectiveGait())),
+							FMath::RadiansToDegrees(FMath::Atan2(Local.Y, Local.X)), Character.GetActorRotation().Yaw,
+							Vel.Size2D() > 1.f ? FMath::RadiansToDegrees(FMath::Atan2(Vel.Y, Vel.X)) : 0.0, Accel.X, Accel.Y});
+					}
 					if (Since > 0.03 && Since < 0.1) { R->GaitSprint = Character.GetSpnMovement()->GetEffectiveGait() == ESpnGait::Sprint ? 1.f : 0.f; const FVector Local = Character.GetActorQuat().UnrotateVector(Character.GetCharacterMovement()->GetCurrentAcceleration().GetSafeNormal2D()); R->LocalAngle = FMath::RadiansToDegrees(FMath::Atan2(Local.Y, Local.X)); }
 					if (Since < 0.8) { R->MinSpeed = FMath::Min(R->MinSpeed, Speed); }
 					if (R->TimeToRecover < 0.0 && Since > 0.2 && Speed >= 0.95f * R->Before) { R->TimeToRecover = static_cast<float>(Since); }
@@ -275,6 +285,8 @@ bool FSpnQaTurnsTest::RunTest(const FString& Parameters)
 					Keys->ReleaseAll(Character);
 					R->bValid = !bTimedOut;
 					Shared->Results.FindOrAdd(Case.Name).Add(*R);
+					SpnQa::Trace(TEXT("Turns"), FString::Printf(TEXT("%s#%d"), Case.Name, Shared->Results.FindOrAdd(Case.Name).Num()),
+						{TEXT("t"), TEXT("speed"), TEXT("gait"), TEXT("local_angle"), TEXT("actor_yaw"), TEXT("vel_heading"), TEXT("accel_x"), TEXT("accel_y")}, R->Trace);
 				}));
 			ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(0.1f));
 		}
@@ -333,6 +345,7 @@ namespace
 		AStaticMeshActor* Block = nullptr;
 		float FrontY = 0.f, GroundZ = 0.f;
 		double JumpAt = -1.0, SpaceUp = -1.0, Crossed = -1.0, Landed = -1.0, StartRun = 0.0;
+		TArray<TArray<double>> Trace; // frames from the take-off until 0.3 s after landing (capped), written to traces.jsonl
 		float TakeoffSpeed = 0.f, MinAirSpeed = 1.0e9f, MaxZ = -1.0e9f, ZAtLand = 0.f, MaxY = -1.0e9f, SpeedAfterLand = 0.f, ZVelAtLand = 0.f, StartX = 0.f, DriftX = 0.f;
 		bool bAir = false;
 		FVector TakeoffPos = FVector::ZeroVector;
@@ -401,6 +414,14 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 					}
 					return Elapsed > 14.0; // never reached the trigger
 				}
+				if (Run->Trace.Num() < 200 && (Run->Landed < 0.0 || Elapsed - Run->JumpAt - Run->Landed < 0.3))
+				{
+					const UCharacterMovementComponent* Move = Character.GetCharacterMovement();
+					const FVector Vel = Character.GetVelocity();
+					// y_to_face: distance between the capsule's front and the obstacle face (negative = past it); z: height above the start ground.
+					Run->Trace.Add({Elapsed - Run->JumpAt, Case.Height > 0.f ? Run->FrontY - (Loc.Y + CapsuleRadius) : 0.0, Loc.Z - Run->GroundZ, Vel.Y, Vel.Z,
+						static_cast<double>(Move->MovementMode.GetValue()), Move->CurrentFloor.FloorDist, Move->CurrentFloor.IsWalkableFloor() ? 1.0 : 0.0, Loc.X - Run->StartX});
+				}
 				if (Run->SpaceUp < 0.0 && Elapsed - Run->JumpAt > 0.1) { Run->Keys.Set(Character, EKeys::SpaceBar, false); Run->SpaceUp = Elapsed; }
 				if (!bGround || Elapsed - Run->JumpAt < 0.15)
 				{
@@ -430,6 +451,10 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 			{
 				Run->Keys.ReleaseAll(Character);
 				const FString Id = Case.Name;
+				if (Run->Trace.Num() > 0)
+				{
+					SpnQa::Trace(TEXT("Jump"), Id, {TEXT("t"), TEXT("y_to_face"), TEXT("z"), TEXT("vy"), TEXT("vz"), TEXT("mode"), TEXT("floor_dist"), TEXT("walkable"), TEXT("x_drift")}, Run->Trace);
+				}
 				const FSpnMovementSettings& S = Character.GetSpnMovement()->Settings;
 				if (Run->Block != nullptr) { Run->Block->Destroy(); }
 				if (Run->JumpAt < 0.0)

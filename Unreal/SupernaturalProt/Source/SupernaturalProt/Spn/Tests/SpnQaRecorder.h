@@ -96,6 +96,28 @@ namespace SpnQa
 	}
 
 	/**
+	 * Appends one measurement trace (NOT a check, never a status) as a JSON line to <QaDir>/traces.jsonl:
+	 * {"suite","id","epoch","columns":[...],"rows":[[...],...]} . tools/spn_trace_tools.py analyses it (mirrored turns, jump approach).
+	 * Keep traces short (a few dozen rows around the event); this is not a per-frame log.
+	 */
+	inline void Trace(const FString& Suite, const FString& Id, const TArray<FString>& Columns, const TArray<TArray<double>>& Rows)
+	{
+		FString Cols;
+		for (int32 i = 0; i < Columns.Num(); ++i) { Cols += (i > 0 ? TEXT(",\"") : TEXT("\"")) + JsonEscape(Columns[i]) + TEXT("\""); }
+		FString Body;
+		for (int32 r = 0; r < Rows.Num(); ++r)
+		{
+			Body += r > 0 ? TEXT(",[") : TEXT("[");
+			for (int32 c = 0; c < Rows[r].Num(); ++c) { Body += FString::Printf(TEXT("%s%.3f"), c > 0 ? TEXT(",") : TEXT(""), Rows[r][c]); }
+			Body += TEXT("]");
+		}
+		const FString Line = FString::Printf(TEXT("{\"suite\":\"%s\",\"id\":\"%s\",\"epoch\":%.3f,\"columns\":[%s],\"rows\":[%s]}\n"),
+			*JsonEscape(Suite), *JsonEscape(Id), NowEpoch(), *Cols, *Body);
+		IFileManager::Get().MakeDirectory(*QaDir(), true);
+		FFileHelper::SaveStringToFile(Line, *(QaDir() / TEXT("traces.jsonl")), FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM, &IFileManager::Get(), FILEWRITE_Append);
+	}
+
+	/**
 	 * Records one check. FAIL and BLOCKED are errors of the automation test (so the exit code and the Unreal report show them);
 	 * NOT_IMPLEMENTED and NOT_TESTED are warnings/infos and never count as PASS.
 	 */

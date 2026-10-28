@@ -157,4 +157,31 @@ bool TraversalOwnsMovement(const TraversalState& state) noexcept {
     return state.phase == TraversalPhase::Approach || state.phase == TraversalPhase::Active;
 }
 
+TraversalInput RequiredInput(TraversalMove move) noexcept {
+    switch (move) {
+    case TraversalMove::StepUp: return TraversalInput::None;
+    case TraversalMove::Jump: return TraversalInput::Jump;
+    case TraversalMove::Vault:
+    case TraversalMove::Mantle:
+    case TraversalMove::Climb: return TraversalInput::Traverse;
+    case TraversalMove::None:
+    case TraversalMove::Blocked: break;
+    }
+    return TraversalInput::NotStartable;
+}
+
+TraversalMove MoveToStart(TraversalMove offered, const TraversalIntent& intent, const TraversalState& state, MovementState current) noexcept {
+    switch (RequiredInput(offered)) {
+    case TraversalInput::NotStartable:
+    case TraversalInput::None: return TraversalMove::None; // step-up is ordinary walking: nothing to start
+    case TraversalInput::Jump:
+        // Only the jump key, and never from inside an active traversal.
+        if (!intent.jumpPressed || (state.phase != TraversalPhase::Idle && state.phase != TraversalPhase::Done)) return TraversalMove::None;
+        return current == MovementState::Falling || current == MovementState::Jumping ? TraversalMove::None : offered;
+    case TraversalInput::Traverse:
+        return intent.traversePressed && CanStartTraversal(state, offered, current) ? offered : TraversalMove::None;
+    }
+    return TraversalMove::None;
+}
+
 } // namespace spn::core

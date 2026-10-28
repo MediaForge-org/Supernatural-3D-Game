@@ -35,6 +35,8 @@ const char* ReachResultName(ReachResult r) noexcept {
 }
 
 ReachResult CheckReach(const ReachConfig& config, const ReachQuery& q) noexcept {
+    // A NaN limit makes every comparison below false, which would read as reachable; an unusable config is invalid input, not a pass.
+    if (!std::isfinite(config.maxDistance) || !std::isfinite(config.maxAngleDegrees) || !std::isfinite(config.maxHeightDifference)) return ReachResult::InvalidInput;
     if (!Finite(q.eye) || !Finite(q.viewDirection) || !Finite(q.targetCentre) || !std::isfinite(q.targetRadius) || q.targetRadius < 0.0) return ReachResult::InvalidInput;
     const double viewLength = Length(q.viewDirection);
     if (viewLength < 1e-9) return ReachResult::InvalidInput;

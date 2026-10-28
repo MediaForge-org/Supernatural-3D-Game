@@ -76,6 +76,16 @@ TEST_CASE("invalid measurements never read as reachable") {
     CHECK(std::string(ReachResultName(ReachResult::Obstructed)) == "Obstructed");
 }
 
+TEST_CASE("a non-finite reach configuration never reads as reachable") {
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    for (int field = 0; field < 3; ++field) {
+        ReachConfig c;
+        (field == 0 ? c.maxDistance : field == 1 ? c.maxAngleDegrees : c.maxHeightDifference) = nan;
+        CHECK(CheckReach(c, Q(1.0, 0.0, 1.6)) == ReachResult::InvalidInput);
+    }
+    CHECK(CheckReach(kCfg, Q(1.0, 0.0, 1.6)) == ReachResult::Ok); // the default config is unaffected
+}
+
 TEST_CASE("actor state gates interactions") {
     CHECK(MayInteract(ActorInteractState{}));
     CHECK_FALSE(MayInteract(ActorInteractState{true, false, false, false}));

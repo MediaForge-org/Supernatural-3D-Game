@@ -63,18 +63,18 @@
       "id": "interaction",
       "title": "Interaction trace, reach and the E key",
       "classes": ["USpnInteractionComponent", "USpnInteractable"],
-      "core_headers": ["Interaction.h", "InteractionReach.h"],
+      "core_headers": ["Interaction.h", "InteractionReach.h", "InteractionSystem.h", "GameEvents.h"],
       "keys": ["DefaultInteractKey"],
-      "tests": ["SpnGame.Interaction.TraceAndUse", "SpnQA.DoorReach", "SpnQA.Doors", "core:Tests/Core/InteractionTests.cpp", "core:Tests/Core/InteractionReachTests.cpp"],
-      "gap": "No on-screen prompt or highlight exists, so nothing visible to test; interaction through a gamepad button is not bound."
+      "tests": ["SpnGame.Interaction.TraceAndUse", "SpnQA.DoorReach", "SpnQA.Doors", "core:Tests/Core/InteractionTests.cpp", "core:Tests/Core/InteractionReachTests.cpp", "core:Tests/Core/InteractionSystemTests.cpp", "core:Tests/Core/GameEventsTests.cpp"],
+      "gap": "No on-screen prompt or highlight exists, so nothing visible to test; interaction through a gamepad button is not bound. InteractionSystem V2 (selection, statuses, cooldowns, links, events) is Core only and not yet used by USpnInteractionComponent; no Unreal test of it exists."
     },
     {
       "id": "doors",
       "title": "Doors: open/close via E, swing, collision, persistence",
       "classes": ["ASpnTestDoor"],
       "core_headers": ["TestDoor.h"],
-      "tests": ["SpnGame.TestDoor.UseAndSwing", "SpnGame.TestDoor.LoadShowsSavedState", "SpnGame.TestMap.PlayDoors", "SpnQA.Doors", "SpnQA.Buildings", "SpnQA.SaveLoad", "core:Tests/Core/DoorPersistenceTests.cpp"],
-      "gap": "Locked doors have no key model; door sound/animation are placeholders; doors vs NPCs and doors blocked by objects are not tested."
+      "tests": ["SpnGame.TestDoor.UseAndSwing", "SpnGame.TestDoor.LoadShowsSavedState", "SpnGame.TestMap.PlayDoors", "SpnQA.Doors", "SpnQA.Buildings", "SpnQA.SaveLoad", "core:Tests/Core/DoorPersistenceTests.cpp", "core:Tests/Core/DevicesTests.cpp", "core:Tests/Core/InteractionSystemTests.cpp"],
+      "gap": "Locked doors have no key model; door sound/animation are placeholders. Closing onto a player: the Core decides through a block rule, but the Unreal overlap query (ASpnTestDoor) is written without a build and NOT verified; doors vs NPCs are not tested."
     },
     {
       "id": "pickups",
@@ -89,10 +89,10 @@
       "id": "worldstate",
       "title": "World state (facts), save and load",
       "classes": ["USpnWorldStateSubsystem"],
-      "core_headers": ["WorldFacts.h"],
+      "core_headers": ["WorldFacts.h", "ObjectPersistence.h"],
       "console": ["Spn.SaveWorld", "Spn.LoadWorld"],
-      "tests": ["SpnCore.WorldFacts.SetAndRead", "SpnCore.WorldState.Initialize", "SpnCore.WorldState.SaveAndLoadSlot", "SpnCore.WorldState.SlotNames", "SpnCore.WorldState.FailedLoadKeepsState", "SpnQA.SaveLoad", "core:Tests/Core/WorldFactsTests.cpp", "core:Tests/Core/WorldFactsCompatibilityTests.cpp"],
-      "gap": "Player position/character state, a save menu, quick-save and autosave do not exist (reported as NOT_IMPLEMENTED by SpnQA.SaveLoad)."
+      "tests": ["SpnCore.WorldFacts.SetAndRead", "SpnCore.WorldState.Initialize", "SpnCore.WorldState.SaveAndLoadSlot", "SpnCore.WorldState.SlotNames", "SpnCore.WorldState.FailedLoadKeepsState", "SpnQA.SaveLoad", "core:Tests/Core/WorldFactsTests.cpp", "core:Tests/Core/WorldFactsCompatibilityTests.cpp", "core:Tests/Core/ObjectPersistenceTests.cpp"],
+      "gap": "Player position/character state, a save menu, quick-save and autosave do not exist (reported as NOT_IMPLEMENTED by SpnQA.SaveLoad). Object-state persistence (changed-state records, regions, atomic files) is Core only and not wired to USpnWorldStateSubsystem."
     },
     {
       "id": "spawn",
@@ -106,7 +106,7 @@
       "title": "Map V2 generator output, instancing and buildings",
       "classes": ["ASpnInstancedGroup"],
       "tests": ["SpnGame.MapV2.Walkthrough", "SpnGame.TestMap.Layout", "SpnGame.Movement.MapLayout", "SpnQA.Buildings", "SpnGame.MapV2Capture.Screenshots"],
-      "gap": "Window gaps, street crossings and lighting are only checked visually (screenshots/video); load time and editor viewport performance are not measured."
+      "gap": "Window gaps, street crossings and lighting are only checked visually (screenshots/video); load time and editor viewport performance are not measured. The opt-in enriched level (Lvl_SpnMovementTestV2Env, spn_env_enrichment.py) exists only as generator data and Fedora-side geometry validation; nothing of it was generated or seen in Unreal (see Docs/Development/M2A3-Environment-Visual-Checklist.md)."
     },
     {
       "id": "performance",
@@ -120,6 +120,13 @@
       "core_headers": ["Npc.h", "Appearance.h", "AppearanceEdit.h", "AppearanceGenerator.h", "AppearanceRecipe.h", "DetailTiers.h", "ContentId.h", "StrongId.h", "DeterministicRandom.h", "Result.h", "Vec.h"],
       "tests": ["core:Tests/Core/NpcTests.cpp", "core:Tests/Core/AppearanceTests.cpp", "core:Tests/Core/AppearanceEditTests.cpp", "core:Tests/Core/AppearanceGeneratorTests.cpp", "core:Tests/Core/AppearanceRecipeTests.cpp", "core:Tests/Core/DetailTierTests.cpp", "core:Tests/Core/ContentIdTests.cpp", "core:Tests/Core/StrongIdTests.cpp", "core:Tests/Core/PropertyTests.cpp", "core:Tests/Core/ResultTests.cpp"],
       "gap": "These Core modules are not integrated in the Unreal game, so there is no in-game test; the Core tests are CMake/CTest tests (Fedora) and are NOT run by the Windows QA script."
+    },
+    {
+      "id": "devices",
+      "title": "Switch, button, lever and links (Core foundation)",
+      "core_headers": ["Devices.h"],
+      "tests": ["core:Tests/Core/DevicesTests.cpp", "core:Tests/Core/InteractionSystemTests.cpp"],
+      "gap": "No Unreal actors or components exist for these devices; nothing is visible in a level. Only Core behavior is tested."
     }
   ]
 }
