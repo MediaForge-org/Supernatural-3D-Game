@@ -44,5 +44,7 @@ public class SpnCore : ModuleRules
 
 		// CoreUObject/Engine: USpnWorldStateSubsystem (a game instance subsystem).
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
+		// Json: the temporary test item catalog (Content/SpnTest/Inventory/TestItemCatalog.json) is read by USpnInventorySubsystem.
+		PrivateDependencyModuleNames.Add("Json");
 	}
 }

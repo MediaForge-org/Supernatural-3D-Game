@@ -1,4 +1,5 @@
 #include "SpnWorldStateSubsystem.h"
+#include "SpnWorldStateInternal.h"
 #include "SpnCoreModule.h"
 
 #include "Engine/GameInstance.h"
@@ -97,12 +98,6 @@ namespace
 #endif
 	}
 }
-
-struct USpnWorldStateSubsystem::FState
-{
-	spn::core::WorldFacts Facts;
-	spn::core::InteractionRegistry Registry;
-};
 
 const TCHAR* LexToString(ESpnSlotResult Result)
 {

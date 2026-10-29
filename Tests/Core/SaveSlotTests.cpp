@@ -3,8 +3,14 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <iterator>
 #include <random>
 #include <spn/core/SaveSlot.h>
+#if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+#endif
 
 #include "MapTestData.h"
 #include "SaveTestFs.h"
@@ -523,3 +529,80 @@ TEST_CASE("real filesystem: the publish primitives behave as the protocol needs 
     CHECK_FALSE(bad.AllChecksPassed());
     CHECK_FALSE(bad.notes.empty());
 }
+
+TEST_CASE("real filesystem: non-ASCII directory and file names round trip (UTF-8 paths, no ANSI code page)") {
+    TempDir dir;
+    StdSaveFileSystem fs;
+    const std::filesystem::path folder = dir.path / std::filesystem::path(u8"Spielstände 日本 Übergänge");
+    std::filesystem::create_directories(folder);
+    SaveSlotStore store(fs, folder / std::filesystem::path(u8"slot äöü.sav"));
+    REQUIRE_FALSE(store.Save(Generation(1), kSchema).has_value());
+    REQUIRE_FALSE(store.Save(Generation(2), kSchema).has_value());
+    CHECK(store.Load(kSchema).Value().slot == Generation(2));
+    CHECK(std::filesystem::exists(store.Previous()));
+    CHECK_FALSE(std::filesystem::exists(store.Temporary()));
+    CHECK(std::distance(std::filesystem::directory_iterator(folder), std::filesystem::directory_iterator()) == 2); // current + previous only
+}
+
+TEST_CASE("real filesystem: a path longer than 260 characters works") {
+    TempDir dir;
+    StdSaveFileSystem fs;
+    std::filesystem::path folder = dir.path;
+#if defined(_WIN32)
+    folder = std::filesystem::path(std::wstring(L"\\\\?\\") + std::filesystem::absolute(dir.path).wstring()); // extended-length prefix: the MAX_PATH limit does not apply
+#endif
+    std::error_code ec;
+    for (int i = 0; i < 6; ++i) { // one level at a time: the failing level is reported
+        folder /= std::string(60, static_cast<char>('a' + i));
+        std::filesystem::create_directory(folder, ec);
+        REQUIRE_MESSAGE(!ec, "cannot create level " << i << " (" << folder.string().size() << " characters): " << ec.message());
+    }
+    REQUIRE(folder.native().size() > 300);
+    SaveSlotStore store(fs, folder / "slot.sav");
+    REQUIRE_FALSE(store.Save(Generation(1), kSchema).has_value());
+    REQUIRE_FALSE(store.Save(Generation(2), kSchema).has_value());
+    CHECK(store.Load(kSchema).Value().slot == Generation(2));
+    CHECK(store.Load(kSchema).Value().source == SaveSource::Current);
+}
+
+#if defined(_WIN32)
+TEST_CASE("windows: a save file that another process keeps open without sharing is not replaced and the old generation survives") {
+    TempDir dir;
+    StdSaveFileSystem fs;
+    SaveSlotStore store(fs, dir.path / "slot.sav");
+    REQUIRE_FALSE(store.Save(Generation(1), kSchema).has_value());
+    REQUIRE_FALSE(store.Save(Generation(2), kSchema).has_value());
+    // an antivirus scanner or indexer holding the file looks like this: open with no FILE_SHARE_DELETE
+    const HANDLE held = ::CreateFileW(store.Current().c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    REQUIRE(held != INVALID_HANDLE_VALUE);
+    const auto error = store.Save(Generation(3), kSchema);
+    ::CloseHandle(held);
+    REQUIRE(error.has_value()); // the failure is reported, the caller can retry
+    CHECK(error->code == SaveErrorCode::Io);
+    CHECK(store.Load(kSchema).Value().slot == Generation(2)); // nothing was lost or half-written
+    CHECK_FALSE(std::filesystem::exists(store.Temporary()));   // the temporary file was cleaned up
+    REQUIRE_FALSE(store.Save(Generation(3), kSchema).has_value()); // once released, saving works again
+    CHECK(store.Load(kSchema).Value().slot == Generation(3));
+}
+#endif
+
+#if defined(_WIN32)
+TEST_CASE("windows: a path with an unpaired UTF-16 surrogate is reported as an error and never throws") {
+    // path::u8string() throws for such a path (MSVC); the store builds its error messages from paths, and its host (Unreal) expects no exception
+    std::wstring name = L"slot_";
+    name.push_back(static_cast<wchar_t>(0xD800));
+    const std::filesystem::path bad = std::filesystem::temp_directory_path() / name / "slot.sav";
+    StdSaveFileSystem fs;
+    SaveSlotStore store(fs, bad);
+    std::optional<SaveError> saveError;
+    CHECK_NOTHROW(saveError = store.Save(Generation(1), kSchema));
+    REQUIRE(saveError.has_value());
+    CHECK(saveError->code == SaveErrorCode::Io);
+    CHECK_FALSE(saveError->detail.empty());
+    CHECK_NOTHROW((void)fs.Read(bad));
+    CHECK_NOTHROW((void)fs.WriteSynced(bad, "x"));
+    CHECK_NOTHROW((void)fs.Rename(bad, bad));
+    CHECK_NOTHROW((void)fs.Remove(bad));
+    CHECK_NOTHROW((void)store.Load(kSchema));
+}
+#endif

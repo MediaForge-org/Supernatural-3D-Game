@@ -21,6 +21,21 @@ using namespace spn::testdata;
 
 namespace {
 
+// std::getenv is flagged by MSVC (C4996); _dupenv_s is its safe equivalent.
+std::string EnvOrEmpty(const char* name) {
+#if defined(_MSC_VER)
+    char* value = nullptr;
+    std::size_t size = 0;
+    if (_dupenv_s(&value, &size, name) != 0 || value == nullptr) return {};
+    std::string result(value);
+    std::free(value);
+    return result;
+#else
+    const char* value = std::getenv(name);
+    return value != nullptr ? std::string(value) : std::string();
+#endif
+}
+
 // Arbitrary test values, not game balance.
 struct World {
     ItemCatalog catalog;
@@ -185,7 +200,7 @@ TEST_CASE("transactions: a recorded transcript of 3000 random batches is reprodu
     CHECK(run.multiCommandRejected > 100);
     for (std::size_t t = 0; t < run.acceptedByType.size(); ++t) CHECK_MESSAGE(run.acceptedByType[t] >= 8, "command type ", t, " is exercised successfully");
     CHECK(run.rolledBackAfterProgress > 100); // the interesting case: a later command fails after earlier ones changed the state
-    if (const char* out = std::getenv("SPN_WRITE_INVENTORY_GOLDEN")) {
+    if (const std::string out = EnvOrEmpty("SPN_WRITE_INVENTORY_GOLDEN"); !out.empty()) {
         std::ofstream(out, std::ios::binary) << run.transcript; // maintenance hook: re-record deliberately, never to make a failing test pass
         return;
     }

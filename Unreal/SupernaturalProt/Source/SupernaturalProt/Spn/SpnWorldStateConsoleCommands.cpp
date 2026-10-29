@@ -1,4 +1,5 @@
 #include "SupernaturalProt.h"
+#include "SpnSaveSubsystem.h"
 #include "SpnWorldStateSubsystem.h"
 
 #include "Engine/Engine.h"
@@ -119,17 +120,71 @@ namespace
 		}
 	}
 
+	USpnSaveSubsystem* FindSave(const UWorld* World, const TCHAR* Command)
+	{
+		const UGameInstance* GameInstance = World != nullptr ? World->GetGameInstance() : nullptr;
+		USpnSaveSubsystem* Save = GameInstance != nullptr ? GameInstance->GetSubsystem<USpnSaveSubsystem>() : nullptr;
+		if (Save == nullptr)
+		{
+			UE_LOG(LogSupernaturalProt, Warning, TEXT("%s FAILED: no save subsystem in %s; run it while playing (PIE or game)"), Command, *DescribeWorld(World));
+		}
+		return Save;
+	}
+
+	void LogSaveStatus(const TCHAR* Command, const FString& Slot, const FSpnSaveStatus& Status, const UWorld* World)
+	{
+		if (Status.IsOk())
+		{
+			UE_LOG(LogSupernaturalProt, Display, TEXT("%s OK: slot '%s', facts revision %llu, %s%s, file %s, in %s"), Command, *Slot,
+				static_cast<unsigned long long>(Status.FactsRevision),
+				Status.Source == ESpnSaveSource::Previous ? TEXT("RECOVERED from the previous generation") : TEXT("current generation"),
+				Status.Source == ESpnSaveSource::Previous ? *FString::Printf(TEXT(" (main file: %s)"), *Status.CurrentProblem) : TEXT(""), *Status.Path,
+				*DescribeWorld(World));
+		}
+		else
+		{
+			UE_LOG(LogSupernaturalProt, Warning, TEXT("%s FAILED: slot '%s': %s: %s, in %s; nothing changed"), Command, *Slot, LexToString(Status.Result), *Status.Detail,
+				*DescribeWorld(World));
+		}
+	}
+
+	void SaveGame(const TArray<FString>& Args, UWorld* World)
+	{
+		if (USpnSaveSubsystem* Save = FindSave(World, TEXT("Spn.SaveGame")))
+		{
+			const FString Slot = SlotFromArgs(Args);
+			LogSaveStatus(TEXT("Spn.SaveGame"), Slot, Save->SaveSlot(Slot), World);
+		}
+	}
+
+	void LoadGame(const TArray<FString>& Args, UWorld* World)
+	{
+		if (USpnSaveSubsystem* Save = FindSave(World, TEXT("Spn.LoadGame")))
+		{
+			const FString Slot = SlotFromArgs(Args);
+			LogSaveStatus(TEXT("Spn.LoadGame"), Slot, Save->LoadSlot(Slot), World);
+		}
+	}
+
 	FAutoConsoleCommandWithWorldAndArgs InventoryCommand(TEXT("Spn.Inventory"),
 		TEXT("PLACEHOLDER debug: print the item counts of a holder. Usage: Spn.Inventory [holder] (default: player.local)"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&ListInventory));
 
 	FAutoConsoleCommandWithWorldAndArgs SaveWorldCommand(TEXT("Spn.SaveWorld"),
-		TEXT("PLACEHOLDER debug: save the world state. Usage: Spn.SaveWorld [slot] (default slot: debug)"),
+		TEXT("PLACEHOLDER debug (legacy worldfacts.spnfacts file; kept until Spn.SaveGame is validated). Usage: Spn.SaveWorld [slot] (default slot: debug)"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&SaveWorld));
 
 	FAutoConsoleCommandWithWorldAndArgs LoadWorldCommand(TEXT("Spn.LoadWorld"),
 		TEXT("PLACEHOLDER debug: replace the world state with a saved slot. Usage: Spn.LoadWorld [slot] (default slot: debug)"),
 		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&LoadWorld));
+
+	FAutoConsoleCommandWithWorldAndArgs SaveGameCommand(TEXT("Spn.SaveGame"),
+		TEXT("Save the game state (WorldFacts) with the unified, checksummed save slot (USpnSaveSubsystem). Usage: Spn.SaveGame [slot] (default slot: debug). Saved/SpnSaves/<slot>/game.spnsave"),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&SaveGame));
+
+	FAutoConsoleCommandWithWorldAndArgs LoadGameCommand(TEXT("Spn.LoadGame"),
+		TEXT("Load a slot written by Spn.SaveGame; falls back to the previous generation if the main file is damaged. Usage: Spn.LoadGame [slot] (default slot: debug)"),
+		FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&LoadGame));
 }
 
 #endif

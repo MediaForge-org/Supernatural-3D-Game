@@ -133,7 +133,7 @@
       "title": "World map domain: layers, regions, points of interest, markers, discovery, spatial queries (Core foundation, M2B1)",
       "core_headers": ["WorldMap.h", "SpatialGrid.h"],
       "tests": ["core:Tests/Core/MapTests.cpp"],
-      "gap": "Not integrated in the Unreal game: no map data (the world geometry will come from SPN WorldForge), no UI and no save-game wiring; only Core behavior is tested on Fedora and is NOT run by the Windows QA script."
+      "gap": "Not integrated in the Unreal game: no map data (the world geometry will come from SPN WorldForge), no UI and no save-game wiring. M2B3.3 added WorldMapState::Revision() (tested in Core, not saved, used by the snapshot guard) as preparation for the map save integration."
     },
     {
       "id": "map.minimap",
@@ -144,10 +144,12 @@
     },
     {
       "id": "inventory.foundation",
-      "title": "Inventory domain: item definitions, stacks, containers, capacity, equipment slots, transactions (Core foundation, M2B1)",
+      "title": "Inventory domain: item definitions, stacks, containers, capacity, equipment slots, transactions (Core foundation, M2B1) and its Unreal integration USpnInventorySubsystem with a temporary data-driven test catalog and developer commands (M2B3.3)",
       "core_headers": ["Inventory.h"],
-      "tests": ["core:Tests/Core/InventoryTests.cpp", "core:Tests/Core/InventoryTxTests.cpp"],
-      "gap": "Not integrated in the Unreal game and not connected to the placeholder pickup counts (Pickup.h); no item data, no UI. Transactions use an undo log (M2B2). Only Core behavior is tested."
+      "classes": ["USpnInventorySubsystem"],
+      "console": ["Spn.Inv.Setup", "Spn.Inv.Catalog", "Spn.Inv.List", "Spn.Inv.Create", "Spn.Inv.Add", "Spn.Inv.Remove", "Spn.Inv.Transfer", "Spn.Inv.Equip", "Spn.Inv.Unequip", "Spn.Inv.Last", "Spn.Inv.Reset"],
+      "tests": ["core:Tests/Core/InventoryTests.cpp", "core:Tests/Core/InventoryTxTests.cpp", "SpnCore.Inventory.Initialize", "SpnCore.Inventory.CatalogRegistration", "SpnCore.Inventory.AddRemoveAndStacks", "SpnCore.Inventory.UniqueInstancesAndState", "SpnCore.Inventory.CapacityLimits", "SpnCore.Inventory.Equipment", "SpnCore.Inventory.TransfersAndRollback", "SpnCore.Inventory.InvalidOperations", "SpnCore.Inventory.Notifications", "SpnCore.Inventory.SaveLoadRoundTrip", "SpnCore.Inventory.FactsAndInventoryTogether", "SpnCore.Inventory.CorruptInventoryPayload", "SpnCore.Inventory.MissingInventorySection", "SpnCore.Inventory.UnknownAndUnsupportedSections", "SpnCore.Inventory.PreviousGenerationWithInventory", "SpnCore.Inventory.RepeatedSaveLoadCycles", "SpnCore.Inventory.CallbacksCannotReenterSaveOrLoad"],
+      "gap": "M2B3.3: usable in a game session through developer commands only; no UI, no pickup/drop actors, no item content (the 6 test items and 3 container presets in Content/SpnTest/Inventory/TestItemCatalog.json are temporary test data), and the placeholder pickup counts in WorldFacts (Pickup.h) are still separate. The catalog is a JSON file, not yet a packaged data asset. Replication/host authority is not modelled. Saved through USpnSaveSubsystem as player.inventory."
     },
     {
       "id": "navigation.foundation",
@@ -160,15 +162,17 @@
       "id": "coordinates.world_frame",
       "title": "Canonical world coordinates and adapters: metres/east-north-up, Unreal centimetre axis presets, local frames, map and minimap (Core foundation, M2B2)",
       "core_headers": ["Coordinates.h"],
-      "tests": ["core:Tests/Core/CoordinateTests.cpp"],
-      "gap": "The Unreal axis mapping is a PROPOSAL (master: open, WF-DC01 / CQ-101) and has never been run in Unreal or checked against WorldForge output; no Unreal adapter code uses it yet. Only Core behavior is tested."
+      "tests": ["core:Tests/Core/CoordinateTests.cpp", "SpnCore.WorldFrame.KnownValues", "SpnCore.WorldFrame.RoundTrip", "SpnCore.WorldFrame.RejectsInvalid", "SpnCore.WorldFrame.EngineDirections", "SpnCore.WorldFrame.TestMapLocations"],
+      "gap": "Axis preset is a PROPOSAL (master: open, WF-DC01 / CQ-101). M2B3.1 added a thin Unreal adapter (SpnWorldFrame) verified in the engine for yaw/axis directions and two test-map locations; no gameplay system uses it yet and it has not been checked against WorldForge output."
     },
     {
       "id": "persistence.save_slot",
-      "title": "Unified save slot: versioned sections, checksums, atomic publication with previous generation, game-state adapters (Core foundation, M2B2)",
+      "title": "Unified save slot: versioned sections, checksums, atomic publication with previous generation, game-state adapters (Core foundation, M2B2) and its Unreal integration USpnSaveSubsystem for WorldFacts (M2B3.2)",
       "core_headers": ["SaveSlot.h", "SaveStore.h", "GameSave.h"],
-      "tests": ["core:Tests/Core/SaveSlotTests.cpp", "core:Tests/Core/GameSaveTests.cpp"],
-      "gap": "Not wired into the Unreal game (the game still uses its own save console commands); the Windows file-flush path is written but unverified; crash safety is tested by fault injection only, never against a real power loss. Only Core behavior is tested."
+      "classes": ["USpnSaveSubsystem"],
+      "console": ["Spn.SaveGame", "Spn.LoadGame"],
+      "tests": ["core:Tests/Core/SaveSlotTests.cpp", "core:Tests/Core/GameSaveTests.cpp", "SpnCore.SaveSubsystem.Initialize", "SpnCore.SaveSubsystem.InvalidSlotsAndDirectories", "SpnCore.SaveSubsystem.SaveCreatesFile", "SpnCore.SaveSubsystem.WorldFactsRoundTrip", "SpnCore.SaveSubsystem.RepeatedCycles", "SpnCore.SaveSubsystem.MissingSave", "SpnCore.SaveSubsystem.CorruptSave", "SpnCore.SaveSubsystem.UnsupportedVersions", "SpnCore.SaveSubsystem.RejectedContent", "SpnCore.SaveSubsystem.PreviousGenerationRecovery", "SpnCore.SaveSubsystem.UnknownSectionsArePreserved", "SpnCore.SaveSubsystem.SectionsWithoutOwnerAreNeverDropped"],
+      "gap": "M2B3.2/3: WorldFacts and (while the inventory has a catalog) player.inventory are saved through the Unreal subsystem (Spn.SaveGame / Spn.LoadGame; the legacy Spn.SaveWorld / Spn.LoadWorld file is kept). Map and object sections have no Unreal owner: slots holding them are refused, never partially loaded. WorldMapState now has a revision, but the map is not integrated, so no cross-system snapshot consistency is claimed beyond facts + inventory. Power-loss durability is unverified (process-kill and fault-injection tests only); the Windows directory flush is a no-op."
     }
   ]
 }

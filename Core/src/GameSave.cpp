@@ -57,6 +57,7 @@ Result<SaveSlot, SaveError> CaptureGameSave(const GameSaveSources& src, const Sa
 
     const std::uint64_t factsBefore = src.facts->Revision();
     const std::optional<std::uint64_t> inventoryBefore = src.inventory ? std::optional<std::uint64_t>(src.inventory->Revision()) : std::nullopt;
+    const std::optional<std::uint64_t> mapBefore = src.map ? std::optional<std::uint64_t>(src.map->Revision()) : std::nullopt;
 
     SaveSlot slot;
     const auto add = [&](std::string_view id, bool required, std::string payload) -> std::optional<SaveError> {
@@ -74,7 +75,7 @@ Result<SaveSlot, SaveError> CaptureGameSave(const GameSaveSources& src, const Sa
     }
     if (auto e = add(kSectionMeta, false, Meta(factsBefore, inventoryBefore))) return *e;
 
-    if (src.facts->Revision() != factsBefore || (src.inventory && src.inventory->Revision() != *inventoryBefore))
+    if (src.facts->Revision() != factsBefore || (src.inventory && src.inventory->Revision() != *inventoryBefore) || (src.map && src.map->Revision() != *mapBefore))
         return Err(SaveErrorCode::ConsistencyMismatch, "state changed while the snapshot was being taken");
 
     if (previous != nullptr) {

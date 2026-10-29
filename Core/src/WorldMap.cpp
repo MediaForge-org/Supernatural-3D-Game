@@ -286,6 +286,7 @@ Result<MarkerId, MapError> WorldMapState::AddMarker(MarkerSpec spec) {
     Index(marker);
     playerMarkers_ += marker.origin == MarkerOrigin::Player ? 1U : 0U;
     markers_.emplace(marker.id.Value(), std::move(marker));
+    ++revision_;
     return MarkerId(nextMarker_ - 1);
 }
 
@@ -306,6 +307,7 @@ std::optional<MapError> WorldMapState::RemoveMarker(MarkerId id) {
     markerGrids_.at(it->second.position.layer.Value()).grid.Remove(id.Value());
     playerMarkers_ -= it->second.origin == MarkerOrigin::Player ? 1U : 0U;
     markers_.erase(it);
+    ++revision_;
     return std::nullopt;
 }
 
@@ -323,6 +325,7 @@ std::optional<MapError> WorldMapState::MoveMarker(MarkerId id, MapPosition posit
     markerGrids_.at(marker.position.layer.Value()).grid.Remove(id.Value());
     marker.position = position;
     Index(marker);
+    ++revision_;
     return std::nullopt;
 }
 
@@ -331,6 +334,7 @@ std::optional<MapError> WorldMapState::SetMarkerVisible(MarkerId id, bool visibl
     if (it == markers_.end()) {
         return Err(MapErrorCode::UnknownMarker);
     }
+    if (it->second.visible != visible) ++revision_;
     it->second.visible = visible;
     return std::nullopt;
 }
@@ -371,6 +375,7 @@ Result<bool, MapError> WorldMapState::Discover(const ContentId& id, DiscoverySta
         return false;
     }
     discovery_[id] = state;
+    ++revision_;
     return true;
 }
 

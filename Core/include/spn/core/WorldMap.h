@@ -254,6 +254,12 @@ public:
     [[nodiscard]] static Result<WorldMapState, MapError> Deserialize(std::string_view text, std::shared_ptr<const WorldMapDefinition> definition,
                                                                       MapStateConfig config = {});
 
+    /// Number of successful mutations of this object since it was created or deserialized (marker added, removed, moved, shown/hidden;
+    /// discovery raised; temporary markers and pruning count too). Never decreases, is NOT part of the saved format (Deserialize starts at 0)
+    /// and does not take part in SameSavedState. It exists so that a snapshot can detect that the map changed while it was being taken
+    /// (CaptureGameSave), exactly like WorldFacts::Revision() and InventoryState::Revision().
+    [[nodiscard]] std::uint64_t Revision() const noexcept { return revision_; }
+
     /// Compares saveable state (persistent markers, counter, discovery); runtime-only temporary markers are ignored.
     [[nodiscard]] bool SameSavedState(const WorldMapState& other) const;
 
@@ -272,6 +278,7 @@ private:
     MapStateConfig config_;
     std::uint64_t nextMarker_ = 1;
     std::size_t playerMarkers_ = 0;
+    std::uint64_t revision_ = 0;
     std::map<std::uint64_t, Marker> markers_;
     std::unordered_map<std::uint32_t, LayerIndex> markerGrids_;
     std::map<ContentId, DiscoveryState> discovery_; // only non-Undiscovered entries

@@ -6,6 +6,9 @@
 #include <system_error>
 
 #if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
 #include <io.h>
 #else
 #include <fcntl.h>
@@ -21,6 +24,24 @@ namespace {
 
 SaveError Io(std::string detail) { return SaveError{SaveErrorCode::Io, std::move(detail)}; }
 
+// Paths in messages: UTF-8, never the ANSI code page. path::u8string() throws std::system_error on Windows for a path holding an unpaired
+// UTF-16 surrogate (verified with MSVC 19.51); an error message must never turn one failure into an exception that crosses into the host
+// (Unreal calls this code with exceptions enabled but expects none), so the conversion is guarded.
+std::string Display(const std::filesystem::path& p) {
+    try {
+        const std::u8string u = p.generic_u8string();
+        return std::string(u.begin(), u.end());
+    } catch (...) {
+        return "<path that is not valid Unicode>";
+    }
+}
+
+// base + suffix as a path, without a narrow-string round trip (keeps non-ASCII and long Windows paths intact).
+std::filesystem::path Suffixed(std::filesystem::path base, const char* suffix) {
+    base += suffix;
+    return base;
+}
+
 bool IsNewerThanThisBuild(SaveErrorCode code) {
     return code == SaveErrorCode::UnsupportedContainerVersion || code == SaveErrorCode::UnsupportedSectionVersion ||
            code == SaveErrorCode::UnsupportedRequiredSection;
@@ -31,39 +52,57 @@ bool IsNewerThanThisBuild(SaveErrorCode code) {
 // --- StdSaveFileSystem ---
 
 std::optional<SaveError> StdSaveFileSystem::WriteSynced(const std::filesystem::path& path, std::string_view bytes) {
+#if defined(_WIN32)
+    std::FILE* f = nullptr;
+    if (_wfopen_s(&f, path.c_str(), L"wb") != 0) f = nullptr; // wide path: non-ASCII and \?\ long paths work
+#else
     std::FILE* f = std::fopen(path.string().c_str(), "wb");
-    if (f == nullptr) return Io("cannot create " + path.string());
+#endif
+    if (f == nullptr) return Io("cannot create " + Display(path));
     bool ok = bytes.empty() || std::fwrite(bytes.data(), 1, bytes.size(), f) == bytes.size();
     ok = ok && std::fflush(f) == 0;
 #if defined(_WIN32)
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
     ok = ok && _commit(_fileno(f)) == 0;
 #else
     ok = ok && ::fsync(::fileno(f)) == 0;
 #endif
     const bool closed = std::fclose(f) == 0;
-    if (!ok || !closed) return Io("write or flush failed: " + path.string());
+    if (!ok || !closed) return Io("write or flush failed: " + Display(path));
     return std::nullopt;
 }
 
 Result<std::string, SaveError> StdSaveFileSystem::Read(const std::filesystem::path& path) {
     std::ifstream in(path, std::ios::binary);
-    if (!in) return Io("cannot open " + path.string());
+    if (!in) return Io("cannot open " + Display(path));
     std::string data((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-    if (in.bad()) return Io("read failed: " + path.string());
+    if (in.bad()) return Io("read failed: " + Display(path));
     return data;
 }
 
 std::optional<SaveError> StdSaveFileSystem::Rename(const std::filesystem::path& from, const std::filesystem::path& to) {
+#if defined(_WIN32)
+    // MoveFileExW: replaces an existing destination and does not return before the move is written through to disk
+    // (MOVEFILE_WRITE_THROUGH). The documented limits (antivirus/indexer holding the destination open) surface as an error, never as a partial file.
+    if (!::MoveFileExW(from.c_str(), to.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH)) {
+        const std::error_code ec(static_cast<int>(::GetLastError()), std::system_category());
+        return Io("rename " + Display(from) + " -> " + Display(to) + ": " + ec.message());
+    }
+    return std::nullopt;
+#else
     std::error_code ec;
     std::filesystem::rename(from, to, ec);
-    if (ec) return Io("rename " + from.string() + " -> " + to.string() + ": " + ec.message());
+    if (ec) return Io("rename " + Display(from) + " -> " + Display(to) + ": " + ec.message());
     return std::nullopt;
+#endif
 }
 
 std::optional<SaveError> StdSaveFileSystem::Remove(const std::filesystem::path& path) {
     std::error_code ec;
     std::filesystem::remove(path, ec);
-    if (ec) return Io("remove " + path.string() + ": " + ec.message());
+    if (ec) return Io("remove " + Display(path) + ": " + ec.message());
     return std::nullopt;
 }
 
@@ -74,14 +113,17 @@ bool StdSaveFileSystem::Exists(const std::filesystem::path& path) {
 
 std::optional<SaveError> StdSaveFileSystem::SyncDirectory(const std::filesystem::path& directory) {
 #if defined(_WIN32)
-    (void)directory; // no portable equivalent; MoveFileEx(WRITE_THROUGH) would be the platform route. Documented limitation, unverified.
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+    (void)directory; // Windows has no directory fsync; Rename() uses MoveFileExW(MOVEFILE_WRITE_THROUGH) instead. Durability across power loss is unverified (see Docs/M2B3/SAVE_WINDOWS_VALIDATION.md).
     return std::nullopt;
 #else
     const int fd = ::open(directory.string().c_str(), O_RDONLY | O_DIRECTORY);
-    if (fd < 0) return Io("cannot open directory " + directory.string());
+    if (fd < 0) return Io("cannot open directory " + Display(directory));
     const bool ok = ::fsync(fd) == 0;
     ::close(fd);
-    if (!ok) return Io("directory sync failed: " + directory.string());
+    if (!ok) return Io("directory sync failed: " + Display(directory));
     return std::nullopt;
 #endif
 }
@@ -89,8 +131,8 @@ std::optional<SaveError> StdSaveFileSystem::SyncDirectory(const std::filesystem:
 // --- SaveSlotStore ---
 
 SaveSlotStore::SaveSlotStore(SaveFileSystem& fs, std::filesystem::path basePath)
-    : fs_(&fs), current_(std::move(basePath)), previous_(current_.string() + ".prev"), temporary_(current_.string() + ".tmp"),
-      previousTemporary_(current_.string() + ".prev.tmp") {}
+    : fs_(&fs), current_(std::move(basePath)), previous_(Suffixed(current_, ".prev")), temporary_(Suffixed(current_, ".tmp")),
+      previousTemporary_(Suffixed(current_, ".prev.tmp")) {}
 
 std::optional<SaveError> SaveSlotStore::Save(const SaveSlot& slot, const SaveSchema& schema) {
     if (const auto e = slot.Validate(schema)) return *e;
@@ -105,7 +147,7 @@ std::optional<SaveError> SaveSlotStore::Save(const SaveSlot& slot, const SaveSch
     const auto back = fs_->Read(temporary_);
     if (!back || back.Value() != text) {
         (void)fs_->Remove(temporary_);
-        return SaveError{SaveErrorCode::VerifyFailed, "read-back of " + temporary_.string() + " differs"};
+        return SaveError{SaveErrorCode::VerifyFailed, "read-back of " + Display(temporary_) + " differs"};
     }
 
     // 2. keep the previous GOOD generation
@@ -182,6 +224,17 @@ std::string DescribeFilesystem(const std::filesystem::path& path) {
     case 0x9123683Eul: return std::string(buf) + " (btrfs)";
     default: return buf;
     }
+#elif defined(_WIN32)
+    wchar_t volume[MAX_PATH + 1] = {};
+    std::error_code ec;
+    const std::filesystem::path absolute = std::filesystem::absolute(path, ec);
+    if (ec || !::GetVolumePathNameW(absolute.c_str(), volume, MAX_PATH)) return {};
+    wchar_t name[MAX_PATH + 1] = {};
+    DWORD flags = 0;
+    if (!::GetVolumeInformationW(volume, nullptr, 0, nullptr, nullptr, &flags, name, MAX_PATH)) return {};
+    const UINT type = ::GetDriveTypeW(volume);
+    const char* kind = type == DRIVE_FIXED ? "fixed" : type == DRIVE_REMOVABLE ? "removable" : type == DRIVE_REMOTE ? "network" : type == DRIVE_RAMDISK ? "RAM disk" : "other";
+    return Display(name) + " on " + Display(volume) + " (" + kind + " drive)";
 #else
     (void)path;
     return {};

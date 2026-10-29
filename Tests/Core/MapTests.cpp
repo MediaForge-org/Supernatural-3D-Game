@@ -642,3 +642,77 @@ TEST_CASE("WorldMapState persistence: frozen version-1 text still loads and re-s
     CHECK(map.FindMarker(MarkerId(2))->label.empty());
     CHECK(map.Serialize() == golden);
 }
+
+// --- Revision (M2B3.3) ----------------------------------------------------------------------------------------------------------
+
+TEST_CASE("WorldMapState revision: every successful mutation increments it, failures and no-ops do not, it is not saved") {
+    WorldMapState map(MakeTestDefinition());
+    std::uint64_t last = map.Revision();
+    CHECK(last == 0);
+    const auto grew = [&](const char* what) {
+        INFO(what);
+        const bool ok = map.Revision() > last;
+        last = map.Revision();
+        return ok;
+    };
+    const auto same = [&](const char* what) {
+        INFO(what);
+        const bool ok = map.Revision() == last;
+        last = map.Revision();
+        return ok;
+    };
+
+    const MarkerId a = map.AddPlayerWaypoint(At(kSurface, 10, 10)).Value();
+    CHECK(grew("AddMarker"));
+    MarkerSpec temp = Spec(At(kSurface, 7, 7));
+    temp.persistence = MarkerPersistence::Temporary;
+    temp.expiresAt = 5.0;
+    const MarkerId t = map.AddMarker(temp).Value();
+    CHECK(grew("AddMarker (temporary)"));
+    CHECK_FALSE(map.MoveMarker(a, At(kSurface, 11, 11)).has_value());
+    CHECK(grew("MoveMarker"));
+    CHECK_FALSE(map.SetMarkerVisible(a, false).has_value());
+    CHECK(grew("SetMarkerVisible (changed)"));
+    CHECK_FALSE(map.SetMarkerVisible(a, false).has_value());
+    CHECK(same("SetMarkerVisible (same value)"));
+    CHECK(map.Discover(Cid("test:poi.shop"), DiscoveryState::Known).Value());
+    CHECK(grew("Discover (raised)"));
+    CHECK_FALSE(map.Discover(Cid("test:poi.shop"), DiscoveryState::Known).Value());
+    CHECK(same("Discover (not raised)"));
+    CHECK(map.DiscoverPoisAround(At(kSurface, 0, 0), 150) > 0);
+    CHECK(grew("DiscoverPoisAround"));
+    CHECK(map.DiscoverPoisAround(At(kSurface, 0, 0), 150) == 0);
+    CHECK(same("DiscoverPoisAround (nothing new)"));
+    CHECK(map.DiscoverRegionsAt(At(kSurface, -3000, 0)) > 0);
+    CHECK(grew("DiscoverRegionsAt"));
+    CHECK(map.PruneExpired(1.0) == 0);
+    CHECK(same("PruneExpired (nothing expired)"));
+    CHECK(map.PruneExpired(10.0) == 1);
+    CHECK(grew("PruneExpired (removed)"));
+    CHECK(map.FindMarker(t) == nullptr);
+    CHECK_FALSE(map.RemoveMarker(a).has_value());
+    CHECK(grew("RemoveMarker"));
+
+    // failures change nothing
+    CHECK(map.RemoveMarker(a)->code == MapErrorCode::UnknownMarker);
+    CHECK(same("RemoveMarker (unknown)"));
+    CHECK_FALSE(map.AddMarker(Spec(At(77, 0, 0))).HasValue());
+    CHECK(same("AddMarker (invalid)"));
+    CHECK(map.MoveMarker(a, At(kSurface, 1, 1))->code == MapErrorCode::UnknownMarker);
+    CHECK(same("MoveMarker (unknown)"));
+    CHECK_FALSE(map.Discover(Cid("test:poi.nope"), DiscoveryState::Known).HasValue());
+    CHECK(same("Discover (unknown entry)"));
+    CHECK(map.QueryRadius(At(kSurface, 0, 0), 100).HasValue());
+    CHECK(same("queries are read-only"));
+
+    // the revision is neither saved nor part of the saved-state comparison
+    const WorldMapState populated = PopulatedState();
+    CHECK(populated.Revision() > 0);
+    const std::string text = populated.Serialize();
+    CHECK(text.find("revision") == std::string::npos);
+    auto loaded = WorldMapState::Deserialize(text, MakeTestDefinition());
+    REQUIRE(loaded.HasValue());
+    CHECK(loaded.Value().Revision() == 0);
+    CHECK(loaded.Value().SameSavedState(populated));
+    CHECK(loaded.Value().Serialize() == text);
+}

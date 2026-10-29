@@ -20,8 +20,16 @@ constexpr std::array<std::string_view, 33> kErrorNames{
     "MalformedLine", "InvalidToken", "CountMismatch", "Inconsistent"};
 static_assert(static_cast<std::size_t>(InventoryErrorCode::Inconsistent) == 32, "update kErrorNames when InventoryErrorCode changes");
 
-bool CheckedAdd(std::uint64_t a, std::uint64_t b, std::uint64_t& out) { return !__builtin_add_overflow(a, b, &out); }
-bool CheckedMul(std::uint64_t a, std::uint64_t b, std::uint64_t& out) { return !__builtin_mul_overflow(a, b, &out); }
+// Portable (no compiler builtins): unsigned wrap-around is defined, so the sum is smaller than an operand exactly when it overflowed.
+bool CheckedAdd(std::uint64_t a, std::uint64_t b, std::uint64_t& out) {
+    out = a + b;
+    return out >= a;
+}
+bool CheckedMul(std::uint64_t a, std::uint64_t b, std::uint64_t& out) {
+    if (a != 0 && b > std::numeric_limits<std::uint64_t>::max() / a) return false;
+    out = a * b;
+    return true;
+}
 
 bool ValidState(const FieldMap& state) {
     if (state.size() > kMaxItemStateFields) {

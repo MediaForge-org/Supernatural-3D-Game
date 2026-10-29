@@ -17,7 +17,8 @@
 // the live state; all sections are therefore taken at the same instant PROVIDED the caller does not modify the state concurrently (the Core
 // is single-threaded; a multi-threaded host must capture on the game thread). As a guard it compares the facts/inventory revision before
 // and after serialization and reports ConsistencyMismatch if something changed in between (e.g. an event listener that mutated state).
-// The map has no revision counter, so the guard does not cover it.
+// The map has a revision counter too (WorldMapState::Revision, not saved), so the guard covers facts, inventory and map; the map revision is
+// not written to slot.meta (the format is unchanged), so a LOADED slot cannot be checked for map-vs-facts consistency.
 //
 // LOADING is two-phase: ParseGameSave builds NEW objects from the slot and changes nothing live; the caller swaps them in only on success.
 

@@ -29,6 +29,8 @@ enum class ESpnSlotResult : uint8
 
 SPNCORE_API const TCHAR* LexToString(ESpnSlotResult Result);
 
+class USpnSaveSubsystem;
+
 struct FSpnSlotStatus
 {
 	ESpnSlotResult Result = ESpnSlotResult::Ok;
@@ -166,6 +168,9 @@ public:
 	FSimpleMulticastDelegate OnWorldStateReplaced;
 
 private:
+	/** USpnSaveSubsystem captures and replaces the Core state directly (Private/SpnWorldStateInternal.h). */
+	friend class USpnSaveSubsystem;
+
 	/** Owning game instance name for logs, so separate instances (PIE sessions, tests) can be told apart. */
 	FString DescribeOwner() const;
 

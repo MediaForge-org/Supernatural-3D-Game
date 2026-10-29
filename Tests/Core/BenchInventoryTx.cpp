@@ -12,6 +12,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <malloc.h>
+
+#if defined(_WIN32)
+#define SPN_USABLE_SIZE(p) _msize(p)
+#else
+#define SPN_USABLE_SIZE(p) malloc_usable_size(p)
+#endif
 #include <new>
 #include <spn/core/ContentId.h>
 #include <spn/core/Inventory.h>
@@ -28,13 +34,13 @@ void* operator new(std::size_t n) {
     void* p = std::malloc(n);
     if (p == nullptr) throw std::bad_alloc();
     ++g_allocs;
-    g_live += malloc_usable_size(p);
+    g_live += SPN_USABLE_SIZE(p);
     if (g_live > g_peak) g_peak = g_live;
     return p;
 }
 void operator delete(void* p) noexcept {
     if (p == nullptr) return;
-    g_live -= malloc_usable_size(p);
+    g_live -= SPN_USABLE_SIZE(p);
     std::free(p);
 }
 void operator delete(void* p, std::size_t) noexcept { operator delete(p); }

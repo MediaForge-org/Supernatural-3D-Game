@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "test_data": true,
+  "description": "TEMPORARY TEST DATA for the inventory integration tests (M2B3.3). Not game content: every item, name and number below is arbitrary and exists only to exercise stacks, unique instances, weight, volume, equipment slots and container limits. Replace with real data later.",
+  "items": [
+    { "id": "spn_test:item.ration",     "category": "spn_test:cat.consumable", "max_stack": 5,  "weight_g": 200,   "volume_ml": 300 },
+    { "id": "spn_test:item.bandage",    "category": "spn_test:cat.consumable", "max_stack": 10, "weight_g": 50,    "volume_ml": 80 },
+    { "id": "spn_test:item.flashlight", "category": "spn_test:cat.tool",       "max_stack": 1,  "weight_g": 400,   "volume_ml": 250,   "equip_slots": ["spn_test:slot.hand"] },
+    { "id": "spn_test:item.notebook",   "category": "spn_test:cat.tool",       "max_stack": 1,  "weight_g": 150,   "volume_ml": 120 },
+    { "id": "spn_test:item.coat",       "category": "spn_test:cat.clothing",   "max_stack": 1,  "weight_g": 1200,  "volume_ml": 4000,  "equip_slots": ["spn_test:slot.torso"] },
+    { "id": "spn_test:item.crate",      "category": "spn_test:cat.bulky",      "max_stack": 1,  "weight_g": 15000, "volume_ml": 60000 }
+  ],
+  "container_presets": [
+    { "id": "spn_test:preset.body",      "kind": "spn_test:container.body",  "max_stacks": 8,  "max_weight_g": 20000, "max_volume_ml": 30000, "equip_slots": ["spn_test:slot.hand", "spn_test:slot.torso"] },
+    { "id": "spn_test:preset.small_box", "kind": "spn_test:container.box",   "max_stacks": 3,  "max_weight_g": 1000,  "max_volume_ml": 1500,  "allowed_categories": ["spn_test:cat.consumable", "spn_test:cat.tool"] },
+    { "id": "spn_test:preset.trunk",     "kind": "spn_test:container.trunk", "max_stacks": 20, "max_weight_g": 80000, "max_volume_ml": 200000 }
+  ]
+}

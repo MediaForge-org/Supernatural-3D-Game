@@ -62,3 +62,10 @@ target_link_libraries(spn_core_save_probe PRIVATE spn::core spn_build_options)
 # Hand-run: inventory transaction latency / allocations before vs after an implementation change (Release build).
 add_executable(spn_core_bench_inventory_tx BenchInventoryTx.cpp)
 target_link_libraries(spn_core_bench_inventory_tx PRIVATE spn::core spn_build_options)
+
+# Hand-run (Windows only): spn_core_save_kill_test run <dir> [iterations] [seed] [maxDelayMs] terminates a saving child process at random
+# moments and checks what can be loaded afterwards. Not registered with CTest (it is slow and uses real files).
+if(WIN32)
+    add_executable(spn_core_save_kill_test SaveKillTest.cpp)
+    target_link_libraries(spn_core_save_kill_test PRIVATE spn::core spn_build_options)
+endif()
