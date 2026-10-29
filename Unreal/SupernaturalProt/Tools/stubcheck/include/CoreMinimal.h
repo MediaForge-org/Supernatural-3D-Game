@@ -77,6 +77,8 @@ struct FVector2D
 	double X = 0.0, Y = 0.0;
 	FVector2D() = default;
 	FVector2D(double x, double y) : X(x), Y(y) {}
+	bool IsNearlyZero() const { return std::fabs(X) < 1e-4 && std::fabs(Y) < 1e-4; }
+	FVector2D GetSafeNormal() const { const double s = std::sqrt(X * X + Y * Y); return s > 1e-8 ? FVector2D(X / s, Y / s) : FVector2D(); }
 	static const FVector2D ZeroVector;
 };
 inline const FVector2D FVector2D::ZeroVector{};
@@ -94,6 +96,7 @@ struct FVector
 	static const FVector ZeroVector;
 };
 inline const FVector FVector::ZeroVector{};
+struct FHitResult {};
 struct FBox { bool IsInside(const FVector&) const { return true; } };
 struct FRotator
 {
@@ -145,6 +148,10 @@ public:
 	UWorld* GetWorld() const { return nullptr; }
 };
 
+// M2A4 additions (stand-ins for engine members the steering/slope code uses; same caveat: what the author believes the engine has).
+constexpr float MIN_TICK_TIME = 1e-6f;
+struct FRootMotionSourceGroup { bool HasOverrideVelocity() const { return false; } };
+
 enum EMovementMode { MOVE_None, MOVE_Walking, MOVE_NavWalking, MOVE_Falling, MOVE_Swimming, MOVE_Flying, MOVE_Custom };
 
 class FNetworkPredictionData_Client { public: virtual ~FNetworkPredictionData_Client() = default; };
@@ -181,6 +188,9 @@ public:
 	float MaxWalkSpeedCrouched = 300.f, BrakingFriction = 0.f, GroundFriction = 8.f, MaxStepHeight = 45.f, AirControl = 0.05f;
 	float JumpZVelocity = 420.f, MinAnalogWalkSpeed = 0.f;
 	bool bUseSeparateBrakingFriction = false, bOrientRotationToMovement = false;
+	float PerchRadiusThreshold = 0.f;
+	bool bUseFlatBaseForFloorChecks = false, bHasRequestedVelocity = false;
+	FRootMotionSourceGroup CurrentRootMotion;
 	FRotator RotationRate;
 	class FNetworkPredictionData_Client_Character* ClientPredictionData = nullptr;
 	virtual float GetMaxSpeed() const { return MaxWalkSpeed; }
@@ -190,6 +200,11 @@ public:
 	virtual void UpdateFromCompressedFlags(uint8) {}
 	virtual bool ClientUpdatePositionAfterServerUpdate() { return false; }
 	virtual void OnMovementModeChanged(EMovementMode, uint8) {}
+	virtual void CalcVelocity(float, float, bool, float) {}
+	virtual FVector ComputeSlideVector(const FVector& Delta, const float, const FVector&, const FHitResult&) const { return Delta; }
+	virtual FVector HandleSlopeBoosting(const FVector& SlideResult, const FVector&, const float, const FVector&, const FHitResult&) const { return SlideResult; }
+	float ComputeAnalogInputModifier() const { return 1.f; }
+	bool HasAnimRootMotion() const { return false; }
 	bool IsCrouching() const { return false; }
 	bool IsFalling() const { return MovementMode == MOVE_Falling; }
 	bool IsMovingOnGround() const { return MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking; }
