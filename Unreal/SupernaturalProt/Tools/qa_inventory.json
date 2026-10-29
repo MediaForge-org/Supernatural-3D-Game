@@ -127,6 +127,34 @@
       "core_headers": ["Devices.h"],
       "tests": ["core:Tests/Core/DevicesTests.cpp", "core:Tests/Core/InteractionSystemTests.cpp"],
       "gap": "No Unreal actors or components exist for these devices; nothing is visible in a level. Only Core behavior is tested."
+    },
+    {
+      "id": "map.world_map",
+      "title": "World map domain: layers, regions, points of interest, markers, discovery, spatial queries (Core foundation, M2B1)",
+      "core_headers": ["WorldMap.h", "SpatialGrid.h"],
+      "tests": ["core:Tests/Core/MapTests.cpp"],
+      "gap": "Not integrated in the Unreal game: no map data (the world geometry will come from SPN WorldForge), no UI and no save-game wiring; only Core behavior is tested on Fedora and is NOT run by the Windows QA script."
+    },
+    {
+      "id": "map.minimap",
+      "title": "Minimap calculations: world-to-screen transform, rotation modes, viewport clipping, off-screen indicators (Core foundation, M2B1)",
+      "core_headers": ["Minimap.h"],
+      "tests": ["core:Tests/Core/MinimapTests.cpp"],
+      "gap": "Produces data only; no widget renders it and no Unreal coordinate adapter exists (axis mapping to Unreal is still to be defined). Only Core behavior is tested."
+    },
+    {
+      "id": "inventory.foundation",
+      "title": "Inventory domain: item definitions, stacks, containers, capacity, equipment slots, transactions (Core foundation, M2B1)",
+      "core_headers": ["Inventory.h"],
+      "tests": ["core:Tests/Core/InventoryTests.cpp"],
+      "gap": "Not integrated in the Unreal game and not connected to the placeholder pickup counts (Pickup.h); no item data, no UI, no save-game wiring. Only Core behavior is tested."
+    },
+    {
+      "id": "navigation.foundation",
+      "title": "Navigation domain: destinations, route data model, route validation and measurement (Core foundation, M2B1)",
+      "core_headers": ["Navigation.h"],
+      "tests": ["core:Tests/Core/NavigationTests.cpp"],
+      "gap": "Data model only: no pathfinding and no road graph (both come from WorldForge / Unreal navigation); nothing is shown in the game. Only Core behavior is tested."
     }
   ]
 }

@@ -14,12 +14,16 @@ add_executable(spn_core_tests
     DoorPersistenceTests.cpp
     EnvScenarioTests.cpp
     InteractionTests.cpp
+    InventoryTests.cpp
     InteractionReachTests.cpp
     InteractionSystemTests.cpp
     JumpModelTests.cpp
     GroundSteeringTests.cpp
     LocomotionTests.cpp
+    MapTests.cpp
+    MinimapTests.cpp
     MovementTests.cpp
+    NavigationTests.cpp
     NpcTests.cpp
     ObjectPersistenceTests.cpp
     PickupTests.cpp
@@ -39,3 +43,6 @@ doctest_discover_tests(spn_core_tests)
 # Hand-run micro-benchmarks (not registered with CTest).
 add_executable(spn_core_bench Bench.cpp)
 target_link_libraries(spn_core_bench PRIVATE spn::core spn_build_options)
+
+add_executable(spn_core_bench_m2b1 BenchM2B1.cpp)
+target_link_libraries(spn_core_bench_m2b1 PRIVATE spn::core spn_build_options)
