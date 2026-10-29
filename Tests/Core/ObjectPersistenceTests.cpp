@@ -88,7 +88,7 @@ TEST_CASE("catalog validates ids, regions, kinds, defaults and duplicates") {
     CHECK(n.OwnerOf("placeholder.door.a.Open") == nullptr);
 }
 
-TEST_CASE("only changed state is captured; defaults, unrelated facts and explicit default values are ignored") {
+TEST_CASE("only changed state is captured - defaults, unrelated facts and explicit default values are ignored") {
     Fixture f;
     CHECK(CaptureChanged(f.facts, f.catalog).empty());
     f.Set(TestDoorOpenKey("door_a"), true);
@@ -176,7 +176,7 @@ TEST_CASE("string fields survive spaces, percent signs, newlines and the empty s
     CHECK(parsed.Value() == std::vector<ObjectRecord>{r});
 }
 
-TEST_CASE("malformed input is rejected with a precise code; nothing partial") {
+TEST_CASE("malformed input is rejected with a precise code - nothing partial") {
     const std::string good = "SPN-OBJECTS 1\nobjects 1\nobject door_a placeholder:interactable.door cell_0_0 3 1\nfield open b 1\nend\n";
     REQUIRE(ParseRecords(good).HasValue());
     const auto code = [](const std::string& text) { auto r = ParseRecords(text); return r.HasValue() ? PersistErrorCode::NoValidFile : r.Error().code; };
@@ -313,7 +313,7 @@ TEST_CASE("regions: unload keeps changed state, removes live facts, reload resto
     CHECK_FALSE(cache.IsLoaded("cell_9_9"));
 }
 
-TEST_CASE("orphans survive save, load and a content change; live state wins over retained state") {
+TEST_CASE("orphans survive save, load and a content change - live state wins over retained state") {
     Fixture f;
     ObjectRecord orphan;
     orphan.id = "door_gone"; orphan.kind = TestDoorKind(); orphan.region = "cell_9_9"; orphan.fields = {{"open", true}};
@@ -397,7 +397,7 @@ TEST_CASE("file failures are reported, never silent") {
     fs::remove_all(dir);
 }
 
-TEST_CASE("end to end: play, save, load into a new session, continue; door lock state and device state come back") {
+TEST_CASE("end to end: play, save, load into a new session, continue - door lock state and device state come back") {
     // session 1
     WorldObjectCatalog catalog;
     REQUIRE_FALSE(catalog.Add(Door("front", "cell_0_0", true)).has_value());

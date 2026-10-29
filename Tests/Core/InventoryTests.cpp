@@ -484,7 +484,7 @@ TEST_CASE("ApplyAll: commands see the effects of earlier commands in the same tr
     CHECK(s.Revision() == 1);
 }
 
-TEST_CASE("ApplyAll: empty list is a no-op; failed single commands do not advance the revision") {
+TEST_CASE("ApplyAll: empty list is a no-op - failed single commands do not advance the revision") {
     Fixture f;
     InventoryState s(f.catalog);
     const auto empty = s.ApplyAll({});

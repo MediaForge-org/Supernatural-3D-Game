@@ -276,7 +276,7 @@ TEST_CASE("nothing starts without the matching explicit press: no automatic jump
     CHECK(RequiredInput(TraversalMove::Blocked) == TraversalInput::NotStartable);
 }
 
-TEST_CASE("the jump key starts only a Jump; the traversal key starts only vault, mantle or climb; wrong keys start nothing") {
+TEST_CASE("the jump key starts only a Jump - the traversal key starts only vault, mantle or climb - wrong keys start nothing") {
     const TraversalState idle;
     const MovementState ground = MovementState::Run;
     TraversalIntent jump;

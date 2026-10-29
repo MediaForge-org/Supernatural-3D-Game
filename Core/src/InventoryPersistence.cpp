@@ -277,6 +277,7 @@ Result<InventoryState, InventoryError> InventoryState::Deserialize(std::string_v
                 return Err(InventoryErrorCode::MalformedLine, line(), "duplicate slot");
             }
         }
+        (void)RecomputeTotals(c, catalog); // an unknown definition or an overflow is reported by CheckInvariants below
         state.containers_.emplace(c.id, std::move(c));
     }
     if (at >= lines.size()) {

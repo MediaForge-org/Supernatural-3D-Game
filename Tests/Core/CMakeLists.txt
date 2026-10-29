@@ -4,6 +4,9 @@ add_executable(spn_core_tests
     StrongIdTests.cpp
     CameraArmTests.cpp
     ContentIdTests.cpp
+    SaveSlotTests.cpp
+    GameSaveTests.cpp
+    CoordinateTests.cpp
     AppearanceTests.cpp
     AppearanceEditTests.cpp
     AppearanceGeneratorTests.cpp
@@ -15,6 +18,7 @@ add_executable(spn_core_tests
     EnvScenarioTests.cpp
     InteractionTests.cpp
     InventoryTests.cpp
+    InventoryTxTests.cpp
     InteractionReachTests.cpp
     InteractionSystemTests.cpp
     JumpModelTests.cpp
@@ -46,3 +50,15 @@ target_link_libraries(spn_core_bench PRIVATE spn::core spn_build_options)
 
 add_executable(spn_core_bench_m2b1 BenchM2B1.cpp)
 target_link_libraries(spn_core_bench_m2b1 PRIVATE spn::core spn_build_options)
+
+# Guard against vacuous CTest entries (see CheckTestNames.cmake).
+add_test(NAME spn_core_test_names
+    COMMAND ${CMAKE_COMMAND} -DTESTS=$<TARGET_FILE:spn_core_tests> -P ${CMAKE_CURRENT_SOURCE_DIR}/CheckTestNames.cmake)
+
+# Hand-run: spn_core_save_probe <dir> reports whether the save protocol's filesystem primitives work on that volume.
+add_executable(spn_core_save_probe SaveProbe.cpp)
+target_link_libraries(spn_core_save_probe PRIVATE spn::core spn_build_options)
+
+# Hand-run: inventory transaction latency / allocations before vs after an implementation change (Release build).
+add_executable(spn_core_bench_inventory_tx BenchInventoryTx.cpp)
+target_link_libraries(spn_core_bench_inventory_tx PRIVATE spn::core spn_build_options)

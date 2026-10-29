@@ -119,6 +119,11 @@ struct Container {
     ContainerRules rules;
     std::map<ItemInstanceId, ItemStack> stacks; ///< ordered by id: deterministic iteration
     std::map<ContentId, ItemInstanceId> equipped; ///< slot -> stack
+    /// Sums of weightGrams * quantity / volumeMilliliters * quantity over the stacks. DERIVED data, maintained by InventoryState (never write
+    /// them): they make the capacity check O(1) instead of O(stacks). CheckInvariants recomputes them independently and compares. They are not
+    /// part of the saved format (SPN-INVENTORY 1 is unchanged); Deserialize recomputes them.
+    std::uint64_t weightGrams = 0;
+    std::uint64_t volumeMilliliters = 0;
     friend bool operator==(const Container&, const Container&) = default;
 };
 
@@ -227,6 +232,8 @@ public:
 
 private:
     friend class InventoryTransaction;
+    /// Sets c.weightGrams / c.volumeMilliliters from the stacks. False (totals left at 0) on an unknown definition or uint64 overflow.
+    static bool RecomputeTotals(Container& c, const ItemCatalog& catalog);
     const ItemCatalog* catalog_;
     std::uint64_t nextInstance_ = 1;
     std::uint64_t revision_ = 0;

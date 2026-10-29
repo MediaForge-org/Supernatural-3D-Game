@@ -60,7 +60,7 @@ TEST_CASE("unsubscribe is immediate, also inside dispatch, and a handle works on
     CHECK(bus.ListenerCount() == 0);
 }
 
-TEST_CASE("a listener may unsubscribe itself and subscribe a new one; the new one sees only later events") {
+TEST_CASE("a listener may unsubscribe itself and subscribe a new one - the new one sees only later events") {
     GameEventBus bus;
     int oldHits = 0, newHits = 0;
     GameEventBus::Handle self = 0;

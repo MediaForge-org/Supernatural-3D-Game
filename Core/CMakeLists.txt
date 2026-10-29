@@ -17,7 +17,11 @@ add_library(spn_core STATIC
     src/InteractionReach.cpp
     src/JumpModel.cpp
     src/Locomotion.cpp
+    src/Coordinates.cpp
     src/Minimap.cpp
+    src/SaveSlot.cpp
+    src/SaveStore.cpp
+    src/GameSave.cpp
     src/Movement.cpp
     src/Navigation.cpp
     src/Npc.cpp

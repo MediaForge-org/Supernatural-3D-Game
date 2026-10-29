@@ -248,7 +248,7 @@ MarkerSpec Spec(MapPosition p, const char* category = "test:cat.note") {
 }
 } // namespace
 
-TEST_CASE("WorldMapState: add, find and remove markers; ids are stable and never reused") {
+TEST_CASE("WorldMapState: add, find and remove markers - ids are stable and never reused") {
     WorldMapState map(MakeTestDefinition());
     auto a = map.AddMarker(Spec(At(kSurface, 10, 10)));
     auto b = map.AddMarker(Spec(At(kSurface, 20, 20)));

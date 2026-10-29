@@ -245,6 +245,44 @@ TEST_CASE("Door 3: a locked door refuses with the locked feedback and writes not
     }
 }
 
+TEST_CASE("Door 3b: the lock guards opening only - all four open/locked combinations") {
+    const auto registry = MakeRegistry();
+    const auto door = Door("door_a");
+    SUBCASE("closed + unlocked: opens") {
+        WorldFacts facts;
+        CHECK(Use(registry, facts, door, Defaults(false, false)).changes.size() == 1);
+        CHECK(IsOpen(facts, "door_a", Defaults(false, false)));
+    }
+    SUBCASE("closed + locked: refused with the locked feedback, nothing written") {
+        WorldFacts facts;
+        const auto error = UseFails(registry, facts, door, Defaults(false, true));
+        CHECK(error.code == InteractionErrorCode::Refused);
+        CHECK(error.feedback == TestDoorLockedFeedback());
+        CHECK(facts.Revision() == 0);
+    }
+    SUBCASE("open + unlocked: closes") {
+        WorldFacts facts;
+        CHECK(Use(registry, facts, door, Defaults(true, false)).changes.size() == 1);
+        CHECK_FALSE(IsOpen(facts, "door_a", Defaults(true, false)));
+    }
+    SUBCASE("open + locked: closes, and stays locked, so it cannot be reopened") {
+        WorldFacts facts;
+        const auto defaults = Defaults(true, true);
+        CHECK(Use(registry, facts, door, defaults).changes.size() == 1);
+        CHECK_FALSE(IsOpen(facts, "door_a", defaults));
+        const auto error = UseFails(registry, facts, door, defaults); // closed + still locked now
+        CHECK(error.feedback == TestDoorLockedFeedback());
+        CHECK_FALSE(IsOpen(facts, "door_a", defaults));
+    }
+    SUBCASE("a disabled door is refused in every state, locked or not") {
+        for (const bool open : {false, true}) {
+            WorldFacts facts;
+            REQUIRE(facts.Apply(SetFact{TestDoorDisabledKey("door_a"), true}, "t").HasValue());
+            CHECK(UseFails(registry, facts, door, Defaults(open, false)).feedback == TestDoorDisabledFeedback());
+        }
+    }
+}
+
 TEST_CASE("Door 4: absent facts follow the authored defaults, including an open door") {
     WorldFacts facts;
     const auto registry = MakeRegistry();
@@ -333,10 +371,12 @@ TEST_CASE("Case 8: every offered verb either succeeds or is Refused with feedbac
             for (const InteractionVerb verb : verbs.Value()) {
                 const auto result =
                     registry.Interact(facts, Door("door_a"), verb, defaults, "test");
+                // The lock guards opening only: refused exactly when the door is closed and locked.
+                const bool refused = locked && !open;
                 if (result.HasValue()) {
-                    CHECK_FALSE(locked);
+                    CHECK_FALSE(refused);
                 } else {
-                    CHECK(locked);
+                    CHECK(refused);
                     CHECK(result.Error().code == InteractionErrorCode::Refused);
                     CHECK_FALSE(result.Error().feedback.IsEmpty());
                 }
@@ -400,7 +440,8 @@ TEST_CASE("Case 10: refused, unknown and failing interactions never partially mo
     CHECK(failed.fact->code == FactErrorCode::TypeMismatch);
     CHECK(facts == before);
 
-    CHECK(UseFails(registry, facts, Door("door_a"), Defaults(false, true)).code ==
+    // door_a is open in the facts: a locked-by-default OPEN door may be closed, so the refused case needs a closed door
+    CHECK(UseFails(registry, facts, Door("door_c"), Defaults(false, true)).code ==
           InteractionErrorCode::Refused);
     Set(facts, TestDoorLockedKey("door_b"), true);
     const WorldFacts lockedBefore = facts;

@@ -133,7 +133,8 @@ InteractionHandler MakeTestDoorHandler() {
             return InteractionError{InteractionErrorCode::Refused, target.id,
                                     TestDoorDisabledFeedback(), std::nullopt};
         }
-        if (door.Value().locked) {
+        // The lock guards OPENING only (closed + locked). An open door can be closed whatever its lock state; the lock then keeps it shut.
+        if (door.Value().locked && !door.Value().open) {
             return InteractionError{InteractionErrorCode::Refused, target.id,
                                     TestDoorLockedFeedback(), std::nullopt};
         }

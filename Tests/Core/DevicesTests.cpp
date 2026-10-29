@@ -79,7 +79,7 @@ TEST_CASE("button counts presses, is exhausted at max_presses and respects disab
     CHECK(Use(r, unlimited, ButtonKind(), "m").Error().code == InteractionErrorCode::StateCorrupt); // no overflow
 }
 
-TEST_CASE("lever advances through its positions and wraps; invalid configuration or state is corrupt") {
+TEST_CASE("lever advances through its positions and wraps - invalid configuration or state is corrupt") {
     const auto r = MakeRegistry();
     WorldFacts f;
     InteractionDefaults three;

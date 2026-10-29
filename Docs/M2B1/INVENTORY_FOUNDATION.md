@@ -82,6 +82,8 @@ Release/GCC 16.2.1, Intel Core Ultra 7 256V, single run, no variance statistics,
 
 **Honest finding:** transaction cost grows **linearly with the size of the touched container** (≈ 130–150 ns per stack): the container is copied into the working set and capacity is recomputed. That is fine for body-sized inventories (tens of stacks, microseconds) and is **not acceptable** for containers with thousands of *distinct* stacks (e.g. a hoarded HQ with unique items). Stackable stock stays cheap because fungible items collapse into few stacks. The fix is known and contained (apply in place with an undo log, keep running weight/volume totals) and is the first recommended hardening step before such containers exist; it would not change the public API.
 
+> **Update (M2B2):** the linear cost described here was removed. Transactions now run in place with an undo log and O(1) capacity checks on cached per-container totals; the measured before/after comparison, the preserved-behaviour evidence and the one remaining O(n) piece (searching a non-full stack when adding stackable items) are in `Docs/M2B2/INVENTORY_PERFORMANCE.md`. The tables above remain the M2B1 measurements of the old mechanism.
+
 ## 8. Known limitations
 
 - Linear transaction cost (above). Single-threaded, no locking.

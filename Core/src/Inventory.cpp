@@ -1,6 +1,9 @@
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <utility>
+#include <variant>
+#include <vector>
 #include <spn/core/Inventory.h>
 
 namespace spn::core {
@@ -48,7 +51,8 @@ template <typename Per> bool Total(const Container& c, const ItemCatalog& catalo
     return true;
 }
 
-std::optional<InventoryError> CheckCapacity(const Container& c, const ItemCatalog& catalog) {
+/// Recomputes the sums from the stacks (O(stacks)). Only CheckInvariants uses it now: it is the independent oracle for the cached totals.
+std::optional<InventoryError> CheckCapacityFromScratch(const Container& c, const ItemCatalog& catalog) {
     if (c.rules.maxStacks && c.stacks.size() > *c.rules.maxStacks) {
         return Err(InventoryErrorCode::StackLimitReached);
     }
@@ -98,60 +102,155 @@ const ItemDefinition* ItemCatalog::Find(const ContentId& id) const {
 
 // --- Transaction --------------------------------------------------------------------------------------------------------------
 
-/// Working copy: containers are copied into `staged_` on first touch, so a failed transaction is dropped without ever having
-/// touched the live state, and the cost is proportional to the containers involved, not to the whole inventory.
+bool InventoryState::RecomputeTotals(Container& c, const ItemCatalog& catalog) {
+    std::uint64_t weight = 0;
+    std::uint64_t volume = 0;
+    const bool ok = Total(c, catalog, [](const ItemDefinition& d) { return d.weightGrams; }, weight) &&
+                    Total(c, catalog, [](const ItemDefinition& d) { return d.volumeMilliliters; }, volume);
+    c.weightGrams = ok ? weight : 0;
+    c.volumeMilliliters = ok ? volume : 0;
+    return ok;
+}
+
+/// Applies commands IN PLACE to the live state and records how to undo every change (an undo log). A failed transaction is rolled back by
+/// replaying the log backwards; a successful one just discards it. Cost: proportional to what the commands touch (O(log n) per touched
+/// stack), not to the size of the containers; no container is ever copied.
+///
+/// Undo never allocates: erased and moved map entries are kept as extracted node handles and re-inserted, inserted entries are erased, and
+/// changed numbers are written back. The Core does not use exceptions, so there is no unwinding path; an out-of-memory std::bad_alloc inside a
+/// command would terminate the process like everywhere else in the Core.
 class InventoryTransaction {
 public:
-    explicit InventoryTransaction(const InventoryState& base) : base_(base), next_(base.nextInstance_) {}
+    explicit InventoryTransaction(InventoryState& live) : live_(live), nextAtStart_(live.nextInstance_) {}
 
     std::optional<InventoryError> Run(const InventoryCommand& command) { return std::visit([this](const auto& c) { return Do(c); }, command); }
 
-    void Commit(InventoryState& live) {
-        for (auto& [id, container] : staged_) {
-            if (container) {
-                live.containers_[id] = std::move(*container);
-            } else {
-                live.containers_.erase(id);
-            }
-        }
-        live.nextInstance_ = next_;
-        ++live.revision_;
+    void Commit() {
+        ++live_.revision_;
+        log_.clear();
     }
+
+    /// Restores the state at construction: containers, stacks, equipment, derived totals, the instance-id counter. The revision was never changed.
+    void Rollback() noexcept {
+        while (!log_.empty()) {
+            std::visit([this](auto& entry) { Undo(entry); }, log_.back());
+            log_.pop_back();
+        }
+        live_.nextInstance_ = nextAtStart_;
+    }
+
     std::vector<ItemInstanceId> created;
 
 private:
-    Container* Get(ContainerId id) {
-        const auto staged = staged_.find(id);
-        if (staged != staged_.end()) {
-            return staged->second ? &*staged->second : nullptr;
-        }
-        const auto live = base_.containers_.find(id);
-        if (live == base_.containers_.end()) {
-            return nullptr;
-        }
-        return &*staged_.emplace(id, live->second).first->second;
+    using StackNode = std::map<ItemInstanceId, ItemStack>::node_type;
+    using EquipNode = std::map<ContentId, ItemInstanceId>::node_type;
+    using ContainerNode = std::map<ContainerId, Container>::node_type;
+
+    struct UQuantity { ContainerId container; ItemInstanceId stack; std::uint32_t old; };
+    struct UInsertedStack { ContainerId container; ItemInstanceId stack; };
+    struct UErasedStack { ContainerId container; StackNode node; };
+    struct UMovedStack { ContainerId from; ContainerId to; ItemInstanceId stack; };
+    struct UInsertedEquip { ContainerId container; ContentId slot; };
+    struct UErasedEquip { ContainerId container; EquipNode node; };
+    struct UTotals { ContainerId container; std::uint64_t weight; std::uint64_t volume; };
+    struct UCreatedContainer { ContainerId container; };
+    struct UDestroyedContainer { ContainerNode node; };
+    using LogEntry = std::variant<UQuantity, UInsertedStack, UErasedStack, UMovedStack, UInsertedEquip, UErasedEquip, UTotals, UCreatedContainer,
+                                  UDestroyedContainer>;
+
+    // --- undo (noexcept: only erases, node re-insertions and number write-backs; every entry refers to state this transaction created or changed) ---
+    Container* Live(ContainerId id) noexcept {
+        const auto it = live_.containers_.find(id);
+        return it == live_.containers_.end() ? nullptr : &it->second;
     }
+    void Undo(UQuantity& e) noexcept { Live(e.container)->stacks.find(e.stack)->second.quantity = e.old; }
+    void Undo(UInsertedStack& e) noexcept { Live(e.container)->stacks.erase(e.stack); }
+    void Undo(UErasedStack& e) noexcept { Live(e.container)->stacks.insert(std::move(e.node)); }
+    void Undo(UMovedStack& e) noexcept { Live(e.from)->stacks.insert(Live(e.to)->stacks.extract(e.stack)); }
+    void Undo(UInsertedEquip& e) noexcept { Live(e.container)->equipped.erase(e.slot); }
+    void Undo(UErasedEquip& e) noexcept { Live(e.container)->equipped.insert(std::move(e.node)); }
+    void Undo(UTotals& e) noexcept {
+        Container* c = Live(e.container);
+        c->weightGrams = e.weight;
+        c->volumeMilliliters = e.volume;
+    }
+    void Undo(UCreatedContainer& e) noexcept { live_.containers_.erase(e.container); }
+    void Undo(UDestroyedContainer& e) noexcept { live_.containers_.insert(std::move(e.node)); }
+
+    // --- logged mutations ---
+    Container* Get(ContainerId id) { return Live(id); }
+
     ItemInstanceId Allocate() {
-        const ItemInstanceId id(next_++);
+        const ItemInstanceId id(live_.nextInstance_++);
         created.push_back(id);
         return id;
     }
-    const ItemCatalog& Catalog() const { return *base_.catalog_; }
-    std::size_t ContainerCount() const {
-        std::size_t n = base_.containers_.size();
-        for (const auto& [id, c] : staged_) {
-            const bool wasLive = base_.containers_.contains(id);
-            if (c && !wasLive) {
-                ++n;
-            } else if (!c && wasLive) {
-                --n;
-            }
+    const ItemCatalog& Catalog() const { return *live_.catalog_; }
+
+    void SetQuantity(Container& c, ItemStack& stack, std::uint32_t quantity) {
+        log_.emplace_back(UQuantity{c.id, stack.id, stack.quantity});
+        stack.quantity = quantity;
+    }
+    void InsertStack(Container& c, ItemStack stack) {
+        const ItemInstanceId id = stack.id;
+        c.stacks.emplace(id, std::move(stack));
+        log_.emplace_back(UInsertedStack{c.id, id});
+    }
+    void EraseStack(Container& c, std::map<ItemInstanceId, ItemStack>::iterator it) {
+        log_.emplace_back(UErasedStack{c.id, c.stacks.extract(it)});
+    }
+    void MoveStack(Container& from, Container& to, std::map<ItemInstanceId, ItemStack>::iterator it) {
+        const ItemInstanceId id = it->first;
+        to.stacks.insert(from.stacks.extract(it));
+        log_.emplace_back(UMovedStack{from.id, to.id, id});
+    }
+
+    /// Adds (sign +1) or removes (sign -1) `quantity` units of `d` to/from the derived totals. On uint64 overflow the totals are left unchanged and
+    /// the overflow is remembered for CheckCapacity of THIS command (the transaction then fails and is rolled back, so no overflowed value is kept).
+    void AdjustTotals(Container& c, const ItemDefinition& d, std::uint64_t quantity, bool add) {
+        std::uint64_t weightPart = 0;
+        std::uint64_t volumePart = 0;
+        const bool weightOk = CheckedMul(d.weightGrams, quantity, weightPart);
+        const bool volumeOk = CheckedMul(d.volumeMilliliters, quantity, volumePart);
+        std::uint64_t weight = c.weightGrams;
+        std::uint64_t volume = c.volumeMilliliters;
+        if (add) {
+            weightOverflow_ = weightOverflow_ || !weightOk || !CheckedAdd(weight, weightPart, weight);
+            volumeOverflow_ = volumeOverflow_ || !volumeOk || !CheckedAdd(volume, volumePart, volume);
+        } else {
+            weight -= weightPart; // committed states never overflow, and a stack's contribution is part of the sum, so this cannot wrap
+            volume -= volumePart;
         }
-        return n;
+        log_.emplace_back(UTotals{c.id, c.weightGrams, c.volumeMilliliters});
+        if (!weightOverflow_) c.weightGrams = weight;
+        if (!volumeOverflow_) c.volumeMilliliters = volume;
+    }
+
+    /// Same checks and the same order as the M2B1 full recomputation (stack count, weight overflow, weight limit, volume overflow, volume limit),
+    /// but on the derived totals: O(1).
+    std::optional<InventoryError> CheckCapacity(const Container& c) {
+        const bool weightOverflow = std::exchange(weightOverflow_, false);
+        const bool volumeOverflow = std::exchange(volumeOverflow_, false);
+        if (c.rules.maxStacks && c.stacks.size() > *c.rules.maxStacks) {
+            return Err(InventoryErrorCode::StackLimitReached);
+        }
+        if (weightOverflow) {
+            return Err(InventoryErrorCode::ArithmeticOverflow, "weight");
+        }
+        if (c.rules.maxWeightGrams && c.weightGrams > *c.rules.maxWeightGrams) {
+            return Err(InventoryErrorCode::WeightLimitReached);
+        }
+        if (volumeOverflow) {
+            return Err(InventoryErrorCode::ArithmeticOverflow, "volume");
+        }
+        if (c.rules.maxVolumeMilliliters && c.volumeMilliliters > *c.rules.maxVolumeMilliliters) {
+            return Err(InventoryErrorCode::VolumeLimitReached);
+        }
+        return std::nullopt;
     }
 
     /// Adds `quantity` of a stackable definition: fill matching stacks first, then new stacks; `keepId` (non-null) names the id for
-    /// the first newly created stack.
+    /// the first newly created stack. Updates the derived totals by `quantity` once everything fitted.
     std::optional<InventoryError> PutStackable(Container& c, const ItemDefinition& d, std::uint32_t quantity, ItemInstanceId keepId) {
         std::uint32_t remaining = quantity;
         for (auto& [id, stack] : c.stacks) {
@@ -160,7 +259,7 @@ private:
             }
             if (stack.definition == d.id && stack.quantity < d.maxStack) {
                 const std::uint32_t put = std::min(remaining, d.maxStack - stack.quantity);
-                stack.quantity += put;
+                SetQuantity(c, stack, stack.quantity + put);
                 remaining -= put;
             }
         }
@@ -175,9 +274,10 @@ private:
             keepId = ItemInstanceId();
             stack.definition = d.id;
             stack.quantity = put;
-            c.stacks.emplace(stack.id, std::move(stack));
+            InsertStack(c, std::move(stack));
             remaining -= put;
         }
+        AdjustTotals(c, d, quantity, true);
         return std::nullopt;
     }
 
@@ -188,25 +288,26 @@ private:
         if (Get(cmd.container) != nullptr) {
             return Err(InventoryErrorCode::DuplicateContainer);
         }
-        if (ContainerCount() >= kMaxContainers) {
+        if (live_.containers_.size() >= kMaxContainers) {
             return Err(InventoryErrorCode::LimitExceeded, "containers");
         }
         Container c;
         c.id = cmd.container;
         c.rules = cmd.rules;
-        staged_[cmd.container] = std::move(c);
+        live_.containers_.emplace(cmd.container, std::move(c));
+        log_.emplace_back(UCreatedContainer{cmd.container});
         return std::nullopt;
     }
 
     std::optional<InventoryError> Do(const DestroyContainer& cmd) {
-        Container* c = Get(cmd.container);
-        if (c == nullptr) {
+        const auto it = live_.containers_.find(cmd.container);
+        if (it == live_.containers_.end()) {
             return Err(InventoryErrorCode::UnknownContainer);
         }
-        if (!c->stacks.empty()) {
+        if (!it->second.stacks.empty()) {
             return Err(InventoryErrorCode::ContainerNotEmpty);
         }
-        staged_[cmd.container] = std::nullopt;
+        log_.emplace_back(UDestroyedContainer{live_.containers_.extract(it)});
         return std::nullopt;
     }
 
@@ -240,9 +341,10 @@ private:
             stack.id = Allocate();
             stack.definition = d->id;
             stack.state = cmd.state;
-            c->stacks.emplace(stack.id, std::move(stack));
+            InsertStack(*c, std::move(stack));
+            AdjustTotals(*c, *d, 1, true);
         }
-        return CheckCapacity(*c, Catalog());
+        return CheckCapacity(*c);
     }
 
     std::optional<InventoryError> Do(const RemoveItem& cmd) {
@@ -260,9 +362,15 @@ private:
         if (IsEquipped(*c, cmd.item)) {
             return Err(InventoryErrorCode::ItemEquipped);
         }
-        it->second.quantity -= cmd.quantity;
-        if (it->second.quantity == 0) {
-            c->stacks.erase(it);
+        const ItemDefinition* d = Catalog().Find(it->second.definition);
+        if (d == nullptr) { // cannot happen in a valid state (CheckInvariants); refuse rather than corrupt the totals
+            return Err(InventoryErrorCode::UnknownDefinition, it->second.definition.Value());
+        }
+        AdjustTotals(*c, *d, cmd.quantity, false);
+        if (cmd.quantity == it->second.quantity) {
+            EraseStack(*c, it);
+        } else {
+            SetQuantity(*c, it->second, it->second.quantity - cmd.quantity);
         }
         return std::nullopt;
     }
@@ -296,10 +404,11 @@ private:
         if (d->Stackable()) {
             const bool whole = cmd.quantity == it->second.quantity;
             const ItemInstanceId keep = whole ? it->first : ItemInstanceId();
+            AdjustTotals(*from, *d, cmd.quantity, false);
             if (whole) {
-                from->stacks.erase(it);
+                EraseStack(*from, it);
             } else {
-                it->second.quantity -= cmd.quantity;
+                SetQuantity(*from, it->second, it->second.quantity - cmd.quantity);
             }
             // A partial move that does not merge entirely creates one new id per new stack (allocated inside PutStackable).
             if (auto e = PutStackable(*to, *d, cmd.quantity, keep)) {
@@ -309,11 +418,11 @@ private:
             if (to->stacks.size() >= kMaxStacksPerContainer) {
                 return Err(InventoryErrorCode::LimitExceeded);
             }
-            ItemStack moved = std::move(it->second);
-            from->stacks.erase(it);
-            to->stacks.emplace(moved.id, std::move(moved));
+            AdjustTotals(*from, *d, 1, false);
+            MoveStack(*from, *to, it);
+            AdjustTotals(*to, *d, 1, true);
         }
-        return CheckCapacity(*to, Catalog());
+        return CheckCapacity(*to);
     }
 
     std::optional<InventoryError> Do(const SplitStack& cmd) {
@@ -335,13 +444,13 @@ private:
         if (c->stacks.size() >= kMaxStacksPerContainer) {
             return Err(InventoryErrorCode::LimitExceeded);
         }
-        it->second.quantity -= cmd.quantity;
+        SetQuantity(*c, it->second, it->second.quantity - cmd.quantity);
         ItemStack split;
         split.id = Allocate();
         split.definition = it->second.definition;
         split.quantity = cmd.quantity;
-        c->stacks.emplace(split.id, std::move(split));
-        return CheckCapacity(*c, Catalog());
+        InsertStack(*c, std::move(split)); // the units only move between stacks: the totals do not change
+        return CheckCapacity(*c);
     }
 
     std::optional<InventoryError> Do(const MergeStacks& cmd) {
@@ -372,10 +481,11 @@ private:
         if (move == 0) {
             return Err(InventoryErrorCode::StackLimitReached);
         }
-        dst->second.quantity += move;
-        src->second.quantity -= move;
-        if (src->second.quantity == 0) {
-            c->stacks.erase(src);
+        SetQuantity(*c, dst->second, dst->second.quantity + move);
+        if (move == src->second.quantity) {
+            EraseStack(*c, src);
+        } else {
+            SetQuantity(*c, src->second, src->second.quantity - move);
         }
         return std::nullopt;
     }
@@ -403,6 +513,7 @@ private:
             return Err(InventoryErrorCode::SlotOccupied, cmd.slot.Value());
         }
         c->equipped.emplace(cmd.slot, cmd.item);
+        log_.emplace_back(UInsertedEquip{c->id, cmd.slot});
         return std::nullopt;
     }
 
@@ -414,15 +525,19 @@ private:
         if (!c->rules.equipSlots.contains(cmd.slot)) {
             return Err(InventoryErrorCode::UnknownSlot, cmd.slot.Value());
         }
-        if (c->equipped.erase(cmd.slot) == 0) {
+        auto node = c->equipped.extract(cmd.slot);
+        if (node.empty()) {
             return Err(InventoryErrorCode::SlotEmpty, cmd.slot.Value());
         }
+        log_.emplace_back(UErasedEquip{c->id, std::move(node)});
         return std::nullopt;
     }
 
-    const InventoryState& base_;
-    std::uint64_t next_;
-    std::map<ContainerId, std::optional<Container>> staged_;
+    InventoryState& live_;
+    const std::uint64_t nextAtStart_;
+    std::vector<LogEntry> log_;
+    bool weightOverflow_ = false;
+    bool volumeOverflow_ = false;
 };
 
 Result<TransactionResult, InventoryError> InventoryState::ApplyAll(const std::vector<InventoryCommand>& commands) {
@@ -432,11 +547,12 @@ Result<TransactionResult, InventoryError> InventoryState::ApplyAll(const std::ve
     InventoryTransaction tx(*this);
     for (std::size_t i = 0; i < commands.size(); ++i) {
         if (auto error = tx.Run(commands[i])) {
+            tx.Rollback();
             error->commandIndex = i;
             return *error;
         }
     }
-    tx.Commit(*this);
+    tx.Commit();
     return TransactionResult{revision_, std::move(tx.created)};
 }
 
@@ -480,14 +596,12 @@ std::uint64_t InventoryState::CountOf(ContainerId container, const ContentId& de
 
 std::uint64_t InventoryState::TotalWeightGrams(ContainerId container) const {
     const Container* c = FindContainer(container);
-    std::uint64_t total = 0;
-    return c != nullptr && Total(*c, *catalog_, [](const ItemDefinition& d) { return d.weightGrams; }, total) ? total : (c != nullptr ? std::numeric_limits<std::uint64_t>::max() : 0);
+    return c != nullptr ? c->weightGrams : 0;
 }
 
 std::uint64_t InventoryState::TotalVolumeMilliliters(ContainerId container) const {
     const Container* c = FindContainer(container);
-    std::uint64_t total = 0;
-    return c != nullptr && Total(*c, *catalog_, [](const ItemDefinition& d) { return d.volumeMilliliters; }, total) ? total : (c != nullptr ? std::numeric_limits<std::uint64_t>::max() : 0);
+    return c != nullptr ? c->volumeMilliliters : 0;
 }
 
 std::optional<InventoryError> InventoryState::CheckInvariants() const {
@@ -526,9 +640,16 @@ std::optional<InventoryError> InventoryState::CheckInvariants() const {
                 return bad("item cannot occupy slot " + slot.Value());
             }
         }
-        if (auto e = CheckCapacity(c, *catalog_)) {
+        if (auto e = CheckCapacityFromScratch(c, *catalog_)) {
             e->detail = "container " + std::to_string(cid.Value()) + " over capacity";
             return e;
+        }
+        std::uint64_t weight = 0;
+        std::uint64_t volume = 0; // summed from the stacks, independent of the cached values
+        if (!Total(c, *catalog_, [](const ItemDefinition& d) { return d.weightGrams; }, weight) ||
+            !Total(c, *catalog_, [](const ItemDefinition& d) { return d.volumeMilliliters; }, volume) || weight != c.weightGrams ||
+            volume != c.volumeMilliliters) {
+            return bad("cached weight/volume totals differ from the stacks");
         }
     }
     return std::nullopt;

@@ -79,7 +79,7 @@ TEST_CASE("registration validates ids, kinds, numbers and duplicates") {
     CHECK_FALSE(w.system.SetEnabled("door_a", false));
 }
 
-TEST_CASE("selection is deterministic: priority, then angle, then distance, then id; unreachable targets never win") {
+TEST_CASE("selection is deterministic: priority, then angle, then distance, then id - unreachable targets never win") {
     World w;
     w.Add("far", SwitchKind(), {2.4, 0.0, 1.6});
     w.Add("near_b", SwitchKind(), {1.0, 0.0, 1.6});
@@ -187,7 +187,7 @@ TEST_CASE("door flow: locked, unlock, open, obstructed close is blocked, close s
     CHECK(w.system.Interact(w.Req("front")).status == InteractStatus::Success);
 }
 
-TEST_CASE("obstruction rule ignores corrupt state and missing callbacks; authored open doors can be blocked too") {
+TEST_CASE("obstruction rule ignores corrupt state and missing callbacks - authored open doors can be blocked too") {
     WorldFacts facts;
     const InteractableRef ref{TestDoorKind(), "d"};
     InteractionDefaults none;
@@ -228,7 +228,7 @@ TEST_CASE("rapid repeated requests on a switch alternate state and journal every
     CHECK(w.facts.Revision() == 9);
 }
 
-TEST_CASE("events: attempt, success and state change in order; rejections carry status and feedback") {
+TEST_CASE("events: attempt, success and state change in order - rejections carry status and feedback") {
     World w;
     w.Add("front", TestDoorKind(), {1.0, 0.0, 1.0});
     w.Add("sw", SwitchKind(), {1.0, 0.5, 1.6});
@@ -255,7 +255,7 @@ TEST_CASE("events: attempt, success and state change in order; rejections carry 
     for (std::size_t i = 1; i < w.events.size(); ++i) CHECK(w.events[i].sequence == w.events[i - 1].sequence + 1);
 }
 
-TEST_CASE("a listener that interacts during an event is refused; there is no nested state change") {
+TEST_CASE("a listener that interacts during an event is refused - there is no nested state change") {
     World w;
     w.Add("sw", SwitchKind(), {1.0, 0.0, 1.6});
     std::vector<InteractStatus> nested;
@@ -290,7 +290,7 @@ TEST_CASE("lever positions through the system and events carry the position") {
     CHECK(w.events.back().to == 1);
 }
 
-TEST_CASE("link: a switch unlocks a door; the door then opens; every step is evented and journaled with a cause") {
+TEST_CASE("link: a switch unlocks a door - the door then opens - every step is evented and journaled with a cause") {
     World w;
     w.Add("sw", SwitchKind(), {1.0, 0.5, 1.6});
     w.Add("gate", TestDoorKind(), {1.0, -0.5, 1.0});
@@ -409,7 +409,7 @@ TEST_CASE("many interactables: selection stays correct with 2000 objects (smoke,
     CHECK(w.system.ReachableTargets(actor).size() == 1);
 }
 
-TEST_CASE("broad phase: negative coordinates, cell borders, removal and re-adding keep selection exact; absurd coordinates are rejected") {
+TEST_CASE("broad phase: negative coordinates, cell borders, removal and re-adding keep selection exact - absurd coordinates are rejected") {
     World w;
     // targets around the cell border at x = -4, y = 0 and in negative space; the actor stands at the border
     w.Add("west", SwitchKind(), {-4.5, 0.0, 1.6});
@@ -418,14 +418,37 @@ TEST_CASE("broad phase: negative coordinates, cell borders, removal and re-addin
     ActorView actor;
     actor.eye = {-4.0, 0.0, 1.6};
     actor.viewDirection = {-1.0, 0.0, 0.0};
-    CHECK(*w.system.SelectTarget(actor) == "west"); // straight ahead
-    CHECK(w.system.ReachableTargets(actor).size() == 3);
+    // Reach is a 60 degree cone (ReachConfig::maxAngleDegrees) around the view direction, widened by the target's angular radius
+    // (reachable when angle - asin(radius / distance) <= 60; the default radius is 0.3 m). Facing west: west is at 0 degrees; south (1 m away,
+    // 17 degrees wide) is at 90 -> 72.5 effective; east (0.5 m away, 37 degrees wide) is at 180 -> 143. Only west is reachable. Every dereference
+    // of a selection is guarded.
+    const auto select = [&](const ActorView& a) -> std::string {
+        const auto id = w.system.SelectTarget(a);
+        return id.has_value() ? *id : std::string("<none>");
+    };
+    const auto reachable = [&](const ActorView& a) {
+        auto ids = w.system.ReachableTargets(a);
+        std::sort(ids.begin(), ids.end());
+        return ids;
+    };
+    using Ids = std::vector<std::string>;
+    CHECK(select(actor) == "west"); // straight ahead
+    CHECK(reachable(actor) == Ids{"west"});
+    // the same three targets seen from the other directions: each direction reaches exactly the target inside its cone
+    actor.viewDirection = {0.0, -1.0, 0.0}; // south ahead; the two targets 0.5 m to the side are at 90 - 37 = 53 effective degrees
+    CHECK(reachable(actor) == Ids{"east", "south", "west"});
+    actor.viewDirection = {-1.0, -1.0, 0.0}; // 45 degrees to west and to south, 135 to east
+    CHECK(reachable(actor) == Ids{"south", "west"});
+    actor.viewDirection = {0.0, 1.0, 0.0}; // north: east and west (53 effective degrees) are inside, south (180 - 17) is not
+    CHECK(reachable(actor) == Ids{"east", "west"});
+    CHECK(select(actor) == "east"); // equal angle and distance: the id decides
     actor.viewDirection = {1.0, 0.0, 0.0};
-    CHECK(*w.system.SelectTarget(actor) == "east");
+    CHECK(select(actor) == "east");
+    CHECK(reachable(actor) == Ids{"east"});
     CHECK(w.system.RemoveInteractable("east"));
-    CHECK(*w.system.SelectTarget(actor) != "east");
+    CHECK(select(actor) == "<none>"); // facing east with east removed: west (180) and south (90) are outside the cone
     w.Add("east", SwitchKind(), {-3.5, 0.0, 1.6}); // same id again after removal
-    CHECK(*w.system.SelectTarget(actor) == "east");
+    CHECK(select(actor) == "east");
 
     // far apart objects never leak into a selection; a big radius is still found from the edge of its reach
     InteractableDescriptor far;
@@ -436,8 +459,8 @@ TEST_CASE("broad phase: negative coordinates, cell borders, removal and re-addin
     ActorView farActor;
     farActor.eye = {5001.0, -7000.0, 1.6};
     farActor.viewDirection = {-1.0, 0.0, 0.0};
-    CHECK(*w.system.SelectTarget(farActor) == "far_away");
-    CHECK(w.system.ReachableTargets(actor).size() == 3);
+    CHECK(select(farActor) == "far_away");
+    CHECK(reachable(actor) == Ids{"east"}); // the far object does not leak into the selection of the actor at the cell border
 
     InteractableDescriptor big;
     big.id = "big";
@@ -446,13 +469,12 @@ TEST_CASE("broad phase: negative coordinates, cell borders, removal and re-addin
     big.radius = 17.0; // surface 3 m from the actor's eye line: within 2.5 m? no -> distance - radius = 3.0 > 2.5
     REQUIRE_FALSE(w.system.AddInteractable(big).has_value());
     actor.viewDirection = {0.0, 1.0, 0.0};
-    const auto none = w.system.SelectTarget(actor);
-    CHECK((!none.has_value() || *none != "big"));
+    CHECK(select(actor) != "big");
     w.system.RemoveInteractable("big");
     big.id = "big2";
     big.centre.y = 19.0; // surface 2.0 m away
     REQUIRE_FALSE(w.system.AddInteractable(big).has_value());
-    CHECK(*w.system.SelectTarget(actor) == "big2"); // found although its centre is 19 m (several cells) away
+    CHECK(select(actor) == "big2"); // found although its centre is 19 m (several cells) away
 
     InteractableDescriptor absurd;
     absurd.id = "absurd";

@@ -89,7 +89,7 @@ TEST_CASE("turns cost speed in proportion to the angle, not more than the model 
     CHECK(std::abs(r90.v.x) < 0.1);
 }
 
-TEST_CASE("without input the character brakes along its heading and stops; input resumes it") {
+TEST_CASE("without input the character brakes along its heading and stops - input resumes it") {
     const double dt = 1.0 / 60.0;
     Vec2 v{6.0, 8.0};
     const SteeringInput none{{0.0, 0.0}, 8.0, 4.0, 8.0};
@@ -226,7 +226,7 @@ EngineTurn EngineFrictionTurn(double side, bool holdSprint, double dt = 1.0 / 12
 
 } // namespace
 
-TEST_CASE("the engine's friction blend alone explains the measured sprint-turn speed dip; losing the sprint gait is a second-order effect") {
+TEST_CASE("the engine's friction blend alone explains the measured sprint-turn speed dip - losing the sprint gait is a second-order effect") {
     const EngineTurn real = EngineFrictionTurn(+1.0, false);
     const EngineTurn kept = EngineFrictionTurn(+1.0, true);
     // Measured on Windows: minimum 461..464 of 800 (57.6..58 %), back at 95 % after about 1.02 s.
@@ -236,7 +236,12 @@ TEST_CASE("the engine's friction blend alone explains the measured sprint-turn s
     CHECK(real.timeTo95 < 1.15);
     // Even with the sprint held the whole time the dip is nearly as deep: the cause is the friction formula, not the gait switch.
     CHECK(kept.minSpeed / 8.0 > 0.55);
-    CHECK(real.minSpeed - kept.minSpeed > -0.05);
+    // Direction of the comparison: dropping the sprint can only LOWER the minimum (the gait limit falls, the model brakes at 8 m/s^2 above it), so the
+    // real run may not end up above the held-sprint run. The cost is the ~56 ms without sprint times the braking rate: measured 0.19..0.205 m/s,
+    // stable for time steps from 1/60 to 1/1000 s (about 6 % of the 3.4 m/s dip), and the real run (4.63) matches the Windows measurement
+    // (4.61..4.64) while the held-sprint run (4.84) does not. The upper bound below stays at 0.4 m/s; a lower bound proves the gait loss is not free.
+    CHECK(real.minSpeed - kept.minSpeed < 0.05);
+    CHECK(kept.minSpeed - real.minSpeed > 0.1);
     CHECK(kept.minSpeed - real.minSpeed < 0.4);
     // The model is mirror symmetric: the left/right difference seen in Unreal (sprint ends only to the left) is NOT explained by it.
     const EngineTurn left = EngineFrictionTurn(-1.0, false);

@@ -146,8 +146,8 @@
       "id": "inventory.foundation",
       "title": "Inventory domain: item definitions, stacks, containers, capacity, equipment slots, transactions (Core foundation, M2B1)",
       "core_headers": ["Inventory.h"],
-      "tests": ["core:Tests/Core/InventoryTests.cpp"],
-      "gap": "Not integrated in the Unreal game and not connected to the placeholder pickup counts (Pickup.h); no item data, no UI, no save-game wiring. Only Core behavior is tested."
+      "tests": ["core:Tests/Core/InventoryTests.cpp", "core:Tests/Core/InventoryTxTests.cpp"],
+      "gap": "Not integrated in the Unreal game and not connected to the placeholder pickup counts (Pickup.h); no item data, no UI. Transactions use an undo log (M2B2). Only Core behavior is tested."
     },
     {
       "id": "navigation.foundation",
@@ -155,6 +155,20 @@
       "core_headers": ["Navigation.h"],
       "tests": ["core:Tests/Core/NavigationTests.cpp"],
       "gap": "Data model only: no pathfinding and no road graph (both come from WorldForge / Unreal navigation); nothing is shown in the game. Only Core behavior is tested."
+    },
+    {
+      "id": "coordinates.world_frame",
+      "title": "Canonical world coordinates and adapters: metres/east-north-up, Unreal centimetre axis presets, local frames, map and minimap (Core foundation, M2B2)",
+      "core_headers": ["Coordinates.h"],
+      "tests": ["core:Tests/Core/CoordinateTests.cpp"],
+      "gap": "The Unreal axis mapping is a PROPOSAL (master: open, WF-DC01 / CQ-101) and has never been run in Unreal or checked against WorldForge output; no Unreal adapter code uses it yet. Only Core behavior is tested."
+    },
+    {
+      "id": "persistence.save_slot",
+      "title": "Unified save slot: versioned sections, checksums, atomic publication with previous generation, game-state adapters (Core foundation, M2B2)",
+      "core_headers": ["SaveSlot.h", "SaveStore.h", "GameSave.h"],
+      "tests": ["core:Tests/Core/SaveSlotTests.cpp", "core:Tests/Core/GameSaveTests.cpp"],
+      "gap": "Not wired into the Unreal game (the game still uses its own save console commands); the Windows file-flush path is written but unverified; crash safety is tested by fault injection only, never against a real power loss. Only Core behavior is tested."
     }
   ]
 }
