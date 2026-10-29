@@ -142,6 +142,48 @@ struct SPNCORE_API FSpnMovementSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump", meta = (ClampMin = "0", ClampMax = "100"))
 	float MaxStepHeight = 25.f;
 
+	/**
+	 * Ground steering (M2A4.1): the velocity vector bends towards the input direction at a limited rate and loses speed in proportion to the angle
+	 * turned (Core "SteerVelocity"), instead of the engine's friction blend, which shrinks the vector cumulatively (800 -> 462 cm/s in a 90 degree
+	 * sprint turn, measured). Applies to walking with OrientRotationToMovement only; off = engine friction (TurnFriction).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering")
+	bool bUseSteering = true;
+
+	/** Heading change rate of the velocity at low speed and at SprintSpeed, degrees/s. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering", meta = (ClampMin = "1", ClampMax = "3600"))
+	float MaxHeadingRateDegrees = 720.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering", meta = (ClampMin = "1", ClampMax = "3600"))
+	float MinHeadingRateDegrees = 300.f;
+
+	/** Fraction of the speed lost per radian of heading change (0.15: a 90 degree turn costs about 23 %). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Steering", meta = (ClampMin = "0", ClampMax = "1"))
+	float SpeedLossPerRadian = 0.15f;
+
+	/**
+	 * Character Movement "Perch Radius Threshold", cm: the capsule does not rest on an edge whose contact lies further than (radius - this) from its
+	 * axis. 0 = the engine default (the rounded capsule bottom rolls over any ledge corner it can touch and a jump then clears ledges up to about
+	 * apex + 25 cm). 14 cm is the value measured in M2A4.1 (Jump suite, ledges 30..100 cm, 12 and 16 cm gave identical results): ledges up to the jump
+	 * apex stay jumpable, 60 cm and higher stay blocked.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump", meta = (ClampMin = "0", ClampMax = "42"))
+	float PerchRadiusThreshold = 14.f;
+
+	/**
+	 * While walking, do not let a slide along a non-walkable surface (a ledge corner) lift the capsule more than the move intended (the engine does this only
+	 * while falling). M2A4.1: measured without effect on the 30 cm walking cases; kept as parity with the falling rule, candidate for removal.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
+	bool bPreventGroundSlopeBoosting = true;
+
+	/**
+	 * Character Movement "Use Flat Base For Floor Checks". Off: the step-up test measures the step height against the ROUNDED capsule bottom, so a
+	 * "25 cm" step limit really allows about 30 cm (the capsule slides over the corner). On: floor checks use the flat base, the limit is the limit.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
+	bool bUseFlatBaseForFloorChecks = true;
+
 	/** Below this horizontal speed the character counts as standing, cm/s. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", meta = (ClampMin = "0"))
 	float IdleSpeed = 5.f;
@@ -183,4 +225,10 @@ namespace SpnMovement
 	SPNCORE_API float JumpApexHeight(float LaunchVelocityCm, float GravityCm);
 
 	SPNCORE_API ESpnObstacleClass ClassifyObstacle(const FSpnMovementSettings& Settings, float HeightCm);
+
+	/**
+	 * One steering step on the ground (Core SteerVelocity). VelocityCm and the result are horizontal velocities in cm/s; Direction is the wanted heading
+	 * (zero = no input, the character brakes with BrakingDeceleration); TargetSpeedCm and AccelerationCm come from the gait.
+	 */
+	SPNCORE_API FVector2D SteerVelocity(const FSpnMovementSettings& Settings, FVector2D VelocityCm, FVector2D Direction, float TargetSpeedCm, float AccelerationCm, float DeltaSeconds);
 }

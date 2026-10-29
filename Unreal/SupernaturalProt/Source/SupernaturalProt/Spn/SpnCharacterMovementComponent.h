@@ -99,6 +99,11 @@ public:
 	virtual void BeginPlay() override;
 	virtual float GetMaxSpeed() const override;
 	virtual float GetMaxAcceleration() const override;
+	/** Ground steering of the SPN settings (Core SteerVelocity) instead of the engine's friction blend; see FSpnMovementSettings::bUseSteering. */
+	virtual void CalcVelocity(float DeltaTime, float Friction, bool bFluid, float BrakingDeceleration) override;
+
+	/** Adds the engine's slope-boosting guard to walking (see FSpnMovementSettings::bPreventGroundSlopeBoosting). */
+	virtual FVector ComputeSlideVector(const FVector& Delta, const float Time, const FVector& Normal, const FHitResult& Hit) const override;
 	virtual class FNetworkPredictionData_Client* GetPredictionData_Client() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
 	/** Replaying saved moves after a server correction must not leave the gait request of the last replayed move behind. */

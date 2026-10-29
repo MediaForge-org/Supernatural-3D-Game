@@ -62,6 +62,14 @@ namespace SpnQa
 		return Map;
 	}
 
+	/** Experiment hook for measurements: -<Name>=<number> on the game command line (set by the wrapper's -Experiment), else Default. Never used for a pass/fail threshold. */
+	inline float ExperimentValue(const TCHAR* Name, float Default)
+	{
+		float Value = Default;
+		FParse::Value(FCommandLine::Get(), *FString::Printf(TEXT("%s="), Name), Value);
+		return Value;
+	}
+
 	inline double NowEpoch() { return (FDateTime::UtcNow() - FDateTime(1970, 1, 1)).GetTotalSeconds(); }
 
 	inline FString JsonEscape(const FString& In)

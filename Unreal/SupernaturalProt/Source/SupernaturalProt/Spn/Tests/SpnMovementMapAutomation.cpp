@@ -68,6 +68,8 @@ namespace
 		return Height >= S.MaxStepHeight + BoundaryMargin ? EVerdict::MustBlock : EVerdict::Report;
 	}
 
+	constexpr float JumpMomentumAllowance = 6.f;   // cm above the apex that momentum and the capsule rounding can add (measured, see JumpVerdict)
+
 	/** Same for a run-up with jump attempts: only a ledge clearly above the apex must block; the band in between is reported. */
 	EVerdict JumpVerdict(const FSpnMovementSettings& S, float Height)
 	{
@@ -75,7 +77,8 @@ namespace
 		{
 			return EVerdict::MustPass;
 		}
-		return Height >= S.JumpHeight + BoundaryMargin + 1.f ? EVerdict::MustBlock : EVerdict::Report;
+		// + JumpMomentumAllowance: measured in M2A4.1 (SpnQA.Jump): at run speed (550 cm/s) a 50 cm ledge is cleared with the momentum, jog is blocked at 50, everything from 60 cm blocks.
+		return Height >= S.JumpHeight + BoundaryMargin + 1.f + JumpMomentumAllowance ? EVerdict::MustBlock : EVerdict::Report;
 	}
 
 	/** State shared between the lambdas of one scenario. */

@@ -17,7 +17,7 @@
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Failed')]
+    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'Failed')]
     [string]$Suite = 'Full',
     [switch]$NoBuild,
     [switch]$NoVideo,
@@ -28,6 +28,7 @@ param(
     [int]$Height = 1080,
     [int]$TimeoutMinutes = 25,
     [string]$Map = '/Game/SpnTest/Lvl_SpnMovementTestV2',   # level the SpnQA tests walk through (passed as -SpnQaMap=)
+    [string[]]$ExtraGameArgs = @(),   # extra game command line arguments, e.g. -SpnQaPerch=21 (measurement experiments)
     [string]$EnginePath = $env:SPN_UE_ROOT,
     [string]$FfmpegPath = $env:SPN_FFMPEG
 )
@@ -93,20 +94,26 @@ if (-not $NoBuild) {
 $groups = @{
     Full        = 'SpnQA'
     Quick       = 'SpnQA.Spawn+SpnQA.Doors+SpnQA.DoorReach+SpnQA.SaveLoad'
-    Movement    = 'SpnQA.Movement+SpnQA.Turns+SpnQA.Jump'
+    Movement    = 'SpnQA.Movement+SpnQA.Turns+SpnQA.Jump+SpnQA.Locomotion'
     Doors       = 'SpnQA.Doors+SpnQA.DoorReach+SpnQA.Buildings'
     Camera      = 'SpnQA.Camera'
     Performance = 'SpnQA.Performance'
+    Jump        = 'SpnQA.Jump'
+    MovementDemo = 'SpnQA.MovementDemo'   # recorded movement regression demo on V3, no repositioning (use -Map ...V3Interiors)
+    Locomotion  = 'SpnQA.Locomotion'   # direction reversal, rotation stability, obstacle collision (M2A4.1)
     Traversal   = 'SpnQA.ContinuousTraversal'   # one uninterrupted walk through two buildings, no repositioning (use -Map ...V3Interiors)
     Access      = 'SpnQA.BuildingAccess'   # one recorded visit of a building: approach, open, enter, explore, leave, close (use -Map ...V3Interiors)
 }
 $expected = @{
-    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Camera', 'SaveLoad', 'Performance')
+    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Locomotion', 'Camera', 'SaveLoad', 'Performance')
     Quick       = @('Spawn', 'Doors', 'DoorReach', 'SaveLoad')
-    Movement    = @('Movement', 'Turns', 'Jump')
+    Movement    = @('Movement', 'Turns', 'Jump', 'Locomotion')
     Doors       = @('Doors', 'DoorReach', 'Buildings')
     Camera      = @('Camera')
     Performance = @('Performance')
+    Jump        = @('Jump')
+    Locomotion  = @('Locomotion')
+    MovementDemo = @('MovementDemo')
     Traversal   = @('ContinuousTraversal')
     Access      = @('BuildingAccess')
 }
@@ -166,6 +173,7 @@ $execCmds = "Automation RunTests $filter"
 $gameArgs = @("`"$uproject`"", $mapPath, '-game', "-ExecCmds=`"$execCmds`"", '-TestExit="Automation Test Queue Empty"', "-SpnQaOut=`"$runDir`"", "-SpnQaMap=$mapPath",
     "-ReportExportPath=`"$(Join-Path $runDir 'automation')`"", "-abslog=`"$gameLog`"", '-unattended', '-nosplash', '-NoVerifyGC',
     "-ini:Engine:[SystemSettings]:t.MaxFPS=$Fps", '-ini:Engine:[SystemSettings]:r.VSync=0')
+$gameArgs += $ExtraGameArgs
 # Quick: a small window without video. -nullrhi was tried and drops key events unreliably (doors/walking flaked), so every suite renders.
 if ($headless) { $gameArgs += @('-windowed', '-ResX=960', '-ResY=540', '-WinX=0', '-WinY=0', '-nosound') } else { $gameArgs += @('-windowed', "-ResX=$Width", "-ResY=$Height", '-WinX=0', '-WinY=0') }
 

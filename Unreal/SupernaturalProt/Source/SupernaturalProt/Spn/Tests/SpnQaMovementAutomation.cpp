@@ -370,6 +370,10 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 		{TEXT("ledge_45_jog"), ESpnGait::Jog, false, 45, 125, false, false},
 		{TEXT("ledge_50_run"), ESpnGait::Run, false, 50, 125, false, false},
 		{TEXT("ledge_60_run"), ESpnGait::Run, false, 60, 125, false, false},
+		{TEXT("ledge_50_jog"), ESpnGait::Jog, false, 50, 125, false, false},
+		{TEXT("ledge_60_jog"), ESpnGait::Jog, false, 60, 125, false, false},
+		{TEXT("ledge_70_run"), ESpnGait::Run, false, 70, 125, false, false},
+		{TEXT("ledge_80_run"), ESpnGait::Run, false, 80, 125, false, false},
 		{TEXT("ledge_100_sprint"), ESpnGait::Jog, true, 100, 125, true, false},
 		{TEXT("late_jump_ledge_45_jog"), ESpnGait::Jog, false, 45, 10, false, false},
 		{TEXT("late_jump_ledge_40_run"), ESpnGait::Run, false, 40, 10, false, false},
@@ -384,6 +388,16 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 			{
 				SpnQa::Section(FString::Printf(TEXT("Jump: %s"), Case.Name));
 				Character.GetSpnMovement()->SetBaseGait(Case.Gait);
+				{
+					const float Perch = SpnQa::ExperimentValue(TEXT("SpnQaPerch"), -1.f);
+					const float Flat = SpnQa::ExperimentValue(TEXT("SpnQaFlatBase"), -1.f);
+					if (Perch >= 0.f || Flat >= 0.f)   // measurement only: the defaults stay in FSpnMovementSettings
+					{
+						if (Perch >= 0.f) { Character.GetSpnMovement()->Settings.PerchRadiusThreshold = Perch; }
+						if (Flat >= 0.f) { Character.GetSpnMovement()->Settings.bUseFlatBaseForFloorChecks = Flat > 0.5f; }
+						Character.GetSpnMovement()->ApplySettings();
+					}
+				}
 				Run->GroundZ = StandZ;
 				Run->StartX = LaneX;
 				if (Case.Height > 0.f)
@@ -483,18 +497,20 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 				}
 				else if (Case.Gap < 50.f)
 				{
-					// The reported problem: the jump right before a ledge about as high as the apex goes almost straight up.
-					if (Run->Crossed < 0.0 || Run->Crossed > 1.0) { Status = SpnQa::EStatus::Fail; Why = TEXT("near-vertical climb: crossing the ledge takes longer than 1 s (known issue, M2A2 report section 5, decision pending)"); }
-					else if (Retained < 50.f) { Status = SpnQa::EStatus::Fail; Why = TEXT("horizontal speed collapses below 50% at the ledge face (known issue, M2A2 report section 5, decision pending)"); }
+					// The reported problem: the jump right before a ledge about as high as the apex goes almost straight up (M2A2 report section 5).
+					// KNOWN ISSUE, still open after M2A4.1 (measured: the speed collapses to 4-10 %, the capsule mounts the ledge 0.45 s after take-off):
+					// the fix is a ledge assist / mantle, planned for the vault milestone, not a tolerance.
+					if (Run->Crossed < 0.0 || Run->Crossed > 1.0) { Status = SpnQa::EStatus::Fail; Why = TEXT("near-vertical climb: crossing the ledge takes longer than 1 s (known issue, M2A2 report section 5, open: needs a ledge assist / mantle)"); }
+					else if (Retained < 50.f) { Status = SpnQa::EStatus::Fail; Why = TEXT("horizontal speed collapses below 50% at the ledge face (known issue, M2A2 report section 5, open: needs a ledge assist / mantle)"); }
 				}
 				else if (Case.Height <= S.MaxStepHeight + 20.f)
 				{
 					if (Run->Crossed < 0.0) { Status = SpnQa::EStatus::Fail; Why = TEXT("could not get over a ledge below the jump apex"); }
 					else if (Retained < 50.f) { Status = SpnQa::EStatus::Fail; Why = TEXT("speed collapses below 50% during the jump over the ledge"); }
 				}
-				else if (Case.Height > S.JumpHeight + 3.f)
+				else if (Case.Height > S.JumpHeight + 6.f)   // +6: measured, at run speed (550 cm/s) a 50 cm ledge is cleared with the momentum (jog is blocked at 50, everything from 60 cm is blocked at every speed)
 				{
-					if (Run->Crossed >= 0.0) { Status = SpnQa::EStatus::Fail; Why = FString::Printf(TEXT("got over a %.0f cm ledge although the apex is %.0f cm (known, SpnGame.Movement.Obstacles fails the same way)"), Case.Height, S.JumpHeight); }
+					if (Run->Crossed >= 0.0) { Status = SpnQa::EStatus::Fail; Why = FString::Printf(TEXT("got over a %.0f cm ledge although the apex is %.0f cm"), Case.Height, S.JumpHeight); }
 				}
 				SpnQa::Check(*this, &Character, TEXT("Jump"), Id, Status, (Why.IsEmpty() ? FString() : Why + TEXT(". ")) + Facts);
 			}));

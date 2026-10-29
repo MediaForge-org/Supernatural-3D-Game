@@ -121,7 +121,10 @@ void USpnCharacterMovementComponent::ApplySettings()
 	RotationRate = FRotator(0.f, Settings.TurnRateDegrees, 0.f);
 	MinAnalogWalkSpeed = Settings.MinAnalogSpeed;
 	// Independent of the jump height: the step height only decides which ledges are walked up, JumpZVelocity only the apex.
+	// Independent of the jump height: the step height only decides which ledges are walked up, JumpZVelocity only the apex.
 	MaxStepHeight = Settings.MaxStepHeight;
+	PerchRadiusThreshold = Settings.PerchRadiusThreshold;
+	bUseFlatBaseForFloorChecks = Settings.bUseFlatBaseForFloorChecks;
 	AirControl = Settings.AirControl;
 	BrakingDecelerationFalling = Settings.AirBrakingDeceleration;
 	RefreshJumpVelocity();
@@ -211,6 +214,42 @@ float USpnCharacterMovementComponent::GetMaxAcceleration() const
 		return SpnMovement::GaitAcceleration(Settings, GetEffectiveGait());
 	}
 	return Super::GetMaxAcceleration();
+}
+
+void USpnCharacterMovementComponent::CalcVelocity(float DeltaTime, float Friction, bool bFluid, float BrakingDeceleration)
+{
+	// Only the plain walking case: root motion, AI requested velocity, crouching, strafing (no orientation to movement) and every other mode keep the engine path.
+	if (!Settings.bUseSteering || MovementMode != MOVE_Walking || !bOrientRotationToMovement || bHasRequestedVelocity || HasAnimRootMotion()
+		|| CurrentRootMotion.HasOverrideVelocity() || IsCrouching() || DeltaTime < MIN_TICK_TIME)
+	{
+		Super::CalcVelocity(DeltaTime, Friction, bFluid, BrakingDeceleration);
+		return;
+	}
+
+	// Depends only on Velocity, Acceleration and DeltaTime, so a client replay after a correction gives the same result as the first run.
+	const FVector2D Direction = FVector2D(Acceleration.X, Acceleration.Y).GetSafeNormal();
+	float TargetSpeed = 0.f;
+	if (!Direction.IsNearlyZero())
+	{
+		const float Analog = ComputeAnalogInputModifier();
+		TargetSpeed = FMath::Max(MinAnalogWalkSpeed, GetMaxSpeed() * Analog);
+	}
+	const FVector2D Next = SpnMovement::SteerVelocity(Settings, FVector2D(Velocity.X, Velocity.Y), Direction, TargetSpeed, GetMaxAcceleration(), DeltaTime);
+	Velocity.X = Next.X;
+	Velocity.Y = Next.Y;
+}
+
+FVector USpnCharacterMovementComponent::ComputeSlideVector(const FVector& Delta, const float Time, const FVector& Normal, const FHitResult& Hit) const
+{
+	FVector Result = Super::ComputeSlideVector(Delta, Time, Normal, Hit);
+	// The engine prevents "slope boosting" (sliding UP along a non-walkable surface) only while FALLING (CharacterMovementComponent.cpp, ComputeSlideVector).
+	// This applies the same rule on the ground. M2A4.1 measured NO effect of it on the 30 cm walking cases (they are still crossed, see the regression report):
+	// it is kept only as parity with the falling rule and is the first candidate for removal when the 30 cm question is resolved.
+	if (Settings.bPreventGroundSlopeBoosting && IsMovingOnGround())
+	{
+		Result = HandleSlopeBoosting(Result, Delta, Time, Normal, Hit);
+	}
+	return Result;
 }
 
 FNetworkPredictionData_Client* USpnCharacterMovementComponent::GetPredictionData_Client() const

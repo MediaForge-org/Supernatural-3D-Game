@@ -1,5 +1,6 @@
 #include "SpnMovement.h"
 
+#include <spn/core/GroundSteering.h>
 #include <spn/core/Movement.h>
 
 namespace
@@ -40,6 +41,16 @@ namespace
 		return Config;
 	}
 
+	spn::core::SteeringConfig ToSteering(const FSpnMovementSettings& S)
+	{
+		spn::core::SteeringConfig Config;
+		Config.maxHeadingRateDegrees = S.MaxHeadingRateDegrees;
+		Config.minHeadingRateDegrees = S.MinHeadingRateDegrees;
+		Config.fullSpeed = S.SprintSpeed * CmToM;
+		Config.speedLossPerRadian = S.SpeedLossPerRadian;
+		return Config;
+	}
+
 	spn::core::MoveIntent ToIntent(FVector2D Input)
 	{
 		return spn::core::MoveIntent{Input.X, Input.Y};
@@ -48,7 +59,11 @@ namespace
 
 bool SpnMovement::Validate(const FSpnMovementSettings& Settings, FString& OutError)
 {
-	const std::optional<std::string> Error = spn::core::Validate(ToCore(Settings));
+	std::optional<std::string> Error = spn::core::Validate(ToCore(Settings));
+	if (!Error.has_value())
+	{
+		Error = spn::core::Validate(ToSteering(Settings));
+	}
 	if (Error.has_value())
 	{
 		OutError = FString(UTF8_TO_TCHAR(Error->c_str()));
@@ -109,4 +124,15 @@ ESpnObstacleClass SpnMovement::ClassifyObstacle(const FSpnMovementSettings& Sett
 	case spn::core::ObstacleClass::JumpCandidate: return ESpnObstacleClass::JumpCandidate;
 	default: return ESpnObstacleClass::Blocked;
 	}
+}
+
+FVector2D SpnMovement::SteerVelocity(const FSpnMovementSettings& Settings, FVector2D VelocityCm, FVector2D Direction, float TargetSpeedCm, float AccelerationCm, float DeltaSeconds)
+{
+	spn::core::SteeringInput Input;
+	Input.direction = {Direction.X, Direction.Y};
+	Input.targetSpeed = TargetSpeedCm * CmToM;
+	Input.acceleration = AccelerationCm * CmToM;
+	Input.braking = Settings.BrakingDeceleration * CmToM;
+	const spn::core::Vec2 Next = spn::core::SteerVelocity(ToSteering(Settings), {VelocityCm.X * CmToM, VelocityCm.Y * CmToM}, Input, DeltaSeconds);
+	return FVector2D(Next.x / CmToM, Next.y / CmToM);
 }

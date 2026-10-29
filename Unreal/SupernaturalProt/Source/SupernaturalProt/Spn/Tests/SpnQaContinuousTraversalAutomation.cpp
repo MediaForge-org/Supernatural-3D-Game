@@ -205,6 +205,8 @@ namespace
 		FVector Previous = FVector::ZeroVector;
 		double PreviousTime = 0.0;
 		double MaxStepPerSecond = 0.0;
+		double MaxWindowSpeed = 0.0;
+		TArray<TPair<double, FVector>> History;
 		double MaxStep = 0.0;
 		double MaxZStep = 0.0;
 		double Walked = 0.0;
@@ -286,6 +288,10 @@ namespace
 			}
 			R.Previous = Loc;
 			R.bHavePrevious = true;
+			// Speed over a 0.25 s window: one frame (dt jitter around a hitch or a screenshot) can show a 1500+ cm/s "speed" for a character that moves at jog speed.
+			R.History.Add(TPair<double, FVector>(Elapsed, Loc));
+			while (R.History.Num() > 1 && Elapsed - R.History[0].Key > 0.25) { R.History.RemoveAt(0); }
+			if (Elapsed - R.History[0].Key >= 0.2) { R.MaxWindowSpeed = FMath::Max(R.MaxWindowSpeed, FVector::Dist(Loc, R.History[0].Value) / (Elapsed - R.History[0].Key)); }
 			if (Elapsed - R.LastTraceTime >= 0.25)
 			{
 				R.LastTraceTime = Elapsed;
@@ -437,9 +443,9 @@ namespace
 			{
 				SpnQa::Check(Test, &Character, Suite, TEXT("run"), SpnQa::EStatus::Pass, FString::Printf(TEXT("all %d steps ran, %d checks, %d failed"), R.Ops.Num(), R.Checks, R.Failed));
 			}
-			// A repositioning would show up as one frame with a huge displacement. The fastest gait (sprint) is about 800 cm/s; 1500 cm/s is the limit.
-			SpnQa::Check(Test, &Character, Suite, TEXT("no_teleport_continuous_motion"), R.MaxStepPerSecond <= 1500.0 ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
-				FString::Printf(TEXT("largest displacement of one frame %.1f cm, highest speed over one frame %.0f cm/s (limit 1500), largest vertical step %.1f cm"), R.MaxStep, R.MaxStepPerSecond, R.MaxZStep));
+			// A repositioning would show up as a jump: one frame of more than 200 cm (sprint, the fastest gait, is 800 cm/s) or more than 1000 cm/s over a 0.25 s window.
+			SpnQa::Check(Test, &Character, Suite, TEXT("no_teleport_continuous_motion"), R.MaxStep <= 200.0 && R.MaxWindowSpeed <= 1000.0 ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
+				FString::Printf(TEXT("largest displacement of one frame %.1f cm (limit 200), highest speed over 0.25 s %.0f cm/s (limit 1000; per-frame speed %.0f is only noise of the frame time), largest vertical step %.1f cm"), R.MaxStep, R.MaxWindowSpeed, R.MaxStepPerSecond, R.MaxZStep));
 			SpnQa::Check(Test, &Character, Suite, TEXT("walked_distance"), R.Walked > 15000.0 ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
 				FString::Printf(TEXT("%.0f cm walked on foot (both buildings and the street between them need more than 15000 cm)"), R.Walked));
 			SpnQa::Trace(Suite, TEXT("position_every_0.25s"), {TEXT("t"), TEXT("x"), TEXT("y"), TEXT("z"), TEXT("speed2d"), TEXT("step")}, R.Trace);
