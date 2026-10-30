@@ -131,6 +131,15 @@ public:
 	/** Bool fact by key; unset if the fact is absent or not a bool. */
 	TOptional<bool> ReadFlag(const FString& Key) const;
 
+	/**
+	 * Sets a bool fact (Night Build 01: persistent "taken / opened" flags of world objects whose CONTENT lives in the inventory). Key rule: first
+	 * [a-z], rest [a-z0-9_.], at most 128 chars. False (store unchanged) for a bad key, or if the key holds a non-bool value.
+	 */
+	bool SetFlag(const FString& Key, bool bValue, const FString& Cause);
+
+	/** New game: replaces the store with an empty one and broadcasts OnWorldStateReplaced. Does not touch files. */
+	void ResetToEmpty();
+
 	/** Number of journaled changes (0 for an empty store). */
 	uint64 GetRevision() const;
 

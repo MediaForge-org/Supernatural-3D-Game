@@ -51,6 +51,13 @@ public:
 	void Teardown();
 	USpnInventoryViewModel* GetViewModel() const { return ViewModel; }
 
+	/**
+	 * Which containers get a tab (Night Build 01). Include non-empty: only those (a world container view = the player container + the opened one).
+	 * Exclude: those never get a tab (the normal inventory hides containers that belong to the world). Both empty = every container (the old behaviour).
+	 * FocusContainer (> 0) becomes the active tab on the next OnShown().
+	 */
+	void SetContainerVisibility(const TSet<int64>& Include, const TSet<int64>& Exclude, int64 FocusContainer = 0);
+
 	/** Called by the owner whenever the screen is shown: rebuilds everything from the current state (stale items never survive a reopening). */
 	void OnShown();
 
@@ -203,6 +210,8 @@ private:
 	TWeakObjectPtr<USpnSaveSubsystem> Save;
 	int64 PrimaryContainerId = 0;
 	int64 ActiveContainer = 0;
+	TSet<int64> IncludeContainers, ExcludeContainers;
+	int64 FocusContainerId = 0;
 	EZone Zone = EZone::Items;
 	TArray<FSpnActionOption> Actions;
 	int32 ActionIndex = 0;

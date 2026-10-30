@@ -116,6 +116,18 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0"))
 	float CameraArmRecoverySpeed = 300.f;
 
+	/**
+	 * Stair camera smoothing (Night Build 01, A1): time constant (seconds) of the exponential decay that lets the VISUAL camera follow a step
+	 * instead of snapping with the capsule. 0 = off. Only the camera boom is offset; the capsule and the physical position are never touched.
+	 * Disabled while airborne (jumps and falls stay immediate) and for vertical jumps larger than twice the step height (teleports, ledges).
+	 */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0", ClampMax = "1"))
+	float StairCameraSmoothingSeconds = 0.14f;
+
+	/** Largest lag (cm) the smoothing may build up; the camera never trails further than this behind the capsule. */
+	UPROPERTY(EditAnywhere, Category="Camera", meta = (ClampMin = "0", ClampMax = "100"))
+	float StairCameraMaxLag = 24.f;
+
 	/** Key that cycles the base gait Walk -> Jog -> Run (placeholder binding, mapped at runtime) */
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultGaitCycleKey = EKeys::V;
@@ -150,8 +162,36 @@ protected:
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
-	/** Called for looking input */
+	/** Called for looking input (gamepad stick): scaled by the gamepad sensitivity setting */
 	void Look(const FInputActionValue& Value);
+
+	/** Called for mouse looking: scaled by the mouse sensitivity setting */
+	void LookMouse(const FInputActionValue& Value);
+
+	/** Player settings (sensitivity, invert Y, smoothing) of this game instance; defaults if there is none */
+	struct FLookSettings { float Mouse = 1.f; float Gamepad = 1.f; bool bInvertY = false; bool bSmoothing = true; };
+	FLookSettings ReadLookSettings() const;
+
+	/** Applies the vertical camera lag for this frame (visual only) */
+	void UpdateStairCamera(float DeltaSeconds);
+
+public:
+	/** Current vertical camera lag in cm (positive: the camera is below where the capsule would put it). For tests and diagnostics. */
+	FORCEINLINE float GetStairCameraLag() const { return StairLagZ; }
+	/** Time constant of the stair camera smoothing in seconds (0 = off). Tests and settings screens. */
+	FORCEINLINE float GetStairCameraSmoothingSeconds() const { return StairCameraSmoothingSeconds; }
+	FORCEINLINE void SetStairCameraSmoothingSeconds(float Seconds) { StairCameraSmoothingSeconds = FMath::Clamp(Seconds, 0.f, 1.f); }
+	/** Capsule-follow smoothing of the camera was reset (teleport / load); the next frame starts without lag. */
+	void ResetStairCamera();
+
+private:
+	float StairLagZ = 0.f;
+	float StairPrevZ = 0.f;
+	bool bStairInit = false;
+	FVector StairBaseLocation = FVector::ZeroVector;
+	bool bStairBaseKnown = false;
+
+protected:
 
 public:
 

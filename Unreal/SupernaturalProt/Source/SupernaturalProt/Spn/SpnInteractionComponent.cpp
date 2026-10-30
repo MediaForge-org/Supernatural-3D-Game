@@ -12,6 +12,7 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Actor.h"
 #include "Spn/SpnInteractable.h"
+#include "Spn/UI/SpnUiNotify.h"
 #include "SupernaturalProt.h"
 
 USpnInteractionComponent::USpnInteractionComponent()
@@ -34,7 +35,11 @@ void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	const FString Verb = Interactable != nullptr ? Interactable->SpnPromptText(Pawn) : FString();
 	// "E - Verb": the key name comes from PromptKey (the character copies its interact key here), so a gamepad key shows its own name later.
 	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("%s \u2013 %s"), *PromptKey.GetDisplayName().ToString(), *Verb);
-	if (CurrentPrompt.IsEmpty())
+	if (SpnUi::SetPrompt(this, CurrentPrompt))
+	{
+		HidePromptWidget(); // the unified HUD draws the prompt (Night Build 01)
+	}
+	else if (CurrentPrompt.IsEmpty())
 	{
 		HidePromptWidget();
 	}

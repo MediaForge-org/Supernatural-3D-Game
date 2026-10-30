@@ -252,6 +252,23 @@ TOptional<bool> USpnWorldStateSubsystem::ReadFlag(const FString& Key) const
 	return {};
 }
 
+void USpnWorldStateSubsystem::ResetToEmpty()
+{
+	State->Facts = spn::core::WorldFacts();
+	UE_LOG(LogSpnCore, Log, TEXT("World state [%s]: reset to an empty store (new game); notifying listeners"), *DescribeOwner());
+	OnWorldStateReplaced.Broadcast();
+}
+
+bool USpnWorldStateSubsystem::SetFlag(const FString& Key, bool bValue, const FString& Cause)
+{
+	const std::string Utf8Key = ToUtf8(Key);
+	if (!spn::core::IsValidFactKey(Utf8Key))
+	{
+		return false;
+	}
+	return State->Facts.Apply(spn::core::SetFact{Utf8Key, bValue}, ToUtf8(Cause)).HasValue();
+}
+
 uint64 USpnWorldStateSubsystem::GetRevision() const
 {
 	return State->Facts.Revision();

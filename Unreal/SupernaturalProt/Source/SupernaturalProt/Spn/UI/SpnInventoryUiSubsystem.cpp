@@ -92,6 +92,16 @@ bool USpnInventoryUiSubsystem::IsConsoleActive() const
 
 bool USpnInventoryUiSubsystem::OpenInventory()
 {
+	return OpenInternal(0);
+}
+
+bool USpnInventoryUiSubsystem::OpenContainer(int64 ContainerId)
+{
+	return ContainerId > 0 && OpenInternal(ContainerId);
+}
+
+bool USpnInventoryUiSubsystem::OpenInternal(int64 FocusContainer)
+{
 	if (bOpen)
 	{
 		return true;
@@ -119,6 +129,26 @@ bool USpnInventoryUiSubsystem::OpenInventory()
 	}
 	// first bound container = the player's own (lowest id) unless a QA setup says otherwise
 	Screen->Setup(Inventory, GameInstance->GetSubsystem<USpnSaveSubsystem>(), 0);
+	{
+		// Night Build 01: world containers (chests, boxes) are hidden from the plain inventory; a container view shows the player's own container
+		// (the lowest id that does not belong to the world) plus the opened one.
+		TSet<int64> Include;
+		if (FocusContainer > 0)
+		{
+			int64 Own = 0;
+			for (const uint64 Id : Inventory->ListContainers())
+			{
+				if (!SpnWorldContainerRegistry().Contains(static_cast<int64>(Id)) && (Own == 0 || static_cast<int64>(Id) < Own))
+				{
+					Own = static_cast<int64>(Id);
+				}
+			}
+			if (Own > 0) { Include.Add(Own); }
+			Include.Add(FocusContainer);
+		}
+		Screen->SetContainerVisibility(Include, SpnWorldContainerRegistry(), FocusContainer);
+		OpenedContainer = FocusContainer;
+	}
 	Screen->AddToViewport(100);
 
 	bHadShowMouseCursor = Controller->bShowMouseCursor;
@@ -145,6 +175,7 @@ void USpnInventoryUiSubsystem::CloseInventory()
 		return;
 	}
 	bOpen = false;
+	OpenedContainer = 0;
 	if (Screen != nullptr)
 	{
 		Screen->RemoveFromParent();
@@ -200,6 +231,10 @@ bool USpnInventoryUiSubsystem::ProcessKeyDown(const FKeyEvent& Event)
 		if (!Event.IsRepeat() && (Key == Settings->OpenKey || Key == Settings->OpenGamepadKey))
 		{
 			// only while a game world with a controller is running and no other UI owns the keyboard
+			if (OpenBlocker && OpenBlocker())
+			{
+				return false; // another screen (pause, map, menu) owns the input
+			}
 			if (GetController() != nullptr && OpenInventory())
 			{
 				return true;
@@ -229,3 +264,13 @@ bool USpnInventoryUiSubsystem::ProcessAnalog(const FAnalogInputEvent& Event)
 	Screen->HandleAnalog(Event.GetKey(), Event.GetAnalogValue());
 	return false; // the value may still reach other listeners; movement is blocked by IgnoreMoveInput
 }
+
+TSet<int64>& SpnWorldContainerRegistry()
+{
+	static TSet<int64> Registry;
+	return Registry;
+}
+
+void USpnInventoryUiSubsystem::RegisterWorldContainer(int64 ContainerId) { SpnWorldContainerRegistry().Add(ContainerId); }
+void USpnInventoryUiSubsystem::UnregisterWorldContainer(int64 ContainerId) { SpnWorldContainerRegistry().Remove(ContainerId); }
+bool USpnInventoryUiSubsystem::IsWorldContainer(int64 ContainerId) const { return SpnWorldContainerRegistry().Contains(ContainerId); }

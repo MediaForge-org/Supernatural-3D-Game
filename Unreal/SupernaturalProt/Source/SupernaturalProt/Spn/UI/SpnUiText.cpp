@@ -137,6 +137,8 @@ namespace
 		{TEXT("kind.spn_test:container.body"), TEXT("Carried"), TEXT("Am Körper")},
 		{TEXT("kind.spn_test:container.trunk"), TEXT("Trunk"), TEXT("Kofferraum")},
 		{TEXT("kind.spn_test:container.box"), TEXT("Small box"), TEXT("Kleine Kiste")},
+		// --- Night Build 01 (map, menus, settings, save slots, HUD, world interaction) ---
+#include "Spn/UI/SpnUiTextNightBuild.inc"
 	};
 
 	const TMap<FString, const FEntry*>& Index()

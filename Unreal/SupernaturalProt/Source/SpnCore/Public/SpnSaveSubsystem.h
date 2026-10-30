@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "SpnMapSubsystem.h"
 
 #include "SpnSaveSubsystem.generated.h"
 
@@ -125,6 +126,10 @@ struct FSpnSaveStatus
 	bool bInventoryRestored = false;
 	/** Load: the slot had no player.inventory (a WorldFacts-only save) and the active inventory was reset to empty, because the slot describes the whole state. */
 	bool bInventoryResetToEmpty = false;
+	/** Load: world.map was in the slot and replaced the map state (markers, waypoint, discovery). Needs USpnMapSubsystem to have a definition. */
+	bool bMapRestored = false;
+	/** Load: the slot had no world.map (a save from before the map existed) and the markers were cleared. Reported, never silent. */
+	bool bMapResetToEmpty = false;
 	/** Inventory revision that was saved or restored (0 if the inventory is not part of the save). */
 	uint64 InventoryRevision = 0;
 	/** Load: what happened to the inventory (see ESpnInventoryLoadOutcome). */
@@ -172,6 +177,31 @@ public:
 	/** The result of the most recent SaveSlot / LoadSlot (success or failure); default-constructed (Ok) before the first call. */
 	const FSpnSaveStatus& GetLastSaveStatus() const { return LastSaveStatus; }
 	const FSpnSaveStatus& GetLastLoadStatus() const { return LastLoadStatus; }
+
+	/** Read-only description of a slot for the slot list (Night Build 01). Never changes the live state or the files. */
+	struct FSpnSlotInfo
+	{
+		FString SlotId;
+		bool bExists = false;
+		/** Ok = the slot could be loaded right now. Otherwise the reason (Corrupt, UnsupportedVersion, CatalogMismatch, SectionsNotIntegrated, ...). */
+		ESpnSaveResult Result = ESpnSaveResult::NotFound;
+		FString Detail;
+		/** The main file was damaged and the previous generation would be used. */
+		bool bFromPrevious = false;
+		FDateTime Modified = FDateTime(0);
+		uint64 FactsRevision = 0;
+		bool bHasInventory = false;
+		uint64 InventoryRevision = 0;
+		bool bHasMap = false;
+		int32 MapMarkers = 0;
+		ESpnCatalogCheck CatalogCheck = ESpnCatalogCheck::NotApplicable;
+	};
+
+	/** Slot ids that have a main file or a previous generation, newest first (by file time). */
+	TArray<FString> ListSlots() const;
+
+	/** Dry-run of a load: reads and parses the slot exactly like LoadSlot would, but swaps nothing and broadcasts nothing. */
+	FSpnSlotInfo InspectSlot(const FString& SlotId, const FSpnLoadOptions& Options = FSpnLoadOptions()) const;
 
 	/** True if the main file or the previous generation of the slot exists (no validation). */
 	bool DoesSlotExist(const FString& SlotId) const;

@@ -30,6 +30,9 @@ public:
 	FString LanguageOverride;
 };
 
+/** Ids of containers that belong to the world (chests, boxes). Process-wide: the actors register themselves in BeginPlay, before any UI exists. */
+SUPERNATURALPROT_API TSet<int64>& SpnWorldContainerRegistry();
+
 /**
  * Owns the inventory screen of one local player: creates it, opens/closes it, switches the input mode and restores the previous one.
  * While the screen is open an input pre-processor routes keys to it, so the screen works independent of widget focus; while it is closed the
@@ -46,6 +49,16 @@ public:
 
 	/** Opens the screen over the current inventory. False if there is no player controller / inventory yet. */
 	bool OpenInventory();
+	/** Opens the screen as a container view: tabs = the player's own container + this world container, the world container active (Night Build 01). */
+	bool OpenContainer(int64 ContainerId);
+	/** Containers that belong to the world (chests, boxes): hidden from the normal inventory, shown only through OpenContainer. */
+	void RegisterWorldContainer(int64 ContainerId);
+	void UnregisterWorldContainer(int64 ContainerId);
+	bool IsWorldContainer(int64 ContainerId) const;
+	/** True while a container view (not the plain inventory) is open. */
+	bool IsContainerView() const { return bOpen && OpenedContainer != 0; }
+	/** Another screen (pause, map, menu) owns the input: the inventory must not open. Set by USpnUiSubsystem. */
+	TFunction<bool()> OpenBlocker;
 	void CloseInventory();
 	void ToggleInventory();
 	bool IsOpen() const { return bOpen; }
@@ -68,6 +81,8 @@ private:
 	UPROPERTY(Transient) TObjectPtr<USpnInventoryScreen> Screen;
 	TSharedPtr<FSpnInventoryInputProcessor> Processor;
 	bool bOpen = false;
+	int64 OpenedContainer = 0;
+	bool OpenInternal(int64 FocusContainer);
 	bool bHadShowMouseCursor = false;
 	bool bHadGameInputMode = true;
 	bool bWasPaused = false;

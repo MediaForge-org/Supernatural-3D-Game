@@ -381,6 +381,10 @@ void USpnInventoryScreen::BindContainers()
 			Ids.Add(static_cast<int64>(Id));
 		}
 	}
+	if (!IncludeContainers.IsEmpty() || !ExcludeContainers.IsEmpty())
+	{
+		Ids.RemoveAll([this](int64 Id) { return ExcludeContainers.Contains(Id) && !IncludeContainers.Contains(Id) || (!IncludeContainers.IsEmpty() && !IncludeContainers.Contains(Id)); });
+	}
 	Ids.Sort();
 	if (PrimaryContainerId > 0 && Ids.Remove(PrimaryContainerId) > 0)
 	{
@@ -404,7 +408,7 @@ void USpnInventoryScreen::OnShown()
 	HeldSlate = TakeWidget(); // builds the Slate tree on first use
 	CloseDialog();
 	BindContainers();
-	ActiveContainer = 0;
+	ActiveContainer = FocusContainerId > 0 && ViewModel->FindPanel(FocusContainerId) != nullptr ? FocusContainerId : 0;
 	Zone = EZone::Items;
 	ViewModel->SetNavigationZone(ESpnNavigationZone::Items);
 	WindowStart = 0;
@@ -412,6 +416,10 @@ void USpnInventoryScreen::OnShown()
 	if (ViewModel->GetSelectedStackId() == 0)
 	{
 		ViewModel->Navigate(ESpnNavigationDirection::First);
+	}
+	if (FocusContainerId > 0 && ViewModel->FindPanel(FocusContainerId) != nullptr)
+	{
+		SetActiveContainer(FocusContainerId, true); // a container view opens on the container, not on the player's own tab
 	}
 	SyncAll();
 	LastRefreshMs = (FPlatformTime::Seconds() - Start) * 1000.0;
@@ -1579,3 +1587,10 @@ FString USpnInventoryScreen::GetHintText() const { return HintLine != nullptr ? 
 FString USpnInventoryScreen::GetEmptyText() const { return EmptyText != nullptr && EmptyText->GetVisibility() != ESlateVisibility::Collapsed ? EmptyText->GetText().ToString() : FString(); }
 FString USpnInventoryScreen::GetDialogText() const { return bDialogOpen && DialogBody != nullptr ? DialogTitle->GetText().ToString() + TEXT(" | ") + DialogBody->GetText().ToString() : FString(); }
 FString USpnInventoryScreen::GetHeaderTitle() const { return TitleText != nullptr ? TitleText->GetText().ToString() : FString(); }
+
+void USpnInventoryScreen::SetContainerVisibility(const TSet<int64>& Include, const TSet<int64>& Exclude, int64 FocusContainer)
+{
+	IncludeContainers = Include;
+	ExcludeContainers = Exclude;
+	FocusContainerId = FocusContainer;
+}

@@ -13,7 +13,9 @@
 #include "InputActionValue.h"
 #include "InputMappingContext.h"
 #include "Spn/SpnCharacterMovementComponent.h"
+#include "Engine/GameInstance.h"
 #include "Spn/SpnInteractionComponent.h"
+#include "Spn/SpnSettingsSubsystem.h"
 #include "Spn/SpnMovementDiagnostics.h"
 #include "SupernaturalProt.h"
 
@@ -83,7 +85,7 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::Move);
-		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::Look);
+		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::LookMouse);
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::Look);
@@ -110,6 +112,8 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 void ASupernaturalProtCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
+
+	UpdateStairCamera(DeltaSeconds);
 
 	if (HideMeshCameraDistance > 0.f && CameraBoom != nullptr && FollowCamera != nullptr && GetMesh() != nullptr)
 	{
@@ -275,13 +279,84 @@ void ASupernaturalProtCharacter::Move(const FInputActionValue& Value)
 	DoMove(MovementVector.X, MovementVector.Y);
 }
 
+ASupernaturalProtCharacter::FLookSettings ASupernaturalProtCharacter::ReadLookSettings() const
+{
+	FLookSettings Out;
+	if (const UGameInstance* Instance = GetGameInstance())
+	{
+		if (const USpnSettingsSubsystem* Settings = Instance->GetSubsystem<USpnSettingsSubsystem>())
+		{
+			Out.Mouse = Settings->Get().MouseSensitivity;
+			Out.Gamepad = Settings->Get().GamepadSensitivity;
+			Out.bInvertY = Settings->Get().bInvertY;
+			Out.bSmoothing = Settings->Get().bCameraSmoothing;
+		}
+	}
+	return Out;
+}
+
 void ASupernaturalProtCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
-	FVector2D LookAxisVector = Value.Get<FVector2D>();
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+	const FLookSettings Settings = ReadLookSettings();
 
 	// route the input
-	DoLook(LookAxisVector.X, LookAxisVector.Y);
+	DoLook(LookAxisVector.X * Settings.Gamepad, LookAxisVector.Y * Settings.Gamepad * (Settings.bInvertY ? -1.f : 1.f));
+}
+
+void ASupernaturalProtCharacter::LookMouse(const FInputActionValue& Value)
+{
+	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+	const FLookSettings Settings = ReadLookSettings();
+	DoLook(LookAxisVector.X * Settings.Mouse, LookAxisVector.Y * Settings.Mouse * (Settings.bInvertY ? -1.f : 1.f));
+}
+
+void ASupernaturalProtCharacter::UpdateStairCamera(float DeltaSeconds)
+{
+	if (CameraBoom == nullptr || DeltaSeconds <= 0.f)
+	{
+		return;
+	}
+	if (!bStairBaseKnown)
+	{
+		StairBaseLocation = CameraBoom->GetRelativeLocation();
+		bStairBaseKnown = true;
+	}
+	const UCharacterMovementComponent* Movement = GetCharacterMovement();
+	const float Z = GetActorLocation().Z;
+	const bool bEnabled = StairCameraSmoothingSeconds > 0.f && ReadLookSettings().bSmoothing;
+	const bool bGrounded = Movement != nullptr && Movement->IsMovingOnGround();
+	const float StepLimit = Movement != nullptr ? Movement->MaxStepHeight : 25.f;
+
+	if (bStairInit && bEnabled && bGrounded)
+	{
+		const float DeltaZ = Z - StairPrevZ;
+		// a stair step or a slope: the capsule moved vertically on the ground by a plausible amount in one frame
+		if (FMath::Abs(DeltaZ) <= StepLimit * 2.f)
+		{
+			StairLagZ = FMath::Clamp(StairLagZ + DeltaZ, -StairCameraMaxLag, StairCameraMaxLag);
+		}
+		else
+		{
+			StairLagZ = 0.f; // teleport / ledge: no smoothing
+		}
+	}
+	else if (!bGrounded || !bEnabled)
+	{
+		StairLagZ = 0.f; // airborne (jump, fall) or switched off: the camera is exactly where the capsule puts it
+	}
+	StairPrevZ = Z;
+	bStairInit = true;
+
+	// frame-rate independent exponential decay towards the capsule: lag *= exp(-dt / tau)
+	if (bEnabled && bGrounded && StairLagZ != 0.f)
+	{
+		StairLagZ *= FMath::Exp(-DeltaSeconds / StairCameraSmoothingSeconds);
+		if (FMath::Abs(StairLagZ) < 0.05f) { StairLagZ = 0.f; }
+	}
+	// positive lag = the capsule rose and the camera still trails below: offset the boom DOWN by the lag (visual only)
+	CameraBoom->SetRelativeLocation(StairBaseLocation - FVector(0.f, 0.f, StairLagZ));
 }
 
 void ASupernaturalProtCharacter::DoMove(float Right, float Forward)
@@ -330,4 +405,14 @@ void ASupernaturalProtCharacter::DoInteract()
 {
 	// use whatever interactable is in front of the character (authority only)
 	Interaction->TryInteract();
+}
+
+void ASupernaturalProtCharacter::ResetStairCamera()
+{
+	bStairInit = false;
+	StairLagZ = 0.f;
+	if (CameraBoom != nullptr && bStairBaseKnown)
+	{
+		CameraBoom->SetRelativeLocation(StairBaseLocation);
+	}
 }

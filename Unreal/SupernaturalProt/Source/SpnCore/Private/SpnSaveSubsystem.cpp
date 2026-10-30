@@ -1,6 +1,7 @@
 #include "SpnSaveSubsystem.h"
 #include "SpnCoreModule.h"
 #include "SpnInventoryInternal.h"
+#include "SpnMapInternal.h"
 #include "SpnWorldStateInternal.h"
 
 #include "Engine/GameInstance.h"
@@ -43,9 +44,9 @@ namespace
 	}
 
 	/** Sections that belong to domains without an Unreal owner: world.objects and world.map always, player.inventory while the inventory has no catalog. */
-	bool IsNotIntegratedSection(std::string_view Id, bool bInventoryActive)
+	bool IsNotIntegratedSection(std::string_view Id, bool bInventoryActive, bool bMapActive)
 	{
-		return Id == spn::core::kSectionObjects || Id == spn::core::kSectionMap || (!bInventoryActive && Id == spn::core::kSectionInventory);
+		return Id == spn::core::kSectionObjects || (!bMapActive && Id == spn::core::kSectionMap) || (!bInventoryActive && Id == spn::core::kSectionInventory);
 	}
 
 	bool IsNewerThanThisBuild(spn::core::SaveErrorCode Code)
@@ -176,12 +177,12 @@ namespace
 		return Candidate;
 	}
 
-	TArray<FString> NotIntegratedSections(const spn::core::SaveSlot& Slot, bool bInventoryActive)
+	TArray<FString> NotIntegratedSections(const spn::core::SaveSlot& Slot, bool bInventoryActive, bool bMapActive)
 	{
 		TArray<FString> Found;
 		for (const auto& Entry : Slot.Sections())
 		{
-			if (IsNotIntegratedSection(Entry.first, bInventoryActive))
+			if (IsNotIntegratedSection(Entry.first, bInventoryActive, bMapActive))
 			{
 				Found.Add(ToFString(Entry.first));
 			}
@@ -307,6 +308,141 @@ bool USpnSaveSubsystem::DoesSlotExist(const FString& SlotId) const
 	return !Path.IsEmpty() && (FPaths::FileExists(Path) || FPaths::FileExists(Path + TEXT(".prev")));
 }
 
+TArray<FString> USpnSaveSubsystem::ListSlots() const
+{
+	TArray<TPair<FDateTime, FString>> Found;
+	TArray<FString> Directories;
+	IFileManager::Get().FindFiles(Directories, *(GetSaveDirectory() / TEXT("*")), false, true);
+	for (const FString& Directory : Directories)
+	{
+		if (!IsValidSlotId(Directory))
+		{
+			continue;
+		}
+		const FString Path = GetSlotFilePath(Directory);
+		FDateTime Time = IFileManager::Get().GetTimeStamp(*Path);
+		if (Time == FDateTime::MinValue())
+		{
+			Time = IFileManager::Get().GetTimeStamp(*(Path + TEXT(".prev")));
+		}
+		if (FPaths::FileExists(Path) || FPaths::FileExists(Path + TEXT(".prev")))
+		{
+			Found.Emplace(Time, Directory);
+		}
+	}
+	Found.Sort([](const TPair<FDateTime, FString>& A, const TPair<FDateTime, FString>& B) { return A.Key != B.Key ? A.Key > B.Key : A.Value < B.Value; });
+	TArray<FString> Out;
+	for (const auto& Entry : Found)
+	{
+		Out.Add(Entry.Value);
+	}
+	return Out;
+}
+
+USpnSaveSubsystem::FSpnSlotInfo USpnSaveSubsystem::InspectSlot(const FString& SlotId, const FSpnLoadOptions& Options) const
+{
+	FSpnSlotInfo Info;
+	Info.SlotId = SlotId;
+	if (!IsValidSlotId(SlotId))
+	{
+		Info.Result = ESpnSaveResult::InvalidSlotId;
+		return Info;
+	}
+	const FString FilePath = GetSlotFilePath(SlotId);
+	Info.Modified = IFileManager::Get().GetTimeStamp(*FilePath);
+	const UGameInstance* Instance = GetGameInstance();
+	const USpnInventorySubsystem* Inventory = Instance != nullptr ? Instance->GetSubsystem<USpnInventorySubsystem>() : nullptr;
+	const USpnMapSubsystem* Map = Instance != nullptr ? Instance->GetSubsystem<USpnMapSubsystem>() : nullptr;
+	const bool bInventoryActive = Inventory != nullptr && Inventory->HasCatalog();
+	const bool bMapActive = Map != nullptr && Map->HasDefinition();
+	try
+	{
+		spn::core::StdSaveFileSystem Fs;
+		spn::core::SaveSlotStore Store(Fs, ToPath(FilePath));
+		const std::filesystem::path Paths[2] = {Store.Current(), Store.Previous()};
+		FString LastProblem;
+		ESpnSaveResult LastResult = ESpnSaveResult::NotFound;
+		for (int32 Generation = 0; Generation < 2; ++Generation)
+		{
+			FCandidate Candidate = ReadCandidate(Fs, Paths[Generation]);
+			if (!Candidate.bExists)
+			{
+				continue;
+			}
+			Info.bExists = true;
+			if (Generation == 1)
+			{
+				Info.Modified = IFileManager::Get().GetTimeStamp(*(FilePath + TEXT(".prev")));
+			}
+			if (!Candidate.Slot)
+			{
+				LastProblem = Describe(*Candidate.Problem);
+				LastResult = ToResult(Candidate.Problem->code);
+				if (IsNewerThanThisBuild(Candidate.Problem->code))
+				{
+					Info.Result = ESpnSaveResult::UnsupportedVersion;
+					Info.Detail = LastProblem;
+					return Info;
+				}
+				continue;
+			}
+			const FString Newer = NewerKnownSection(*Candidate.Slot);
+			if (!Newer.IsEmpty())
+			{
+				Info.Result = ESpnSaveResult::UnsupportedVersion;
+				Info.Detail = FString::Printf(TEXT("section %s was written by a newer build"), *Newer);
+				return Info;
+			}
+			const TArray<FString> Foreign = NotIntegratedSections(*Candidate.Slot, bInventoryActive, bMapActive);
+			if (!Foreign.IsEmpty())
+			{
+				Info.Result = ESpnSaveResult::SectionsNotIntegrated;
+				Info.Detail = FString::Printf(TEXT("the slot holds %s, which this build cannot restore"), *FString::Join(Foreign, TEXT(", ")));
+				return Info;
+			}
+			spn::core::GameLoadContext Context;
+			Context.itemCatalog = bInventoryActive ? Inventory->State->Catalog.get() : nullptr;
+			Context.acceptCatalogMismatch = Options.bAcceptCatalogMismatch;
+			if (bMapActive)
+			{
+				Context.mapDefinition = Map->State->Definition;
+			}
+			auto Game = spn::core::ParseGameSave(*Candidate.Slot, Context);
+			if (!Game)
+			{
+				LastProblem = Describe(Game.Error());
+				LastResult = ToResult(Game.Error().code);
+				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || IsNewerThanThisBuild(Game.Error().code))
+				{
+					Info.Result = LastResult;
+					Info.Detail = LastProblem;
+					Info.bFromPrevious = Generation == 1;
+					return Info;
+				}
+				continue;
+			}
+			Info.Result = ESpnSaveResult::Ok;
+			Info.bFromPrevious = Generation == 1;
+			Info.Detail = Generation == 1 ? LastProblem : FString();
+			Info.FactsRevision = Game.Value().facts.Revision();
+			Info.bHasInventory = Game.Value().inventory.has_value();
+			Info.InventoryRevision = Info.bHasInventory ? Game.Value().inventory->Revision() : 0;
+			Info.bHasMap = Game.Value().map.has_value();
+			Info.MapMarkers = Info.bHasMap ? static_cast<int32>(Game.Value().map->MarkerCount()) : 0;
+			Info.CatalogCheck = static_cast<ESpnCatalogCheck>(static_cast<uint8>(Game.Value().catalogCheck));
+			return Info;
+		}
+		Info.Result = Info.bExists ? (LastResult == ESpnSaveResult::NotFound ? ESpnSaveResult::Corrupt : LastResult) : ESpnSaveResult::NotFound;
+		Info.Detail = Info.bExists ? LastProblem : FString(TEXT("no save in this slot"));
+	}
+	catch (...)
+	{
+		Info.Result = ESpnSaveResult::InternalError;
+		Info.Detail = TEXT("exception while reading the slot");
+	}
+	return Info;
+}
+
 FSpnSaveStatus USpnSaveSubsystem::SaveSlot(const FString& SlotId)
 {
 	check(IsInGameThread());
@@ -351,6 +487,8 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 	}
 	const USpnInventorySubsystem* Inventory = GetGameInstance()->GetSubsystem<USpnInventorySubsystem>();
 	const bool bInventoryActive = Inventory != nullptr && Inventory->HasCatalog();
+	const USpnMapSubsystem* Map = GetGameInstance()->GetSubsystem<USpnMapSubsystem>();
+	const bool bMapActive = Map != nullptr && Map->HasDefinition();
 	const FString FilePath = GetSlotFilePath(SlotId);
 
 	try
@@ -383,7 +521,7 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 				UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: NOT saved: section %s of '%s' was written by a newer build"), *Owner, *Newer, *FilePath);
 				return Fail(ESpnSaveResult::UnsupportedVersion, FString::Printf(TEXT("section %s was written by a newer build and would be downgraded"), *Newer), FilePath);
 			}
-			const TArray<FString> Foreign = NotIntegratedSections(*Existing.Slot, bInventoryActive);
+			const TArray<FString> Foreign = NotIntegratedSections(*Existing.Slot, bInventoryActive, bMapActive);
 			if (!Foreign.IsEmpty())
 			{
 				const FString List = FString::Join(Foreign, TEXT(", "));
@@ -398,6 +536,10 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 		if (bInventoryActive)
 		{
 			Sources.inventory = &*Inventory->State->Inventory;
+		}
+		if (bMapActive)
+		{
+			Sources.map = &*Map->State->Map;
 		}
 		auto Captured = spn::core::CaptureGameSave(Sources, Existing.Slot ? &*Existing.Slot : nullptr);
 		if (!Captured)
@@ -460,6 +602,8 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 	}
 	USpnInventorySubsystem* Inventory = GetGameInstance()->GetSubsystem<USpnInventorySubsystem>();
 	const bool bInventoryActive = Inventory != nullptr && Inventory->HasCatalog();
+	USpnMapSubsystem* Map = GetGameInstance()->GetSubsystem<USpnMapSubsystem>();
+	const bool bMapActive = Map != nullptr && Map->HasDefinition();
 	const FString FilePath = GetSlotFilePath(SlotId);
 
 	try
@@ -515,7 +659,7 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 				Status.CurrentProblem = CurrentProblem;
 				return Status;
 			}
-			const TArray<FString> Foreign = NotIntegratedSections(*Candidate.Slot, bInventoryActive);
+			const TArray<FString> Foreign = NotIntegratedSections(*Candidate.Slot, bInventoryActive, bMapActive);
 			if (!Foreign.IsEmpty())
 			{
 				// not a problem of this generation: older ones would be just as unrestorable, and loading only part of the slot is not allowed
@@ -528,6 +672,10 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			spn::core::GameLoadContext Context;
 			Context.itemCatalog = bInventoryActive ? Inventory->State->Catalog.get() : nullptr;
 			Context.acceptCatalogMismatch = Options.bAcceptCatalogMismatch;
+			if (bMapActive)
+			{
+				Context.mapDefinition = Map->State->Definition;
+			}
 			auto Game = spn::core::ParseGameSave(*Candidate.Slot, Context);
 			if (!Game)
 			{
@@ -581,6 +729,21 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 				}
 				Status.InventoryRevision = Inventory->GetRevision();
 			}
+			if (bMapActive)
+			{
+				if (Game.Value().map)
+				{
+					Map->State->Map = std::move(*Game.Value().map);
+					Status.bMapRestored = true;
+				}
+				else
+				{
+					// a save without world.map (older build) describes a map without markers: fresh state on the same definition, reported
+					Status.bMapResetToEmpty = Map->State->Map->MarkerCount() > 0;
+					Map->State->Map.emplace(Map->State->Definition);
+				}
+				Map->ResetStateInternal();
+			}
 			Status.FactsRevision = WorldState->GetRevision();
 			UE_LOG(LogSpnCore, Log, TEXT("Save [%s]: loaded slot '%s' from the %s (facts revision %llu -> %llu%s)%s"), *Owner, *SlotId,
 				bPrevious ? TEXT("PREVIOUS generation") : TEXT("main file"), static_cast<unsigned long long>(PreviousRevision),
@@ -593,8 +756,11 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			{
 				Inventory->BroadcastReplaced();
 			}
+			if (bMapActive)
+			{
+				Map->BroadcastReplaced();
+			}
 			OnLoaded.Broadcast();
-			return Status;
 			return Status;
 		}
 
