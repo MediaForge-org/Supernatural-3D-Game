@@ -2,12 +2,15 @@
 
 #include "CoreMinimal.h"
 #include "SpnInventoryTypes.h"
+#include "SpnItemPresentation.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Templates/PimplPtr.h"
 
 #include "SpnInventorySubsystem.generated.h"
 
 class USpnSaveSubsystem;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FSpnInventoryChangedDetailed, const FSpnInventoryChange&);
 
 // Unreal integration of the portable inventory (Core/include/spn/core/Inventory.h, M2B1/M2B2) -> M2B3.3. ENGINEERING PROPOSAL, not master canon.
 //
@@ -59,6 +62,19 @@ public:
 	bool FindDefinition(const FString& DefinitionId, FSpnItemDefinitionData& OutDefinition) const;
 	bool FindContainerPreset(const FString& PresetId, FSpnContainerRulesData& OutRules) const;
 
+	/** Fingerprint of the gameplay-relevant item definitions ("fp1:<hex>", see Core CatalogFingerprint.h); empty without a catalog. Written to saves. */
+	FString GetCatalogFingerprint() const;
+
+	// --- presentation (optional; no gameplay values) -------------------------------------------------------------------------------
+
+	/** Optional presentation set (names, icons, meshes, sounds). Not owned by the catalog and never part of a save or a fingerprint. */
+	void SetPresentationSet(USpnItemPresentationSet* InSet);
+	USpnItemPresentationSet* GetPresentationSet() const { return PresentationSet; }
+	/** Entry for a definition id, or null (nothing set, or the set has no entry). */
+	const FSpnItemPresentationEntry* FindPresentation(const FString& DefinitionId) const;
+	/** Compares the presentation set with the catalog (orphans, missing, duplicates). Empty report without a set. */
+	FSpnPresentationReport ValidatePresentation() const;
+
 	/** Empties the inventory (no containers, revision 0, ids restart at 1) and keeps the catalog. */
 	void ResetInventory();
 	/** Removes catalog and inventory. */
@@ -81,6 +97,13 @@ public:
 	FSpnInventoryStatus Equip(uint64 ContainerId, uint64 StackId, const FString& Slot);
 	FSpnInventoryStatus Unequip(uint64 ContainerId, const FString& Slot);
 
+	/**
+	 * Dry run: translates and executes the commands in the Core and ALWAYS undoes them. Error == None means Apply() would succeed right now.
+	 * Changes nothing (revision, ids, state), logs nothing, does not touch GetLastFailure() and calls no listener. Used by the view-model to learn
+	 * which actions are possible without re-implementing the rules.
+	 */
+	FSpnInventoryStatus ProbeCommands(const TArray<FSpnInventoryCommand>& Commands);
+
 	/** The most recent failed transaction or catalog change (for inspection / debug commands); Error == None if there was none. */
 	const FSpnInventoryStatus& GetLastFailure() const;
 
@@ -102,14 +125,24 @@ public:
 
 	// --- notifications ---------------------------------------------------------------------------------------------------------------
 
+	/** After every successful, non-empty transaction, with the containers it touched. Fires right after OnInventoryChanged. */
+	FSpnInventoryChangedDetailed OnInventoryChangedDetailed;
+
 	/** After every successful, non-empty transaction. */
 	FSimpleMulticastDelegate OnInventoryChanged;
-	/** After the save subsystem replaced the whole inventory by a load (all other loaded state is in place by then). */
+	/** After the whole inventory was replaced: a load (all other loaded state is in place by then), ResetInventory, SetCatalog or ClearCatalog. */
 	FSimpleMulticastDelegate OnInventoryReplaced;
 
 private:
 	/** USpnSaveSubsystem captures and replaces the Core state directly (Private/SpnInventoryInternal.h). */
 	friend class USpnSaveSubsystem;
+
+	/** Empties the inventory without notifying (used by the save subsystem, which notifies after all of its swaps). */
+	void ResetInventoryInternal();
+	void BroadcastReplaced();
+
+	UPROPERTY(Transient)
+	TObjectPtr<USpnItemPresentationSet> PresentationSet;
 
 	struct FState;
 	TPimplPtr<FState> State;

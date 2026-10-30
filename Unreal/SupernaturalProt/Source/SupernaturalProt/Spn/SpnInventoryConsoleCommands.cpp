@@ -1,5 +1,7 @@
 #include "SupernaturalProt.h"
 #include "SpnInventorySubsystem.h"
+#include "SpnInventoryViewModel.h"
+#include "SpnSaveSubsystem.h"
 
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
@@ -275,6 +277,47 @@ namespace
 		}
 	}
 
+	void InvView(const TArray<FString>& Args, UWorld* World)
+	{
+		USpnInventorySubsystem* Inventory = FindInventory(World, TEXT("Spn.Inv.View"));
+		if (Inventory == nullptr)
+		{
+			return;
+		}
+		// a throw-away view-model bound to the containers 1 (body), 2 (trunk), 3 (small box): what a screen would show
+		USpnInventoryViewModel* Vm = NewObject<USpnInventoryViewModel>(GetTransientPackage());
+		Vm->AddToRoot();
+		const UGameInstance* GameInstance = World->GetGameInstance();
+		Vm->Initialize(Inventory, GameInstance != nullptr ? GameInstance->GetSubsystem<USpnSaveSubsystem>() : nullptr);
+		Vm->SetBoundContainers({1, 2, 3});
+		UE_LOG(LogSupernaturalProt, Display, TEXT("Spn.Inv.View: version %d, %d panel(s)"), Vm->GetVersion(), Vm->GetPanels().Num());
+		for (const FSpnContainerPanel& Panel : Vm->GetPanels())
+		{
+			const auto Meter = [](const FSpnCapacityMeter& M) { return M.bUnlimited ? FString::Printf(TEXT("%lld (no limit)"), M.Used) : FString::Printf(TEXT("%lld / %lld (%.0f%%)"), M.Used, M.Max, M.Fraction * 100.f); };
+			UE_LOG(LogSupernaturalProt, Display, TEXT("  panel %lld [%s]: %d row(s); stacks %s; weight %s g; volume %s ml"), Panel.ContainerId, *Panel.Kind, Panel.Rows.Num(), *Meter(Panel.StackMeter), *Meter(Panel.WeightMeter), *Meter(Panel.VolumeMeter));
+			for (const FSpnEquipmentSlotView& Slot : Panel.Slots)
+			{
+				UE_LOG(LogSupernaturalProt, Display, TEXT("    slot %s: %s"), *Slot.SlotId, Slot.bOccupied ? *Slot.EquippedDefinitionId : TEXT("(free)"));
+			}
+			for (const FSpnItemRow& Row : Panel.Rows)
+			{
+				UE_LOG(LogSupernaturalProt, Display, TEXT("    row stack %lld: %d x %s  %lld g  %lld ml%s"), Row.StackId, Row.Quantity, *Row.DisplayName.ToString(), Row.TotalWeightGrams, Row.TotalVolumeMilliliters,
+					Row.bEquipped ? *FString::Printf(TEXT("  [equipped: %s]"), *Row.EquippedSlot) : TEXT(""));
+			}
+		}
+		if (Vm->Navigate(ESpnNavigationDirection::Down) || Vm->GetSelectedStackId() != 0)
+		{
+			UE_LOG(LogSupernaturalProt, Display, TEXT("  selected: container %lld stack %lld"), Vm->GetSelectedContainerId(), Vm->GetSelectedStackId());
+			for (const FSpnActionOption& Option : Vm->GetAvailableActions())
+			{
+				UE_LOG(LogSupernaturalProt, Display, TEXT("    action %s: %s%s"), *Option.Label.ToString(), Option.bAvailable ? TEXT("available") : TEXT("NOT available: "), *Option.UnavailableText.ToString());
+			}
+		}
+		Vm->Shutdown();
+		Vm->RemoveFromRoot();
+	}
+
+	FAutoConsoleCommandWithWorldAndArgs InvViewCommand(TEXT("Spn.Inv.View"), TEXT("DEV: print what an inventory screen would show (view-model of containers 1, 2, 3, first selection and its actions)"), FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&InvView));
 	FAutoConsoleCommandWithWorldAndArgs InvSetupCommand(TEXT("Spn.Inv.Setup"), TEXT("DEV: load the TEMPORARY test catalog and create test containers 1 (body), 2 (trunk), 3 (small box)"), FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&InvSetup));
 	FAutoConsoleCommandWithWorldAndArgs InvCatalogCommand(TEXT("Spn.Inv.Catalog"), TEXT("DEV: list the item definitions and container presets of the catalog"), FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&InvCatalog));
 	FAutoConsoleCommandWithWorldAndArgs InvListCommand(TEXT("Spn.Inv.List"), TEXT("DEV: print every container and stack"), FConsoleCommandWithWorldAndArgsDelegate::CreateStatic(&InvList));

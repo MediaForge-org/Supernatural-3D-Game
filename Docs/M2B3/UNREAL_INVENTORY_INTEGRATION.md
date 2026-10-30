@@ -1,5 +1,7 @@
 # M2B3.3 — Unreal inventory subsystem, test catalog and save integration
 
+> **Update M2B3.4 (2026-10-29):** the inventory subsystem gained a view-model, a catalog fingerprint (`slot.catalog`, a new optional section) and explicit migration/compatibility statuses; see `INVENTORY_VIEW_MODEL.md`. `LoadSlot` now takes `FSpnLoadOptions`, `ESpnSaveResult` has `CatalogMismatch`, and `FSpnSaveStatus` reports `InventoryOutcome`, `CatalogCheck` and both fingerprints.
+
 Status words: **Implemented / Tested / Proposed / Unverified**. Date: 2026-10-29. Base `da1af14` plus the uncommitted M2B3.1–M2B3.3 changes. Nothing was committed or pushed; the Git stash, the installed engine, existing maps/assets, controller mappings and the Fab arrangement (plugin stays isolated) were not touched.
 Master consultation (CLAUDE.md §11): **no new inventory rules, item data, save format or balance value was invented.** The Core inventory (M2B1/M2B2) and the `player.inventory` section (`SPN-INVENTORY 1`) are used as they are; the only master finding on inventories remains "body inventory is physically limited, vehicles provide storage" (`Docs/M2B1/GAME_SYSTEMS_ARCHITECTURE.md` §2, no numbers). Every item and number in the test catalog is arbitrary test data. Unreal-side policies that are decisions of ours are marked **Proposed**.
 

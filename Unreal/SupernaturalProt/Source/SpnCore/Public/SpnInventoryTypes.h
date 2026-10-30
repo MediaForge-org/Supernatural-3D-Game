@@ -1,6 +1,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/ObjectMacros.h"
+
+#include "SpnInventoryTypes.generated.h"
 
 // Unreal-side value types of the inventory (M2B3.3). ENGINEERING PROPOSAL, not master canon.
 //
@@ -10,6 +13,7 @@
 // NOTHING here is item data: the test items live in Content/SpnTest/Inventory/TestItemCatalog.json and are marked as test data.
 
 /** Outcome of a catalog change or an inventory transaction. Mirrors spn::core::InventoryErrorCode for commands; appended to, never reordered. */
+UENUM(BlueprintType)
 enum class ESpnInventoryError : uint8
 {
 	None,
@@ -94,6 +98,7 @@ struct FSpnItemCatalogData
 	TArray<FSpnContainerPresetData> ContainerPresets;
 };
 
+UENUM(BlueprintType)
 enum class ESpnStateValueType : uint8
 {
 	Bool,
@@ -102,12 +107,20 @@ enum class ESpnStateValueType : uint8
 };
 
 /** One named per-instance field of a non-stackable item (durability, charge, notes ...). Field names: [a-z][a-z0-9_]*, at most 16 per item. */
+USTRUCT(BlueprintType)
 struct FSpnItemStateField
 {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	FString Name;
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	ESpnStateValueType Type = ESpnStateValueType::Int;
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	bool BoolValue = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	int64 IntValue = 0;
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	FString StringValue;
 
 	static FSpnItemStateField MakeBool(const FString& InName, bool bValue) { FSpnItemStateField F; F.Name = InName; F.Type = ESpnStateValueType::Bool; F.BoolValue = bValue; return F; }
@@ -196,4 +209,17 @@ struct FSpnContainerView
 	TArray<FSpnStackView> Stacks;
 	uint64 WeightGrams = 0;
 	uint64 VolumeMilliliters = 0;
+};
+
+/** What a successful transaction (or a replacement) touched; lets listeners refresh only what changed instead of copying the whole inventory. */
+struct FSpnInventoryChange
+{
+	/** Inventory revision after the change. */
+	uint64 Revision = 0;
+	/** Containers named by the commands of the transaction (source and target of transfers, created and destroyed containers). */
+	TArray<uint64> TouchedContainers;
+	/** True when the whole inventory was replaced or reset (load, reset, catalog change): refresh everything. */
+	bool bReplacedAll = false;
+
+	bool Touches(uint64 ContainerId) const { return bReplacedAll || TouchedContainers.Contains(ContainerId); }
 };

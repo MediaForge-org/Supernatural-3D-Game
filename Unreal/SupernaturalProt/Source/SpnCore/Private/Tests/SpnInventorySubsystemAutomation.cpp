@@ -647,7 +647,7 @@ bool FSpnInvCombinedTest::RunTest(const FString& Parameters)
 	TestTrue(TEXT("save both"), Env.Save().SaveSlot(TestSlotId).IsOk());
 	const TArray<uint8> Saved = Fingerprint(Env);
 	const spn::core::SaveSlot Parsed = ParsedSlot(Env.File());
-	TestEqual(TEXT("the slot has facts, inventory and meta"), static_cast<int32>(Parsed.Count()), 3);
+	TestEqual(TEXT("the slot has facts, inventory, meta and (M2B3.4) the catalog fingerprint"), static_cast<int32>(Parsed.Count()), 4);
 	if (const spn::core::SaveSection* Meta = Parsed.Find("slot.meta"))
 	{
 		TestTrue(TEXT("slot.meta records both revisions"), Meta->payload.find("facts_revision 1") != std::string::npos && Meta->payload.find("inventory_revision ") != std::string::npos);

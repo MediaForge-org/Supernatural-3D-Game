@@ -8,6 +8,7 @@
 #include "HAL/PlatformFileManager.h"
 #include "Misc/Paths.h"
 
+#include <spn/core/CatalogFingerprint.h>
 #include <spn/core/GameSave.h>
 #include <spn/core/SaveSlot.h>
 #include <spn/core/SaveStore.h>
@@ -63,6 +64,8 @@ namespace
 		case SaveErrorCode::UnsupportedSectionVersion:
 		case SaveErrorCode::UnsupportedRequiredSection:
 			return ESpnSaveResult::UnsupportedVersion;
+		case SaveErrorCode::CatalogMismatch:
+			return ESpnSaveResult::CatalogMismatch;
 		case SaveErrorCode::SectionRejected:
 		case SaveErrorCode::ConsistencyMismatch:
 		case SaveErrorCode::MissingContext:
@@ -107,13 +110,33 @@ namespace
 		{
 			const std::string_view Id = Entry.first;
 			const bool bKnown = Id == spn::core::kSectionFacts || Id == spn::core::kSectionObjects || Id == spn::core::kSectionMap || Id == spn::core::kSectionInventory
-				|| Id == spn::core::kSectionMeta;
+				|| Id == spn::core::kSectionMeta || Id == spn::core::kSectionCatalog;
 			if (bKnown && Entry.second.version > 1)
 			{
 				return ToFString(Entry.first);
 			}
 		}
 		return FString();
+	}
+
+	/**
+	 * A slot.catalog whose fingerprint this build cannot recompute (fp2, ...): the load refuses it (UnsupportedVersion), so a save must not replace
+	 * it either - that would be a silent downgrade of a save written by a newer build.
+	 */
+	bool HasFutureFingerprint(const spn::core::SaveSlot& Slot)
+	{
+		const spn::core::SaveSection* Section = Slot.Find(spn::core::kSectionCatalog);
+		if (Section == nullptr)
+		{
+			return false;
+		}
+		const std::string_view Key = "catalog_fingerprint ";
+		if (!std::string_view(Section->payload).starts_with(Key))
+		{
+			return false; // malformed: not a version problem (the load rejects it as damaged, a save may replace it)
+		}
+		const std::string_view Rest = std::string_view(Section->payload).substr(Key.size());
+		return Rest.starts_with("fp") && !Rest.starts_with(spn::core::kCatalogFingerprintPrefix);
 	}
 
 	/** Marks a save/load as running for its whole duration, including the callbacks it broadcasts. */
@@ -183,6 +206,8 @@ const TCHAR* LexToString(ESpnSaveResult Result)
 	case ESpnSaveResult::SectionsNotIntegrated: return TEXT("SectionsNotIntegrated");
 	case ESpnSaveResult::InconsistentSnapshot: return TEXT("InconsistentSnapshot");
 	case ESpnSaveResult::InternalError: return TEXT("InternalError");
+	case ESpnSaveResult::Busy: return TEXT("Busy");
+	case ESpnSaveResult::CatalogMismatch: return TEXT("CatalogMismatch");
 	}
 	return TEXT("Unknown");
 }
@@ -291,6 +316,28 @@ FSpnSaveStatus USpnSaveSubsystem::SaveSlot(const FString& SlotId)
 		return Fail(ESpnSaveResult::Busy, TEXT("a save or load is already running"));
 	}
 	const FBusyScope BusyScope(bBusy);
+	LastSaveStatus = DoSave(SlotId);
+	OnSaveFinished.Broadcast(LastSaveStatus);
+	return LastSaveStatus;
+}
+
+FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId, const FSpnLoadOptions& Options)
+{
+	check(IsInGameThread());
+	if (bBusy)
+	{
+		UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: request refused: a save or load is already running (called back from a callback?)"), *GetNameSafe(GetGameInstance()));
+		return Fail(ESpnSaveResult::Busy, TEXT("a save or load is already running"));
+	}
+	const FBusyScope BusyScope(bBusy);
+	LastLoadStatus = DoLoad(SlotId, Options);
+	OnLoadFinished.Broadcast(LastLoadStatus);
+	return LastLoadStatus;
+}
+
+FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
+{
+	check(IsInGameThread());
 	const FString Owner = GetNameSafe(GetGameInstance());
 	if (!IsValidSlotId(SlotId))
 	{
@@ -326,7 +373,11 @@ FSpnSaveStatus USpnSaveSubsystem::SaveSlot(const FString& SlotId)
 		}
 		if (Existing.Slot)
 		{
-			const FString Newer = NewerKnownSection(*Existing.Slot);
+			FString Newer = NewerKnownSection(*Existing.Slot);
+			if (Newer.IsEmpty() && HasFutureFingerprint(*Existing.Slot))
+			{
+				Newer = TEXT("slot.catalog (fingerprint algorithm)");
+			}
 			if (!Newer.IsEmpty())
 			{
 				UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: NOT saved: section %s of '%s' was written by a newer build"), *Owner, *Newer, *FilePath);
@@ -368,6 +419,7 @@ FSpnSaveStatus USpnSaveSubsystem::SaveSlot(const FString& SlotId)
 		Status.Path = FilePath;
 		Status.FactsRevision = WorldState->GetRevision();
 		Status.InventoryRevision = bInventoryActive ? Inventory->GetRevision() : 0;
+		Status.StoredFingerprint = bInventoryActive ? Inventory->GetCatalogFingerprint() : FString();
 		if (Existing.Slot)
 		{
 			for (const std::string& Id : Existing.Slot->UnreadSections(spn::core::GameSaveSchema()))
@@ -392,15 +444,9 @@ FSpnSaveStatus USpnSaveSubsystem::SaveSlot(const FString& SlotId)
 	}
 }
 
-FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId)
+FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOptions& Options)
 {
 	check(IsInGameThread());
-	if (bBusy)
-	{
-		UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: request refused: a save or load is already running (called back from a callback?)"), *GetNameSafe(GetGameInstance()));
-		return Fail(ESpnSaveResult::Busy, TEXT("a save or load is already running"));
-	}
-	const FBusyScope BusyScope(bBusy);
 	const FString Owner = GetNameSafe(GetGameInstance());
 	if (!IsValidSlotId(SlotId))
 	{
@@ -481,9 +527,22 @@ FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId)
 			// phase 1: build NEW objects, change nothing live
 			spn::core::GameLoadContext Context;
 			Context.itemCatalog = bInventoryActive ? Inventory->State->Catalog.get() : nullptr;
+			Context.acceptCatalogMismatch = Options.bAcceptCatalogMismatch;
 			auto Game = spn::core::ParseGameSave(*Candidate.Slot, Context);
 			if (!Game)
 			{
+				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || IsNewerThanThisBuild(Game.Error().code))
+				{
+					// not damage: falling back to an older generation would hide the problem (and a reset would lose the inventory)
+					UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: NOT loaded: slot '%s' %s; state unchanged"), *Owner, *SlotId, *Describe(Game.Error()));
+					FSpnSaveStatus Status = Fail(ToResult(Game.Error().code), Describe(Game.Error()), FilePath);
+					Status.CurrentProblem = CurrentProblem;
+					if (bInventoryActive)
+					{
+						Status.CurrentFingerprint = Inventory->GetCatalogFingerprint();
+					}
+					return Status;
+				}
 				LastProblem = Describe(Game.Error());
 				LastResult = ToResult(Game.Error().code);
 				if (!bPrevious)
@@ -508,12 +567,17 @@ FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId)
 				{
 					Inventory->State->Inventory = std::move(*Game.Value().inventory);
 					Status.bInventoryRestored = true;
+					Status.InventoryOutcome = ESpnInventoryLoadOutcome::Restored;
+					Status.CatalogCheck = static_cast<ESpnCatalogCheck>(static_cast<uint8>(Game.Value().catalogCheck));
+					Status.StoredFingerprint = ToFString(Game.Value().storedFingerprint);
+					Status.CurrentFingerprint = ToFString(Game.Value().currentFingerprint);
 				}
 				else
 				{
 					// a WorldFacts-only save describes the whole state: the inventory starts fresh (reported, never silent)
 					Status.bInventoryResetToEmpty = Inventory->GetRevision() > 0 || !Inventory->ListContainers().IsEmpty();
-					Inventory->ResetInventory();
+					Status.InventoryOutcome = ESpnInventoryLoadOutcome::MigratedEmptyNoSection;
+					Inventory->ResetInventoryInternal();
 				}
 				Status.InventoryRevision = Inventory->GetRevision();
 			}
@@ -527,7 +591,7 @@ FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId)
 			WorldState->OnWorldStateReplaced.Broadcast();
 			if (bInventoryActive)
 			{
-				Inventory->OnInventoryReplaced.Broadcast();
+				Inventory->BroadcastReplaced();
 			}
 			OnLoaded.Broadcast();
 			return Status;
@@ -554,4 +618,28 @@ FSpnSaveStatus USpnSaveSubsystem::LoadSlot(const FString& SlotId)
 		UE_LOG(LogSpnCore, Error, TEXT("Save [%s]: loading slot '%s' threw an unknown exception; state unchanged"), *Owner, *SlotId);
 		return Fail(ESpnSaveResult::InternalError, TEXT("unknown exception"), FilePath);
 	}
+}
+
+const TCHAR* LexToString(ESpnInventoryLoadOutcome Outcome)
+{
+	switch (Outcome)
+	{
+	case ESpnInventoryLoadOutcome::NotIntegrated: return TEXT("NotIntegrated");
+	case ESpnInventoryLoadOutcome::Restored: return TEXT("Restored");
+	case ESpnInventoryLoadOutcome::MigratedEmptyNoSection: return TEXT("MigratedEmptyNoSection");
+	}
+	return TEXT("Unknown");
+}
+
+const TCHAR* LexToString(ESpnCatalogCheck Check)
+{
+	switch (Check)
+	{
+	case ESpnCatalogCheck::NotApplicable: return TEXT("NotApplicable");
+	case ESpnCatalogCheck::LegacyNoFingerprint: return TEXT("LegacyNoFingerprint");
+	case ESpnCatalogCheck::StaleFingerprint: return TEXT("StaleFingerprint");
+	case ESpnCatalogCheck::Match: return TEXT("Match");
+	case ESpnCatalogCheck::MismatchAccepted: return TEXT("MismatchAccepted");
+	}
+	return TEXT("Unknown");
 }

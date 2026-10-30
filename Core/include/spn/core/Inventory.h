@@ -204,6 +204,14 @@ public:
     /// and the error carries the failing command's index. An empty list is a successful no-op (revision unchanged).
     Result<TransactionResult, InventoryError> ApplyAll(const std::vector<InventoryCommand>& commands);
 
+    /// The catalog this state is bound to (configuration, not state).
+    [[nodiscard]] const ItemCatalog& Catalog() const noexcept { return *catalog_; }
+
+    /// Dry run: executes the commands exactly like ApplyAll, then ALWAYS undoes them. Returns the error ApplyAll would return (with the failing
+    /// command index), or nothing if ApplyAll would succeed. The state, the id counter and the revision are afterwards exactly as before (the undo log
+    /// of the transaction machinery is used, nothing is copied). Not const because the state is changed temporarily; not thread-safe.
+    [[nodiscard]] std::optional<InventoryError> Probe(const std::vector<InventoryCommand>& commands);
+
     [[nodiscard]] const Container* FindContainer(ContainerId id) const;
     [[nodiscard]] const ItemStack* FindStack(ContainerId container, ItemInstanceId item) const;
     /// Container that currently holds the stack, or null id.

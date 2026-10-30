@@ -5,6 +5,7 @@ add_library(spn_core STATIC
     src/AppearanceGenerator.cpp
     src/AppearanceRecipe.cpp
     src/CameraArm.cpp
+    src/CatalogFingerprint.cpp
     src/ContentId.cpp
     src/DetailTiers.cpp
     src/Devices.cpp

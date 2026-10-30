@@ -566,6 +566,23 @@ Result<TransactionResult, InventoryError> InventoryState::ApplyAll(const std::ve
 
 Result<TransactionResult, InventoryError> InventoryState::Apply(const InventoryCommand& command) { return ApplyAll({command}); }
 
+std::optional<InventoryError> InventoryState::Probe(const std::vector<InventoryCommand>& commands) {
+    if (commands.empty()) {
+        return std::nullopt;
+    }
+    InventoryTransaction tx(*this);
+    std::optional<InventoryError> result;
+    for (std::size_t i = 0; i < commands.size(); ++i) {
+        if (auto error = tx.Run(commands[i])) {
+            error->commandIndex = i;
+            result = std::move(error);
+            break;
+        }
+    }
+    tx.Rollback(); // never Commit: revision untouched, ids restored
+    return result;
+}
+
 // --- Queries ------------------------------------------------------------------------------------------------------------------
 
 const Container* InventoryState::FindContainer(ContainerId id) const {

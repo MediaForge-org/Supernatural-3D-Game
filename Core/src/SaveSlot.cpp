@@ -90,6 +90,7 @@ std::string_view ToString(SaveErrorCode code) noexcept {
     case SaveErrorCode::Io: return "Io";
     case SaveErrorCode::VerifyFailed: return "VerifyFailed";
     case SaveErrorCode::NoValidSave: return "NoValidSave";
+    case SaveErrorCode::CatalogMismatch: return "CatalogMismatch";
     }
     return "Unknown";
 }

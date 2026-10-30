@@ -19,6 +19,7 @@ add_executable(spn_core_tests
     InteractionTests.cpp
     InventoryTests.cpp
     InventoryTxTests.cpp
+    CatalogFingerprintTests.cpp
     InteractionReachTests.cpp
     InteractionSystemTests.cpp
     JumpModelTests.cpp

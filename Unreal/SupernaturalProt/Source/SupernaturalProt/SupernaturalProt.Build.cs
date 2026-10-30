@@ -18,6 +18,7 @@ public class SupernaturalProt : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
+			"DeveloperSettings",
 			"SlateCore",
 			"Slate"
 		});

@@ -56,9 +56,50 @@ enum class ESpnSaveResult : uint8
 	InternalError,
 	/** A save or load is already running (a callback called back in). Nothing was touched. */
 	Busy,
+	/** The inventory was saved against item definitions that differ from the current catalog; refused unless the caller accepts it explicitly. */
+	CatalogMismatch,
 };
 
 SPNCORE_API const TCHAR* LexToString(ESpnSaveResult Result);
+
+/** What a load did with the inventory. Explicit so that a migration is never silent. */
+enum class ESpnInventoryLoadOutcome : uint8
+{
+	/** The inventory subsystem has no catalog (inactive); the slot's inventory section, if any, would have blocked the load. */
+	NotIntegrated,
+	/** player.inventory was read and replaced the inventory. */
+	Restored,
+	/** The slot has no player.inventory (a valid save from before inventories existed): the inventory is now EMPTY. This is a migration, reported here. The save file itself is not touched. */
+	MigratedEmptyNoSection,
+};
+
+/** Result of comparing the catalog fingerprint stored in the slot with the current catalog (see Core CatalogFingerprint.h). */
+enum class ESpnCatalogCheck : uint8
+{
+	/** No inventory in the slot or inventory not integrated. */
+	NotApplicable,
+	/** Inventory without a fingerprint (saved before M2B3.4): loaded after the Core validated it against the current catalog, but NOT verified. */
+	LegacyNoFingerprint,
+	/** The fingerprint belongs to an older inventory revision (an older build re-saved the inventory): treated like legacy. */
+	StaleFingerprint,
+	/** Same gameplay definitions. */
+	Match,
+	/** Different definitions, accepted because FSpnLoadOptions::bAcceptCatalogMismatch was set; the inventory was validated against the current catalog. */
+	MismatchAccepted,
+};
+
+SPNCORE_API const TCHAR* LexToString(ESpnInventoryLoadOutcome Outcome);
+SPNCORE_API const TCHAR* LexToString(ESpnCatalogCheck Check);
+
+/** Explicit decisions of the caller for a load. The defaults are the safe ones. */
+struct FSpnLoadOptions
+{
+	/**
+	 * Load an inventory that was saved against different item definitions. NEVER the default: a mismatch is refused (CatalogMismatch) and nothing is
+	 * reset. Accepting still validates the inventory against the current catalog (unknown items, over-full stacks and so on are rejected).
+	 */
+	bool bAcceptCatalogMismatch = false;
+};
 
 /** Which generation a load came from. */
 enum class ESpnSaveSource : uint8
@@ -86,6 +127,13 @@ struct FSpnSaveStatus
 	bool bInventoryResetToEmpty = false;
 	/** Inventory revision that was saved or restored (0 if the inventory is not part of the save). */
 	uint64 InventoryRevision = 0;
+	/** Load: what happened to the inventory (see ESpnInventoryLoadOutcome). */
+	ESpnInventoryLoadOutcome InventoryOutcome = ESpnInventoryLoadOutcome::NotIntegrated;
+	/** Load: result of the catalog fingerprint comparison. */
+	ESpnCatalogCheck CatalogCheck = ESpnCatalogCheck::NotApplicable;
+	/** Load: fingerprint stored in the slot (empty if none) and fingerprint of the current catalog. Save: StoredFingerprint is the one written. */
+	FString StoredFingerprint;
+	FString CurrentFingerprint;
 	/** WorldFacts revision that was saved, or that was loaded. */
 	uint64 FactsRevision = 0;
 	/** Absolute path of the slot's main file (empty for InvalidSlotId/InvalidDirectory). */
@@ -93,6 +141,8 @@ struct FSpnSaveStatus
 
 	bool IsOk() const { return Result == ESpnSaveResult::Ok; }
 };
+DECLARE_MULTICAST_DELEGATE_OneParam(FSpnSaveFinished, const FSpnSaveStatus&);
+
 
 /**
  * Saves and loads the game state to named slots. Game-thread only. Depends on USpnWorldStateSubsystem (initialised first).
@@ -117,7 +167,11 @@ public:
 	 * Replaces the WorldFacts of USpnWorldStateSubsystem with the slot's content (two-phase: parse into new objects, swap only on success).
 	 * If the main file is damaged or rejected, the previous generation is tried; a save from a newer build is never rolled back.
 	 */
-	FSpnSaveStatus LoadSlot(const FString& SlotId);
+	FSpnSaveStatus LoadSlot(const FString& SlotId, const FSpnLoadOptions& Options = FSpnLoadOptions());
+
+	/** The result of the most recent SaveSlot / LoadSlot (success or failure); default-constructed (Ok) before the first call. */
+	const FSpnSaveStatus& GetLastSaveStatus() const { return LastSaveStatus; }
+	const FSpnSaveStatus& GetLastLoadStatus() const { return LastLoadStatus; }
 
 	/** True if the main file or the previous generation of the slot exists (no validation). */
 	bool DoesSlotExist(const FString& SlotId) const;
@@ -141,6 +195,9 @@ public:
 	FString GetSlotFilePath(const FString& SlotId) const;
 
 	/** Broadcast after a successful SaveSlot / LoadSlot (after the world state was replaced). */
+	/** After every SaveSlot / LoadSlot, successful or not, with the result (a failed load changed nothing). Fires before the call returns, while busy. */
+	FSpnSaveFinished OnSaveFinished;
+	FSpnSaveFinished OnLoadFinished;
 	FSimpleMulticastDelegate OnSaved;
 	FSimpleMulticastDelegate OnLoaded;
 
@@ -148,4 +205,8 @@ private:
 	FString SaveDirectory;
 	/** Set while a save or load runs, so a callback cannot start another one in the middle of it. */
 	bool bBusy = false;
+	FSpnSaveStatus DoSave(const FString& SlotId);
+	FSpnSaveStatus DoLoad(const FString& SlotId, const FSpnLoadOptions& Options);
+	FSpnSaveStatus LastSaveStatus;
+	FSpnSaveStatus LastLoadStatus;
 };

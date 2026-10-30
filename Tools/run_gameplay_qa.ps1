@@ -17,7 +17,7 @@
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'Failed')]
+    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'InventoryUi', 'Failed')]
     [string]$Suite = 'Full',
     [switch]$NoBuild,
     [switch]$NoVideo,
@@ -100,6 +100,7 @@ $groups = @{
     Performance = 'SpnQA.Performance'
     Jump        = 'SpnQA.Jump'
     MovementDemo = 'SpnQA.MovementDemo'   # recorded movement regression demo on V3, no repositioning (use -Map ...V3Interiors)
+    InventoryUi = 'SpnQA.InventoryUi'     # M2B3.5: graphical inventory in a rendered session (keyboard, mouse, simulated gamepad, save/load, screenshots)
     Locomotion  = 'SpnQA.Locomotion'   # direction reversal, rotation stability, obstacle collision (M2A4.1)
     Traversal   = 'SpnQA.ContinuousTraversal'   # one uninterrupted walk through two buildings, no repositioning (use -Map ...V3Interiors)
     Access      = 'SpnQA.BuildingAccess'   # one recorded visit of a building: approach, open, enter, explore, leave, close (use -Map ...V3Interiors)
@@ -114,6 +115,7 @@ $expected = @{
     Jump        = @('Jump')
     Locomotion  = @('Locomotion')
     MovementDemo = @('MovementDemo')
+    InventoryUi = @('InventoryUi')
     Traversal   = @('ContinuousTraversal')
     Access      = @('BuildingAccess')
 }

@@ -63,6 +63,7 @@ enum class SaveErrorCode : std::uint8_t {
     Io,
     VerifyFailed,               ///< read-back after writing differs from what was written
     NoValidSave,
+    CatalogMismatch,            ///< the inventory was saved against item definitions that differ from the current catalog (slot.catalog fingerprint)
 };
 [[nodiscard]] std::string_view ToString(SaveErrorCode code) noexcept;
 

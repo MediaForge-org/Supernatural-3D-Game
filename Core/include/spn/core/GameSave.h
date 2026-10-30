@@ -11,6 +11,9 @@
 //   world.map         optional   WorldMapState::Serialize()          SPN-MAPSTATE 1
 //   player.inventory  optional   InventoryState::Serialize()         SPN-INVENTORY 1
 //   slot.meta         optional   "facts_revision N" / "inventory_revision N": which gameplay moment the sections were taken at
+//   slot.catalog      optional   "catalog_fingerprint fp1:<hex>" / "inventory_revision N": the item definitions player.inventory was saved against
+//                                (M2B3.4, see CatalogFingerprint.h). A separate section, NOT an extension of slot.meta: slot.meta has a strict
+//                                grammar that older builds reject, whereas an unknown optional section is ignored and kept by every build.
 // "optional" means: absent = that domain was never saved (start it fresh); it is not a statement that the game can live without it.
 //
 // SNAPSHOT BOUNDARY: CaptureGameSave takes const references and returns a value. It runs synchronously on the calling thread and never mutates
@@ -41,6 +44,7 @@ inline constexpr std::string_view kSectionObjects = "world.objects";
 inline constexpr std::string_view kSectionMap = "world.map";
 inline constexpr std::string_view kSectionInventory = "player.inventory";
 inline constexpr std::string_view kSectionMeta = "slot.meta";
+inline constexpr std::string_view kSectionCatalog = "slot.catalog";
 
 /// What this build reads: world.facts required, everything else optional, all at version 1.
 [[nodiscard]] SaveSchema GameSaveSchema();
@@ -63,7 +67,20 @@ struct GameLoadContext {
     std::shared_ptr<const WorldMapDefinition> mapDefinition; ///< needed iff world.map is present
     MapStateConfig mapConfig;
     const ItemCatalog* itemCatalog = nullptr;                ///< needed iff player.inventory is present; must outlive the loaded state
+    /// Catalog fingerprint policy (M2B3.4): by default a slot whose recorded fingerprint differs from the current catalog is REFUSED (CatalogMismatch).
+    /// Setting this is an explicit decision by the caller; the inventory is still fully validated against the current catalog, nothing is reset.
+    bool acceptCatalogMismatch = false;
 };
+
+/// Result of comparing the catalog fingerprint recorded in the slot with the catalog the inventory is loaded against.
+enum class CatalogCheck : std::uint8_t {
+    NotApplicable,       ///< the slot has no player.inventory
+    LegacyNoFingerprint, ///< inventory without slot.catalog (saved before M2B3.4): loaded, validated by the Core parser only, NOT verified
+    StaleFingerprint,    ///< slot.catalog names another inventory revision (a build that does not know it re-saved the inventory): treated as legacy
+    Match,               ///< same definitions
+    MismatchAccepted,    ///< different definitions, accepted explicitly by the caller (acceptCatalogMismatch)
+};
+[[nodiscard]] std::string_view ToString(CatalogCheck check) noexcept;
 
 struct LoadedGame {
     WorldFacts facts;
@@ -71,6 +88,9 @@ struct LoadedGame {
     std::optional<WorldMapState> map;
     std::optional<InventoryState> inventory;
     std::vector<std::string> unreadSections; ///< optional sections this build ignored (and kept in the slot)
+    CatalogCheck catalogCheck = CatalogCheck::NotApplicable;
+    std::string storedFingerprint;  ///< from slot.catalog, empty if none
+    std::string currentFingerprint; ///< of the catalog used for loading, empty if there is no inventory
 };
 
 /// Parses every present section into new objects. Errors: SectionRejected (a domain parser said no; detail = section + domain error),

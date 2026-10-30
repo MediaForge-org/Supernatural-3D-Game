@@ -1,6 +1,7 @@
 #include "spn/core/GameSave.h"
 
 #include "TextParsing.h"
+#include "spn/core/CatalogFingerprint.h"
 
 namespace spn::core {
 
@@ -40,13 +41,39 @@ std::optional<ParsedMeta> ParseMeta(std::string_view text) {
     return haveFacts ? std::optional<ParsedMeta>(meta) : std::nullopt;
 }
 
+
+std::string CatalogSection(const std::string& fingerprint, std::uint64_t inventoryRevision) {
+    return "catalog_fingerprint " + fingerprint + "\ninventory_revision " + std::to_string(inventoryRevision) + "\n";
+}
+
+struct ParsedCatalog {
+    std::string fingerprint;
+    std::uint64_t inventoryRevision = 0;
+};
+
+std::optional<ParsedCatalog> ParseCatalogSection(std::string_view text) {
+    const std::string_view keyFp = "catalog_fingerprint ";
+    const std::string_view keyRev = "inventory_revision ";
+    if (!text.starts_with(keyFp)) return std::nullopt;
+    const std::size_t nl1 = text.find('\n');
+    if (nl1 == std::string_view::npos) return std::nullopt;
+    ParsedCatalog parsed;
+    parsed.fingerprint = std::string(text.substr(keyFp.size(), nl1 - keyFp.size()));
+    if (!IsWellFormedFingerprint(parsed.fingerprint)) return std::nullopt;
+    const std::string_view rest = text.substr(nl1 + 1);
+    if (!rest.starts_with(keyRev) || !rest.ends_with('\n')) return std::nullopt;
+    const auto revision = detail::ParseCanonicalInteger<std::uint64_t>(rest.substr(keyRev.size(), rest.size() - keyRev.size() - 1));
+    if (!revision) return std::nullopt;
+    parsed.inventoryRevision = *revision;
+    return parsed;
+}
 } // namespace
 
 SaveSchema GameSaveSchema() {
     SaveSchema schema;
     schema.sections = {
         {std::string(kSectionFacts), 1, true},   {std::string(kSectionObjects), 1, false}, {std::string(kSectionMap), 1, false},
-        {std::string(kSectionInventory), 1, false}, {std::string(kSectionMeta), 1, false},
+        {std::string(kSectionInventory), 1, false}, {std::string(kSectionMeta), 1, false}, {std::string(kSectionCatalog), 1, false},
     };
     return schema;
 }
@@ -72,6 +99,7 @@ Result<SaveSlot, SaveError> CaptureGameSave(const GameSaveSources& src, const Sa
     }
     if (src.inventory != nullptr) {
         if (auto e = add(kSectionInventory, false, src.inventory->Serialize())) return *e;
+        if (auto e = add(kSectionCatalog, false, CatalogSection(CatalogFingerprint(src.inventory->Catalog()), src.inventory->Revision()))) return *e;
     }
     if (auto e = add(kSectionMeta, false, Meta(factsBefore, inventoryBefore))) return *e;
 
@@ -97,7 +125,7 @@ Result<LoadedGame, SaveError> ParseGameSave(const SaveSlot& slot, const GameLoad
     if (!parsedFacts)
         return Err(SaveErrorCode::SectionRejected, std::string(kSectionFacts) + ": " + std::string(ToString(parsedFacts.Error().code)) + " line " +
                                                        std::to_string(parsedFacts.Error().line));
-    LoadedGame game{std::move(parsedFacts).Value(), std::nullopt, std::nullopt, std::nullopt, slot.UnreadSections(schema)};
+    LoadedGame game{std::move(parsedFacts).Value(), std::nullopt, std::nullopt, std::nullopt, slot.UnreadSections(schema), CatalogCheck::NotApplicable, {}, {}};
 
     const auto readable = [&](std::string_view id) {
         const SaveSection* s = slot.Find(id);
@@ -141,7 +169,48 @@ Result<LoadedGame, SaveError> ParseGameSave(const SaveSlot& slot, const GameLoad
             return Err(SaveErrorCode::ConsistencyMismatch, "inventory section present but slot.meta has no inventory revision");
         }
     }
+    // Catalog fingerprint: written by CaptureGameSave next to player.inventory (M2B3.4).
+    if (const SaveSection* any = slot.Find(kSectionCatalog); any != nullptr && any->version > 1) {
+        return Err(SaveErrorCode::UnsupportedSectionVersion, std::string(kSectionCatalog) + ": written by a newer version");
+    }
+    if (game.inventory) game.currentFingerprint = CatalogFingerprint(*ctx.itemCatalog);
+    if (const SaveSection* s = readable(kSectionCatalog)) {
+        if (!game.inventory) return Err(SaveErrorCode::ConsistencyMismatch, "slot.catalog present but the player.inventory section is missing");
+        const auto catalog = ParseCatalogSection(s->payload);
+        if (!catalog) return Err(SaveErrorCode::SectionRejected, std::string(kSectionCatalog) + ": malformed");
+        game.storedFingerprint = catalog->fingerprint;
+        if (catalog->inventoryRevision != game.inventory->Revision()) {
+            game.catalogCheck = CatalogCheck::StaleFingerprint; // describes an older inventory than the one in this slot: proves nothing
+        } else if (!IsComparableFingerprint(catalog->fingerprint)) {
+            return Err(SaveErrorCode::UnsupportedSectionVersion, std::string(kSectionCatalog) + ": fingerprint " + catalog->fingerprint.substr(0, catalog->fingerprint.find(':')) +
+                                                                     " was written by a newer version");
+        } else if (catalog->fingerprint == game.currentFingerprint) {
+            game.catalogCheck = CatalogCheck::Match;
+        } else if (ctx.acceptCatalogMismatch) {
+            game.catalogCheck = CatalogCheck::MismatchAccepted;
+        } else {
+            return Err(SaveErrorCode::CatalogMismatch, "the inventory was saved against item definitions " + catalog->fingerprint + " but the current catalog is " +
+                                                           game.currentFingerprint);
+        }
+    } else if (game.inventory) {
+        game.catalogCheck = CatalogCheck::LegacyNoFingerprint;
+    }
     return game;
+}
+
+} // namespace spn::core
+
+namespace spn::core {
+
+std::string_view ToString(CatalogCheck check) noexcept {
+    switch (check) {
+    case CatalogCheck::NotApplicable: return "NotApplicable";
+    case CatalogCheck::LegacyNoFingerprint: return "LegacyNoFingerprint";
+    case CatalogCheck::StaleFingerprint: return "StaleFingerprint";
+    case CatalogCheck::Match: return "Match";
+    case CatalogCheck::MismatchAccepted: return "MismatchAccepted";
+    }
+    return "Unknown";
 }
 
 } // namespace spn::core

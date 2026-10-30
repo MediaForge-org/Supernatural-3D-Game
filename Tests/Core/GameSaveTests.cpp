@@ -1,6 +1,7 @@
 #include <doctest.h>
 
 #include <algorithm>
+#include <spn/core/CatalogFingerprint.h>
 #include <spn/core/Devices.h>
 #include <spn/core/GameSave.h>
 #include <spn/core/SaveStore.h>
@@ -225,4 +226,158 @@ TEST_CASE("game save: existing formats stay readable - SPN-MAPSTATE 1 and SPN-IN
     REQUIRE(game.HasValue());
     CHECK(game.Value().map->SameSavedState(g.map));
     CHECK(*game.Value().inventory == g.inventory);
+}
+
+// === catalog fingerprint in the slot (M2B3.4) ============================================================================================
+
+namespace {
+
+std::string CatalogPayload(const std::string& fingerprint, std::uint64_t revision) {
+    return "catalog_fingerprint " + fingerprint + "\ninventory_revision " + std::to_string(revision) + "\n";
+}
+
+SaveSlot WithSection(SaveSlot slot, std::string_view id, std::uint32_t version, std::string payload) {
+    REQUIRE_FALSE(slot.Put(SaveSection{std::string(id), version, false, std::move(payload)}).has_value());
+    return slot;
+}
+
+} // namespace
+
+TEST_CASE("catalog check: capture writes slot.catalog next to the inventory, load verifies it") {
+    Game g;
+    const SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+    const SaveSection* section = slot.Find(kSectionCatalog);
+    REQUIRE(section != nullptr);
+    CHECK(section->version == 1);
+    CHECK_FALSE(section->required);
+    CHECK(section->payload == CatalogPayload(CatalogFingerprint(g.items), g.inventory.Revision()));
+    CHECK_FALSE(slot.Validate(GameSaveSchema()).has_value());
+
+    const auto game = ParseGameSave(slot, g.Context());
+    REQUIRE(game.HasValue());
+    CHECK(game.Value().catalogCheck == CatalogCheck::Match);
+    CHECK(game.Value().storedFingerprint == CatalogFingerprint(g.items));
+    CHECK(game.Value().currentFingerprint == game.Value().storedFingerprint);
+
+    // a slot without an inventory has no catalog section and nothing to check
+    GameSaveSources factsOnly;
+    factsOnly.facts = &g.facts;
+    const SaveSlot small = CaptureGameSave(factsOnly).Value();
+    CHECK(small.Find(kSectionCatalog) == nullptr);
+    CHECK(ParseGameSave(small, g.Context()).Value().catalogCheck == CatalogCheck::NotApplicable);
+}
+
+TEST_CASE("catalog check: a legacy slot (inventory without slot.catalog) loads, explicitly marked as unverified") {
+    Game g;
+    SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+    REQUIRE(slot.Remove(kSectionCatalog));
+    const auto game = ParseGameSave(slot, g.Context());
+    REQUIRE(game.HasValue());
+    CHECK(game.Value().catalogCheck == CatalogCheck::LegacyNoFingerprint);
+    CHECK(game.Value().storedFingerprint.empty());
+    CHECK(game.Value().currentFingerprint == CatalogFingerprint(g.items));
+    REQUIRE(game.Value().inventory.has_value());
+    CHECK(game.Value().inventory->Serialize() == g.inventory.Serialize()); // fully restored
+}
+
+TEST_CASE("catalog check: a fingerprint of another inventory revision is stale (an older build re-saved the inventory)") {
+    Game g;
+    const SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+    const SaveSlot stale = WithSection(slot, kSectionCatalog, 1, CatalogPayload("fp1:" + std::string(64, '0'), g.inventory.Revision() + 5));
+    const auto game = ParseGameSave(stale, g.Context());
+    REQUIRE(game.HasValue());
+    CHECK(game.Value().catalogCheck == CatalogCheck::StaleFingerprint);
+}
+
+TEST_CASE("catalog check: changed definitions are refused by default and never reset the inventory - accepting is explicit and still validated") {
+    Game g;
+    const SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+
+    // same id, other weight: the inventory still parses, the fingerprint says the meaning changed
+    ItemCatalog heavier;
+    ItemDefinition coin;
+    coin.id = Cid("test:item.coin");
+    coin.category = Cid("test:cat.currency");
+    coin.maxStack = 10;
+    coin.weightGrams = 50;
+    REQUIRE_FALSE(heavier.Add(coin).has_value());
+    GameLoadContext context = g.Context();
+    context.itemCatalog = &heavier;
+    const auto refused = ParseGameSave(slot, context);
+    REQUIRE_FALSE(refused.HasValue());
+    CHECK(refused.Error().code == SaveErrorCode::CatalogMismatch);
+    CHECK(refused.Error().detail.find(CatalogFingerprint(g.items)) != std::string::npos);
+    CHECK(refused.Error().detail.find(CatalogFingerprint(heavier)) != std::string::npos);
+
+    context.acceptCatalogMismatch = true;
+    const auto accepted = ParseGameSave(slot, context);
+    REQUIRE(accepted.HasValue());
+    CHECK(accepted.Value().catalogCheck == CatalogCheck::MismatchAccepted);
+    CHECK(accepted.Value().storedFingerprint != accepted.Value().currentFingerprint);
+    REQUIRE(accepted.Value().inventory.has_value());
+    CHECK(accepted.Value().inventory->CountOf(ContainerId{1}, Cid("test:item.coin")) == 23); // content kept, not reset
+    CHECK(accepted.Value().inventory->TotalWeightGrams(ContainerId{1}) == 23 * 50);         // weights follow the NEW definition
+
+    // accepting does not skip validation: a catalog under which the saved inventory is invalid is still rejected
+    ItemCatalog smaller;
+    coin.maxStack = 2; // the saved stacks of 10 no longer fit
+    REQUIRE_FALSE(smaller.Add(coin).has_value());
+    context.itemCatalog = &smaller;
+    const auto invalid = ParseGameSave(slot, context);
+    REQUIRE_FALSE(invalid.HasValue());
+    CHECK(invalid.Error().code == SaveErrorCode::SectionRejected);
+
+    // a catalog that lost the item entirely is rejected by the parser as well
+    ItemCatalog without;
+    ItemDefinition other = coin;
+    other.id = Cid("test:item.other");
+    REQUIRE_FALSE(without.Add(other).has_value());
+    context.itemCatalog = &without;
+    CHECK(ParseGameSave(slot, context).Error().code == SaveErrorCode::SectionRejected);
+}
+
+TEST_CASE("catalog check: damaged or inconsistent slot.catalog sections are rejected, never read as no fingerprint") {
+    Game g;
+    const SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+    const std::string good = CatalogFingerprint(g.items);
+    const std::uint64_t revision = g.inventory.Revision();
+    const std::vector<std::string> malformed = {
+        "",
+        "garbage\n",
+        "catalog_fingerprint " + good + "\n",                                                                  // revision line missing
+        "catalog_fingerprint " + good + "\ninventory_revision " + std::to_string(revision),                    // no final newline
+        "inventory_revision " + std::to_string(revision) + "\ncatalog_fingerprint " + good + "\n",             // wrong order
+        "catalog_fingerprint fp1:XYZ\ninventory_revision " + std::to_string(revision) + "\n",
+        "catalog_fingerprint " + good + "\ninventory_revision 01\n",                                            // not canonical
+        "catalog_fingerprint " + good + "\ninventory_revision " + std::to_string(revision) + "\nextra 1\n",
+    };
+    for (const std::string& payload : malformed) {
+        INFO("payload: " << payload);
+        const auto game = ParseGameSave(WithSection(slot, kSectionCatalog, 1, payload), g.Context());
+        REQUIRE_FALSE(game.HasValue());
+        CHECK(game.Error().code == SaveErrorCode::SectionRejected);
+    }
+    // a catalog section without an inventory is inconsistent
+    SaveSlot noInventory = slot;
+    REQUIRE(noInventory.Remove(kSectionInventory));
+    REQUIRE(noInventory.Remove(kSectionMeta));
+    CHECK(ParseGameSave(noInventory, g.Context()).Error().code == SaveErrorCode::ConsistencyMismatch);
+    // newer versions are never ignored
+    CHECK(ParseGameSave(WithSection(slot, kSectionCatalog, 2, CatalogPayload(good, revision)), g.Context()).Error().code == SaveErrorCode::UnsupportedSectionVersion);
+    const std::string future = "fp2:" + good.substr(4);
+    CHECK(ParseGameSave(WithSection(slot, kSectionCatalog, 1, CatalogPayload(future, revision)), g.Context()).Error().code == SaveErrorCode::UnsupportedSectionVersion);
+}
+
+TEST_CASE("catalog check: backward compatibility - a build that does not know slot.catalog ignores it and keeps it") {
+    Game g;
+    const SaveSlot slot = CaptureGameSave(g.Sources()).Value();
+    SaveSchema older = GameSaveSchema(); // the schema of M2B3.3 builds had no slot.catalog
+    std::erase_if(older.sections, [](const SectionSpec& spec) { return spec.id == kSectionCatalog; });
+    CHECK_FALSE(slot.Validate(older).has_value());
+    const auto unread = slot.UnreadSections(older);
+    CHECK(std::find(unread.begin(), unread.end(), std::string(kSectionCatalog)) != unread.end());
+    // and the container round trip keeps the bytes
+    const auto reparsed = SaveSlot::Parse(slot.Serialize());
+    REQUIRE(reparsed.HasValue());
+    CHECK(reparsed.Value().Find(kSectionCatalog)->payload == slot.Find(kSectionCatalog)->payload);
 }

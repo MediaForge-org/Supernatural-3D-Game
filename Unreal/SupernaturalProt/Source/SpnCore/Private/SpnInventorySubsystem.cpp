@@ -10,6 +10,7 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
+#include <spn/core/CatalogFingerprint.h>
 #include <spn/core/ContentId.h>
 
 #include <exception>
@@ -656,6 +657,7 @@ FSpnInventoryStatus USpnInventorySubsystem::SetCatalog(const FSpnItemCatalogData
 		State->LastFailure = FSpnInventoryStatus();
 		UE_LOG(LogSpnCore, Log, TEXT("Inventory [%s]: catalog installed: %d item definition(s), %d container preset(s)%s"), *Owner, Catalog.Items.Num(),
 			Catalog.ContainerPresets.Num(), Catalog.bIsTestData ? TEXT(" -- TEMPORARY TEST DATA, not game content") : TEXT(""));
+		BroadcastReplaced();
 		FSpnInventoryStatus Status;
 		Status.Revision = 0;
 		return Status;
@@ -697,7 +699,7 @@ FSpnInventoryStatus USpnInventorySubsystem::LoadCatalogFromFile(const FString& A
 	return SetCatalogFromJson(Text);
 }
 
-void USpnInventorySubsystem::ResetInventory()
+void USpnInventorySubsystem::ResetInventoryInternal()
 {
 	if (State->Catalog)
 	{
@@ -706,12 +708,101 @@ void USpnInventorySubsystem::ResetInventory()
 	}
 }
 
+void USpnInventorySubsystem::BroadcastReplaced()
+{
+	FSpnInventoryChange Change;
+	Change.Revision = GetRevision();
+	Change.bReplacedAll = true;
+	OnInventoryReplaced.Broadcast();
+	OnInventoryChangedDetailed.Broadcast(Change);
+}
+
+void USpnInventorySubsystem::ResetInventory()
+{
+	ResetInventoryInternal();
+	BroadcastReplaced();
+}
+
 void USpnInventorySubsystem::ClearCatalog()
 {
 	State->Inventory.reset();
 	State->Catalog.reset();
 	State->CatalogData = FSpnItemCatalogData();
+	BroadcastReplaced();
 }
+
+FString USpnInventorySubsystem::GetCatalogFingerprint() const
+{
+	return State->Catalog ? ToFString(spn::core::CatalogFingerprint(*State->Catalog)) : FString();
+}
+
+void USpnInventorySubsystem::SetPresentationSet(USpnItemPresentationSet* InSet)
+{
+	PresentationSet = InSet;
+	BroadcastReplaced(); // names and icons changed: views refresh (the gameplay state did not change)
+}
+
+const FSpnItemPresentationEntry* USpnInventorySubsystem::FindPresentation(const FString& DefinitionId) const
+{
+	return PresentationSet != nullptr ? PresentationSet->Find(DefinitionId) : nullptr;
+}
+
+FSpnPresentationReport USpnInventorySubsystem::ValidatePresentation() const
+{
+	FSpnPresentationReport Report;
+	if (PresentationSet != nullptr)
+	{
+		TArray<FString> Ids;
+		for (const FSpnItemDefinitionData& Item : State->CatalogData.Items)
+		{
+			Ids.Add(Item.Id);
+		}
+		Report = PresentationSet->ValidateAgainstCatalog(Ids);
+	}
+	return Report;
+}
+
+FSpnInventoryStatus USpnInventorySubsystem::ProbeCommands(const TArray<FSpnInventoryCommand>& Commands)
+{
+	FSpnInventoryStatus Status;
+	Status.Revision = GetRevision();
+	if (!HasCatalog())
+	{
+		Status.Error = ESpnInventoryError::NoCatalog;
+		Status.Detail = TEXT("no item catalog is loaded");
+		return Status;
+	}
+	try
+	{
+		std::vector<spn::core::InventoryCommand> Translated;
+		for (int32 Index = 0; Index < Commands.Num(); ++Index)
+		{
+			spn::core::InventoryCommand Command;
+			FString Error;
+			if (!ToCoreCommand(Commands[Index], Command, Error))
+			{
+				Status.Error = ESpnInventoryError::InvalidArgument;
+				Status.Detail = Error;
+				Status.FailedCommandIndex = Index;
+				return Status;
+			}
+			Translated.push_back(std::move(Command));
+		}
+		if (const auto Error = State->Inventory->Probe(Translated))
+		{
+			Status.Error = ToError(Error->code);
+			Status.Detail = DescribeError(*Error);
+			Status.FailedCommandIndex = static_cast<int32>(Error->commandIndex);
+		}
+	}
+	catch (...)
+	{
+		Status.Error = ESpnInventoryError::InternalError;
+		Status.Detail = TEXT("exception while probing");
+	}
+	return Status;
+}
+
 
 FSpnInventoryStatus USpnInventorySubsystem::Apply(const TArray<FSpnInventoryCommand>& Commands)
 {
@@ -757,7 +848,18 @@ FSpnInventoryStatus USpnInventorySubsystem::Apply(const TArray<FSpnInventoryComm
 		}
 		if (!Commands.IsEmpty())
 		{
+			FSpnInventoryChange Change;
+			Change.Revision = Status.Revision;
+			for (const FSpnInventoryCommand& Command : Commands)
+			{
+				Change.TouchedContainers.AddUnique(Command.Container);
+				if (Command.Type == ESpnInventoryCommandType::TransferItem)
+				{
+					Change.TouchedContainers.AddUnique(Command.OtherContainer);
+				}
+			}
 			OnInventoryChanged.Broadcast();
+			OnInventoryChangedDetailed.Broadcast(Change);
 		}
 		return Status;
 	}
