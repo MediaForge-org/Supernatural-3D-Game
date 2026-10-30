@@ -3,7 +3,10 @@
 ## Regressions
 None known as of the final test run (see `QA_RESULTS.md`). The two movement failures below pre-date this work.
 
-## Unresolved (pre-existing)
+## Movement investigation (2026-10-30)
+`Obstacles`, `StairsAndRamps` and the intermittent `ledge_80_blocks_even_with_a_jump` are resolved (root causes and evidence in `MOVEMENT_INVESTIGATION_REPORT.md`). Still failing: `SpnQA.Jump.late_jump_ledge_45_jog` and `late_jump_ledge_40_run` - a design decision (mantle / ledge assist), not a physics defect. Walking along a wall now slides at the engine speed (tangential part of the input); pressed straight into a wall the character stops.
+
+## Unresolved (pre-existing; partly superseded by the section above)
 * **`SpnGame.Movement.Obstacles` and `SpnGame.Movement.StairsAndRamps` fail** (a 30 cm ledge / a 30 cm staircase are walked up). Root cause not found; see `OPUS_ESCALATION.md`. Not widened, not weakened.
 * **`late_jump_ledge_45_jog`, `late_jump_ledge_40_run` and the intermittent `MovementDemo.ledge_80_blocks_even_with_a_jump` were NOT investigated** (the time went into the 30 cm question and the integrated features). They belong to the `SpnQA.*` movement suites, which were not re-run in this build unless `QA_RESULTS.md` says so.
 

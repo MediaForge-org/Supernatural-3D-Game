@@ -1,4 +1,7 @@
-# OPUS_ESCALATION — walking up 30 cm ledges (`SpnGame.Movement.Obstacles`, `SpnGame.Movement.StairsAndRamps`)
+# OPUS_ESCALATION
+
+> **Update 2026-10-30 (movement investigation): cases 1, 2 and 5 are RESOLVED with verified root causes; cases 3 and 4 have a verified mechanism and wait for a design decision. Full evidence: `MOVEMENT_INVESTIGATION_REPORT.md`. The sections below are the history; several hypotheses in them were refuted (see the summary at the end).**
+ — walking up 30 cm ledges (`SpnGame.Movement.Obstacles`, `SpnGame.Movement.StairsAndRamps`)
 
 Status: **UNRESOLVED.** Time-boxed (about 60 minutes of focused investigation in Night Build 01, after the M2A4.1 attempts). The code is back at the committed state for these files (`git diff` of `SpnCharacterMovementComponent.*` and `SpnMovement.h` is empty). The two tests fail exactly as they did at the baseline; they were not weakened.
 
@@ -66,9 +69,11 @@ No code was changed for movement in this pass (as instructed: no speculative fix
 # the two SpnGame cases (headless, about 3 min)
 UnrealEditor-Cmd.exe Unreal\SupernaturalProt\SupernaturalProt.uproject -ExecCmds="Automation RunTests SpnGame.Movement.Obstacles+SpnGame.Movement.StairsAndRamps; Quit" -unattended -NullRHI -NoSound
 # the late-jump cases (they need the rendered session; the headless run reports the same two failures)
-powershell.exe -ExecutionPolicy Bypass -File Toolsun_gameplay_qa.ps1 -Suite Jump -NoVideo
+powershell.exe -ExecutionPolicy Bypass -File Tools
+un_gameplay_qa.ps1 -Suite Jump -NoVideo
 # the intermittent 80 cm case
-powershell.exe -ExecutionPolicy Bypass -File Toolsun_gameplay_qa.ps1 -Suite MovementDemo -NoVideo      # repeat 10x and count
+powershell.exe -ExecutionPolicy Bypass -File Tools
+un_gameplay_qa.ps1 -Suite MovementDemo -NoVideo      # repeat 10x and count
 ```
 
 ## Relevant code
@@ -93,3 +98,17 @@ powershell.exe -ExecutionPolicy Bypass -File Toolsun_gameplay_qa.ps1 -Suite Mov
 ## Previous unsuccessful repair attempts (cumulative)
 
 M2A4.1: perch radius 12/14/16, flat-base floor checks, slope-boosting guard. Night Build 01: strict `CanStepUp` override (refused but not the mechanism), `MoveAlongFloor` lift instrumentation (no lift above 2 cm). Completion pass: none (by instruction).
+
+---
+
+# Resolution summary (movement investigation, 2026-10-30)
+
+| Case | Status | Verified root cause | Change |
+|---|---|---|---|
+| `SpnGame.Movement.Obstacles` (30 cm walked) | **RESOLVED** | Not "many small slide lifts" (refuted: the trace shows ONE +30 cm lift). `StepUp` refuses correctly; the post-move floor check (flat base = 45-degree box reaching the full radius, restarted 48.6 cm above the capsule bottom) lands on the ledge top, reports a walkable floor at -27.85 cm, the perch probe accepts it because it sees the old ground, and `AdjustFloorHeight` lifts the capsule 30 cm in one frame. | `FindFloor` override + `bLimitFloorRiseToStepHeight`: a floor that would lift the capsule above `MaxStepHeight` while walking is replaced by the perch-probe floor |
+| `SpnGame.Movement.StairsAndRamps` (30 cm stairs) | **RESOLVED** | same mechanism | same change |
+| `SpnQA.Jump.late_jump_ledge_45_jog` | **OPEN - design decision** | lower hemisphere hits the ledge corner 1-2 frames after take-off, horizontal speed collapses (engine falling slide + slope-boosting guard); outcome is a knife edge (apex 45.0 cm = ledge 45 cm) and frame-rate dependent. Not caused by the capsule radius (30/34 cm also blocked) or by the floor rule. Getting onto the ledge here = mantle / ledge assist | none (no automatic mantle without a rule) |
+| `SpnQA.Jump.late_jump_ledge_40_run` | **OPEN - design decision** | same | none |
+| `ledge_80_blocks_even_with_a_jump` (intermittent) | **RESOLVED (root cause)** | not the 80 cm wall (never climbed) and not mouse drift (yaw logged constant): the SPN ground steering plus the engine's per-move velocity reset made a character pressed straight into a wall accelerate sideways (30 cm/s nudge -> 133 cm/s, 285 cm in 3 s), slide to the end of the wall and walk round it | `CalcVelocity`: pressed into a wall, only the input component along the wall steers; regression test `SpnGame.Movement.WallPushNoSideDrift` (drift 285 -> 1.7 cm) |
+
+Refuted hypotheses: "many small slide lifts" (case 1), "mouse yaw drift in the rendered run" (case 5), "the wide 42 cm capsule blocks the late jump" (cases 3/4).

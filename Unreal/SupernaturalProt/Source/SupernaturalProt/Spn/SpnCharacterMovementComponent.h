@@ -110,6 +110,19 @@ public:
 	virtual bool ClientUpdatePositionAfterServerUpdate() override;
 	virtual void OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode) override;
 
+	// --- movement trace (diagnostics only): console variable spn.MoveTrace 1. Off by default; off costs one cvar read per call. ---
+	/** True while spn.MoveTrace is not 0. */
+	static bool IsMoveTraceEnabled();
+	/** The recorded trace lines since the last call (one line per engine event), and clears them. */
+	TArray<FString> ConsumeMoveTrace();
+	virtual void MoveAlongFloor(const FVector& InVelocity, float DeltaSeconds, FStepDownResult* OutStepDownResult = NULL) override;
+	virtual bool StepUp(const FVector& GravDir, const FVector& Delta, const FHitResult& Hit, FStepDownResult* OutStepDownResult = NULL) override;
+	virtual void AdjustFloorHeight() override;
+	virtual float SlideAlongSurface(const FVector& Delta, float Time, const FVector& Normal, FHitResult& Hit, bool bHandleImpact) override;
+	virtual void PhysFalling(float deltaTime, int32 Iterations) override;
+	/** Applies FSpnMovementSettings::bLimitFloorRiseToStepHeight after the engine's floor check. */
+	virtual void FindFloor(const FVector& CapsuleLocation, FFindFloorResult& OutFloorResult, bool bCanUseCachedLocation, const FHitResult* DownwardSweepResult = NULL) const override;
+
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
@@ -122,6 +135,19 @@ protected:
 
 	/** Sprint held. Predicted: travels in the move flags. */
 	bool bSprintRequested = false;
+
+	/**
+	 * Wall contact of the last ground move (set when a walking move slid along a non-walkable surface, consumed by the next CalcVelocity). The steering
+	 * then only follows the part of the input that runs along that wall: pressed straight into a wall the character stops instead of building up
+	 * sideways speed (measured: 133 cm/s along the wall after a 30 cm/s nudge, the intermittent ledge_80 failure). Derived from the move's own collision,
+	 * so a replayed move recomputes it.
+	 */
+	FVector2D PendingWallNormal = FVector2D::ZeroVector;
+	bool bPendingWallContact = false;
+
+	/** Movement trace lines (only filled while spn.MoveTrace is on; bounded). */
+	TArray<FString> MoveTraceLines;
+	void AddMoveTrace(FString&& Line);
 
 	ESpnGait MaxAllowedGait = ESpnGait::Sprint;
 	float SpeedScale = 1.f;

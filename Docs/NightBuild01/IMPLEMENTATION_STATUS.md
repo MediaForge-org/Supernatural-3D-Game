@@ -7,7 +7,7 @@ PASS / PARTIAL / FAIL / NOT IMPLEMENTED. "Evidence" names a test or file; detail
 | Pkg | Topic | Status | Evidence / what is missing |
 |---|---|---|---|
 | A1 | Stair camera smoothing | **PASS** | `SpnGame.Movement.StairCamera`; unchanged in the completion pass |
-| A2 | Known movement failures | **FAIL (open, escalated)** | `Obstacles`, `StairsAndRamps`, `SpnQA.Jump.late_jump_ledge_45_jog`, `late_jump_ledge_40_run` still fail; `ledge_80_blocks_even_with_a_jump` passed in both runs of this session (intermittent, not fixed). `OPUS_ESCALATION.md` |
+| A2 | Known movement failures | **PARTIAL** (movement investigation 2026-10-30) | RESOLVED: `Obstacles`, `StairsAndRamps` (floor-rise rule), `ledge_80_blocks_even_with_a_jump` (wall-contact steering). OPEN, design decision: `late_jump_ledge_45_jog`, `late_jump_ledge_40_run`. `MOVEMENT_INVESTIGATION_REPORT.md` |
 | A3 | Regression coverage | **PARTIAL** | all movement suites re-run (see `QA_RESULTS.md`); no new movement coverage beyond `StairCamera` |
 | B | World map UI | **PASS** (test data) | journey run + `SpnCore.Map.*`; controller path simulated only |
 | C | Minimap | **PASS** | `SpnCore.Map.Minimap`, journey screenshots |

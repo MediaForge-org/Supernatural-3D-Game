@@ -184,6 +184,17 @@ struct SPNCORE_API FSpnMovementSettings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
 	bool bUseFlatBaseForFloorChecks = true;
 
+	/**
+	 * Movement investigation after Night Build 01 (Docs/NightBuild01/MOVEMENT_INVESTIGATION_REPORT.md): while walking, a floor found by the floor check
+	 * that would lift the capsule by more than MaxStepHeight is not accepted. Measured root cause of the 30 cm cases: StepUp correctly refuses the ledge,
+	 * but the engine's floor sweep (flat base = a box turned 45 degrees whose corners reach the full capsule radius, restarted 48.6 cm above the capsule
+	 * bottom after a penetrating first try) lands on the ledge TOP while the capsule is blocked at its face; the floor is reported walkable at -27.9 cm and
+	 * AdjustFloorHeight lifts the capsule by 30 cm in one frame, bypassing the step limit. With this rule the floor is looked up again with the narrower
+	 * perch probe (radius minus PerchRadiusThreshold); only that floor is used. Not a tuning value: it makes MaxStepHeight the limit it claims to be.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Jump")
+	bool bLimitFloorRiseToStepHeight = true;
+
 	/** Below this horizontal speed the character counts as standing, cm/s. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State", meta = (ClampMin = "0"))
 	float IdleSpeed = 5.f;

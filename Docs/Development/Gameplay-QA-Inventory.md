@@ -7,7 +7,7 @@ Test kinds: `SpnQA.*` = gameplay QA (real key input, recorded, in the run report
 
 | System | Covered by | Coverage gap |
 |---|---|---|
-| **movement.gaits**<br>Gaits Walk/Jog/Run/Sprint, acceleration, braking, gait cycle and sprint keys | `SpnGame.Movement.Gaits`, `SpnGame.Movement.Settings`, `SpnGame.Movement.CharacterDefaults`, `SpnGame.Movement.SpeedAudit`, `SpnQA.Movement`, `core:Tests/Core/MovementTests.cpp`, `core:Tests/Core/LocomotionTests.cpp` | Gamepad sprint (DefaultSprintGamepadKey) and analog stick magnitudes through a real gamepad are not tested; speeds are the current placeholder values, not approved tuning. |
+| **movement.gaits**<br>Gaits Walk/Jog/Run/Sprint, acceleration, braking, gait cycle and sprint keys | `SpnGame.Movement.Gaits`, `SpnGame.Movement.Settings`, `SpnGame.Movement.CharacterDefaults`, `SpnGame.Movement.SpeedAudit`, `SpnQA.Movement`, `core:Tests/Core/MovementTests.cpp`, `core:Tests/Core/LocomotionTests.cpp`, `SpnGame.Movement.WallPushNoSideDrift` | Gamepad sprint (DefaultSprintGamepadKey) and analog stick magnitudes through a real gamepad are not tested; speeds are the current placeholder values, not approved tuning. |
 | **movement.turns**<br>Direction changes, 90/180 degree turns, sprint left/right | `SpnGame.Movement.SprintTurn`, `SpnQA.Turns`, `core:Tests/Core/GroundSteeringTests.cpp` | The steering model of the Core (GroundSteering) is not wired into the Unreal movement yet; SprintTurn fails until that decision is made (see Docs/Development/M2A2-Windows-Integration-Report.md). |
 | **movement.jump**<br>Jump: standing, moving, sprint, ledges, collisions, landing | `SpnGame.Movement.Jump`, `SpnGame.Movement.JumpMoving`, `SpnGame.Movement.StepJumpIndependence`, `SpnQA.Jump`, `core:Tests/Core/JumpModelTests.cpp` | Jump key is bound by the template's IMC_Default asset (Space), exercised through SpnQA.Jump but not inventoried as a C++ binding; coyote time / jump buffering do not exist. |
 | **movement.obstacles**<br>Obstacles, steps, stairs and ramps | `SpnGame.Movement.Obstacles`, `SpnGame.Movement.StairsAndRamps`, `SpnQA.Jump`, `SpnQA.Buildings`, `core:Tests/Core/TraversalTests.cpp` | Obstacles and StairsAndRamps fail today (walking over 30 cm ledges, 30 cm stairs); a capsule/step decision by the developer is open. |
@@ -37,6 +37,10 @@ Test kinds: `SpnQA.*` = gameplay QA (real key input, recorded, in the run report
 
 ## Automation tests not assigned to any system
 
+- `SpnDiag.Movement.LateJump`
+- `SpnDiag.Movement.LedgeWalk`
+- `SpnDiag.Movement.StairWalk`
+- `SpnDiag.Movement.WallPush`
 - `SpnGame.TestMap.M1Layout`
 - `SpnGame.TestMap.M1Traversal`
 - `SpnQA.BuildingAccess`

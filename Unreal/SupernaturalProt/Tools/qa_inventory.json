@@ -29,7 +29,8 @@
         "SpnGame.Movement.SpeedAudit",
         "SpnQA.Movement",
         "core:Tests/Core/MovementTests.cpp",
-        "core:Tests/Core/LocomotionTests.cpp"
+        "core:Tests/Core/LocomotionTests.cpp",
+        "SpnGame.Movement.WallPushNoSideDrift"
       ],
       "gap": "Gamepad sprint (DefaultSprintGamepadKey) and analog stick magnitudes through a real gamepad are not tested; speeds are the current placeholder values, not approved tuning."
     },

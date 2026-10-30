@@ -284,11 +284,15 @@ bool FSpnTestMapM1TraversalTest::RunTest(const FString& Parameters)
 		});
 
 	// Wall, diagonal: walking into the wall at 45 degrees must slide along it, not stick.
-	Walk(FVector(WallFace - 300.f, WallY - 280.f, CharacterStandZ), 3.5f, [](const FVector&) { return false; },
-		[this, WallFace](const FVector& End, bool)
+	// Movement investigation after Night Build 01: both properties are checked at the moment the slide has been shown (Y past WallY + 100), not after a
+	// fixed 3.5 s. The fixed time only worked while the ground steering slowed the slide down by a feedback loop with the wall (the defect fixed in
+	// USpnCharacterMovementComponent::CalcVelocity); at the engine's slide speed (about 350 * cos 45 = 247 cm/s) the character reaches the end of this 6 m
+	// wall within 3.5 s and walks round it, which is correct and not what this check is about. Nothing is relaxed: still stopped by the wall, still sliding.
+	Walk(FVector(WallFace - 300.f, WallY - 280.f, CharacterStandZ), 3.5f, [](const FVector& Location) { return Location.Y > WallY + 100.f; },
+		[this, WallFace](const FVector& End, bool bReached)
 		{
-			TestTrue(FString::Printf(TEXT("diagonal: stopped by the wall (end X %.0f)"), End.X), End.X < WallFace);
-			TestTrue(FString::Printf(TEXT("diagonal: slid along the wall (end Y %.0f, started at %.0f)"), End.Y, WallY - 280.f), End.Y > WallY + 100.f);
+			TestTrue(FString::Printf(TEXT("diagonal: slid along the wall (end Y %.0f, started at %.0f)"), End.Y, WallY - 280.f), bReached && End.Y > WallY + 100.f);
+			TestTrue(FString::Printf(TEXT("diagonal: stopped by the wall while sliding (end X %.0f, face %.0f)"), End.X, WallFace), End.X < WallFace);
 		},
 		45.f);
 	return true;
