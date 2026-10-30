@@ -16,6 +16,7 @@ class USpnInventorySubsystem;
 class USpnSaveSubsystem;
 class UTextBlock;
 class UVerticalBox;
+class UWrapBox;
 
 // The graphical inventory (M2B3.5): a UMG screen over USpnInventoryViewModel. ENGINEERING PROPOSAL (layout, texts, key assignment), not master canon.
 //
@@ -118,6 +119,20 @@ public:
 	FString GetHeaderTitle() const;
 	int32 GetQuantity() const { return QuantityValue; }
 
+	// --- view options (Inventory UI 2.0): list / grid, sort order, category filter. All of them are VIEW state: the Core inventory is never touched ---
+	/** List <-> grid. The selection stays on the same stack. */
+	void ToggleView();
+	/** Next sort mode (Default, Name, Category, Weight, Volume, Quantity); bToggleDirection flips ascending/descending instead. */
+	void CycleSort(bool bToggleDirection = false);
+	/** Next category present in the active container; after the last one the filter is cleared. */
+	void CycleFilter();
+	bool IsGridView() const { return bGrid; }
+	/** True if the visible row widget is drawn as a grid tile. */
+	bool IsRowTile(int32 Index) const { return RowPool.IsValidIndex(Index) && Index < VisibleRows && RowPool[Index]->GetContent().bTile; }
+	/** Text of the three toolbar buttons as drawn: 0 = view, 1 = sort, 2 = category. */
+	FString GetToolbarText(int32 Index) const;
+	static constexpr int32 GridColumnCount = 6;
+
 	// --- measurements (milliseconds of the most recent operation; tests and the performance report read them) ---
 	double LastRefreshMs = 0.0;
 	double LastRowsBuildMs = 0.0;
@@ -158,6 +173,9 @@ private:
 	void SyncTabs();
 	void SyncEquipment();
 	void SyncRows();
+	void SyncToolbar();
+	void SyncViewChange();
+	void ResetRowPool();
 	void SyncSelectionVisuals();
 	void SyncDetails();
 	void SyncActions();
@@ -232,6 +250,7 @@ private:
 	float ScrollStick = 0.f;
 	FDelegateHandle InventoryChangedHandle;
 	bool bDirtyRows = false, bDirtyEquipment = false, bDirtyTabs = false, bDirtyAll = false;
+	bool bGrid = false;
 
 	// widgets
 	UPROPERTY(Transient) TObjectPtr<UBorder> TitleBadge;
@@ -246,6 +265,10 @@ private:
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> ItemsWindowText;
 	UPROPERTY(Transient) TObjectPtr<UScrollBox> RowScroll;
 	UPROPERTY(Transient) TObjectPtr<UVerticalBox> RowBox;
+	UPROPERTY(Transient) TObjectPtr<UWrapBox> RowWrap;
+	UPROPERTY(Transient) TObjectPtr<USpnUiButton> ViewButton;
+	UPROPERTY(Transient) TObjectPtr<USpnUiButton> SortButton;
+	UPROPERTY(Transient) TObjectPtr<USpnUiButton> FilterButton;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> EmptyText;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> DetailsTitleLabel;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> DetailsName;

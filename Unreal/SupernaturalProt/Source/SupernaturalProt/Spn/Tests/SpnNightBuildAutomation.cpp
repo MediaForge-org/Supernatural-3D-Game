@@ -1,4 +1,6 @@
 #include "Engine/Engine.h"
+#include "Engine/UserInterfaceSettings.h"
+#include "Misc/ConfigCacheIni.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "HAL/FileManager.h"
@@ -267,6 +269,54 @@ bool FSpnNbSettingsTest::RunTest(const FString&)
 	Settings->Set(Original);
 	FApp::SetVolumeMultiplier(OriginalVolume);
 	FSpnUiText::SetLanguageOverride(OriginalLanguage);
+	return true;
+}
+
+// Settings completion: music / effects volume (engine sound classes) and the UI scale have a real, observable effect and survive a restart (simulated by
+// resetting the in-memory values and loading the ini again). The test restores everything it touched.
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnNbSettingsAudioUiTest, "SpnGame.NightBuild.SettingsAudioUi", Flags)
+bool FSpnNbSettingsAudioUiTest::RunTest(const FString&)
+{
+	FNbWorld W;
+	USpnSettingsSubsystem* Settings = W.GameInstance->GetSubsystem<USpnSettingsSubsystem>();
+	if (Settings == nullptr) { AddError(TEXT("no settings subsystem")); return false; }
+	const FSpnPlayerSettings Original = Settings->Get();
+	const float OriginalMasterMultiplier = FApp::GetVolumeMultiplier();
+	const float OriginalScale = GetDefault<UUserInterfaceSettings>()->ApplicationScale;
+
+	const FSpnPlayerSettings Wild = [] { FSpnPlayerSettings S; S.MusicVolume = -2.f; S.EffectsVolume = NAN; S.UiScale = 9.f; return S; }();
+	const FSpnPlayerSettings Clamped = USpnSettingsSubsystem::Clamped(Wild);
+	TestEqual(TEXT("music volume clamped"), Clamped.MusicVolume, 0.f);
+	TestEqual(TEXT("NaN effects volume falls back"), Clamped.EffectsVolume, 1.f);
+	TestEqual(TEXT("UI scale clamped to 1.5"), Clamped.UiScale, 1.5f);
+
+	FSpnPlayerSettings Mine = Original;
+	Mine.MusicVolume = 0.3f;
+	Mine.EffectsVolume = 0.6f;
+	Mine.UiScale = 1.25f;
+	Settings->Set(Mine);
+	TestEqual(TEXT("the Music sound class follows the music slider"), USpnSettingsSubsystem::GetMusicClassVolume(), 0.3f);
+	TestEqual(TEXT("the SFX sound class follows the effects slider"), USpnSettingsSubsystem::GetEffectsClassVolume(), 0.6f);
+	TestEqual(TEXT("the UI scale reaches the UI settings"), GetDefault<UUserInterfaceSettings>()->ApplicationScale, 1.25f);
+
+	// "restart": throw the in-memory values away, load from the ini, apply
+	FSpnPlayerSettings Reset = Original;
+	Reset.MusicVolume = 1.f; Reset.EffectsVolume = 1.f; Reset.UiScale = 1.f;
+	Settings->Set(Reset);
+	TestEqual(TEXT("reset really changed the class volume"), USpnSettingsSubsystem::GetMusicClassVolume(), 1.f);
+	GConfig->SetFloat(TEXT("SpnPlayer"), TEXT("MusicVolume"), 0.3f, GGameUserSettingsIni);
+	GConfig->SetFloat(TEXT("SpnPlayer"), TEXT("EffectsVolume"), 0.6f, GGameUserSettingsIni);
+	GConfig->SetFloat(TEXT("SpnPlayer"), TEXT("UiScale"), 1.25f, GGameUserSettingsIni);
+	Settings->Load();
+	Settings->ApplyGlobal();
+	TestEqual(TEXT("music volume restored from the ini"), Settings->Get().MusicVolume, 0.3f);
+	TestEqual(TEXT("effects volume restored from the ini"), Settings->Get().EffectsVolume, 0.6f);
+	TestEqual(TEXT("UI scale restored from the ini"), Settings->Get().UiScale, 1.25f);
+	TestEqual(TEXT("and applied again"), USpnSettingsSubsystem::GetMusicClassVolume(), 0.3f);
+
+	Settings->Set(Original);
+	FApp::SetVolumeMultiplier(OriginalMasterMultiplier);
+	GetMutableDefault<UUserInterfaceSettings>()->ApplicationScale = OriginalScale;
 	return true;
 }
 

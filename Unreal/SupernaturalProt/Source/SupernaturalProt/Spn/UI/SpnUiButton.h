@@ -9,6 +9,7 @@ class UBorder;
 class UHorizontalBox;
 class UTextBlock;
 class UVerticalBox;
+class USizeBox;
 
 // Palette and metrics of the SPN interface (M2B3.5). One place, so the look stays consistent and can be restyled later.
 namespace SpnUi
@@ -54,6 +55,8 @@ struct FSpnUiButtonContent
 	/** One or two characters on the swatch when there is no icon texture. */
 	FString IconLetter;
 	FLinearColor IconColor = SpnUi::AccentDim;
+	/** Compact vertical tile for a grid (icon on top, name below, quantity and badge under it); the subtitle is not shown. */
+	bool bTile = false;
 };
 
 /**
@@ -104,6 +107,8 @@ protected:
 private:
 	void ApplyContent();
 	void ApplyVisuals();
+	void ApplyLayout(bool bTile);
+	bool bTileLayout = false;
 
 	FSpnUiButtonContent Content;
 	bool bSelected = false;
@@ -111,6 +116,12 @@ private:
 	bool bEnabledState = true;
 	bool bHovered = false;
 
+	UPROPERTY(Transient) TObjectPtr<USizeBox> SizeRoot;
+	UPROPERTY(Transient) TObjectPtr<UHorizontalBox> LineBox;
+	UPROPERTY(Transient) TObjectPtr<UVerticalBox> TextsBox;
+	UPROPERTY(Transient) TObjectPtr<UVerticalBox> TileBox;
+	UPROPERTY(Transient) TObjectPtr<UHorizontalBox> TileFooter;
+	UPROPERTY(Transient) TObjectPtr<USizeBox> IconSizeBox;
 	UPROPERTY(Transient) TObjectPtr<UBorder> RingBorder;
 	UPROPERTY(Transient) TObjectPtr<UBorder> BodyBorder;
 	UPROPERTY(Transient) TObjectPtr<UBorder> IconBorder;

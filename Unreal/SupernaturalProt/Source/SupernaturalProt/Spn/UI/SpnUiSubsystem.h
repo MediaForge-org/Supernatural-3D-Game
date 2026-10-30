@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Containers/Ticker.h"
 #include "SpnSaveSubsystem.h"
 #include "Spn/SpnSettingsSubsystem.h"
 #include "Spn/UI/SpnMenuScreen.h"
@@ -154,4 +155,8 @@ private:
 	SpnUi::ENote PendingNoteKind = SpnUi::ENote::Info;
 	bool bHasPendingNote = false;
 	int32 QaStation = 0;
+	/** QA only (-SpnQaKeys): writes the player pose to a file about 30 times per second so an external driver can steer with real input in a closed loop. */
+	FTSTicker::FDelegateHandle QaPoseFeed;
+	void StartQaPoseFeed();
+	void ApplyGameplayInput(int32 Attempt);
 };

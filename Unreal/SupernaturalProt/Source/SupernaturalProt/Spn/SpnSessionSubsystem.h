@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "SpnSaveSubsystem.h"
+#include "Containers/Ticker.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 
 #include "SpnSessionSubsystem.generated.h"
@@ -18,9 +19,11 @@ class UWorld;
 // player's own container, and - for the integration level - the pickups and the container of the integration scenario (placeholder
 // objects). A new game resets the world facts, the inventory, the map and the waypoint. The save format is untouched.
 //
-// NOT SAVED (documented limitation): the player's position and the actors themselves. A loaded game restores facts, inventory, the map with the
-// waypoint, and therefore which pickups are taken, what every container holds and where the waypoint is; the player stays where the level
-// placed them.
+// PLAYER POSE: saved in the optional section player.pose (SpnPlayerPose.h: canonical metres through FSpnWorldFrame, bearing, pitch, gait, crouch,
+// level). A load hands the pose to this subsystem AFTER the state swap; it is applied once the player pawn of the right level exists (the level
+// may still be loading). A pose that cannot be used (other level, no floor below it, blocked) is reported and the player stays at the level's
+// start point - never a silent default. Legacy slots without a pose load fully and are reported as such. The actors themselves are not saved;
+// the scenario spawner recreates them from the world facts (pickups taken, container contents).
 
 UENUM()
 enum class ESpnSessionPending : uint8
@@ -50,6 +53,8 @@ public:
 	const FString& GetActiveSlot() const { return ActiveSlot; }
 	void SetActiveSlot(const FString& Slot) { ActiveSlot = Slot; }
 
+	/** Like StartNewGame, but in the world that is already loaded (tests, console): resets the state and installs the scenario objects here. */
+	void StartNewGameInPlace(UWorld* World);
 	/** Starts a new game: travels to the gameplay level and resets the state there. */
 	void StartNewGame();
 	/**
@@ -75,6 +80,11 @@ public:
 
 private:
 	void HandlePostLoadMap(UWorld* World);
+	void HandlePoseLoaded(const FSpnPlayerPose& Pose);
+	bool CaptureLivePose(FSpnPlayerPose& Out) const;
+	/** Places the player. False if the pose cannot be used here (reported to the HUD); the player then stays where the level put them. */
+	bool ApplyPose(UWorld* World, const FSpnPlayerPose& Pose);
+	void TryApplyPendingPose();
 	bool EnsureCatalog();
 	void EnsureMap();
 	void ResetForNewGame();
@@ -87,4 +97,12 @@ private:
 	FString PendingSlot;
 	bool bPendingAccept = false;
 	FString ActiveSlot;
+	TOptional<FSpnPlayerPose> PendingPose;
+	int32 PoseAttempts = 0;
+	FTSTicker::FDelegateHandle PoseTicker;
+public:
+	/** Test/diagnostics: the pose waiting for its pawn (unset if none). */
+	const TOptional<FSpnPlayerPose>& GetPendingPose() const { return PendingPose; }
+	/** Applies a pose to the live player right now (tests, console). */
+	bool ApplyPoseNow(const FSpnPlayerPose& Pose);
 };

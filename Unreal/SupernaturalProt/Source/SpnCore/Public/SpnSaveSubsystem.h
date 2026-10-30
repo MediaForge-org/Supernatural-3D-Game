@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SpnMapSubsystem.h"
+#include "SpnPlayerPose.h"
 
 #include "SpnSaveSubsystem.generated.h"
 
@@ -130,6 +131,10 @@ struct FSpnSaveStatus
 	bool bMapRestored = false;
 	/** Load: the slot had no world.map (a save from before the map existed) and the markers were cleared. Reported, never silent. */
 	bool bMapResetToEmpty = false;
+	/** Load: the slot has a player.pose section (false = legacy slot: the player stays where the level put them). */
+	bool bPoseInSlot = false;
+	/** Load: the validated pose, handed to OnPoseLoaded after the swap. Save: the pose that was written (unset if no provider or it declined). */
+	TOptional<FSpnPlayerPose> Pose;
 	/** Inventory revision that was saved or restored (0 if the inventory is not part of the save). */
 	uint64 InventoryRevision = 0;
 	/** Load: what happened to the inventory (see ESpnInventoryLoadOutcome). */
@@ -194,6 +199,10 @@ public:
 		uint64 InventoryRevision = 0;
 		bool bHasMap = false;
 		int32 MapMarkers = 0;
+		bool bHasPose = false;
+		/** Level of the saved pose (empty without pose). */
+		FString PoseLevel;
+		TOptional<FSpnPlayerPose> Pose;
 		ESpnCatalogCheck CatalogCheck = ESpnCatalogCheck::NotApplicable;
 	};
 
@@ -223,6 +232,15 @@ public:
 
 	/** Absolute path of the slot's main file; empty for an invalid slot id. */
 	FString GetSlotFilePath(const FString& SlotId) const;
+
+	/**
+	 * Bound by the game layer: fills the pose of the live player at save time. Return false (or leave unbound) when there is no player: the slot is then
+	 * written WITHOUT player.pose and any older pose of the slot is dropped instead of carried over, so a stale position can never come back.
+	 */
+	TFunction<bool(FSpnPlayerPose&)> PoseProvider;
+	/** After a load swapped the state and the slot has a pose; the listener places the player (the level may still have to be loaded first). */
+	DECLARE_MULTICAST_DELEGATE_OneParam(FSpnPoseLoaded, const FSpnPlayerPose&);
+	FSpnPoseLoaded OnPoseLoaded;
 
 	/** Broadcast after a successful SaveSlot / LoadSlot (after the world state was replaced). */
 	/** After every SaveSlot / LoadSlot, successful or not, with the result (a failed load changed nothing). Fires before the call returns, while busy. */

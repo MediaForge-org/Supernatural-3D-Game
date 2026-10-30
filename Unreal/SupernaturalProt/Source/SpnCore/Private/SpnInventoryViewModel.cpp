@@ -261,6 +261,10 @@ void USpnInventoryViewModel::RebuildPanel(int64 ContainerId, TMap<FString, FSpnI
 		{
 			SlotToStack.Add(Stack.EquippedSlot, ToId(Stack.StackId));
 		}
+		if (Definition != nullptr && !Definition->Category.IsEmpty())
+		{
+			Panel.Categories.AddUnique(Definition->Category);
+		}
 		if (!CategoryFilter.IsEmpty() && (Definition == nullptr || Definition->Category != CategoryFilter))
 		{
 			continue;
@@ -295,6 +299,8 @@ void USpnInventoryViewModel::RebuildPanel(int64 ContainerId, TMap<FString, FSpnI
 		}
 		Panel.Rows.Add(MoveTemp(Row));
 	}
+
+	Panel.Categories.Sort();
 
 	// order
 	const auto Compare = [this](const FSpnItemRow& A, const FSpnItemRow& B) -> bool

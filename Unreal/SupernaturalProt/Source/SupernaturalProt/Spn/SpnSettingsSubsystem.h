@@ -13,8 +13,10 @@
 //   * graphics (display mode, resolution, scalability preset, VSync, frame-rate limit) belong to the engine's UGameUserSettings and are only
 //     read and written through it (GameUserSettings.ini); this class does not copy them.
 //   * everything else is stored in the same ini under [SpnPlayer] and applied here.
-// Only settings with an implemented effect exist: the master volume drives the engine's global volume multiplier. There is no music or effects
-// bus yet, so no music/effects sliders are offered (see Docs/NightBuild01/KNOWN_ISSUES.md). Nothing here is gameplay tuning.
+// Only settings with an implemented effect exist. AUDIO FOUNDATION: the master volume drives the engine's global volume multiplier; music and effects
+// volume drive the volume of the engine's own sound classes /Engine/EngineSounds/Music and /Engine/EngineSounds/SFX (in memory only; nothing is saved to
+// the engine content). Every sound that is assigned to one of those classes follows the slider. THE PROJECT HAS NO SOUNDS YET: until content uses the
+// classes the two sliders have nothing audible to change, and the settings page says so. Nothing here is gameplay tuning.
 
 USTRUCT()
 struct FSpnPlayerSettings
@@ -23,6 +25,11 @@ struct FSpnPlayerSettings
 
 	/** 0..1, applied through FApp::SetVolumeMultiplier (all audio). */
 	UPROPERTY() float MasterVolume = 1.f;
+	/** 0..1, volume of the Music sound class and of the SFX sound class (see the foundation note above). */
+	UPROPERTY() float MusicVolume = 1.f;
+	UPROPERTY() float EffectsVolume = 1.f;
+	/** Scale of the whole game UI (UUserInterfaceSettings::ApplicationScale), 0.75 .. 1.5. */
+	UPROPERTY() float UiScale = 1.f;
 	/** Multipliers on the look input (1 = the project default). */
 	UPROPERTY() float MouseSensitivity = 1.f;
 	UPROPERTY() float GamepadSensitivity = 1.f;
@@ -50,7 +57,10 @@ public:
 	void Set(const FSpnPlayerSettings& NewSettings);
 	void Load();
 	void SaveToDisk() const;
-	/** Applies the settings that have a global effect (volume, language). */
+	/** The volume currently set on the engine sound class "Music" / "SFX" (-1 if the class cannot be loaded). For tests and diagnostics. */
+	static float GetMusicClassVolume();
+	static float GetEffectsClassVolume();
+	/** Applies the settings that have a global effect (volume, language, UI scale). */
 	void ApplyGlobal() const;
 	static FSpnPlayerSettings Clamped(const FSpnPlayerSettings& In);
 

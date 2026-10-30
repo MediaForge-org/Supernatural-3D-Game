@@ -204,6 +204,9 @@ struct SPNCORE_API FSpnContainerPanel
 	/** Stacks in the container regardless of the filter. */
 	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	int32 TotalStackCount = 0;
+	/** Category ids that occur in the container regardless of the filter (sorted); what a category filter can offer. */
+	UPROPERTY(BlueprintReadOnly, Category = "Spn")
+	TArray<FString> Categories;
 	UPROPERTY(BlueprintReadOnly, Category = "Spn")
 	FSpnCapacityMeter StackMeter;
 	UPROPERTY(BlueprintReadOnly, Category = "Spn")
@@ -341,6 +344,14 @@ public:
 	/** Only rows of this category id are shown; empty shows all. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Inventory")
 	void SetCategoryFilter(const FString& CategoryId);
+	UFUNCTION(BlueprintPure, Category = "Spn|Inventory")
+	ESpnInventorySort GetSortMode() const { return SortMode; }
+	UFUNCTION(BlueprintPure, Category = "Spn|Inventory")
+	bool IsSortDescending() const { return bSortDescending; }
+	UFUNCTION(BlueprintPure, Category = "Spn|Inventory")
+	FString GetCategoryFilter() const { return CategoryFilter; }
+	UFUNCTION(BlueprintPure, Category = "Spn|Inventory")
+	int32 GetGridColumns() const { return GridColumns; }
 
 	// --- selection and navigation ---------------------------------------------------------------------------------------------------
 

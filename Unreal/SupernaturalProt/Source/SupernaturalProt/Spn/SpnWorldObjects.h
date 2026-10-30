@@ -37,6 +37,13 @@ namespace SpnWorld
 
 	/** The player's own container: PlayerContainerId if it exists, else the lowest container id that is not a world container. 0 if none. */
 	SUPERNATURALPROT_API uint64 FindPlayerContainer(const USpnInventorySubsystem& Inventory);
+
+	/**
+	 * True if ANOTHER live world object of this world already uses the identity (same StableId; for containers also the same derived container id,
+	 * i.e. a CRC collision). Two objects sharing an identity would share one taken flag / one inventory container: items could be taken twice or
+	 * seen in two places. The one that began play first keeps the identity; the later one disables itself and says so in the log.
+	 */
+	SUPERNATURALPROT_API bool IsIdentityTaken(const AActor& Self, const FString& StableId, bool bContainer);
 }
 
 /** A pickup that adds a real item to the player's inventory. All-or-nothing: if the stack does not fit, nothing moves and the object stays. */
@@ -63,6 +70,8 @@ public:
 	virtual FString SpnPromptText(const AActor* User) const override;
 
 	bool IsTaken() const;
+	/** True if this pickup lost the identity race (see SpnWorld::IsIdentityTaken): it is hidden, not interactable and never touches the saved flag. */
+	bool HasIdentityConflict() const { return bIdentityConflict; }
 	/** Key of the saved flag (world.facts). */
 	FString TakenKey() const;
 
@@ -73,6 +82,7 @@ protected:
 
 private:
 	void Refresh();
+	bool bIdentityConflict = false;
 	USpnWorldStateSubsystem* GetWorldState() const;
 	USpnInventorySubsystem* GetInventory() const;
 
@@ -123,6 +133,7 @@ public:
 	virtual FString SpnPromptText(const AActor* User) const override;
 
 	uint64 GetContainerId() const;
+	bool HasIdentityConflict() const { return bIdentityConflict; }
 	/** Creates the inventory container with its initial items if it does not exist and a catalog is installed. True if the container exists afterwards. */
 	bool EnsureContainer();
 
@@ -132,6 +143,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type Reason) override;
 
 private:
+	bool bIdentityConflict = false;
 	USpnInventorySubsystem* GetInventory() const;
 
 	UPROPERTY(VisibleAnywhere, Category = "Components") TObjectPtr<USceneComponent> Root;

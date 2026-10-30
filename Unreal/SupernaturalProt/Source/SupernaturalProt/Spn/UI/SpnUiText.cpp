@@ -65,8 +65,8 @@ namespace
 		{TEXT("ui.dialog.confirm"), TEXT("Discard"), TEXT("Wegwerfen")},
 		{TEXT("ui.dialog.cancel"), TEXT("Cancel"), TEXT("Abbrechen")},
 		// --- input hints ---
-		{TEXT("ui.hint.keyboard"), TEXT("Arrows: move   Enter: use   Tab: next container   ←/→: panel   +/−: quantity   Esc / I: close"), TEXT("Pfeile: bewegen   Eingabe: benutzen   Tab: nächster Behälter   ←/→: Bereich   +/−: Menge   Esc / I: schließen")},
-		{TEXT("ui.hint.gamepad"), TEXT("D-pad: move   Cross: use   Circle: back   L1/R1: container   L2/R2: quantity   Options: close"), TEXT("Steuerkreuz: bewegen   Kreuz: benutzen   Kreis: zurück   L1/R1: Behälter   L2/R2: Menge   Options: schließen")},
+		{TEXT("ui.hint.keyboard"), TEXT("Arrows: move   Enter: use   Tab: next container   ←/→: panel   +/−: quantity   V: list/grid   O: sort   F: category   Esc / I: close"), TEXT("Pfeile: bewegen   Eingabe: benutzen   Tab: nächster Behälter   ←/→: Bereich   +/−: Menge   V: Liste/Raster   O: Sortierung   F: Kategorie   Esc / I: schließen")},
+		{TEXT("ui.hint.gamepad"), TEXT("D-pad: move   Cross: use   Circle: back   L1/R1: container   L2/R2: quantity   Triangle: sort   L3: list/grid   R3: category   Options: close"), TEXT("Steuerkreuz: bewegen   Kreuz: benutzen   Kreis: zurück   L1/R1: Behälter   L2/R2: Menge   Dreieck: Sortierung   L3: Liste/Raster   R3: Kategorie   Options: schließen")},
 		{TEXT("ui.hint.dialog"), TEXT("Enter / Cross: confirm   Esc / Circle: cancel"), TEXT("Eingabe / Kreuz: bestätigen   Esc / Kreis: abbrechen")},
 		// --- view-model: errors ---
 		{TEXT("spn.inventory.ok"), TEXT("Done."), TEXT("Erledigt.")},

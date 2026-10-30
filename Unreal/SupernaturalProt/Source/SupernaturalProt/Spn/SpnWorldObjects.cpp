@@ -1,6 +1,7 @@
 #include "Spn/SpnWorldObjects.h"
 
 #include "Components/StaticMeshComponent.h"
+#include "EngineUtils.h"
 #include "Components/TextRenderComponent.h"
 #include "Engine/CollisionProfile.h"
 #include "Engine/GameInstance.h"
@@ -21,6 +22,25 @@ namespace SpnWorld
 	uint64 ContainerIdFor(const FString& StableId)
 	{
 		return 0x1'0000'0000ull + static_cast<uint64>(FCrc::StrCrc32(*StableId) & 0x7FFFFFFFu);
+	}
+
+	bool IsIdentityTaken(const AActor& Self, const FString& StableId, bool bContainer)
+	{
+		const UWorld* World = Self.GetWorld();
+		if (World == nullptr)
+		{
+			return false;
+		}
+		for (TActorIterator<ASpnWorldPickup> It(World); It; ++It)
+		{
+			if (*It != &Self && !It->HasIdentityConflict() && It->HasActorBegunPlay() && !bContainer && It->StableId == StableId) { return true; }
+		}
+		for (TActorIterator<ASpnWorldContainer> It(World); It; ++It)
+		{
+			if (*It == &Self || It->HasIdentityConflict() || !It->HasActorBegunPlay()) { continue; }
+			if (bContainer ? (It->StableId == StableId || It->GetContainerId() == ContainerIdFor(StableId)) : false) { return true; }
+		}
+		return false;
 	}
 
 	FText ItemDisplayName(const FString& DefinitionId)
@@ -131,6 +151,14 @@ void ASpnWorldPickup::BeginPlay()
 	{
 		UE_LOG(LogSupernaturalProt, Error, TEXT("%s: StableId '%s' breaks the id rule; the pickup cannot be used"), *GetName(), *StableId);
 	}
+	if (SpnWorld::IsIdentityTaken(*this, StableId, false))
+	{
+		UE_LOG(LogSupernaturalProt, Error, TEXT("%s: another pickup already uses the StableId '%s'; this one is disabled (one identity = one object)"), *GetName(), *StableId);
+		bIdentityConflict = true;
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+		return;
+	}
 	if (USpnWorldStateSubsystem* WorldState = GetWorldState())
 	{
 		ReplacedHandle = WorldState->OnWorldStateReplaced.AddUObject(this, &ASpnWorldPickup::Refresh);
@@ -157,7 +185,7 @@ void ASpnWorldPickup::Refresh()
 
 FString ASpnWorldPickup::SpnPromptText(const AActor* User) const
 {
-	if (IsTaken())
+	if (bIdentityConflict || IsTaken())
 	{
 		return FString();
 	}
@@ -168,6 +196,11 @@ FSpnInteractStatus ASpnWorldPickup::SpnUse(AActor* User)
 {
 	FSpnInteractStatus Status;
 	Status.Result = ESpnInteractResult::Failed;
+	if (bIdentityConflict)
+	{
+		Status.Detail = TEXT("duplicate identity");
+		return Status;
+	}
 	USpnInventorySubsystem* Inventory = GetInventory();
 	USpnWorldStateSubsystem* WorldState = GetWorldState();
 	if (Inventory == nullptr || WorldState == nullptr || !Inventory->HasCatalog())
@@ -310,6 +343,14 @@ void ASpnWorldContainer::BeginPlay()
 		UE_LOG(LogSupernaturalProt, Error, TEXT("%s: StableId '%s' breaks the id rule; the container cannot be used"), *GetName(), *StableId);
 		return;
 	}
+	if (SpnWorld::IsIdentityTaken(*this, StableId, true))
+	{
+		UE_LOG(LogSupernaturalProt, Error, TEXT("%s: another container already uses the StableId '%s' (or its derived container id); this one is disabled"), *GetName(), *StableId);
+		bIdentityConflict = true;
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+		return;
+	}
 	SpnWorldContainerRegistry().Add(static_cast<int64>(GetContainerId()));
 	if (USpnInventorySubsystem* Inventory = GetInventory())
 	{
@@ -326,12 +367,19 @@ void ASpnWorldContainer::EndPlay(const EEndPlayReason::Type Reason)
 		Inventory->OnInventoryReplaced.Remove(ReplacedHandle);
 	}
 	ReplacedHandle.Reset();
-	SpnWorldContainerRegistry().Remove(static_cast<int64>(GetContainerId()));
+	if (!bIdentityConflict)
+	{
+		SpnWorldContainerRegistry().Remove(static_cast<int64>(GetContainerId()));
+	}
 	Super::EndPlay(Reason);
 }
 
 FString ASpnWorldContainer::SpnPromptText(const AActor* User) const
 {
+	if (bIdentityConflict)
+	{
+		return FString();
+	}
 	return FSpnUiText::Get(TEXT("ui.world.prompt.open"), {FText::FromString(Title)}).ToString();
 }
 
@@ -339,6 +387,11 @@ FSpnInteractStatus ASpnWorldContainer::SpnUse(AActor* User)
 {
 	FSpnInteractStatus Status;
 	Status.Result = ESpnInteractResult::Failed;
+	if (bIdentityConflict)
+	{
+		Status.Detail = TEXT("duplicate identity");
+		return Status;
+	}
 	if (!EnsureContainer())
 	{
 		Status.Detail = TEXT("container unavailable");

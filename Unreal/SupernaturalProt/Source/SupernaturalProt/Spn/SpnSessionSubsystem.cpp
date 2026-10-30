@@ -17,6 +17,13 @@
 #include "Spn/UI/SpnUiNotify.h"
 #include "Spn/UI/SpnUiText.h"
 #include "SupernaturalProt.h"
+#include "SupernaturalProtCharacter.h"
+#include "Spn/SpnCharacterMovementComponent.h"
+#include "Engine/EngineTypes.h"
+#include "Containers/Ticker.h"
+#include "Misc/PackageName.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "UObject/UObjectGlobals.h"
 
 namespace
@@ -34,6 +41,17 @@ namespace
 				}
 			}
 		}));
+
+	FString LevelPath(const UWorld* World)
+	{
+		return World != nullptr ? UWorld::RemovePIEPrefix(World->GetOutermost()->GetName()) : FString();
+	}
+
+	ASupernaturalProtCharacter* FindPlayerCharacter(UWorld* World)
+	{
+		APlayerController* Controller = World != nullptr ? World->GetFirstPlayerController() : nullptr;
+		return Controller != nullptr ? Cast<ASupernaturalProtCharacter>(Controller->GetPawn()) : nullptr;
+	}
 
 	FSpnSaveStatus MakeStatus(ESpnSaveResult Result, const FString& Detail)
 	{
@@ -73,11 +91,22 @@ void USpnSessionSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		}
 	}
 	PostLoadHandle = FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &USpnSessionSubsystem::HandlePostLoadMap);
+	if (USpnSaveSubsystem* Save = GetGameInstance()->GetSubsystem<USpnSaveSubsystem>())
+	{
+		Save->PoseProvider = [this](FSpnPlayerPose& Out) { return CaptureLivePose(Out); };
+		Save->OnPoseLoaded.AddUObject(this, &USpnSessionSubsystem::HandlePoseLoaded);
+	}
 }
 
 void USpnSessionSubsystem::Deinitialize()
 {
 	FCoreUObjectDelegates::PostLoadMapWithWorld.Remove(PostLoadHandle);
+	FTSTicker::GetCoreTicker().RemoveTicker(PoseTicker);
+	if (USpnSaveSubsystem* Save = GetGameInstance() != nullptr ? GetGameInstance()->GetSubsystem<USpnSaveSubsystem>() : nullptr)
+	{
+		Save->PoseProvider = nullptr;
+		Save->OnPoseLoaded.RemoveAll(this);
+	}
 	Super::Deinitialize();
 }
 
@@ -173,10 +202,15 @@ void USpnSessionSubsystem::SetupGameplayWorld(UWorld* World)
 
 	if (Action == ESpnSessionPending::NewGame)
 	{
+		PendingPose.Reset();
 		ResetForNewGame();
 	}
 	USpnInventorySubsystem* Inventory = Instance->GetSubsystem<USpnInventorySubsystem>();
-	if (bCatalog && Inventory != nullptr && SpnWorld::FindPlayerContainer(*Inventory) == 0)
+	// The session itself creates the player's container with the fixed id PlayerContainerId. Looking it up by that id (not by "the lowest container that
+	// is not a world container") keeps this independent of the process-wide world-container registry: a stale registry once made the cupboard look like the
+	// player's body and the real player container was never created.
+	FSpnContainerView PlayerView;
+	if (bCatalog && Inventory != nullptr && !Inventory->GetContainer(SpnWorld::PlayerContainerId, PlayerView))
 	{
 		const FSpnInventoryStatus Status = Inventory->CreateContainerFromPreset(SpnWorld::PlayerContainerId, TEXT("spn_test:preset.body"));
 		if (!Status.IsOk())
@@ -196,7 +230,11 @@ void USpnSessionSubsystem::SetupGameplayWorld(UWorld* World)
 		{
 			ActiveSlot = Slot;
 		}
-		UE_LOG(LogSupernaturalProt, Display, TEXT("Session: pending load of '%s' -> %s %s"), *Slot, LexToString(Status.Result), *Status.Detail);
+		UE_LOG(LogSupernaturalProt, Display, TEXT("Session: pending load of '%s' -> %s %s (pose in slot: %d)"), *Slot, LexToString(Status.Result), *Status.Detail, Status.bPoseInSlot ? 1 : 0);
+		if (Status.IsOk() && !Status.bPoseInSlot)
+		{
+			SpnUi::Notify(World, FSpnUiText::Get(TEXT("ui.pose.legacy")), SpnUi::ENote::Info);
+		}
 		OnPendingLoadFinished.Broadcast(Status);
 	}
 }
@@ -253,6 +291,15 @@ void USpnSessionSubsystem::SpawnScenario(UWorld* World)
 	}
 }
 
+void USpnSessionSubsystem::StartNewGameInPlace(UWorld* World)
+{
+	bGameFlow = true;
+	bMenuWorld = false;
+	Pending = ESpnSessionPending::NewGame;
+	PendingSlot.Reset();
+	SetupGameplayWorld(World);
+}
+
 void USpnSessionSubsystem::StartNewGame()
 {
 	bGameFlow = true;
@@ -282,14 +329,22 @@ FSpnSaveStatus USpnSessionSubsystem::LoadGame(const FString& Slot, bool bAcceptC
 	{
 		return MakeStatus(Info.Result, Info.Detail); // nothing was touched
 	}
-	if (bMenuWorld)
+	// The level of the saved pose decides where the game continues; a missing level falls back to the test level (reported when the pose is applied).
+	UWorld* CurrentWorld = Instance->GetWorld();
+	FString TargetLevel = GameplayMapName();
+	if (Info.bHasPose && FPackageName::DoesPackageExist(Info.PoseLevel))
+	{
+		TargetLevel = Info.PoseLevel;
+	}
+	if (bMenuWorld || (Info.bHasPose && LevelPath(CurrentWorld) != TargetLevel && TargetLevel == Info.PoseLevel))
 	{
 		Pending = ESpnSessionPending::Load;
 		PendingSlot = Slot;
 		bPendingAccept = bAcceptCatalogMismatch;
-		if (UWorld* World = Instance->GetWorld())
+		if (CurrentWorld != nullptr)
 		{
-			UGameplayStatics::OpenLevel(World, FName(*GameplayMapName()));
+			UGameplayStatics::SetGamePaused(CurrentWorld, false);
+			UGameplayStatics::OpenLevel(CurrentWorld, FName(*TargetLevel));
 		}
 		return MakeStatus(ESpnSaveResult::Ok, TEXT("loading"));
 	}
@@ -347,4 +402,127 @@ FString USpnSessionSubsystem::FindContinueSlot() const
 		}
 	}
 	return FString();
+}
+
+bool USpnSessionSubsystem::CaptureLivePose(FSpnPlayerPose& Out) const
+{
+	UWorld* World = GetGameInstance() != nullptr ? GetGameInstance()->GetWorld() : nullptr;
+	const USpnMapSubsystem* Map = GetGameInstance()->GetSubsystem<USpnMapSubsystem>();
+	if (World == nullptr || !bGameFlow || bMenuWorld || Map == nullptr)
+	{
+		return false;
+	}
+	const ASupernaturalProtCharacter* Character = FindPlayerCharacter(World);
+	const APlayerController* Controller = World->GetFirstPlayerController();
+	if (Character == nullptr || Controller == nullptr)
+	{
+		return false;
+	}
+	const FRotator View = Controller->GetControlRotation();
+	const USpnCharacterMovementComponent* Movement = Character->GetSpnMovement();
+	const TCHAR* Gait = TEXT("jog");
+	if (Movement != nullptr)
+	{
+		Gait = Movement->GetBaseGait() == ESpnGait::Walk ? TEXT("walk") : Movement->GetBaseGait() == ESpnGait::Run ? TEXT("run") : TEXT("jog");
+	}
+	return FSpnPlayerPose::FromUnreal(LevelPath(World), Map->GetFrame(), Character->GetActorLocation(), FRotator::NormalizeAxis(View.Yaw),
+		FRotator::NormalizeAxis(View.Pitch), Gait, Character->bIsCrouched, Out);
+}
+
+bool USpnSessionSubsystem::ApplyPoseNow(const FSpnPlayerPose& Pose)
+{
+	return ApplyPose(GetGameInstance()->GetWorld(), Pose);
+}
+
+bool USpnSessionSubsystem::ApplyPose(UWorld* World, const FSpnPlayerPose& Pose)
+{
+	ASupernaturalProtCharacter* Character = FindPlayerCharacter(World);
+	if (World == nullptr || Character == nullptr)
+	{
+		return false;
+	}
+	auto Refuse = [&](const TCHAR* Key, const TCHAR* Why)
+	{
+		UE_LOG(LogSupernaturalProt, Warning, TEXT("Session: saved pose NOT applied: %s (level %s, pos %s m)"), Why, *Pose.Level, *Pose.WorldMetres.ToString());
+		SpnUi::Notify(World, FSpnUiText::Get(Key), SpnUi::ENote::Warning);
+		return false;
+	};
+	if (Pose.Level != LevelPath(World))
+	{
+		return Refuse(FPackageName::DoesPackageExist(Pose.Level) ? TEXT("ui.pose.invalid") : TEXT("ui.pose.level_missing"), TEXT("the pose belongs to another level"));
+	}
+	FVector Location;
+	double Yaw = 0.0;
+	if (!Pose.ToUnreal(Location, Yaw))
+	{
+		return Refuse(TEXT("ui.pose.invalid"), TEXT("not representable in the world frame"));
+	}
+	// there has to be walkable ground below the saved position (an edited or outdated save must not drop the player into the void)
+	FHitResult Floor;
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(SpnPoseFloor), false, Character);
+	if (!World->LineTraceSingleByChannel(Floor, Location, Location - FVector(0.0, 0.0, 400.0), ECC_Visibility, Params))
+	{
+		return Refuse(TEXT("ui.pose.invalid"), TEXT("no ground below the saved position"));
+	}
+	if (!Character->TeleportTo(Location, FRotator(0.0, Yaw, 0.0), false, false))
+	{
+		return Refuse(TEXT("ui.pose.invalid"), TEXT("the saved position is blocked"));
+	}
+	if (APlayerController* Controller = World->GetFirstPlayerController())
+	{
+		Controller->SetControlRotation(FRotator(Pose.PitchDeg, Yaw, 0.0));
+	}
+	if (USpnCharacterMovementComponent* Movement = Character->GetSpnMovement())
+	{
+		Movement->StopMovementImmediately();
+		Movement->SetBaseGait(Pose.Gait == TEXT("walk") ? ESpnGait::Walk : Pose.Gait == TEXT("run") ? ESpnGait::Run : ESpnGait::Jog);
+	}
+	Character->ResetStairCamera();
+	if (Pose.bCrouched)
+	{
+		Character->Crouch();
+	}
+	else if (Character->bIsCrouched)
+	{
+		Character->UnCrouch();
+	}
+	UE_LOG(LogSupernaturalProt, Display, TEXT("Session: pose applied: %s at (%.0f, %.0f, %.0f) cm yaw %.1f"), *Pose.Level, Location.X, Location.Y, Location.Z, Yaw);
+	SpnUi::Notify(World, FSpnUiText::Get(TEXT("ui.pose.restored")), SpnUi::ENote::Good);
+	return true;
+}
+
+void USpnSessionSubsystem::HandlePoseLoaded(const FSpnPlayerPose& Pose)
+{
+	PendingPose = Pose;
+	PoseAttempts = 0;
+	FTSTicker::GetCoreTicker().RemoveTicker(PoseTicker);
+	TryApplyPendingPose();
+}
+
+void USpnSessionSubsystem::TryApplyPendingPose()
+{
+	if (!PendingPose.IsSet())
+	{
+		return;
+	}
+	UWorld* World = GetGameInstance() != nullptr ? GetGameInstance()->GetWorld() : nullptr;
+	if (World != nullptr && !bMenuWorld && FindPlayerCharacter(World) != nullptr)
+	{
+		const FSpnPlayerPose Pose = *PendingPose;
+		PendingPose.Reset();
+		ApplyPose(World, Pose);
+		return;
+	}
+	// the level is still starting: the pawn is spawned by the game mode a moment after the world began play
+	if (++PoseAttempts > 100)
+	{
+		UE_LOG(LogSupernaturalProt, Warning, TEXT("Session: saved pose dropped: no player pawn appeared within 10 s"));
+		PendingPose.Reset();
+		return;
+	}
+	PoseTicker = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateLambda([this](float)
+	{
+		TryApplyPendingPose();
+		return false;
+	}), 0.1f);
 }

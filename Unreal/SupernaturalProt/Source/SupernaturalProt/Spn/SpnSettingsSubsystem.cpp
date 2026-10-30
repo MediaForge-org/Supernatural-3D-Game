@@ -1,4 +1,6 @@
 #include "Spn/SpnSettingsSubsystem.h"
+#include "Engine/UserInterfaceSettings.h"
+#include "Sound/SoundClass.h"
 
 #include "Engine/Engine.h"
 #include "HAL/IConsoleManager.h"
@@ -22,6 +24,9 @@ FSpnPlayerSettings USpnSettingsSubsystem::Clamped(const FSpnPlayerSettings& In)
 {
 	FSpnPlayerSettings Out = In;
 	Out.MasterVolume = FMath::Clamp(FMath::IsFinite(In.MasterVolume) ? In.MasterVolume : 1.f, 0.f, 1.f);
+	Out.MusicVolume = FMath::Clamp(FMath::IsFinite(In.MusicVolume) ? In.MusicVolume : 1.f, 0.f, 1.f);
+	Out.EffectsVolume = FMath::Clamp(FMath::IsFinite(In.EffectsVolume) ? In.EffectsVolume : 1.f, 0.f, 1.f);
+	Out.UiScale = FMath::Clamp(FMath::IsFinite(In.UiScale) ? In.UiScale : 1.f, 0.75f, 1.5f);
 	Out.MouseSensitivity = FMath::Clamp(FMath::IsFinite(In.MouseSensitivity) ? In.MouseSensitivity : 1.f, 0.1f, 4.f);
 	Out.GamepadSensitivity = FMath::Clamp(FMath::IsFinite(In.GamepadSensitivity) ? In.GamepadSensitivity : 1.f, 0.1f, 4.f);
 	Out.MinimapZoom = FMath::Clamp(FMath::IsFinite(In.MinimapZoom) ? In.MinimapZoom : 1.f, 0.5f, 4.f);
@@ -45,6 +50,9 @@ void USpnSettingsSubsystem::Load()
 	if (GConfig != nullptr)
 	{
 		GConfig->GetFloat(Section, TEXT("MasterVolume"), Loaded.MasterVolume, GGameUserSettingsIni);
+		GConfig->GetFloat(Section, TEXT("MusicVolume"), Loaded.MusicVolume, GGameUserSettingsIni);
+		GConfig->GetFloat(Section, TEXT("EffectsVolume"), Loaded.EffectsVolume, GGameUserSettingsIni);
+		GConfig->GetFloat(Section, TEXT("UiScale"), Loaded.UiScale, GGameUserSettingsIni);
 		GConfig->GetFloat(Section, TEXT("MouseSensitivity"), Loaded.MouseSensitivity, GGameUserSettingsIni);
 		GConfig->GetFloat(Section, TEXT("GamepadSensitivity"), Loaded.GamepadSensitivity, GGameUserSettingsIni);
 		GConfig->GetBool(Section, TEXT("InvertY"), Loaded.bInvertY, GGameUserSettingsIni);
@@ -64,6 +72,9 @@ void USpnSettingsSubsystem::SaveToDisk() const
 		return;
 	}
 	GConfig->SetFloat(Section, TEXT("MasterVolume"), Settings.MasterVolume, GGameUserSettingsIni);
+	GConfig->SetFloat(Section, TEXT("MusicVolume"), Settings.MusicVolume, GGameUserSettingsIni);
+	GConfig->SetFloat(Section, TEXT("EffectsVolume"), Settings.EffectsVolume, GGameUserSettingsIni);
+	GConfig->SetFloat(Section, TEXT("UiScale"), Settings.UiScale, GGameUserSettingsIni);
 	GConfig->SetFloat(Section, TEXT("MouseSensitivity"), Settings.MouseSensitivity, GGameUserSettingsIni);
 	GConfig->SetFloat(Section, TEXT("GamepadSensitivity"), Settings.GamepadSensitivity, GGameUserSettingsIni);
 	GConfig->SetBool(Section, TEXT("InvertY"), Settings.bInvertY, GGameUserSettingsIni);
@@ -75,9 +86,32 @@ void USpnSettingsSubsystem::SaveToDisk() const
 	GConfig->Flush(false, GGameUserSettingsIni);
 }
 
+namespace
+{
+	USoundClass* FindEngineSoundClass(const TCHAR* Path)
+	{
+		return LoadObject<USoundClass>(nullptr, Path, nullptr, LOAD_Quiet | LOAD_NoWarn);
+	}
+}
+
+float USpnSettingsSubsystem::GetMusicClassVolume()
+{
+	const USoundClass* Class = FindEngineSoundClass(TEXT("/Engine/EngineSounds/Music.Music"));
+	return Class != nullptr ? Class->Properties.Volume : -1.f;
+}
+
+float USpnSettingsSubsystem::GetEffectsClassVolume()
+{
+	const USoundClass* Class = FindEngineSoundClass(TEXT("/Engine/EngineSounds/SFX.SFX"));
+	return Class != nullptr ? Class->Properties.Volume : -1.f;
+}
+
 void USpnSettingsSubsystem::ApplyGlobal() const
 {
 	FApp::SetVolumeMultiplier(Settings.MasterVolume);
+	if (USoundClass* Music = FindEngineSoundClass(TEXT("/Engine/EngineSounds/Music.Music"))) { Music->Properties.Volume = Settings.MusicVolume; }
+	if (USoundClass* Effects = FindEngineSoundClass(TEXT("/Engine/EngineSounds/SFX.SFX"))) { Effects->Properties.Volume = Settings.EffectsVolume; }
+	GetMutableDefault<UUserInterfaceSettings>()->ApplicationScale = Settings.UiScale;
 	FSpnUiText::SetLanguageOverride(Settings.Language);
 }
 

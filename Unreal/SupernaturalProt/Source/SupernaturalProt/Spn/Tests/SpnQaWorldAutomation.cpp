@@ -408,8 +408,8 @@ bool FSpnQaSaveLoadTest::RunTest(const FString& Parameters)
 		{
 			if (bTimedOut) { SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("timeout"), SpnQa::EStatus::Blocked, TEXT("save/load sequence did not finish")); }
 			IFileManager::Get().DeleteDirectory(*FPaths::GetPath(USpnWorldStateSubsystem::GetSlotFilePath(Slot)), false, true);
-			SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("player_position_saved"), SpnQa::EStatus::NotImplemented, TEXT("the world state saves interactable facts and inventories only; the player's position and character state are not part of any save file"));
-			SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("save_ui_and_autosave"), SpnQa::EStatus::NotImplemented, TEXT("only the console commands Spn.SaveWorld / Spn.LoadWorld exist; no menu, quick-save key or autosave"));
+			SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("player_position_saved"), SpnQa::EStatus::NotImplemented, TEXT("NOT IMPLEMENTED on THIS path: the console commands Spn.SaveWorld / Spn.LoadWorld save the world state only. The player pose IS saved by the game flow (USpnSaveSubsystem, section player.pose; tests SpnCore.Save.PlayerPose* and SpnGame.NightBuild.PoseWorld), which this level does not enable"));
+			SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("save_ui_and_autosave"), SpnQa::EStatus::NotImplemented, TEXT("not on this path: this level has only the console commands Spn.SaveWorld / Spn.LoadWorld. The game flow (menu, pause, save slots, Spn.Game.Enable) has a save-slot UI; there is still no quick-save key or autosave"));
 			SpnQa::Check(*this, &Character, TEXT("SaveLoad"), TEXT("inventory_save_load"), SpnQa::EStatus::NotTested, TEXT("covered by SpnGame.TestPickup.SaveLoadRestoresInventory and SpnGame.TestMap.PlayPickups; the V2 level has no pickups"));
 		}));
 	return true;

@@ -54,7 +54,30 @@ Widgets are pure code-built UMG (`UUserWidget` + `WidgetTree`) like the inventor
 
 ## 5. Save
 
-No format change: the already-defined optional section `world.map` now has an Unreal owner, and the existing policy applies (a slot with a section this build cannot restore is refused, never half-loaded). `InspectSlot` parses exactly like a load but swaps nothing and reports: loadable / previous generation / catalog mismatch / newer build / not integrated / corrupt / missing. A catalog mismatch is never accepted automatically: the UI asks, and the Core still validates every item. **Not saved (documented limitation):** the player's position and rotation (there is no section for it).
+No change of the container format. One new OPTIONAL section, `player.pose` (version 1), written and read by the Unreal layer (`USpnSaveSubsystem`, `FSpnPlayerPose` in `SpnPlayerPose.h`); the Core sees it as an unknown optional section, so every older reader keeps loading the slot and older builds carry the section over. `world.map` has its Unreal owner since the first Night Build, and the existing policy applies (a slot with a section this build cannot restore is refused, never half-loaded). `InspectSlot` parses exactly like a load but swaps nothing.
+
+**`player.pose`** (strict text payload, `SPN-PLAYERPOSE 1`): level package path, the world frame (axes preset + origin), position in the CANONICAL frame (metres, x east, y north, z up, `%.17g`), compass bearing, pitch, gait, crouch. The position goes through `SpnWorldFrame` (the same adapter the map uses); no second coordinate system exists, and a later decision about the axis preset (CQ-101) is a frame parameter, not a save migration.
+
+* **Capture:** `PoseProvider` (bound by `USpnSessionSubsystem`) fills the live pose at save time. If there is no player (menu world, no pawn) the slot is written WITHOUT a pose and an older pose of that slot is dropped, never carried over.
+* **Load, phase 1:** the pose is parsed together with facts / inventory / map into new objects. A present but unreadable pose rejects the whole generation (`Rejected`; the previous generation is tried), nothing live changes. A pose written by a newer build (`version > 1`) refuses the load and the overwrite (`UnsupportedVersion`).
+* **Load, phase 2:** after the state swap the subsystem broadcasts `OnPoseLoaded`; the session applies the pose once the player pawn of the right level exists (a level travel may still be in progress; a bounded retry ticker waits for the pawn). Placement: right level, representable position, walkable ground within 4 m below (line trace), `TeleportTo` without penetration; otherwise the player stays at the level start and the HUD says so (`ui.pose.invalid` / `ui.pose.level_missing`). **Never a silent default.**
+* **Level choice:** `LoadGame` from the menu (or in place when the saved level differs) travels to the saved level when its package exists; otherwise to the test level with the notice above.
+* **Legacy slots** (no `player.pose`) load completely; the player starts at the level start and the HUD says `ui.pose.legacy`. `FSpnSaveStatus::bPoseInSlot` tells the caller.
+* **Not saved:** velocity, jump/fall state, animation state, the camera boom, stamina etc.; there are none that matter for a rest position.
+
+## 5a. World objects and persistence
+
+Pickups and containers keep their STATE where it already lives and is saved: the taken flag as a bool fact in `world.facts`, the contents in the inventory section (container id = fixed offset + CRC32 of the StableId). The actors are recreated from the level / the scenario spawner and bring themselves in line with the loaded state (`OnWorldStateReplaced` / `OnInventoryReplaced`). Identity guard: an actor whose StableId (for containers: or derived container id) is already used by a live actor of the world disables itself and logs an error, so two actors can never share one flag or one inventory container.
+
+The Core `ObjectPersistence` layer (catalog + `RegionStateCache` + `world.objects`) is **not integrated**. Reason: it stores the state of catalog objects a second time (the facts already hold it), and its added value (state of unloaded regions, orphans) needs region streaming, which does not exist. Integrating it now would create two copies of the same state that must be kept consistent. This is a persistence-format decision for the developer (see `COMPLETION_REPORT.md`, open decisions).
+
+## 5b. Input mode
+
+A level change keeps the viewport. The menu level leaves the mouse-capture mode on "capture only while a button is held"; the gameplay level used to inherit it, so the mouse look worked only with a button down (found by the scripted run, reproduced by `SpnGame.Input.ModeAfterTravel`). `USpnUiSubsystem::ApplyGameplayInput` now starts every gameplay world in game-only input with a hidden cursor and look/move enabled (waits for the pawn, does nothing while a page is open).
+
+## 5c. Settings
+
+Persisted in `GameUserSettings.ini` `[SpnPlayer]`. New: music volume and effects volume (volume of the engine sound classes `/Engine/EngineSounds/Music` and `/SFX`, in memory only) and UI scale (`UUserInterfaceSettings::ApplicationScale`). The project has no sounds yet; the settings page says so next to both sliders.
 
 ## 6. Decisions left open (deliberately)
 

@@ -53,21 +53,27 @@ TSharedRef<SWidget> USpnUiButton::RebuildWidget()
 	}
 	if (WidgetTree->RootWidget == nullptr)
 	{
+		SizeRoot = WidgetTree->ConstructWidget<USizeBox>();
+		WidgetTree->RootWidget = SizeRoot;
 		RingBorder = WidgetTree->ConstructWidget<UBorder>();
 		RingBorder->SetPadding(FMargin(2.f));
-		WidgetTree->RootWidget = RingBorder;
+		SizeRoot->SetContent(RingBorder);
 
 		BodyBorder = WidgetTree->ConstructWidget<UBorder>();
 		BodyBorder->SetPadding(FMargin(9.f, 6.f, 10.f, 6.f));
 		RingBorder->SetContent(BodyBorder);
 
 		UHorizontalBox* Line = WidgetTree->ConstructWidget<UHorizontalBox>();
+		LineBox = Line;
 		BodyBorder->SetContent(Line);
+		TileBox = WidgetTree->ConstructWidget<UVerticalBox>();
+		TileFooter = WidgetTree->ConstructWidget<UHorizontalBox>();
 
 		// icon swatch (the fallback when there is no icon texture)
 		USizeBox* IconSize = WidgetTree->ConstructWidget<USizeBox>();
 		IconSize->SetWidthOverride(34.f);
 		IconSize->SetHeightOverride(34.f);
+		IconSizeBox = IconSize;
 		IconBorder = WidgetTree->ConstructWidget<UBorder>();
 		IconBorder->SetHorizontalAlignment(HAlign_Center);
 		IconBorder->SetVerticalAlignment(VAlign_Center);
@@ -82,6 +88,7 @@ TSharedRef<SWidget> USpnUiButton::RebuildWidget()
 		TitleText = MakeText(*WidgetTree, 15, false, SpnUi::Text);
 		SubtitleText = MakeText(*WidgetTree, 11, false, SpnUi::TextDim);
 		SubtitleText->SetAutoWrapText(true);
+		TextsBox = Texts;
 		Texts->AddChildToVerticalBox(TitleText);
 		UVerticalBoxSlot* SubSlot = Texts->AddChildToVerticalBox(SubtitleText);
 		SubSlot->SetPadding(FMargin(0.f, 1.f, 0.f, 0.f));
@@ -133,9 +140,10 @@ void USpnUiButton::ApplyContent()
 	{
 		return; // the widget tree is built on the first RebuildWidget
 	}
+	ApplyLayout(Content.bTile);
 	TitleText->SetText(Content.Title);
 	SubtitleText->SetText(Content.Subtitle);
-	SubtitleText->SetVisibility(Content.Subtitle.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+	SubtitleText->SetVisibility(Content.Subtitle.IsEmpty() || Content.bTile ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
 	SubtitleText->SetColorAndOpacity(FSlateColor(Content.SubtitleColor));
 	RightText->SetText(Content.Right);
 	RightText->SetVisibility(Content.Right.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
@@ -147,6 +155,71 @@ void USpnUiButton::ApplyContent()
 	IconBorder->SetBrush(BoxBrush(Content.IconColor, Content.IconColor * 1.6f, 1.f, 3.f));
 	IconText->SetText(FText::FromString(Content.IconLetter));
 	ApplyVisuals();
+}
+
+void USpnUiButton::ApplyLayout(bool bTile)
+{
+	if (bTile == bTileLayout || LineBox == nullptr || TileBox == nullptr)
+	{
+		return;
+	}
+	bTileLayout = bTile;
+	// the same widgets move between a one-line row and a compact vertical tile; nothing is created or destroyed
+	LineBox->ClearChildren();
+	TextsBox->ClearChildren();
+	TileBox->ClearChildren();
+	TileFooter->ClearChildren();
+	if (bTile)
+	{
+		SizeRoot->SetWidthOverride(124.f);
+		SizeRoot->SetHeightOverride(132.f);
+		IconSizeBox->SetWidthOverride(58.f);
+		IconSizeBox->SetHeightOverride(58.f);
+		IconText->SetFont(SpnUi::Font(24, true));
+		TitleText->SetFont(SpnUi::Font(12, false));
+		TitleText->SetJustification(ETextJustify::Center);
+		TitleText->SetAutoWrapText(false);
+		RightText->SetJustification(ETextJustify::Center);
+		BodyBorder->SetPadding(FMargin(6.f, 8.f, 6.f, 6.f));
+		BodyBorder->SetContent(TileBox);
+		UVerticalBoxSlot* IconSlot = TileBox->AddChildToVerticalBox(IconSizeBox);
+		IconSlot->SetHorizontalAlignment(HAlign_Center);
+		UVerticalBoxSlot* TitleSlot = TileBox->AddChildToVerticalBox(TitleText);
+		TitleSlot->SetHorizontalAlignment(HAlign_Center);
+		TitleSlot->SetPadding(FMargin(0.f, 6.f, 0.f, 2.f));
+		UHorizontalBoxSlot* RightSlot = TileFooter->AddChildToHorizontalBox(RightText);
+		RightSlot->SetPadding(FMargin(0.f, 0.f, 4.f, 0.f));
+		TileFooter->AddChildToHorizontalBox(BadgeBorder);
+		UVerticalBoxSlot* FooterSlot = TileBox->AddChildToVerticalBox(TileFooter);
+		FooterSlot->SetHorizontalAlignment(HAlign_Center);
+	}
+	else
+	{
+		SizeRoot->ClearWidthOverride();
+		SizeRoot->ClearHeightOverride();
+		IconSizeBox->SetWidthOverride(34.f);
+		IconSizeBox->SetHeightOverride(34.f);
+		IconText->SetFont(SpnUi::Font(15, true));
+		TitleText->SetFont(SpnUi::Font(15, false));
+		TitleText->SetJustification(ETextJustify::Left);
+		RightText->SetJustification(ETextJustify::Right);
+		BodyBorder->SetPadding(FMargin(9.f, 6.f, 10.f, 6.f));
+		BodyBorder->SetContent(LineBox);
+		UHorizontalBoxSlot* IconSlot = LineBox->AddChildToHorizontalBox(IconSizeBox);
+		IconSlot->SetVerticalAlignment(VAlign_Center);
+		IconSlot->SetPadding(FMargin(0.f, 0.f, 10.f, 0.f));
+		TextsBox->AddChildToVerticalBox(TitleText);
+		TextsBox->AddChildToVerticalBox(SubtitleText)->SetPadding(FMargin(0.f, 1.f, 0.f, 0.f));
+		UHorizontalBoxSlot* TextSlot = LineBox->AddChildToHorizontalBox(TextsBox);
+		TextSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		TextSlot->SetVerticalAlignment(VAlign_Center);
+		UHorizontalBoxSlot* BadgeSlot = LineBox->AddChildToHorizontalBox(BadgeBorder);
+		BadgeSlot->SetVerticalAlignment(VAlign_Center);
+		BadgeSlot->SetPadding(FMargin(8.f, 0.f, 0.f, 0.f));
+		UHorizontalBoxSlot* RightSlot = LineBox->AddChildToHorizontalBox(RightText);
+		RightSlot->SetVerticalAlignment(VAlign_Center);
+		RightSlot->SetPadding(FMargin(12.f, 0.f, 0.f, 0.f));
+	}
 }
 
 void USpnUiButton::ApplyVisuals()

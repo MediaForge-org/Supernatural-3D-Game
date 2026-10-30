@@ -15,6 +15,8 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
+#include "Components/WrapBox.h"
+#include "Components/WrapBoxSlot.h"
 #include "HAL/PlatformTime.h"
 #include "SpnInventorySubsystem.h"
 #include "SpnSaveSubsystem.h"
@@ -214,12 +216,33 @@ void USpnInventoryScreen::BuildTree()
 	ItemsWindowText = NewText(11, false, SpnUi::TextFaint);
 	ItemsHeader->AddChildToHorizontalBox(ItemsWindowText);
 	ItemsBody->AddChildToVerticalBox(ItemsHeader)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
+	// view options: view (list/grid), sort, category filter; clickable, and V / O / F (Y, L3, R3 on a controller) from the keyboard
+	UHorizontalBox* Toolbar = WidgetTree->ConstructWidget<UHorizontalBox>();
+	for (int32 Index = 0; Index < 3; ++Index)
+	{
+		USpnUiButton* Button = NewButton();
+		Button->OnClicked.BindLambda([this, Index](USpnUiButton*)
+		{
+			bUsingMouseMode = true;
+			if (Index == 0) { ToggleView(); } else if (Index == 1) { CycleSort(); } else { CycleFilter(); }
+		});
+		(Index == 0 ? ViewButton : Index == 1 ? SortButton : FilterButton) = Button;
+		UHorizontalBoxSlot* ToolSlot = Toolbar->AddChildToHorizontalBox(Button);
+		ToolSlot->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
+		ToolSlot->SetPadding(FMargin(Index == 0 ? 0.f : 6.f, 0.f, 0.f, 0.f));
+	}
+	ItemsBody->AddChildToVerticalBox(Toolbar)->SetPadding(FMargin(0.f, 0.f, 0.f, 8.f));
 	RowScroll = WidgetTree->ConstructWidget<UScrollBox>();
 	RowScroll->SetScrollBarVisibility(ESlateVisibility::Visible);
 	RowScroll->SetAlwaysShowScrollbar(false);
 	RowScroll->SetConsumeMouseWheel(EConsumeMouseWheel::WhenScrollingPossible);
 	RowBox = WidgetTree->ConstructWidget<UVerticalBox>();
 	RowScroll->AddChild(RowBox);
+	RowWrap = WidgetTree->ConstructWidget<UWrapBox>();
+	RowWrap->SetInnerSlotPadding(FVector2D(6.f, 6.f));
+	RowWrap->SetWrapSize(static_cast<float>(GridColumnCount) * 130.f);
+	RowWrap->SetVisibility(ESlateVisibility::Collapsed);
+	RowScroll->AddChild(RowWrap);
 	ItemsBody->AddChildToVerticalBox(RowScroll)->SetSize(FSlateChildSize(ESlateSizeRule::Fill));
 	EmptyText = NewText(15, false, SpnUi::TextDim);
 	EmptyText->SetJustification(ETextJustify::Center);
@@ -336,6 +359,7 @@ void USpnInventoryScreen::Setup(USpnInventorySubsystem* InInventory, USpnSaveSub
 	PrimaryContainerId = InPrimaryContainerId;
 	ViewModel = NewObject<USpnInventoryViewModel>(this);
 	ViewModel->Initialize(InInventory, InSave);
+	ViewModel->SetGridColumns(bGrid ? GridColumnCount : 1);
 	ViewModel->OnChangedNative.AddUObject(this, &USpnInventoryScreen::OnVmChanged);
 	ViewModel->OnContainerChangedNative.AddUObject(this, &USpnInventoryScreen::OnVmContainerChanged);
 	ViewModel->OnSelectionChangedNative.AddUObject(this, &USpnInventoryScreen::OnVmSelectionChanged);
@@ -536,6 +560,7 @@ void USpnInventoryScreen::SyncAll()
 	TitleBadge->SetVisibility(ViewModel != nullptr && ViewModel->GetPanels().Num() > 0 && Inventory.IsValid() && Inventory->GetCatalogData().bIsTestData ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 	SyncTabs();
 	SyncEquipment();
+	SyncToolbar();
 	++RowsFromAll;
 	SyncRows();
 	SyncCapacity();
@@ -637,6 +662,93 @@ void USpnInventoryScreen::SyncEquipment()
 	}
 }
 
+void USpnInventoryScreen::ResetRowPool()
+{
+	RowBox->ClearChildren();
+	RowWrap->ClearChildren();
+	RowPool.Reset();
+	RowBox->SetVisibility(bGrid ? ESlateVisibility::Collapsed : ESlateVisibility::SelfHitTestInvisible);
+	RowWrap->SetVisibility(bGrid ? ESlateVisibility::SelfHitTestInvisible : ESlateVisibility::Collapsed);
+}
+
+void USpnInventoryScreen::ToggleView()
+{
+	bGrid = !bGrid;
+	if (ViewModel != nullptr) { ViewModel->SetGridColumns(bGrid ? GridColumnCount : 1); }
+	ResetRowPool();
+	SyncRows();
+	SyncToolbar();
+	ShowMessage(FSpnUiText::Get(bGrid ? TEXT("ui.inv.view.grid.set") : TEXT("ui.inv.view.list.set")), ESpnMessageSeverity::Info);
+}
+
+void USpnInventoryScreen::CycleSort(bool bToggleDirection)
+{
+	if (ViewModel == nullptr) { return; }
+	static const ESpnInventorySort Order[] = {ESpnInventorySort::Default, ESpnInventorySort::Name, ESpnInventorySort::Category, ESpnInventorySort::TotalWeight, ESpnInventorySort::TotalVolume, ESpnInventorySort::Quantity};
+	int32 Index = 0;
+	for (int32 I = 0; I < UE_ARRAY_COUNT(Order); ++I) { if (Order[I] == ViewModel->GetSortMode()) { Index = I; } }
+	bool bDescending = ViewModel->IsSortDescending();
+	if (bToggleDirection) { bDescending = !bDescending; }
+	else { Index = (Index + 1) % UE_ARRAY_COUNT(Order); bDescending = false; }
+	WindowStart = 0;
+	ViewModel->SetSortMode(Order[Index], bDescending); // a view change only: the Core order and every stack id stay as they are
+	SyncViewChange();
+}
+
+void USpnInventoryScreen::CycleFilter()
+{
+	if (ViewModel == nullptr) { return; }
+	const FSpnContainerPanel* Panel = ActivePanel();
+	TArray<FString> Categories = Panel != nullptr ? Panel->Categories : TArray<FString>();
+	const FString Current = ViewModel->GetCategoryFilter();
+	if (!Current.IsEmpty() && !Categories.Contains(Current)) { Categories.Add(Current); Categories.Sort(); }
+	FString Next;
+	if (Current.IsEmpty()) { Next = Categories.IsEmpty() ? FString() : Categories[0]; }
+	else
+	{
+		const int32 At = Categories.IndexOfByKey(Current);
+		Next = (At == INDEX_NONE || At + 1 >= Categories.Num()) ? FString() : Categories[At + 1];
+	}
+	WindowStart = 0;
+	ViewModel->SetCategoryFilter(Next);
+	SyncViewChange();
+}
+
+void USpnInventoryScreen::SyncViewChange()
+{
+	// the view-model reports a sort / filter change as one generic change; the rows, the details and the actions of the (possibly new) selection are redrawn here
+	EnsureValidActiveContainer();
+	SyncRows();
+	SyncDetails();
+	SyncActions();
+	SyncToolbar();
+}
+
+FString USpnInventoryScreen::GetToolbarText(int32 Index) const
+{
+	USpnUiButton* Button = Index == 0 ? ViewButton.Get() : Index == 1 ? SortButton.Get() : FilterButton.Get();
+	return Button != nullptr ? Button->GetTitleString() : FString();
+}
+
+void USpnInventoryScreen::SyncToolbar()
+{
+	if (ViewModel == nullptr || ViewButton == nullptr) { return; }
+	auto Set = [](USpnUiButton* Button, const FText& Text, bool bActive)
+	{
+		FSpnUiButtonContent Content;
+		Content.Title = Text;
+		Button->SetContent(Content);
+		Button->SetVisualState(bActive, false, true);
+	};
+	Set(ViewButton, FSpnUiText::Get(bGrid ? TEXT("ui.inv.view.grid") : TEXT("ui.inv.view.list")), bGrid);
+	static const TCHAR* const SortKeys[] = {TEXT("ui.inv.sort.default"), TEXT("ui.inv.sort.name"), TEXT("ui.inv.sort.category"), TEXT("ui.inv.sort.weight"), TEXT("ui.inv.sort.volume"), TEXT("ui.inv.sort.quantity")};
+	const int32 SortIndex = static_cast<int32>(ViewModel->GetSortMode()) < UE_ARRAY_COUNT(SortKeys) ? static_cast<int32>(ViewModel->GetSortMode()) : 0;
+	const bool bSorted = ViewModel->GetSortMode() != ESpnInventorySort::Default || ViewModel->IsSortDescending();
+	Set(SortButton, FText::Format(FSpnUiText::Get(TEXT("ui.inv.sort.label")), FSpnUiText::Get(SortKeys[SortIndex]), FText::FromString(ViewModel->IsSortDescending() ? TEXT("v") : TEXT("^"))), bSorted);
+	const FString Filter = ViewModel->GetCategoryFilter();
+	Set(FilterButton, FText::Format(FSpnUiText::Get(TEXT("ui.inv.filter.label")), Filter.IsEmpty() ? FSpnUiText::Get(TEXT("ui.inv.filter.all")) : CategoryName(Filter)), !Filter.IsEmpty());
+}
+
 void USpnInventoryScreen::SyncRows()
 {
 	const double Start = FPlatformTime::Seconds();
@@ -673,13 +785,16 @@ void USpnInventoryScreen::SyncRows()
 			Button->OnDoubleClicked.BindLambda([this](USpnUiButton* Clicked) { ActivateRow(Clicked, true); });
 			Button->OnRightClicked.BindLambda([this](USpnUiButton* Clicked) { ActivateRow(Clicked, false); SetZone(EZone::Actions); });
 			RowPool.Add(Button);
-			RowBox->AddChildToVerticalBox(Button)->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f));
+			if (bGrid) { RowWrap->AddChildToWrapBox(Button); }
+			else { RowBox->AddChildToVerticalBox(Button)->SetPadding(FMargin(0.f, 0.f, 0.f, 5.f)); }
 		}
 		USpnUiButton* Button = RowPool[VisibleRows];
 		FSpnUiButtonContent Content;
 		const FText Name = ItemName(Row);
 		Content.Title = Name;
 		FString Sub = CategoryName(Row.Category).ToString();
+		if (Row.TotalWeightGrams > 0) { Sub += FString::Printf(TEXT("  -  %s"), *FSpnUiText::FormatWeight(Row.TotalWeightGrams).ToString()); }
+		if (Row.TotalVolumeMilliliters > 0) { Sub += FString::Printf(TEXT("  -  %s"), *FSpnUiText::FormatVolume(Row.TotalVolumeMilliliters).ToString()); }
 		for (const FSpnItemStateField& Field : Row.State)
 		{
 			const FString Value = Field.Type == ESpnStateValueType::Int ? FString::Printf(TEXT("%lld"), Field.IntValue) : (Field.Type == ESpnStateValueType::Bool ? (Field.BoolValue ? TEXT("✓") : TEXT("–")) : Field.StringValue);
@@ -689,6 +804,7 @@ void USpnInventoryScreen::SyncRows()
 		Content.Right = Row.bStackable || Row.Quantity > 1 ? FText::FromString(FString::Printf(TEXT("×%d"), Row.Quantity)) : FText::GetEmpty();
 		Content.Badge = Row.bEquipped ? FSpnUiText::Get(TEXT("ui.badge.equipped")) : FText::GetEmpty();
 		Content.bShowIcon = true;
+		Content.bTile = bGrid;
 		Content.IconLetter = FirstLetter(Name);
 		Content.IconColor = SpnUi::SwatchColor(Row.Category);
 		Button->Tag = Row.StackId;
@@ -1348,7 +1464,11 @@ bool USpnInventoryScreen::HandleKey(const FKey& Key, bool bShift, bool bRepeat)
 	else if (bLeft || bRight)
 	{
 		const bool bForward = bRight;
-		if (Zone == EZone::Items)
+		if (Zone == EZone::Items && bGrid && ViewModel->Navigate(bForward ? ESpnNavigationDirection::Right : ESpnNavigationDirection::Left))
+		{
+			// moved inside the grid row; at the edge of the row the arrows switch the panel as in the list
+		}
+		else if (Zone == EZone::Items)
 		{
 			if (bForward) { SetZone(EZone::Actions); }
 			else if (PrimaryPanel() != nullptr && !PrimaryPanel()->Slots.IsEmpty()) { SetZone(EZone::Equipment); }
@@ -1399,6 +1519,18 @@ bool USpnInventoryScreen::HandleKey(const FKey& Key, bool bShift, bool bRepeat)
 		{
 			ViewModel->ExecuteDefaultAction();
 		}
+	}
+	else if (Key == EKeys::V || Key == EKeys::Gamepad_LeftThumbstick)
+	{
+		if (!bRepeat) { ToggleView(); }
+	}
+	else if (Key == EKeys::O || Key == EKeys::Gamepad_FaceButton_Top)
+	{
+		if (!bRepeat) { CycleSort(bShift); }
+	}
+	else if (Key == EKeys::F || Key == EKeys::Gamepad_RightThumbstick)
+	{
+		if (!bRepeat) { CycleFilter(); }
 	}
 	else if (Key == EKeys::Delete || Key == EKeys::Gamepad_FaceButton_Left)
 	{

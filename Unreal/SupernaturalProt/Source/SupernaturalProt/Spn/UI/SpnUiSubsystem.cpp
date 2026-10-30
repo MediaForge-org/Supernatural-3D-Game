@@ -13,6 +13,11 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Misc/DateTime.h"
+#include "HAL/FileManager.h"
+#include "Misc/CommandLine.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Parse.h"
+#include "Misc/Paths.h"
 #include "SpnInventorySubsystem.h"
 #include "SpnMapSubsystem.h"
 #include "SpnSaveSubsystem.h"
@@ -102,6 +107,10 @@ void USpnUiSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 		Processor = MakeShared<FSpnUiInputProcessor>(this);
 		FSlateApplication::Get().RegisterInputPreProcessor(Processor, 0);
 	}
+	if (FParse::Param(FCommandLine::Get(), TEXT("SpnQaKeys")))
+	{
+		StartQaPoseFeed();
+	}
 	if (UGameInstance* Instance = GetInstance())
 	{
 		if (USpnSessionSubsystem* Session = Instance->GetSubsystem<USpnSessionSubsystem>())
@@ -121,6 +130,7 @@ void USpnUiSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void USpnUiSubsystem::Deinitialize()
 {
+	FTSTicker::GetCoreTicker().RemoveTicker(QaPoseFeed);
 	if (Processor.IsValid() && FSlateApplication::IsInitialized())
 	{
 		FSlateApplication::Get().UnregisterInputPreProcessor(Processor);
@@ -183,7 +193,33 @@ void USpnUiSubsystem::HandleWorldReady(bool bMenu)
 	else
 	{
 		EnsureHud();
+		ApplyGameplayInput(0);
 	}
+}
+
+void USpnUiSubsystem::ApplyGameplayInput(int32 Attempt)
+{
+	// A level change keeps the viewport and its mouse-capture mode: the menu level left it on "capture only while a button is held", so the mouse
+	// look of the gameplay level would only turn the camera with a button down. Every gameplay world therefore starts in game-only input with a
+	// hidden cursor and the look / move input enabled, whatever the previous level did.
+	APlayerController* Controller = GetController();
+	if (Controller == nullptr || Controller->GetPawn() == nullptr)
+	{
+		if (Attempt < 50 && GetLocalPlayer() != nullptr)
+		{
+			FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateWeakLambda(this, [this, Attempt](float) { ApplyGameplayInput(Attempt + 1); return false; }), 0.1f);
+		}
+		return;
+	}
+	if (Stack.Num() > 0 || bPausedByUi)
+	{
+		return; // a page is open: it owns the input mode and restores it when it closes
+	}
+	Controller->SetIgnoreMoveInput(false);
+	Controller->SetIgnoreLookInput(false);
+	Controller->SetShowMouseCursor(false);
+	Controller->SetInputMode(FInputModeGameOnly());
+	Controller->FlushPressedKeys();
 }
 
 void USpnUiSubsystem::HandlePendingLoad(const FSpnSaveStatus& Status)
@@ -823,6 +859,8 @@ void USpnUiSubsystem::FillSettings()
 
 	Header(TEXT("ui.settings.audio"));
 	Row(TEXT("volume"), TEXT("ui.settings.volume"), Percent(S.MasterVolume));
+	Row(TEXT("music"), TEXT("ui.settings.music"), Percent(S.MusicVolume)).Subtitle = T(TEXT("ui.settings.audio_note"));
+	Row(TEXT("effects"), TEXT("ui.settings.effects"), Percent(S.EffectsVolume)).Subtitle = T(TEXT("ui.settings.audio_note"));
 
 	Header(TEXT("ui.settings.input"));
 	Row(TEXT("mouse"), TEXT("ui.settings.mouse"), Multiplier(S.MouseSensitivity));
@@ -834,6 +872,7 @@ void USpnUiSubsystem::FillSettings()
 	Row(TEXT("orientation"), TEXT("ui.settings.orientation"), T(S.bMinimapHeadingUp ? TEXT("ui.settings.heading_up") : TEXT("ui.settings.north_up")));
 	Row(TEXT("zoom"), TEXT("ui.settings.zoom"), Multiplier(S.MinimapZoom));
 	Row(TEXT("smoothing"), TEXT("ui.settings.smoothing"), OnOff(S.bCameraSmoothing));
+	Row(TEXT("uiscale"), TEXT("ui.settings.uiscale"), Percent(S.UiScale));
 	Row(TEXT("language"), TEXT("ui.settings.language"), S.Language == TEXT("de") ? FText::FromString(TEXT("Deutsch")) : S.Language == TEXT("en") ? FText::FromString(TEXT("English")) : T(TEXT("ui.settings.auto")));
 
 	Menu->SetTexts(T(TEXT("ui.settings.title")), FText::GetEmpty(), T(TEXT("ui.settings.footer")));
@@ -884,6 +923,9 @@ void USpnUiSubsystem::OnAdjust(ESpnPage Page, FName Id, int32 Delta)
 		USpnSettingsSubsystem::SetFrameRateLimit(static_cast<float>(FpsOptions[Index]));
 	}
 	else if (Id == TEXT("volume")) { S.MasterVolume = FMath::Clamp(FMath::RoundToFloat(S.MasterVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
+	else if (Id == TEXT("music")) { S.MusicVolume = FMath::Clamp(FMath::RoundToFloat(S.MusicVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
+	else if (Id == TEXT("effects")) { S.EffectsVolume = FMath::Clamp(FMath::RoundToFloat(S.EffectsVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
+	else if (Id == TEXT("uiscale")) { S.UiScale = FMath::Clamp(FMath::RoundToFloat(S.UiScale * 20.f + Delta) / 20.f, 0.75f, 1.5f); }
 	else if (Id == TEXT("mouse")) { S.MouseSensitivity = FMath::Clamp(FMath::RoundToFloat(S.MouseSensitivity * 10.f + Delta) / 10.f, 0.1f, 4.f); }
 	else if (Id == TEXT("pad")) { S.GamepadSensitivity = FMath::Clamp(FMath::RoundToFloat(S.GamepadSensitivity * 10.f + Delta) / 10.f, 0.1f, 4.f); }
 	else if (Id == TEXT("invert")) { S.bInvertY = !S.bInvertY; }
@@ -1065,6 +1107,37 @@ namespace
 		{TEXT("hall_crate"), FVector(-9150.f, -5440.f, 106.f), FVector(-9150.f, -5340.f, 20.f)},
 		{TEXT("room1_cupboard"), FVector(-8700.f, -5640.f, 106.f), FVector(-8700.f, -5740.f, 30.f)},
 	};
+}
+
+void USpnUiSubsystem::StartQaPoseFeed()
+{
+	FString Dir;
+	if (!FParse::Value(FCommandLine::Get(), TEXT("SpnQaDir="), Dir) || Dir.IsEmpty())
+	{
+		Dir = FPaths::ProjectSavedDir() / TEXT("NightBuild01");
+	}
+	const FString File = FPaths::ConvertRelativePathToFull(Dir) / TEXT("pose.txt");
+	IFileManager::Get().MakeDirectory(*FPaths::GetPath(File), true);
+	QaPoseFeed = FTSTicker::GetCoreTicker().AddTicker(FTickerDelegate::CreateWeakLambda(this, [this, File](float)
+	{
+		const APlayerController* Controller = GetController();
+		const APawn* Pawn = Controller != nullptr ? Controller->GetPawn() : nullptr;
+		FString Text;
+		if (Pawn != nullptr)
+		{
+			const FVector P = Pawn->GetActorLocation();
+			const FVector Eye = Pawn->GetPawnViewLocation();
+			const FRotator R = Controller->GetControlRotation();
+			Text = FString::Printf(TEXT("%.1f %.1f %.1f %.2f %.2f %.1f %.1f %.1f %d %d %d %d %d"), P.X, P.Y, P.Z, FRotator::NormalizeAxis(R.Yaw), FRotator::NormalizeAxis(R.Pitch), Eye.X, Eye.Y,
+				Eye.Z, Stack.Num(), bPausedByUi ? 1 : 0, Controller->bShowMouseCursor ? 1 : 0, Controller->IsLookInputIgnored() ? 1 : 0, Controller->IsMoveInputIgnored() ? 1 : 0);
+		}
+		else
+		{
+			Text = TEXT("none");
+		}
+		FFileHelper::SaveStringToFile(Text, *File, FFileHelper::EEncodingOptions::ForceAnsi);
+		return true;
+	}), 0.03f);
 }
 
 bool USpnUiSubsystem::HandleQaKey(const FKey& Key)

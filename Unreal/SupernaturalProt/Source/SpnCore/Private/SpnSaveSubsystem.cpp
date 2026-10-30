@@ -105,13 +105,33 @@ namespace
 	 * A known section id with a newer version than this build reads (the container tolerates that for optional sections and would hand them to
 	 * "unread"): never ignored (it would look like an absent inventory) and never overwritten (a silent downgrade). Empty = none.
 	 */
+	constexpr std::string_view SectionPose = "player.pose";
+
+	/** player.pose is read by this layer, not by the Core: absent = legacy slot (fine); present but unreadable = the generation is rejected as a whole. */
+	bool ReadPose(const spn::core::SaveSlot& Slot, TOptional<FSpnPlayerPose>& Out, FString& Error)
+	{
+		Out.Reset();
+		const spn::core::SaveSection* Section = Slot.Find(SectionPose);
+		if (Section == nullptr)
+		{
+			return true;
+		}
+		FSpnPlayerPose Pose;
+		if (!FSpnPlayerPose::Parse(ToFString(Section->payload), Pose, Error))
+		{
+			return false;
+		}
+		Out = Pose;
+		return true;
+	}
+
 	FString NewerKnownSection(const spn::core::SaveSlot& Slot)
 	{
 		for (const auto& Entry : Slot.Sections())
 		{
 			const std::string_view Id = Entry.first;
 			const bool bKnown = Id == spn::core::kSectionFacts || Id == spn::core::kSectionObjects || Id == spn::core::kSectionMap || Id == spn::core::kSectionInventory
-				|| Id == spn::core::kSectionMeta || Id == spn::core::kSectionCatalog;
+				|| Id == spn::core::kSectionMeta || Id == spn::core::kSectionCatalog || Id == SectionPose;
 			if (bKnown && Entry.second.version > 1)
 			{
 				return ToFString(Entry.first);
@@ -421,6 +441,17 @@ USpnSaveSubsystem::FSpnSlotInfo USpnSaveSubsystem::InspectSlot(const FString& Sl
 				}
 				continue;
 			}
+			TOptional<FSpnPlayerPose> InspectedPose;
+			FString PoseError;
+			if (!ReadPose(*Candidate.Slot, InspectedPose, PoseError))
+			{
+				LastProblem = PoseError;
+				LastResult = ESpnSaveResult::Rejected;
+				continue;
+			}
+			Info.bHasPose = InspectedPose.IsSet();
+			Info.PoseLevel = InspectedPose.IsSet() ? InspectedPose->Level : FString();
+			Info.Pose = InspectedPose;
 			Info.Result = ESpnSaveResult::Ok;
 			Info.bFromPrevious = Generation == 1;
 			Info.Detail = Generation == 1 ? LastProblem : FString();
@@ -549,6 +580,27 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 			return Fail(bInconsistent ? ESpnSaveResult::InconsistentSnapshot : ToResult(Captured.Error().code), Describe(Captured.Error()), FilePath);
 		}
 
+		// player.pose: written fresh from the live player, or removed - never carried over from an older save of the slot
+		TOptional<FSpnPlayerPose> SavedPose;
+		Captured.Value().Remove(SectionPose);
+		if (PoseProvider)
+		{
+			FSpnPlayerPose Pose;
+			if (PoseProvider(Pose))
+			{
+				spn::core::SaveSection Section;
+				Section.id = std::string(SectionPose);
+				Section.version = 1;
+				Section.required = false;
+				const FTCHARToUTF8 Utf8(*Pose.Serialize());
+				Section.payload.assign(Utf8.Get(), static_cast<std::size_t>(Utf8.Length()));
+				if (const auto PutError = Captured.Value().Put(std::move(Section)))
+				{
+					return Fail(ToResult(PutError->code), Describe(*PutError), FilePath);
+				}
+				SavedPose = Pose;
+			}
+		}
 		if (const auto Error = Store.Save(Captured.Value(), spn::core::GameSaveSchema()))
 		{
 			UE_LOG(LogSpnCore, Error, TEXT("Save [%s]: saving slot '%s' to '%s' failed (%s); the previous save is unchanged"), *Owner, *SlotId, *FilePath,
@@ -560,12 +612,15 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 		Status.Source = ESpnSaveSource::Current;
 		Status.Path = FilePath;
 		Status.FactsRevision = WorldState->GetRevision();
+		Status.Pose = SavedPose;
+		Status.bPoseInSlot = SavedPose.IsSet();
 		Status.InventoryRevision = bInventoryActive ? Inventory->GetRevision() : 0;
 		Status.StoredFingerprint = bInventoryActive ? Inventory->GetCatalogFingerprint() : FString();
 		if (Existing.Slot)
 		{
 			for (const std::string& Id : Existing.Slot->UnreadSections(spn::core::GameSaveSchema()))
 			{
+				if (Id == SectionPose) { continue; }
 				Status.PreservedSections.Add(ToFString(Id));
 			}
 		}
@@ -701,6 +756,22 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 				continue;
 			}
 
+			TOptional<FSpnPlayerPose> LoadedPose;
+			{
+				FString PoseError;
+				if (!ReadPose(*Candidate.Slot, LoadedPose, PoseError))
+				{
+					LastProblem = PoseError;
+					LastResult = ESpnSaveResult::Rejected;
+					if (!bPrevious)
+					{
+						CurrentProblem = LastProblem;
+					}
+					UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: %s of slot '%s' rejected (%s)"), *Owner, bPrevious ? TEXT("previous generation") : TEXT("main file"), *SlotId, *LastProblem);
+					continue;
+				}
+			}
+
 			// phase 2: swap EVERYTHING first (moves of ordered maps do not throw and call nobody), then notify. Nothing between the two swaps can
 			// observe or modify a half-loaded state, and every listener sees the complete loaded state.
 			const uint64 PreviousRevision = WorldState->GetRevision();
@@ -708,6 +779,8 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			Status.Source = bPrevious ? ESpnSaveSource::Previous : ESpnSaveSource::Current;
 			Status.CurrentProblem = bPrevious ? CurrentProblem : FString();
 			Status.Path = FilePath;
+			Status.bPoseInSlot = LoadedPose.IsSet();
+			Status.Pose = LoadedPose;
 			WorldState->State->Facts = std::move(Game.Value().facts);
 			if (bInventoryActive)
 			{
@@ -759,6 +832,10 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			if (bMapActive)
 			{
 				Map->BroadcastReplaced();
+			}
+			if (LoadedPose.IsSet())
+			{
+				OnPoseLoaded.Broadcast(*LoadedPose);
 			}
 			OnLoaded.Broadcast();
 			return Status;

@@ -43,3 +43,53 @@ The capsule does not get onto the 30 cm ledge through `StepUp` (attempt A refuse
 * Log per-frame `Z`, `Velocity.Z`, `CurrentFloor.FloorDist` / walkable flag, movement mode and the `Hit.ImpactNormal` of the blocking hit for the 30 cm case with `spn.MoveDiag 1` (the recorder exists: `SpnMovementDiagnostics`); look for the frame series with Z rising 0.5-2 cm per frame.
 * Try an override of `SlideAlongSurface` / `HandleImpact` for ground moves that clamps the vertical component of the slide to 0 unless the surface is walkable (`IsWalkable(Hit)` evaluated on the impact normal, not the sweep normal).
 * Or question the spec: with a rounded capsule bottom (radius 42) the physically meaningful limit is above `MaxStepHeight`; the owner may prefer `MaxStepHeight` of about 20 cm so that 30 cm blocks (this changes what stairs with 25 cm risers do — a decision for the developer).
+
+---
+
+# Update (Night Build 01 completion, 2026-10-30): all five open movement cases, fresh evidence
+
+No code was changed for movement in this pass (as instructed: no speculative fixes; the stair-camera smoothing of A1 is untouched and its test `SpnGame.Movement.StairCamera` passes). This section collects what a separate, Opus-assisted investigation needs.
+
+## The five open cases
+
+| Case | Where | Fresh result (this session) | Expected |
+|---|---|---|---|
+| `SpnGame.Movement.Obstacles` | `Spn/Tests/SpnMovementMapAutomation.cpp:671` | **FAIL** (headless full run `logs/regression-complete-1.log`: 128 of 130 pass, these two fail) | a 30 cm thin ledge blocks a walking character |
+| `SpnGame.Movement.StairsAndRamps` | same file `:739` | **FAIL** | a staircase with 30 cm risers blocks a walking character |
+| `SpnQA.Jump.late_jump_ledge_45_jog` | `Spn/Tests/SpnQaMovementAutomation.cpp:378` | **FAIL** (rendered `run_gameplay_qa.ps1 -Suite Full`, report `Saved/GameplayQA/20261030-124911/report.md`): take-off 350 cm/s, lowest speed before landing 34 cm/s (10 %), apex 45 cm (spec 45), landed after 0.44 s, Z at landing 137 (ground 97), 0.6 s after landing 221 cm/s, "crossed no" | crossing the 45 cm ledge with a late jump must not take longer than 1 s |
+| `SpnQA.Jump.late_jump_ledge_40_run` | `:379` | **FAIL**: take-off 550 cm/s, lowest speed 39 cm/s (7 %), apex 45 cm, landed after 0.46 s, Z 132, 0.6 s after landing 258 cm/s | same |
+| `SpnQA.MovementDemo` / `ledge_80_blocks_even_with_a_jump` | `SpnQaMovementDemoAutomation.cpp:128` | **PASS in this session** (rendered full run, and in the headless run); it was intermittent earlier and has not reproduced now. Not "fixed": no change was made, so the intermittency is simply unobserved. | an 80 cm ledge blocks even with a jump |
+
+## Reproduction
+
+```
+# the two SpnGame cases (headless, about 3 min)
+UnrealEditor-Cmd.exe Unreal\SupernaturalProt\SupernaturalProt.uproject -ExecCmds="Automation RunTests SpnGame.Movement.Obstacles+SpnGame.Movement.StairsAndRamps; Quit" -unattended -NullRHI -NoSound
+# the late-jump cases (they need the rendered session; the headless run reports the same two failures)
+powershell.exe -ExecutionPolicy Bypass -File Toolsun_gameplay_qa.ps1 -Suite Jump -NoVideo
+# the intermittent 80 cm case
+powershell.exe -ExecutionPolicy Bypass -File Toolsun_gameplay_qa.ps1 -Suite MovementDemo -NoVideo      # repeat 10x and count
+```
+
+## Relevant code
+
+* `Spn/SpnCharacterMovementComponent.{h,cpp}` (`ApplySettings`: `MaxStepHeight = 25`, `PerchRadiusThreshold`, `bUseFlatBaseForFloorChecks`; `ComputeSlideVector`), `Spn/SpnMovement.h` (the constants and the M2A4.1 history in its comments), the jump model in Core (`Core/include/spn/core/JumpModel.h`, `Movement.h`; Core was not touched).
+* Engine reference (read-only, do NOT modify the installed engine): `CharacterMovementComponent.cpp`: `StepUp`, `CanStepUp`, `MoveAlongFloor`, `SlideAlongSurface`, `HandleImpact`, `PhysFalling` (landing on a ledge edge).
+
+## What the late-jump numbers suggest (hypotheses, not facts)
+
+1. **The late jump starts 10 cm before the wall** (the 10 in the table). With a 45 cm apex and a 45 cm ledge the capsule bottom reaches the ledge top only at the very end of the rise; the horizontal speed collapses to 7-10 % of the take-off speed against the face ("lowest speed 34 / 39 cm/s") and the capsule lands on the top edge after ~0.45 s, then needs more than 1 s to be "across". That is a *ledge-assist / mantle* feature gap, not a tuning bug (the test text says so: "known issue, M2A2 report section 5, open: needs a ledge assist / mantle"). A fix is a design decision (automatic mantle assist? shorter/longer ledge margin in the spec?), not a one-line change.
+2. **The 30 cm walking cases and the late jump may share one mechanism:** the capsule's rounded bottom rolling over a ledge corner in many sub-centimetre slide lifts (`OPUS_ESCALATION` §"What this tells us"). A per-frame recorder (below) would show whether the late-jump landing "creeps" the last centimetres the same way.
+3. **The intermittent 80 cm case** was observed in an earlier build only; with frame-time dependent sweeps a different sub-stepping (editor frame rate, `MaxSimulationTimeStep`, `MaxSimulationIterations`) could explain intermittency. It passed in both sessions today (headless 60 fps cap vs. rendered), which does not exclude it.
+
+## Suggested diagnostic experiments (in this order)
+
+1. `spn.MoveDiag 1` during the 30 cm case; plot Z, `Velocity.Z`, `CurrentFloor.FloorDist`, movement mode and the blocking hit's `ImpactNormal` per frame (`SpnMovementDiagnostics`). Look for the 0.5-2 cm-per-frame Z series.
+2. Same recorder for `late_jump_ledge_45_jog`; compare the last 0.2 s before "landed".
+3. Run the 30 cm case at fixed 30 / 60 / 120 fps (`-FPS`/`t.MaxFPS` with `p.FixedFrameRate`) to see whether the creep depends on the frame time (it would also explain the intermittent 80 cm case).
+4. Override `SlideAlongSurface` for `MOVE_Walking` to drop the vertical slide component when the impact normal is not walkable (as listed above) and see whether the late-jump numbers change too.
+5. Decide the specification question first if experiments 1-4 show the physics is "correct": `MaxStepHeight` 20 vs 25 cm, whether 30 cm is allowed to be walked, and whether a mantle assist is wanted (developer decisions; not taken here).
+
+## Previous unsuccessful repair attempts (cumulative)
+
+M2A4.1: perch radius 12/14/16, flat-base floor checks, slope-boosting guard. Night Build 01: strict `CanStepUp` override (refused but not the mechanism), `MoveAlongFloor` lift instrumentation (no lift above 2 cm). Completion pass: none (by instruction).

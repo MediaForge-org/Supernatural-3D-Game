@@ -166,7 +166,8 @@ void USpnMenuScreen::SetItems(const TArray<FSpnMenuItem>& InItems, FName SelectI
 	Items = InItems;
 	Selected = 0;
 	const int32 Found = FindIndex(Keep);
-	if (Found != INDEX_NONE)
+	// a remembered entry that is disabled (Continue without a save) or a header must not keep the selection: the keyboard could never leave it sensibly
+	if (Found != INDEX_NONE && !Items[Found].bHeader && Items[Found].bEnabled)
 	{
 		Selected = Found;
 	}

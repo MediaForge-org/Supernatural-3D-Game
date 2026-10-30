@@ -419,7 +419,10 @@
         "SpnGame.InventoryUi.Input.BackStepsAndModalDialog",
         "SpnGame.InventoryUi.Localization.GermanEnglishAndFallback",
         "SpnGame.InventoryUi.Performance.LargeInventory",
-        "SpnQA.InventoryUi"
+        "SpnQA.InventoryUi",
+        "SpnGame.InventoryUi2.ViewSortFilter",
+        "SpnGame.InventoryUi2.GridView",
+        "SpnGame.InventoryUi2.Performance"
       ],
       "gap": "M2B3.5: the widget tests drive the screen through HandleKey() and read the real widget texts; the rendered session (open key, input-mode switch, mouse clicks, screenshots) is validated by the SpnQA.InventoryUi gameplay QA test. Not covered: a physical DualSense (gamepad input is simulated with gamepad key events), packaged builds, item icon textures (swatch fallback only)."
     },
@@ -510,9 +513,17 @@
         "SpnGame.NightBuild.Settings",
         "SpnGame.NightBuild.UiText",
         "SpnCore.Save.InspectSlot",
-        "SpnCore.Save.CatalogMismatchFeedback"
+        "SpnCore.Save.CatalogMismatchFeedback",
+        "SpnGame.NightBuild.SettingsAudioUi",
+        "SpnCore.Save.PlayerPose",
+        "SpnCore.Save.PlayerPoseFormat",
+        "SpnCore.Save.PlayerPoseCorruptIsAtomic",
+        "SpnGame.NightBuild.PoseWorld",
+        "SpnGame.Input.RouterPriority",
+        "SpnGame.Input.ConsoleTyping",
+        "SpnGame.Input.ModeAfterTravel"
       ],
-      "gap": "Router priority and page flow are verified by the scripted integration run only (Tools/windows/nb01_run_integration.ps1, state dumps); no unit test of the pre-processor yet.",
+      "gap": "Input routing is covered by automated Slate-injected tests (priority, repeated cycles, input mode after a level travel, console typing with the console put into its typing state); a physical keyboard layout, a real console key press in a focused window and any hardware gamepad are verified only by the scripted OS-input run (Tools/windows/nb01_run_journey.ps1) or not at all. Music/effects volume drive engine sound classes that nothing in the project uses yet.",
       "classes": [
         "USpnUiSubsystem",
         "USpnMenuScreen",
@@ -535,10 +546,11 @@
       "tests": [
         "SpnGame.NightBuild.Pickup",
         "SpnGame.NightBuild.PickupPersistence",
-        "SpnGame.NightBuild.Container"
+        "SpnGame.NightBuild.Container",
+        "SpnGame.NightBuild.ObjectsWorld"
       ],
       "title": "Inventory-backed world pickups and containers",
-      "gap": "Actors themselves are not persisted (ObjectPersistence not integrated in Unreal); container opening through the UI is covered by the scripted run only."
+      "gap": "Persistence = the taken flag in world.facts + the inventory section; the actors are recreated from the level / scenario spawner and match their saved state (SpnGame.NightBuild.ObjectsWorld, real level recreation). Core ObjectPersistence (world.objects section, RegionStateCache) is deliberately not integrated: it would duplicate state that world.facts already holds and only pays off with region streaming; see Docs/NightBuild01/COMPLETION_REPORT.md."
     }
   ]
 }

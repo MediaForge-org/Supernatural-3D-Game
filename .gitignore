@@ -147,3 +147,7 @@ credentials*.json
 /Unreal/**/*.VC.db
 /Unreal/**/UpgradeLog.htm
 /Unreal/**/Config/DefaultEditorPerProjectUserSettings.ini
+
+# Python generated files
+__pycache__/
+*.pyc

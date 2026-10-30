@@ -1,5 +1,36 @@
 # Night Build 01 — implementation status per work package
 
+## Completion matrix (after the completion pass, 2026-10-30) — supersedes the table below where they differ
+
+PASS / PARTIAL / FAIL / NOT IMPLEMENTED. "Evidence" names a test or file; details in `QA_RESULTS.md`.
+
+| Pkg | Topic | Status | Evidence / what is missing |
+|---|---|---|---|
+| A1 | Stair camera smoothing | **PASS** | `SpnGame.Movement.StairCamera`; unchanged in the completion pass |
+| A2 | Known movement failures | **FAIL (open, escalated)** | `Obstacles`, `StairsAndRamps`, `SpnQA.Jump.late_jump_ledge_45_jog`, `late_jump_ledge_40_run` still fail; `ledge_80_blocks_even_with_a_jump` passed in both runs of this session (intermittent, not fixed). `OPUS_ESCALATION.md` |
+| A3 | Regression coverage | **PARTIAL** | all movement suites re-run (see `QA_RESULTS.md`); no new movement coverage beyond `StairCamera` |
+| B | World map UI | **PASS** (test data) | journey run + `SpnCore.Map.*`; controller path simulated only |
+| C | Minimap | **PASS** | `SpnCore.Map.Minimap`, journey screenshots |
+| D | Navigation | **PASS** (straight line) | `SpnCore.Map.Navigation`; journey: distance 50 m to 38 m by walking toward the waypoint |
+| E | Main menu | **PASS** | journey; a disabled remembered entry no longer keeps the selection (fixed) |
+| F | Pause menu | **PASS** | `SpnGame.Input.RouterPriority`, journey |
+| G | Settings | **PARTIAL** | persisted: master, music, effects (engine sound classes; **the project has no sounds yet**), UI scale, sensitivity, invert, language, graphics, minimap, camera smoothing. Persistence tested by ini reload (`SpnGame.NightBuild.SettingsAudioUi`), **not across a real process restart**. Not offered: subtitles / colour-blind modes / key rebinding (nothing to attach them to) |
+| H | Save-slot UI | **PASS** | `SpnCore.Save.*`, journey |
+| I | Unified HUD | **PASS** | journey screenshots |
+| J | Interaction | **PARTIAL** | doors, pickups, containers; no new interaction rules |
+| K | World pickups | **PASS** | `SpnGame.NightBuild.Pickup/PickupPersistence/ObjectsWorld`; identity guard |
+| L | World containers | **PARTIAL** | contents + identity + recreation PASS (`ObjectsWorld`); Core `ObjectPersistence` / `world.objects` **NOT integrated** (decision, `COMPLETION_REPORT.md` section 5) |
+| M | Inventory UI | **PARTIAL (mostly done)** | PASS: list/grid toggle, sort (6 modes, both directions), category filter, grid keyboard navigation, weight/volume/condition in rows, view options never touch the Core, performance measured (`SpnGame.InventoryUi2.*`). NOT done: redesigned equipment panel, responsive-layout verification (the screen scales to fit, only checked at 16:9), real item icons (swatch placeholders) |
+| N | Input routing | **PASS (simulated input)** | `SpnGame.Input.RouterPriority/ConsoleTyping/ModeAfterTravel`; physical keyboard layouts and DualSense **not verified** |
+| O | Integrated scenario | **PASS** (scripted, no teleport) | `Tools/windows/nb01_run_journey.ps1`, 7/7 restore checks incl. position |
+| P | QA | see `QA_RESULTS.md` | |
+| Q | Video | **PASS** (scripted input) | `Saved/NightBuild01/completion-video/run.mp4`, 1920x1080, 60 fps, real rendering |
+
+---
+
+(The table below is the original Night Build 01 status; where it says "not saved: the player position", "no teleport-free scenario" or "package M not started", the matrix above applies.)
+
+
 Status words: **Done** = implemented, compiled, exercised in a real game session and covered by an automated test where one makes sense. **Partial** = works but with stated gaps. **Not done** = not started. Evidence names files under `Docs/NightBuild01/logs/` and `Unreal/SupernaturalProt/Saved/NightBuild01/` (screenshots, video).
 
 | Pkg | Topic | Status | What exists / what is missing |

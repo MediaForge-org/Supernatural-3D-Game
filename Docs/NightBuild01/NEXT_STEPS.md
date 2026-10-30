@@ -1,5 +1,18 @@
 # Night Build 01 — next steps (smallest useful first)
 
+## After the completion pass (2026-10-30)
+
+Done since the list below was written: player pose in the save (step 3), router tests (step 8), most of the inventory UI package (step 5), music/effects/UI-scale settings foundation (part of step 6), the teleport-free journey. Still open, in suggested order:
+
+1. **Decide:** integrate Core `ObjectPersistence` or keep world.facts + inventory as the single copy (`COMPLETION_REPORT.md` section 5); confirm `player.pose` against the master (not reachable from the Windows machine); axis preset `CQ-101`.
+2. **Movement escalation** (`OPUS_ESCALATION.md`): the five open cases, starting with the per-frame recorder; decide the 30 cm rule and whether a mantle assist is wanted.
+3. **Hardware pass:** DualSense and a second keyboard layout against the router, the menus, the map and the inventory (gamepad shortcuts Y / L3 / R3 for sort / view / category are new).
+4. **Real audio:** put the first sounds on the Music / SFX classes (or choose another architecture) so the two sliders do something; then re-test persistence across a real restart.
+5. **Inventory UI:** redesigned equipment panel, real icons from `USpnItemPresentationSet`, responsive layouts for 16:10 and ultrawide, configurable grid columns.
+6. **Real navigation / map data** (unchanged, see below).
+
+---
+
 Proposals for the developer's review; none of them is approved by being listed.
 
 1. **Decide the open points of `ARCHITECTURE.md` §6** — the ones that block real content: axis preset / origin (`CQ-101`), where the real map definition comes from (WorldForge file vs data asset), one waypoint or several, pause semantics in co-op.
