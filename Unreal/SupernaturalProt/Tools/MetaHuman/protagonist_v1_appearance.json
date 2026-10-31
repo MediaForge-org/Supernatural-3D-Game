@@ -1,0 +1,20 @@
+{
+ "_status": "PLACEHOLDER values for Protagonist V1 preview, estimated from the reference image by eye; not approved tuning. Body values are raw MetaHuman body-constraint measurements.",
+ "skin": {"u": 0.42, "v": 0.56, "roughness": 0.95},
+ "freckles": {"density": 0.15, "strength": 0.1},
+ "accents": {"nose": {"redness": 0.6}, "cheeks": {"redness": 0.58}, "under_eye": {"lightness": 0.45}},
+ "iris": {"primary_color_u": 0.30, "primary_color_v": 0.55, "secondary_color_u": 0.38, "secondary_color_v": 0.42, "global_saturation": 1.2},
+ "body": {"Height": 183.0, "Masculine/Feminine": -1.1, "Fat": -0.8, "Muscularity": 0.5},
+ "grooms": {
+  "Hair": ["Hair", "Hair_M_BobMessy"],
+  "Eyebrows": ["Eyebrows", "Eyebrows_M_Natural"],
+  "Beard": ["Beards", "Beard_M_Stubble"],
+  "Mustache": ["Mustaches", "Mustache_M_Stubble"]
+ },
+ "groom_params": {
+  "Hair": {"Melanin": 0.82, "Redness": 0.22},
+  "Eyebrows": {"Melanin": 0.88, "Redness": 0.2},
+  "Beard": {"Melanin": 0.78, "Redness": 0.25},
+  "Mustache": {"Melanin": 0.8, "Redness": 0.25}
+ }
+}

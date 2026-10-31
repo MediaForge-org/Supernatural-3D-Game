@@ -1,0 +1,25 @@
+{
+ "_status": "Hand-placed estimates (pixels in the 1536x1024 reference image), accuracy about +-5 px; ear and brow points are uncertain (hair covers the ear, brow landmarks sit on the skin under the eyebrow hair). Keys are MetaHuman 5.8 face landmark indices.",
+ "image_size": [1536, 1024],
+ "points": {
+  "64": [638, 260],
+  "65": [624, 277],
+  "67": [608, 270],
+  "62": [632, 365],
+  "78": [515, 190],
+  "10": [545, 184],
+  "77": [570, 188],
+  "59": [595, 195],
+  "24": [615, 182],
+  "26": [640, 187],
+  "6": [602, 212],
+  "54": [418, 255],
+  "56": [410, 222]
+ },
+ "names": {
+  "64": "nose tip", "65": "subnasale", "67": "right alar wing", "62": "chin front", "78": "right brow outer",
+  "10": "right brow middle", "77": "right brow inner", "59": "glabella", "24": "left brow inner", "26": "left brow middle",
+  "6": "nasal root", "54": "right ear middle", "56": "right ear top"
+ },
+ "low_confidence": ["78", "10", "77", "24", "26", "54", "56", "59"]
+}
