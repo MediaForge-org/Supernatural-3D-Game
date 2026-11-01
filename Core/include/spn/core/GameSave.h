@@ -10,6 +10,8 @@
 //                                the part of the object state the live fact store does not hold
 //   world.map         optional   WorldMapState::Serialize()          SPN-MAPSTATE 1
 //   player.inventory  optional   InventoryState::Serialize()         SPN-INVENTORY 1
+//   world.npcs        optional   NpcMemoryStore::Serialize()        SPN-NPCMEM 1: persistent NPC identities, bounded memories, deaths (NightBuild02).
+//                                Additive: builds that do not know the section ignore it and carry it over when they re-save (UnreadSections).
 //   slot.meta         optional   "facts_revision N" / "inventory_revision N": which gameplay moment the sections were taken at
 //   slot.catalog      optional   "catalog_fingerprint fp1:<hex>" / "inventory_revision N": the item definitions player.inventory was saved against
 //                                (M2B3.4, see CatalogFingerprint.h). A separate section, NOT an extension of slot.meta: slot.meta has a strict
@@ -31,6 +33,7 @@
 #include <vector>
 
 #include "spn/core/Inventory.h"
+#include "spn/core/NpcMemory.h"
 #include "spn/core/ObjectPersistence.h"
 #include "spn/core/Result.h"
 #include "spn/core/SaveSlot.h"
@@ -43,6 +46,7 @@ inline constexpr std::string_view kSectionFacts = "world.facts";
 inline constexpr std::string_view kSectionObjects = "world.objects";
 inline constexpr std::string_view kSectionMap = "world.map";
 inline constexpr std::string_view kSectionInventory = "player.inventory";
+inline constexpr std::string_view kSectionNpcMemory = "world.npcs";
 inline constexpr std::string_view kSectionMeta = "slot.meta";
 inline constexpr std::string_view kSectionCatalog = "slot.catalog";
 
@@ -56,6 +60,7 @@ struct GameSaveSources {
     const WorldObjectCatalog* catalog = nullptr;
     const WorldMapState* map = nullptr;
     const InventoryState* inventory = nullptr;
+    const NpcMemoryStore* npcMemory = nullptr; ///< optional (appended last: positional initialisation of the members above stays valid)
 };
 
 /// Builds a slot from the live state. `previous` (optional): sections this build does not know or cannot read (UnreadSections) are carried over
@@ -70,6 +75,7 @@ struct GameLoadContext {
     /// Catalog fingerprint policy (M2B3.4): by default a slot whose recorded fingerprint differs from the current catalog is REFUSED (CatalogMismatch).
     /// Setting this is an explicit decision by the caller; the inventory is still fully validated against the current catalog, nothing is reset.
     bool acceptCatalogMismatch = false;
+    NpcMemoryConfig npcMemoryConfig{}; ///< used to rebuild world.npcs; capacities / half-lives are configuration, not saved data
 };
 
 /// Result of comparing the catalog fingerprint recorded in the slot with the catalog the inventory is loaded against.
@@ -91,6 +97,7 @@ struct LoadedGame {
     CatalogCheck catalogCheck = CatalogCheck::NotApplicable;
     std::string storedFingerprint;  ///< from slot.catalog, empty if none
     std::string currentFingerprint; ///< of the catalog used for loading, empty if there is no inventory
+    std::optional<NpcMemoryStore> npcMemory{}; ///< present iff world.npcs was saved and readable
 };
 
 /// Parses every present section into new objects. Errors: SectionRejected (a domain parser said no; detail = section + domain error),

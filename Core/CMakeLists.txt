@@ -19,13 +19,21 @@ add_library(spn_core STATIC
     src/JumpModel.cpp
     src/Locomotion.cpp
     src/Coordinates.cpp
+    src/GeometryMath.cpp
+    src/MapGeometry.cpp
+    src/MapRender.cpp
     src/Minimap.cpp
+    src/NavigationSession.cpp
+    src/RoadNetwork.cpp
+    src/Routing.cpp
+    src/SyntheticMapRegion.cpp
     src/SaveSlot.cpp
     src/SaveStore.cpp
     src/GameSave.cpp
     src/Movement.cpp
     src/Navigation.cpp
     src/Npc.cpp
+    src/NpcMemory.cpp
     src/ObjectPersistence.cpp
     src/Pickup.cpp
     src/TestDoor.cpp

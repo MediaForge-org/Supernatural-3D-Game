@@ -74,6 +74,7 @@ SaveSchema GameSaveSchema() {
     schema.sections = {
         {std::string(kSectionFacts), 1, true},   {std::string(kSectionObjects), 1, false}, {std::string(kSectionMap), 1, false},
         {std::string(kSectionInventory), 1, false}, {std::string(kSectionMeta), 1, false}, {std::string(kSectionCatalog), 1, false},
+        {std::string(kSectionNpcMemory), 1, false},
     };
     return schema;
 }
@@ -85,6 +86,7 @@ Result<SaveSlot, SaveError> CaptureGameSave(const GameSaveSources& src, const Sa
     const std::uint64_t factsBefore = src.facts->Revision();
     const std::optional<std::uint64_t> inventoryBefore = src.inventory ? std::optional<std::uint64_t>(src.inventory->Revision()) : std::nullopt;
     const std::optional<std::uint64_t> mapBefore = src.map ? std::optional<std::uint64_t>(src.map->Revision()) : std::nullopt;
+    const std::optional<std::uint64_t> npcBefore = src.npcMemory ? std::optional<std::uint64_t>(src.npcMemory->Revision()) : std::nullopt;
 
     SaveSlot slot;
     const auto add = [&](std::string_view id, bool required, std::string payload) -> std::optional<SaveError> {
@@ -101,9 +103,13 @@ Result<SaveSlot, SaveError> CaptureGameSave(const GameSaveSources& src, const Sa
         if (auto e = add(kSectionInventory, false, src.inventory->Serialize())) return *e;
         if (auto e = add(kSectionCatalog, false, CatalogSection(CatalogFingerprint(src.inventory->Catalog()), src.inventory->Revision()))) return *e;
     }
+    if (src.npcMemory != nullptr) {
+        if (auto e = add(kSectionNpcMemory, false, src.npcMemory->Serialize())) return *e;
+    }
     if (auto e = add(kSectionMeta, false, Meta(factsBefore, inventoryBefore))) return *e;
 
-    if (src.facts->Revision() != factsBefore || (src.inventory && src.inventory->Revision() != *inventoryBefore) || (src.map && src.map->Revision() != *mapBefore))
+    if (src.facts->Revision() != factsBefore || (src.inventory && src.inventory->Revision() != *inventoryBefore) || (src.map && src.map->Revision() != *mapBefore) ||
+        (src.npcMemory && src.npcMemory->Revision() != *npcBefore))
         return Err(SaveErrorCode::ConsistencyMismatch, "state changed while the snapshot was being taken");
 
     if (previous != nullptr) {
@@ -153,6 +159,13 @@ Result<LoadedGame, SaveError> ParseGameSave(const SaveSlot& slot, const GameLoad
             return Err(SaveErrorCode::SectionRejected, std::string(kSectionInventory) + ": " + std::string(ToString(inv.Error().code)) + " line " +
                                                            std::to_string(inv.Error().commandIndex) + " " + inv.Error().detail);
         game.inventory = std::move(inv).Value();
+    }
+    if (const SaveSection* s = readable(kSectionNpcMemory)) {
+        auto npcs = NpcMemoryStore::Deserialize(s->payload, ctx.npcMemoryConfig);
+        if (!npcs)
+            return Err(SaveErrorCode::SectionRejected, std::string(kSectionNpcMemory) + ": " + std::string(ToString(npcs.Error().code)) + " line " +
+                                                           std::to_string(npcs.Error().line));
+        game.npcMemory = std::move(npcs).Value();
     }
     if (const SaveSection* s = readable(kSectionMeta)) {
         const auto meta = ParseMeta(s->payload);

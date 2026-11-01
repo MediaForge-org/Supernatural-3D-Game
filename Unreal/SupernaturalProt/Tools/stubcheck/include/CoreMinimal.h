@@ -5,6 +5,7 @@
 // these members (see Docs/Setup/Windows-M2A-Handover.md, "Annahmen ueber die Engine-API").
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <cstdint>
 #include <cstdio>
 #include <cstdarg>
@@ -52,6 +53,7 @@ public:
 	const char* operator*() const { return Value.c_str(); }
 	bool IsEmpty() const { return Value.empty(); }
 	void Reset() { Value.clear(); }
+	FString(const FString&) = default;
 	FString& operator=(const FString&) = default;
 	template <typename... Args> static FString Printf(const char* format, Args... args)
 	{
@@ -78,6 +80,11 @@ struct FVector2D
 	FVector2D() = default;
 	FVector2D(double x, double y) : X(x), Y(y) {}
 	bool IsNearlyZero() const { return std::fabs(X) < 1e-4 && std::fabs(Y) < 1e-4; }
+	double Size() const { return std::sqrt(X * X + Y * Y); }
+	static double DotProduct(const FVector2D& a, const FVector2D& b) { return a.X * b.X + a.Y * b.Y; }
+	FVector2D operator-(const FVector2D& o) const { return FVector2D(X - o.X, Y - o.Y); }
+	FVector2D operator/(double d) const { return FVector2D(X / d, Y / d); }
+	friend FVector2D operator*(double d, const FVector2D& v) { return FVector2D(d * v.X, d * v.Y); }
 	FVector2D GetSafeNormal() const { const double s = std::sqrt(X * X + Y * Y); return s > 1e-8 ? FVector2D(X / s, Y / s) : FVector2D(); }
 	static const FVector2D ZeroVector;
 };
@@ -96,7 +103,13 @@ struct FVector
 	static const FVector ZeroVector;
 };
 inline const FVector FVector::ZeroVector{};
-struct FHitResult {};
+struct FHitResult
+{
+	// Members the M2 trace/steering code reads (stand-in; the engine's FHitResult has many more).
+	float Time = 1.f;
+	FVector Normal, ImpactNormal, ImpactPoint;
+	bool bStartPenetrating = false, bBlockingHit = false;
+};
 struct FBox { bool IsInside(const FVector&) const { return true; } };
 struct FRotator
 {
@@ -121,9 +134,13 @@ template <typename T> struct TSharedPtr : std::shared_ptr<T>
 };
 template <typename T> using TSharedRef = TSharedPtr<T>;
 template <typename T, typename... Args> TSharedPtr<T> MakeShared(Args&&... args) { return TSharedPtr<T>(std::make_shared<T>(std::forward<Args>(args)...)); }
+template <typename T> T&& MoveTemp(T& v) { return static_cast<T&&>(v); }
 template <typename T> struct TArray : std::vector<T>
 {
 	int32 Num() const { return static_cast<int32>(this->size()); }
+	void Add(const T& v) { this->push_back(v); }
+	void Add(T&& v) { this->push_back(std::move(v)); }
+	void Reset() { this->clear(); }
 };
 
 struct FPropertyChangedEvent { FName GetMemberPropertyName() const { return FName(); } };
@@ -135,6 +152,7 @@ class ACharacter;
 class USceneComponent : public UObject
 {
 public:
+	FVector GetComponentLocation() const { return {}; }
 	FQuat GetComponentQuat() const { return {}; }
 };
 class UPrimitiveComponent : public USceneComponent {};
@@ -178,6 +196,25 @@ public:
 };
 inline FSavedMovePtr FNetworkPredictionData_Client_Character::AllocateNewMove() { return MakeShared<FSavedMove_Character>(); }
 
+// Floor/step stand-ins (nightbuild02): the members of the engine's FFindFloorResult / FStepDownResult that the movement trace and the
+// floor-rise limit use. Signatures follow the UE 5.x CharacterMovementComponent.h as the author knows it; NOT verified against the engine.
+constexpr float MIN_FLOOR_DIST = 1.9f;
+constexpr float MAX_FLOOR_DIST = 2.4f;
+constexpr float UE_KINDA_SMALL_NUMBER = 1.e-4f;
+struct FFindFloorResult
+{
+	bool bBlockingHit = false, bWalkableFloor = false, bLineTrace = false;
+	float FloorDist = 0.f, LineDist = 0.f;
+	FHitResult HitResult;
+	bool IsWalkableFloor() const { return bBlockingHit && bWalkableFloor; }
+	float GetDistanceToFloor() const { return bLineTrace ? LineDist : FloorDist; }
+};
+struct FStepDownResult
+{
+	bool bComputedFloor = false;
+	FFindFloorResult FloorResult;
+};
+
 class UCharacterMovementComponent : public UActorComponent
 {
 public:
@@ -191,6 +228,7 @@ public:
 	float PerchRadiusThreshold = 0.f;
 	bool bUseFlatBaseForFloorChecks = false, bHasRequestedVelocity = false;
 	FRootMotionSourceGroup CurrentRootMotion;
+	FFindFloorResult CurrentFloor;
 	FRotator RotationRate;
 	class FNetworkPredictionData_Client_Character* ClientPredictionData = nullptr;
 	virtual float GetMaxSpeed() const { return MaxWalkSpeed; }
@@ -209,6 +247,15 @@ public:
 	bool IsFalling() const { return MovementMode == MOVE_Falling; }
 	bool IsMovingOnGround() const { return MovementMode == MOVE_Walking || MovementMode == MOVE_NavWalking; }
 	void StopMovementImmediately() {}
+	virtual void MoveAlongFloor(const FVector&, float, FStepDownResult* = NULL) {}
+	virtual bool StepUp(const FVector&, const FVector&, const FHitResult&, FStepDownResult* = NULL) { return false; }
+	virtual void AdjustFloorHeight() {}
+	virtual float SlideAlongSurface(const FVector&, float, const FVector&, FHitResult&, bool) { return 0.f; }
+	virtual void PhysFalling(float, int32) {}
+	virtual void FindFloor(const FVector&, FFindFloorResult&, bool, const FHitResult* = NULL) const {}
+	void ComputeFloorDist(const FVector&, float, float, FFindFloorResult&, float, const FHitResult* = NULL) const {}
+	float GetValidPerchRadius() const { return PerchRadiusThreshold; }
+	bool IsWalkable(const FHitResult&) const { return true; }
 };
 
 class APawn;

@@ -252,3 +252,91 @@ TEST_CASE("the engine's friction blend alone explains the measured sprint-turn s
     // key press, when the capsule has already turned by up to 50 degrees. The input itself was a real 90 degrees.
     CHECK(real.secondsWithoutSprint < 0.15);
 }
+
+// --- NightBuild02: frame-rate behaviour and extreme inputs (measured first, then pinned; no production change was needed) ---
+
+namespace {
+
+struct TurnOutcome {
+    double minSpeed;
+    double timeToHeading;
+};
+
+TurnOutcome TurnAtFrameRate(double turnDegrees, double fps) {
+    const double dt = 1.0 / fps;
+    const double rad = turnDegrees * kPi / 180.0;
+    Vec2 v{8.0, 0.0};
+    SteeringInput in{{std::cos(rad), std::sin(rad)}, 8.0, 4.0, 8.0};
+    TurnOutcome out{8.0, -1.0};
+    double t = 0.0;
+    for (int i = 0; i < static_cast<int>(2.0 * fps); ++i) {
+        v = SteerVelocity(kSteer, v, in, dt);
+        t += dt;
+        out.minSpeed = std::min(out.minSpeed, Speed(v));
+        if (out.timeToHeading < 0.0 && std::abs(std::atan2(v.y, v.x) - rad) < 1e-6) out.timeToHeading = t;
+    }
+    return out;
+}
+
+} // namespace
+
+TEST_CASE("sprint turns give the same speed dip and turn time at 20 to 240 fps within frame quantisation") {
+    for (const double turn : {45.0, 90.0, 135.0}) {
+        const TurnOutcome reference = TurnAtFrameRate(turn, 1000.0);
+        for (const double fps : {20.0, 30.0, 60.0, 90.0, 144.0, 240.0}) {
+            const TurnOutcome o = TurnAtFrameRate(turn, fps);
+            INFO("turn " << turn << " deg at " << fps << " fps");
+            CHECK(std::abs(o.minSpeed - reference.minSpeed) <= 0.03 * reference.minSpeed); // measured: below 1.5 %
+            REQUIRE(o.timeToHeading > 0.0);
+            CHECK(std::abs(o.timeToHeading - reference.timeToHeading) <= 1.0 / fps + 0.01); // one frame of quantisation
+        }
+    }
+}
+
+TEST_CASE("steering survives extreme time steps, speeds and directions without non-finite output or speed growth") {
+    const double huge = 1.0e300;
+    const double inf = std::numeric_limits<double>::infinity();
+    const double nan = std::numeric_limits<double>::quiet_NaN();
+    // a one-hour frame must neither overshoot the target nor flip the heading wildly
+    const Vec2 afterHour = SteerVelocity(kSteer, {0.0, 0.0}, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, 3600.0);
+    CHECK(Speed(afterHour) == doctest::Approx(8.0));
+    CHECK(afterHour.y == doctest::Approx(0.0).epsilon(1e-9));
+    // enormous but finite directions and velocities are normalised / kept finite
+    const Vec2 a = SteerVelocity(kSteer, {1.0, 0.0}, SteeringInput{{huge, huge}, 8.0, 4.0, 8.0}, 0.016);
+    CHECK(std::isfinite(a.x));
+    CHECK(std::isfinite(a.y));
+    CHECK(Speed(a) <= 8.0 + 1e-9);
+    const Vec2 b = SteerVelocity(kSteer, {1.0e200, 1.0e200}, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, 0.016);
+    CHECK(std::isfinite(b.x));
+    CHECK(std::isfinite(b.y));
+    CHECK(Speed(b) <= Speed(Vec2{1.0e200, 1.0e200}));
+    // denormal direction counts as no input; non-finite everything is ignored
+    CHECK(SteerVelocity(kSteer, {3.0, 0.0}, SteeringInput{{1e-320, 0.0}, 8.0, 4.0, 8.0}, 0.1).x < 3.0); // braking
+    const Vec2 keep{2.0, 1.0};
+    CHECK(SteerVelocity(kSteer, keep, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, nan) == keep);
+    CHECK(SteerVelocity(kSteer, keep, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, inf) == keep);
+    CHECK(SteerVelocity(kSteer, keep, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, -1.0) == keep);
+    CHECK(SteerVelocity(kSteer, {nan, 0.0}, SteeringInput{{1.0, 0.0}, 8.0, 4.0, 8.0}, 0.1).y == 0.0);
+    const Vec2 c = SteerVelocity(kSteer, keep, SteeringInput{{nan, inf}, nan, inf, -inf}, 0.1);
+    CHECK(std::isfinite(c.x));
+    CHECK(std::isfinite(c.y));
+    CHECK(Speed(c) <= Speed(keep) + 1e-12);
+}
+
+TEST_CASE("steering fuzz: 200000 random steps never leave the finite range or exceed max(previous speed, target) + acceleration * dt") {
+    std::uint64_t state = 0x9E3779B97F4A7C15ULL;
+    const auto next = [&] {
+        state = state * 6364136223846793005ULL + 1442695040888963407ULL;
+        return static_cast<double>(state >> 11) / 9007199254740992.0; // [0, 1)
+    };
+    Vec2 v{0.0, 0.0};
+    for (int i = 0; i < 200000; ++i) {
+        const double dt = next() < 0.05 ? next() * 5.0 : next() * 0.05;
+        SteeringInput in{{(next() - 0.5) * (next() < 0.1 ? 0.0 : 4.0), (next() - 0.5) * 4.0}, next() * 10.0, next() * 8.0, next() * 16.0};
+        const double before = Speed(v);
+        v = SteerVelocity(kSteer, v, in, dt);
+        REQUIRE(std::isfinite(v.x));
+        REQUIRE(std::isfinite(v.y));
+        REQUIRE(Speed(v) <= std::max(before, in.targetSpeed) + 1e-9);
+    }
+}
