@@ -296,7 +296,7 @@ void USpnHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 		const uint64 Revision = Map->GetRevision();
 		const bool bMoved = FVector::DistSquared(Location, LastLocation) > 30.f * 30.f;
 		const bool bTurned = FMath::Abs(FRotator::NormalizeAxis(Yaw - LastYaw)) > 1.f;
-		const bool bChanged = Revision != LastRevision || Prefs.MinimapZoom != LastZoom || Prefs.bMinimapHeadingUp != LastHeadingUp;
+		const bool bChanged = Revision != LastRevision || Map->GetRouteGeneration() != LastRouteGeneration || Prefs.MinimapZoom != LastZoom || Prefs.bMinimapHeadingUp != LastHeadingUp;
 		const bool bStale = Clock - LastRebuild > 0.5;
 		if (bMoved || bTurned || bChanged || bStale)
 		{
@@ -311,9 +311,43 @@ void USpnHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 				View->SetPlayer(Metres, Bearing);
 				View->SetMinimapFrame(Map->BuildMinimapFrame(Request), Prefs.bMinimapHeadingUp);
 				View->SetNavigation(Reading);
+				if (Map->HasRoadNetwork())
+				{
+					// road layer + route of the minimap: the same Core render frame as the map screen (square viewport)
+					FSpnMapRenderRequest Road;
+					Road.CenterMetres = Metres;
+					Road.HeadingBearingRadians = Bearing;
+					Road.MetresPerPixel = 0.8 / FMath::Max(Prefs.MinimapZoom, 0.1f);
+					Road.bHeadingUp = Prefs.bMinimapHeadingUp;
+					Road.HalfSizePx = FVector2D(Request.RadiusPx, Request.RadiusPx);
+					View->SetRoadFrame(Map->BuildMapRenderFrame(Road));
+				}
+				else
+				{
+					View->SetRoadFrame(FSpnMapRenderFrame());
+				}
 			}
 			FText Caption;
-			if (Reading.bActive)
+			if (Reading.bActive && !Reading.bStraightLine)
+			{
+				if (Reading.Status == ESpnNavStatus::NoRoute)
+				{
+					Caption = FSpnUiText::Get(TEXT("ui.hud.noroute"), {FText::FromString(Reading.Label), FSpnUiText::Get(*(FString(TEXT("ui.nav.fail.")) + Reading.FailureText))});
+				}
+				else if (Reading.bArrived)
+				{
+					Caption = FSpnUiText::Get(TEXT("ui.hud.arrived"), {FText::FromString(Reading.Label)});
+				}
+				else if (Reading.bOffRoute)
+				{
+					Caption = FSpnUiText::Get(TEXT("ui.hud.offroute"), {FText::FromString(Reading.Label), FormatDistance(Reading.DistanceMetres)});
+				}
+				else
+				{
+					Caption = FSpnUiText::Get(TEXT("ui.hud.route"), {FText::FromString(Reading.Label), FormatDistance(Reading.DistanceMetres)});
+				}
+			}
+			else if (Reading.bActive)
 			{
 				Caption = Reading.bArrived ? FSpnUiText::Get(TEXT("ui.hud.arrived"), {FText::FromString(Reading.Label)})
 					: FSpnUiText::Get(TEXT("ui.hud.waypoint"), {FText::FromString(Reading.Label), FormatDistance(Reading.DistanceMetres)});
@@ -326,6 +360,7 @@ void USpnHudWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 			LastLocation = Location;
 			LastYaw = Yaw;
 			LastRevision = Revision;
+			LastRouteGeneration = Map->GetRouteGeneration();
 			LastZoom = Prefs.MinimapZoom;
 			LastHeadingUp = Prefs.bMinimapHeadingUp;
 			LastRebuild = Clock;

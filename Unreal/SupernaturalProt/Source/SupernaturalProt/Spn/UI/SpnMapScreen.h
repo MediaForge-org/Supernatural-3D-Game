@@ -43,6 +43,10 @@ public:
 	/** Waypoint on the selected entry, else at the crosshair / last mouse position. */
 	void PlaceWaypoint();
 	void RemoveWaypoint();
+	/** Road navigation: closes / opens the road segment under the mouse cursor (else the crosshair). Re-plans the route when it uses the road. */
+	void ToggleRoadClosure();
+	/** Road navigation: vehicle <-> on foot; re-plans to the same waypoint. */
+	void ToggleTravelMode();
 	void CenterOnPlayer();
 	void SelectNext(int32 Step);
 	void ClearSelection();

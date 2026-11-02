@@ -39,6 +39,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
 	bool bAuthoredLocked = false;
 
+	/** Authored block (barricaded / jammed): both verbs are refused while the `.disabled` fact says so. Mechanisms clear the fact later. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
+	bool bAuthoredBlocked = false;
+
+	/** A locked, closed door of this kind can be broken open with Force (F / Triangle). Breaking is permanent and saved. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
+	bool bBreakable = false;
+
+	/** Key id ([a-z][a-z0-9_.]*) that unlocks the door with Use while fact placeholder.key.<id>.held is true. Empty = no key opens it. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
+	FString RequiredKeyId;
+
 	/** Hinge yaw when open, in degrees (placeholder motion). */
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Motion", meta = (ClampMin = "-170", ClampMax = "170"))
 	float OpenAngle = 90.f;
@@ -77,6 +89,18 @@ public:
 	virtual FSpnInteractStatus SpnUse(AActor* User) override;
 	virtual FString SpnPromptText(const AActor* User) const override;
 
+	virtual FSpnInteractStatus SpnForce(AActor* User) override;
+	virtual FString SpnForcePromptText(const AActor* User) const override;
+
+	/** Broken open for good (fact `.broken`). A broken door has no working lock but still swings. */
+	bool IsBroken() const;
+
+	/** Blocked: the `.disabled` fact or the authored bAuthoredBlocked. */
+	bool IsBlocked() const;
+
+	/** True if the key this door needs is held. */
+	bool HasRequiredKey() const;
+
 	/** Open according to the world state (or bAuthoredOpen while no fact exists). */
 	bool IsOpen() const;
 
@@ -104,7 +128,9 @@ protected:
 
 private:
 	USpnWorldStateSubsystem* GetWorldState() const;
-	TMap<FString, bool> AuthoredDefaults() const;
+	FSpnInteractDefaults AuthoredDefaults() const;
+	FSpnInteractStatus RunVerb(ESpnInteractionVerb Verb, AActor* User);
+	void ReportOutcome(const FSpnInteractStatus& Status) const;
 
 	/** Points the hinge at the world state: swinging there, or jumping there (after a load). */
 	void RefreshFromWorldState(bool bAnimate);

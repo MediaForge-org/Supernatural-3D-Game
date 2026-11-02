@@ -44,6 +44,129 @@ SPNCORE_API const TCHAR* LexToString(ESpnMapResult Result);
 
 enum class ESpnDiscovery : uint8 { Undiscovered, Known, Visited };
 
+/** Mirrors spn::core::NavigationStatus. */
+enum class ESpnNavStatus : uint8 { Idle, Active, Arrived, NoRoute, Cancelled };
+SPNCORE_API const TCHAR* LexToString(ESpnNavStatus Status);
+
+/** Mirrors spn::core::TravelMode. */
+enum class ESpnTravelMode : uint8 { OnFoot, Driving };
+
+/** One polyline of a render frame (road, river/coast/contour line). Screen pixels, origin = viewport centre, x right, y DOWN. */
+struct FSpnRenderPolyline
+{
+	uint64 Id = 0;
+	/** spn::core::RoadClass index (roads), spn::core::LineKind index (lines). */
+	uint8 Kind = 0;
+	/** spn::core::RoadStructure index: 0 Surface, 1 Bridge, 2 Tunnel, ... (roads). */
+	uint8 Structure = 0;
+	bool bOneWay = false;
+	bool bRoundabout = false;
+	bool bClosed = false;
+	TArray<FVector2D> Points;
+};
+
+/** One filled ring (area or building). */
+struct FSpnRenderPolygon
+{
+	uint64 Id = 0;
+	/** spn::core::AreaKind index (areas). */
+	uint8 Kind = 0;
+	bool bBuilding = false;
+	TArray<FVector2D> Points;
+	TArray<FVector2D> Entrances;
+};
+
+/** Screen-space draw data from spn::core::BuildMapRenderFrame. The order of each array is the draw order. */
+struct FSpnMapRenderFrame
+{
+	bool bValid = false;
+	bool bTruncated = false;
+	double MetresPerPixel = 1.0;
+	double NorthOnScreenRadians = 0.0;
+	double PlayerHeadingOnScreenRadians = 0.0;
+	TArray<FSpnRenderPolygon> Areas;
+	TArray<FSpnRenderPolyline> Lines;
+	TArray<FSpnRenderPolygon> Buildings;
+	TArray<FSpnRenderPolyline> Roads;
+	TArray<TArray<FVector2D>> RouteTravelled;
+	TArray<TArray<FVector2D>> RouteRemaining;
+	bool bHasDestination = false;
+	FVector2D DestinationScreen = FVector2D::ZeroVector;
+	bool bDestinationInside = false;
+	bool bHasDestinationIndicator = false;
+	FVector2D DestinationIndicator = FVector2D::ZeroVector;
+	int32 Candidates = 0;
+	int32 Emitted = 0;
+};
+
+struct FSpnMapRenderRequest
+{
+	/** Map metres (X east, Y north) at the viewport centre. */
+	FVector2D CenterMetres = FVector2D::ZeroVector;
+	/** Compass bearing (radians clockwise from north) of the player; the arrow and the HeadingUp rotation use it. */
+	double HeadingBearingRadians = 0.0;
+	double MetresPerPixel = 1.0;
+	bool bHeadingUp = false;
+	bool bCircle = false;
+	/** Circle: HalfSizePx.X is the radius. */
+	FVector2D HalfSizePx = FVector2D(400.0, 300.0);
+	bool bRespectDiscovery = false;
+};
+
+/** Raw road geometry in map metres (the same Core data the map draws; used to build the 3D demo region). */
+struct FSpnGeoRoad
+{
+	uint64 Id = 0;
+	/** spn::core::RoadClass / RoadStructure index. */
+	uint8 Class = 0;
+	uint8 Structure = 0;
+	bool bOneWay = false;
+	bool bRoundabout = false;
+	TArray<FVector2D> Points;
+};
+
+struct FSpnGeoBuilding
+{
+	uint64 Id = 0;
+	FString Category;
+	FString Label;
+	double HeightMetres = 0.0; // 0 = unspecified
+	TArray<FVector2D> Footprint;
+	TArray<FVector2D> Entrances;
+};
+
+struct FSpnGeoArea
+{
+	uint64 Id = 0;
+	/** spn::core::AreaKind index. */
+	uint8 Kind = 0;
+	FString Label;
+	double ElevationMetres = 0.0; // 0 = unknown
+	TArray<FVector2D> Outline;
+};
+
+struct FSpnGeometryView
+{
+	bool bValid = false;
+	TArray<FSpnGeoRoad> Roads;
+	TArray<FSpnGeoBuilding> Buildings;
+	TArray<FSpnGeoArea> Areas;
+};
+
+/** The active road route as map-metre vertices. */
+struct FSpnRouteView
+{
+	bool bValid = false;
+	uint64 Generation = 0;
+	double LengthMetres = 0.0;
+	double RoadLengthMetres = 0.0;
+	double ConnectorLengthMetres = 0.0;
+	double StraightLineMetres = 0.0;
+	TArray<FVector2D> Points;
+	/** Road segment ids the route follows (in order, without duplicates). */
+	TArray<uint64> RoadSegmentIds;
+};
+
 struct FSpnMapPoiView
 {
 	FString Id;
@@ -108,8 +231,19 @@ struct FSpnNavigationReading
 	double RelativeRadians = 0.0;
 	double DistanceMetres = 0.0;
 	bool bArrived = false;
-	/** Always true in this build: the reading is a direct line, not a route. */
+	/** True when no road route drives the reading (test district / no geometry): the reading is a direct line. */
 	bool bStraightLine = true;
+
+	// --- road navigation (synthetic region, NightBuild02 NavigationSession); meaningful when bStraightLine == false ---
+	ESpnNavStatus Status = ESpnNavStatus::Idle;
+	/** Distance of the player from the route. */
+	double OffRouteMetres = 0.0;
+	bool bOffRoute = false;
+	/** Core RouteFailure name when Status == NoRoute (e.g. NoPath, DestinationNotAccessible). */
+	FString FailureText;
+	/** A point on the route about 40 m ahead of the player: the compass follows the road, not the air line. */
+	bool bHasNextPoint = false;
+	FVector2D NextPointMetres = FVector2D::ZeroVector;
 };
 
 struct FSpnMinimapRequest
@@ -146,6 +280,17 @@ public:
 
 	/** Installs the TEMPORARY test-district definition (placeholder labels, ~300 m). Replaces state with an empty one. */
 	ESpnMapResult InstallTestDefinition(const FSpnWorldFrame& InFrame = FSpnWorldFrame());
+	/**
+	 * Installs the SYNTHETIC test region of the Core (spn::core::synthetic): definition, road/building/area geometry and a NavigationSession.
+	 * Waypoints then plan real road routes (no air line). NOT geography, not a WorldForge result, not a map candidate. The Frame is the DEMO
+	 * adapter between Core map metres and Unreal centimetres (Docs/NightBuild03); it is no global or RC-01 decision.
+	 */
+	ESpnMapResult InstallSyntheticRegion(const FSpnWorldFrame& InFrame = FSpnWorldFrame());
+	bool IsSyntheticRegion() const { return bSyntheticRegion; }
+	/** True when road geometry and a NavigationSession exist (routes instead of straight lines). */
+	bool HasRoadNetwork() const;
+	/** Named test position of the synthetic region: westStreet, eastStreet, westOpenField, shopInside, houseInside, noEntranceInside, warehouseInside, islandTarget, hamletTarget. */
+	bool GetSyntheticPosition(const FString& Key, FVector2D& OutMetres) const;
 	bool HasDefinition() const;
 	const FSpnWorldFrame& GetFrame() const { return Frame; }
 	bool IsTestDefinition() const { return bTestDefinition; }
@@ -199,6 +344,30 @@ public:
 	/** Evaluates arrival once per waypoint: broadcasts OnWaypointReached the first time the player is inside the radius. */
 	void UpdateNavigation(const FVector& PlayerLocationCm, float PlayerYawDegrees);
 
+	// --- road navigation (needs InstallSyntheticRegion) -------------------------------------------------------------------------------
+
+	void SetTravelMode(ESpnTravelMode Mode);
+	ESpnTravelMode GetTravelMode() const { return TravelMode; }
+	/** The active road route (valid while Status is Active or Arrived). */
+	bool GetRoute(FSpnRouteView& Out) const;
+	/** Increases whenever a different route is installed or cleared (redraw key of the route layer). */
+	uint64 GetRouteGeneration() const;
+	/** Closes / opens a road segment. Re-plans at once when the active route uses it. False for an unknown segment id. */
+	bool SetRoadClosed(uint64 SegmentId, bool bClosed);
+	bool IsRoadClosed(uint64 SegmentId) const;
+	TArray<uint64> GetClosedRoads() const;
+	/** Nearest road segment within RadiusMetres of the position (any class), for picking a road on the map. */
+	bool FindRoadAt(const FVector2D& Metres, double RadiusMetres, uint64& OutSegmentId) const;
+	/** Draw data of the map for a viewport (bValid false without geometry). */
+	FSpnMapRenderFrame BuildMapRenderFrame(const FSpnMapRenderRequest& Request) const;
+	/** Copies the raw feature geometry (roads, buildings, areas) out of the Core, in map metres. For visualisation only. */
+	FSpnGeometryView GetGeometryView() const;
+	/** Plans a route without creating a waypoint (tests, diagnostics). False with OutFailure set when none exists. */
+	bool PlanRouteLength(const FVector2D& FromMetres, const FVector2D& ToMetres, double& OutLength, FString& OutFailure) const;
+
+	/** Moves the navigation clock forward (tests and scripted demos: re-plan cooldowns are measured on it). Real time keeps running. */
+	void AdvanceNavigationClock(double Seconds) { ClockSkew += Seconds; }
+
 	// --- change tracking -------------------------------------------------------------------------------------------------------------
 
 	/** Increases on every successful mutation (UI refresh key). Not saved. */
@@ -219,6 +388,10 @@ private:
 
 	FSpnWorldFrame Frame;
 	bool bTestDefinition = false;
+	bool bSyntheticRegion = false;
+	double ClockSkew = 0.0;
+	double NowSeconds() const;
+	ESpnTravelMode TravelMode = ESpnTravelMode::Driving;
 	double ArrivalRadiusMetres = 4.0;
 	int64 ArrivalAnnouncedFor = 0;
 	FString RegionLabel;

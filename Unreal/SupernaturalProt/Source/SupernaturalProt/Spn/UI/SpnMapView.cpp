@@ -147,6 +147,186 @@ namespace
 		}
 	}
 
+	// ----- road map drawing (NightBuild03): consumes the Core MapRenderFrame through USpnMapSubsystem::BuildMapRenderFrame -----
+
+	/** Ear-clipping triangulation of a simple ring (screen space). False for degenerate input; the caller then draws nothing for the fill. */
+	bool Triangulate(const TArray<FVector2D>& P, TArray<SlateIndex>& OutIndices)
+	{
+		const int32 N = P.Num();
+		if (N < 3 || N > 512) { return false; }
+		double Area = 0.0;
+		for (int32 I = 0; I < N; ++I) { const FVector2D& A = P[I]; const FVector2D& B = P[(I + 1) % N]; Area += A.X * B.Y - B.X * A.Y; }
+		if (FMath::Abs(Area) < 1e-6) { return false; }
+		TArray<int32> Idx;
+		for (int32 I = 0; I < N; ++I) { Idx.Add(Area > 0.0 ? I : N - 1 - I); }
+		auto Cross = [&](int32 A, int32 B, int32 C) { return (P[B].X - P[A].X) * (P[C].Y - P[A].Y) - (P[B].Y - P[A].Y) * (P[C].X - P[A].X); };
+		int32 Guard = N * N + 8;
+		while (Idx.Num() > 3 && Guard-- > 0)
+		{
+			bool bClipped = false;
+			for (int32 I = 0; I < Idx.Num(); ++I)
+			{
+				const int32 A = Idx[(I + Idx.Num() - 1) % Idx.Num()], B = Idx[I], C = Idx[(I + 1) % Idx.Num()];
+				if (Cross(A, B, C) <= 1e-9) { continue; } // reflex (or flat) corner
+				bool bInside = false;
+				for (const int32 Q : Idx)
+				{
+					if (Q == A || Q == B || Q == C) { continue; }
+					if (Cross(A, B, Q) >= 0.0 && Cross(B, C, Q) >= 0.0 && Cross(C, A, Q) >= 0.0) { bInside = true; break; }
+				}
+				if (bInside) { continue; }
+				OutIndices.Add(static_cast<SlateIndex>(A)); OutIndices.Add(static_cast<SlateIndex>(B)); OutIndices.Add(static_cast<SlateIndex>(C));
+				Idx.RemoveAt(I);
+				bClipped = true;
+				break;
+			}
+			if (!bClipped) { return false; }
+		}
+		if (Idx.Num() == 3) { OutIndices.Add(static_cast<SlateIndex>(Idx[0])); OutIndices.Add(static_cast<SlateIndex>(Idx[1])); OutIndices.Add(static_cast<SlateIndex>(Idx[2])); }
+		return OutIndices.Num() >= 3;
+	}
+
+	void FillPoly(FSlateWindowElementList& Out, int32 Layer, const FGeometry& G, const TArray<FVector2D>& Pts, const FLinearColor& Color)
+	{
+		TArray<SlateIndex> Indices;
+		if (!Triangulate(Pts, Indices)) { return; }
+		const FSlateRenderTransform Transform = G.ToPaintGeometry().GetAccumulatedRenderTransform();
+		const FColor C = Color.ToFColor(true);
+		TArray<FSlateVertex> Verts;
+		Verts.Reserve(Pts.Num());
+		for (const FVector2D& P : Pts) { Verts.Add(FSlateVertex::Make<ESlateVertexRounding::Disabled>(Transform, F(P), FVector2f(0.f, 0.f), C)); }
+		const FSlateResourceHandle Handle = FSlateApplication::Get().GetRenderer()->GetResourceHandle(*White());
+		FSlateDrawElement::MakeCustomVerts(Out, Layer, Handle, Verts, Indices, nullptr, 0, 0);
+	}
+
+	void Stroke(FSlateWindowElementList& Out, int32 Layer, const FGeometry& G, const TArray<FVector2D>& Pts, const FLinearColor& Color, float Thickness)
+	{
+		if (Pts.Num() < 2) { return; }
+		TArray<FVector2f> Points;
+		Points.Reserve(Pts.Num());
+		for (const FVector2D& P : Pts) { Points.Add(F(P)); }
+		FSlateDrawElement::MakeLines(Out, Layer, G.ToPaintGeometry(), Points, ESlateDrawEffect::None, Color, true, Thickness);
+	}
+
+	TArray<FVector2D> ToLocal(const TArray<FVector2D>& Screen, const FVector2D& Origin)
+	{
+		TArray<FVector2D> Out;
+		Out.Reserve(Screen.Num());
+		for (const FVector2D& P : Screen) { Out.Add(Origin + P); }
+		return Out;
+	}
+
+	FLinearColor AreaColor(uint8 Kind)
+	{
+		switch (Kind)
+		{
+		case 0: return FLinearColor(0.07f, 0.20f, 0.36f, 1.f);   // Water
+		case 1: return FLinearColor(0.10f, 0.19f, 0.10f, 1.f);   // Island
+		case 2: return FLinearColor(0.05f, 0.15f, 0.07f, 1.f);   // Forest
+		case 3: return FLinearColor(0.08f, 0.21f, 0.10f, 1.f);   // Park
+		case 4: return FLinearColor(0.07f, 0.16f, 0.08f, 1.f);   // Green
+		case 5: return FLinearColor(0.19f, 0.18f, 0.16f, 1.f);   // Industrial
+		case 6: return FLinearColor(0.15f, 0.16f, 0.18f, 1.f);   // Parking
+		case 7: return FLinearColor(0.21f, 0.20f, 0.18f, 1.f);   // Plaza
+		case 9: return FLinearColor(0.17f, 0.15f, 0.12f, 1.f);   // Mountain
+		default: return FLinearColor::Transparent;               // District: outline only
+		}
+	}
+
+	/** Road width in metres and fill colour per Core RoadClass. Placeholder look (not an approved UI style). */
+	void RoadStyle(uint8 Class, double& OutWidthMetres, FLinearColor& OutFill)
+	{
+		static const double Widths[] = {14.0, 8.0, 12.0, 10.0, 8.0, 6.0, 4.0, 3.0, 2.5, 1.6};
+		static const FLinearColor Fills[] = {
+			FLinearColor(0.86f, 0.55f, 0.22f, 1.f), FLinearColor(0.80f, 0.52f, 0.24f, 1.f), FLinearColor(0.88f, 0.70f, 0.28f, 1.f),
+			FLinearColor(0.90f, 0.82f, 0.45f, 1.f), FLinearColor(0.78f, 0.78f, 0.74f, 1.f), FLinearColor(0.62f, 0.64f, 0.66f, 1.f),
+			FLinearColor(0.52f, 0.54f, 0.57f, 1.f), FLinearColor(0.48f, 0.40f, 0.28f, 1.f), FLinearColor(0.30f, 0.38f, 0.24f, 1.f),
+			FLinearColor(0.70f, 0.52f, 0.52f, 1.f)};
+		const int32 I = FMath::Clamp<int32>(Class, 0, 9);
+		OutWidthMetres = Widths[I];
+		OutFill = Fills[I];
+	}
+
+	/** Draws a road MapRenderFrame. Uses layers Layer .. Layer + 4. Origin = viewport centre in widget pixels. */
+	void DrawRoadFrame(FSlateWindowElementList& Out, int32 Layer, const FGeometry& G, const FSpnMapRenderFrame& Fr, const FVector2D& Origin, bool bDetail)
+	{
+		for (const FSpnRenderPolygon& Area : Fr.Areas)
+		{
+			const TArray<FVector2D> Pts = ToLocal(Area.Points, Origin);
+			const FLinearColor Fill = AreaColor(Area.Kind);
+			if (Fill.A > 0.f) { FillPoly(Out, Layer, G, Pts, Fill); }
+			else { Poly(Out, Layer, G, Pts, FLinearColor(0.20f, 0.26f, 0.31f, 0.6f), 1.f); }
+		}
+		for (const FSpnRenderPolyline& Ln : Fr.Lines)
+		{
+			// LineKind: River, Stream, Coastline, Contour
+			const FLinearColor C = Ln.Kind == 3 ? FLinearColor(0.30f, 0.26f, 0.20f, 0.7f) : FLinearColor(0.16f, 0.36f, 0.58f, 1.f);
+			Stroke(Out, Layer + 1, G, ToLocal(Ln.Points, Origin), C, Ln.Kind == 3 ? 1.f : (Ln.Kind == 1 ? 1.5f : 2.5f));
+		}
+		for (const FSpnRenderPolygon& B : Fr.Buildings)
+		{
+			const TArray<FVector2D> Pts = ToLocal(B.Points, Origin);
+			FillPoly(Out, Layer + 1, G, Pts, FLinearColor(0.30f, 0.27f, 0.25f, 1.f));
+			Poly(Out, Layer + 1, G, Pts, FLinearColor(0.50f, 0.45f, 0.40f, 1.f), 1.f);
+			if (bDetail)
+			{
+				for (const FVector2D& E : B.Entrances) { Dot(Out, Layer + 1, G, Origin + E, 2.2f, FLinearColor(0.95f, 0.85f, 0.35f, 1.f)); }
+			}
+		}
+		const double Mpp = FMath::Max(Fr.MetresPerPixel, 1e-6);
+		// casings first (bridges get a light casing, tunnels a dim one), then the fills, so junctions merge cleanly
+		for (int32 Pass = 0; Pass < 2; ++Pass)
+		{
+			for (const FSpnRenderPolyline& Road : Fr.Roads)
+			{
+				double WidthM = 6.0;
+				FLinearColor Fill;
+				RoadStyle(Road.Kind, WidthM, Fill);
+				const float Width = static_cast<float>(FMath::Clamp(WidthM / Mpp, Road.Kind <= 6 ? 3.0 : 2.0, 34.0));
+				const bool bTunnel = Road.Structure == 2 || Road.Structure == 3;
+				const bool bBridge = Road.Structure == 1;
+				const TArray<FVector2D> Pts = ToLocal(Road.Points, Origin);
+				if (Pass == 0)
+				{
+					const FLinearColor Casing = bBridge ? FLinearColor(0.95f, 0.95f, 0.98f, 1.f) : FLinearColor(0.01f, 0.012f, 0.015f, bTunnel ? 0.5f : 1.f);
+					Stroke(Out, Layer + 2, G, Pts, Casing, Width + (bBridge ? 3.f : 2.f));
+				}
+				else
+				{
+					FLinearColor C = Fill;
+					if (bTunnel) { C = C * 0.7f; C.A = 0.45f; }
+					Stroke(Out, Layer + 3, G, Pts, C, Width);
+					if (Road.bClosed)
+					{
+						Stroke(Out, Layer + 4, G, Pts, FLinearColor(0.92f, 0.16f, 0.14f, 0.95f), FMath::Max(Width * 0.55f, 2.f));
+						if (Pts.Num() >= 2)
+						{
+							const FVector2D Mid = Pts[Pts.Num() / 2];
+							Dot(Out, Layer + 4, G, Mid, 7.f, FLinearColor(0.92f, 0.16f, 0.14f, 1.f), FLinearColor::White, 1.5f);
+							Line(Out, Layer + 4, G, Mid + FVector2D(-3.5, -3.5), Mid + FVector2D(3.5, 3.5), FLinearColor::White, 2.f);
+							Line(Out, Layer + 4, G, Mid + FVector2D(-3.5, 3.5), Mid + FVector2D(3.5, -3.5), FLinearColor::White, 2.f);
+						}
+					}
+				}
+			}
+		}
+		// route: a dark casing under a bright line; the part already travelled is grey
+		for (const TArray<FVector2D>& Part : Fr.RouteTravelled)
+		{
+			Stroke(Out, Layer + 4, G, ToLocal(Part, Origin), FLinearColor(0.45f, 0.52f, 0.58f, 0.9f), 4.f);
+		}
+		for (const TArray<FVector2D>& Part : Fr.RouteRemaining)
+		{
+			const TArray<FVector2D> Pts = ToLocal(Part, Origin);
+			Stroke(Out, Layer + 4, G, Pts, FLinearColor(0.02f, 0.02f, 0.03f, 0.9f), 8.f);
+			Stroke(Out, Layer + 4, G, Pts, FLinearColor(1.00f, 0.55f, 0.12f, 1.f), 5.f);
+		}
+		if (Fr.bHasDestinationIndicator)
+		{
+			Dot(Out, Layer + 4, G, Origin + Fr.DestinationIndicator, 6.f, FLinearColor(1.f, 0.55f, 0.12f, 1.f), FLinearColor::White, 1.5f);
+		}
+	}
+
 	double NiceStep(double MinMetres)
 	{
 		static const double Steps[] = {1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000, 25000, 50000, 100000, 250000, 500000, 1000000};
@@ -264,6 +444,11 @@ FReply SSpnMapView::OnMouseButtonUp(const FGeometry& Geometry, const FPointerEve
 
 FReply SSpnMapView::OnMouseMove(const FGeometry& Geometry, const FPointerEvent& Event)
 {
+	if (Mode == EMode::Full)
+	{
+		LastSize = FVector2D(Geometry.GetLocalSize());
+		CursorMetres = LocalToMap(FVector2D(Geometry.AbsoluteToLocal(Event.GetScreenSpacePosition())));
+	}
 	if (Mode == EMode::Full && bDragging)
 	{
 		const FVector2D Local = FVector2D(Geometry.AbsoluteToLocal(Event.GetScreenSpacePosition()));
@@ -326,12 +511,24 @@ int32 SSpnMapView::PaintFull(const FGeometry& G, FSlateWindowElementList& Out, i
 	const double Step = NiceStep(MetresPerPixel * 64.0);
 	const FVector2D ViewMin = LocalToMap(FVector2D(0, Size.Y)), ViewMax = LocalToMap(FVector2D(Size.X, 0));
 	const FLinearColor GridColor(0.10f, 0.125f, 0.145f, 1.f), GridMajor(0.15f, 0.185f, 0.21f, 1.f);
-	for (double X = FMath::CeilToDouble(FMath::Max(ViewMin.X, B.Min.X) / Step) * Step; X <= FMath::Min(ViewMax.X, B.Max.X); X += Step)
+	const bool bRoads = M->HasRoadNetwork();
+	if (bRoads)
+	{
+		// roads, buildings, water and the route come from the Core (MapRenderFrame); nothing is drawn that the data does not contain
+		FSpnMapRenderRequest Request;
+		Request.CenterMetres = CenterMetres;
+		Request.MetresPerPixel = MetresPerPixel;
+		Request.HeadingBearingRadians = PlayerBearing;
+		Request.HalfSizePx = Size * 0.5;
+		RoadFrame = M->BuildMapRenderFrame(Request);
+		if (RoadFrame.bValid) { DrawRoadFrame(Out, L + 1, G, RoadFrame, Size * 0.5, true); }
+	}
+	for (double X = FMath::CeilToDouble(FMath::Max(ViewMin.X, B.Min.X) / Step) * Step; X <= FMath::Min(ViewMax.X, B.Max.X) && !bRoads; X += Step)
 	{
 		const bool bMajor = FMath::IsNearlyZero(FMath::Fmod(X, Step * 5.0), 1e-6);
 		Line(Out, L + 2, G, MapToLocal(FVector2D(X, FMath::Max(ViewMin.Y, B.Min.Y))), MapToLocal(FVector2D(X, FMath::Min(ViewMax.Y, B.Max.Y))), bMajor ? GridMajor : GridColor, 1.f);
 	}
-	for (double Y = FMath::CeilToDouble(FMath::Max(ViewMin.Y, B.Min.Y) / Step) * Step; Y <= FMath::Min(ViewMax.Y, B.Max.Y); Y += Step)
+	for (double Y = FMath::CeilToDouble(FMath::Max(ViewMin.Y, B.Min.Y) / Step) * Step; Y <= FMath::Min(ViewMax.Y, B.Max.Y) && !bRoads; Y += Step)
 	{
 		const bool bMajor = FMath::IsNearlyZero(FMath::Fmod(Y, Step * 5.0), 1e-6);
 		Line(Out, L + 2, G, MapToLocal(FVector2D(FMath::Max(ViewMin.X, B.Min.X), Y)), MapToLocal(FVector2D(FMath::Min(ViewMax.X, B.Max.X), Y)), bMajor ? GridMajor : GridColor, 1.f);
@@ -348,7 +545,7 @@ int32 SSpnMapView::PaintFull(const FGeometry& G, FSlateWindowElementList& Out, i
 	FSpnMapMarkerView Waypoint;
 	const bool bHasWaypoint = M->GetWaypoint(Waypoint);
 	const FVector2D PlayerLocal = MapToLocal(PlayerMetres);
-	if (bHasWaypoint)
+	if (bHasWaypoint && !bRoads)
 	{
 		const FVector2D WpLocal = MapToLocal(Waypoint.Metres);
 		const FVector2D Delta = WpLocal - PlayerLocal;
@@ -414,6 +611,36 @@ int32 SSpnMapView::PaintMini(const FGeometry& G, FSlateWindowElementList& Out, i
 	const FVector2D Size = LastSize;
 	const FVector2D C = Size * 0.5;
 	const float R = static_cast<float>(FMath::Min(Size.X, Size.Y) * 0.5 - 3.0);
+	if (RoadFrame.bValid)
+	{
+		// road minimap: a square viewport (the Core clips the route to the same rectangle); drawn instead of the disc
+		Box(Out, L, G, C - FVector2D(R, R), FVector2D(R * 2.f, R * 2.f), FLinearColor(0.022f, 0.030f, 0.036f, 0.92f));
+		DrawRoadFrame(Out, L + 1, G, RoadFrame, C, false);
+		TArray<FVector2D> Frame4{C + FVector2D(-R, -R), C + FVector2D(R, -R), C + FVector2D(R, R), C + FVector2D(-R, R)};
+		Poly(Out, L + 6, G, Frame4, FLinearColor(0.34f, 0.46f, 0.52f, 1.f), 2.f);
+		if (Frame.bValid)
+		{
+			for (const FSpnMinimapEntry& E : Frame.Entries)
+			{
+				if (!E.bPlayerWaypoint) { continue; }
+				const FSpnMapSymbol S = SpnMapStyle::SymbolFor(E.Category, true);
+				if (E.bOffscreen)
+				{
+					const double Angle = FMath::Atan2(E.Screen.X, -E.Screen.Y);
+					TArray<FVector2D> Pts{C + E.Screen + Rotate(FVector2D(0, -6), Angle), C + E.Screen + Rotate(FVector2D(5, 4), Angle), C + E.Screen + Rotate(FVector2D(-5, 4), Angle)};
+					Poly(Out, L + 7, G, Pts, S.Color, 3.f);
+				}
+				else
+				{
+					Symbol(Out, L + 7, G, C + E.Screen, S, 5.f, true);
+				}
+			}
+		}
+		Arrow(Out, L + 8, G, C, RoadFrame.PlayerHeadingOnScreenRadians, 8.f, FLinearColor(0.96f, 0.98f, 1.f, 1.f));
+		const FVector2D NPos2 = C + Rotate(FVector2D(0, -(R - 11.0)), RoadFrame.NorthOnScreenRadians);
+		Text(Out, L + 9, G, NPos2 - FVector2D(4.0, 8.0), TEXT("N"), 12, FLinearColor(0.95f, 0.55f, 0.35f, 1.f), true);
+		return L + 10;
+	}
 	Dot(Out, L, G, C, R, FLinearColor(0.022f, 0.030f, 0.036f, 0.86f), FLinearColor(0.34f, 0.46f, 0.52f, 1.f), 2.f);
 	Dot(Out, L + 1, G, C, R * 0.5f, FLinearColor::Transparent, FLinearColor(0.12f, 0.16f, 0.19f, 0.8f), 1.f);
 	Line(Out, L + 1, G, C + FVector2D(-R + 4, 0), C + FVector2D(R - 4, 0), FLinearColor(0.12f, 0.16f, 0.19f, 0.7f), 1.f);

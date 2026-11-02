@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/UI/SpnUiText.h"
 #include "Spn/Tests/SpnMovementTestSupport.h"
 #include "Spn/Tests/SpnQaRecorder.h"
 #include "Spn/Tests/SpnTestPlayReset.h"
@@ -33,8 +34,8 @@ namespace
 	constexpr EAutomationTestFlags TraversalFlags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter;
 	const TCHAR* const Suite = TEXT("ContinuousTraversal");
 	const TCHAR* const DoorIds[] = {TEXT("d_cottage1_door"), TEXT("d_storage_door")};
-	const FString PromptOpen = TEXT("E – Tür öffnen");
-	const FString PromptClose = TEXT("E – Tür schließen");
+	FString PromptOpen() { return FString(TEXT("E \u2013 ")) + FSpnUiText::Get(TEXT("ui.door.open")).ToString(); }
+	FString PromptClose() { return FString(TEXT("E \u2013 ")) + FSpnUiText::Get(TEXT("ui.door.close")).ToString(); }
 
 	// Building 1: door plane x = -9400, y = -5440. Building 2: door plane x = -9300, y = -12700.
 	const FVector2D Cottage1Front(-9600, -5440);
@@ -404,7 +405,7 @@ namespace
 				break;
 			case EOp::CheckPrompt:
 			{
-				const FString& Expected = Op.A > 0.f ? PromptClose : PromptOpen;
+				const FString Expected = Op.A > 0.f ? PromptClose() : PromptOpen();
 				Check(Character, Op.Id, Prompt == Expected, FString::Printf(TEXT("prompt shown while looking at the door: '%s' (expected '%s')"), *Prompt, *Expected));
 				Next();
 				break;

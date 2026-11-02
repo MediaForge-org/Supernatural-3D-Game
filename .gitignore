@@ -151,3 +151,6 @@ credentials*.json
 # Python generated files
 __pycache__/
 *.pyc
+
+# NightBuild03 demo recordings, raw captures and logs (large, regenerable)
+/Artifacts/MapNavigationDemo/

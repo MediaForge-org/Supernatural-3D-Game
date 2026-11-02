@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/UI/SpnUiText.h"
 #include "Spn/Tests/SpnMovementTestSupport.h"
 #include "Spn/Tests/SpnQaRecorder.h"
 #include "Spn/Tests/SpnTestPlayReset.h"
@@ -199,7 +200,7 @@ namespace
 				{
 					const USpnInteractionComponent* Interaction = Character.FindComponentByClass<USpnInteractionComponent>();
 					const FString Prompt = Interaction != nullptr ? Interaction->GetCurrentPrompt() : FString();
-					Record(Character, "prompt_shown", Prompt == TEXT("E \u2013 T\u00fcr \u00f6ffnen") ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
+					Record(Character, "prompt_shown", Prompt == (FString(TEXT("E \u2013 ")) + FSpnUiText::Get(TEXT("ui.door.open")).ToString()) ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
 						FString::Printf(TEXT("on-screen prompt while looking at the closed door: '%s' (expected E - Tuer oeffnen)"), *Prompt));
 				}
 				if (PressFrames == 0) Record(Character, "interact_target", bTarget ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,

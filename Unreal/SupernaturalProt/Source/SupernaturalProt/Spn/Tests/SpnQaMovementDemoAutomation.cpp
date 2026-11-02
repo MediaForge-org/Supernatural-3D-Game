@@ -5,6 +5,7 @@
 #include "EngineUtils.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/UI/SpnUiText.h"
 #include "Spn/Tests/SpnMovementTestSupport.h"
 #include "Spn/Tests/SpnQaRecorder.h"
 #include "Spn/Tests/SpnTestPlayReset.h"
@@ -28,7 +29,7 @@ namespace
 	constexpr EAutomationTestFlags DemoFlags = EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter;
 	const TCHAR* const Suite = TEXT("MovementDemo");
 	const TCHAR* const DoorId = TEXT("d_cottage1_door");
-	const FString PromptOpen = TEXT("E – Tür öffnen");
+	FString PromptOpen() { return FString(TEXT("E \u2013 ")) + FSpnUiText::Get(TEXT("ui.door.open")).ToString(); }
 
 	const FVector2D RoadStart(-10450, -4700);
 	const FVector2D Cottage1Front(-9600, -5440);
@@ -406,7 +407,7 @@ namespace
 				Key(4, R.Frames == 0);
 				if (++R.Frames > 1) { Key(4, false); Next(); }
 				break;
-			case EOp::CheckPrompt: Check(Character, Op.Id, Prompt == PromptOpen, FString::Printf(TEXT("prompt '%s'"), *Prompt)); Next(); break;
+			case EOp::CheckPrompt: Check(Character, Op.Id, Prompt == PromptOpen(), FString::Printf(TEXT("prompt '%s'"), *Prompt)); Next(); break;
 			case EOp::CheckDoor:
 				Check(Character, Op.Id, Op.A > 0.5f ? (R.Door->IsOpen() && bDoorSettled && FMath::Abs(R.Door->GetCurrentAngle()) > 80.f) : (!R.Door->IsOpen() && bDoorSettled),
 					FString::Printf(TEXT("door open flag %d, leaf angle %.0f"), R.Door->IsOpen(), R.Door->GetCurrentAngle()));

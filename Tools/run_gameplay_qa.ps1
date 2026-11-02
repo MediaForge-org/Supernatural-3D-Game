@@ -8,6 +8,7 @@
   .\Tools\run_gameplay_qa.ps1 -Suite Quick         # fast regression, small window, no video
   .\Tools\run_gameplay_qa.ps1 -Suite Movement      # gaits, turns, jumps
   .\Tools\run_gameplay_qa.ps1 -Suite Doors         # doors, interaction reach, buildings and stairs
+  .Toolsun_gameplay_qa.ps1 -Suite Building      # NightBuild04: Lvl_SpnBuildingTest, locked/key/forced doors, switch, save + reload
   .\Tools\run_gameplay_qa.ps1 -Suite Performance
   .\Tools\run_gameplay_qa.ps1 -Suite Failed        # repeats the test groups that failed in the latest run
   .\Tools\run_gameplay_qa.ps1 -Suite Full -Regression   # additionally the older SpnGame.* regression tests (no video of those)
@@ -17,7 +18,7 @@
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'InventoryUi', 'Failed')]
+    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'InventoryUi', 'Building', 'Failed')]
     [string]$Suite = 'Full',
     [switch]$NoBuild,
     [switch]$NoVideo,
@@ -38,7 +39,7 @@ $repo = Split-Path -Parent $PSScriptRoot
 $projDir = Join-Path $repo 'Unreal\SupernaturalProt'
 $uproject = Join-Path $projDir 'SupernaturalProt.uproject'
 $qaRoot = Join-Path $projDir 'Saved\GameplayQA'
-$mapPath = $Map
+$mapPath = if ($Suite -eq 'Building' -and -not $PSBoundParameters.ContainsKey('Map')) { '/Game/SpnTest/Lvl_SpnBuildingTest' } else { $Map }
 $python = $null
 
 function Find-Engine {
@@ -104,9 +105,10 @@ $groups = @{
     Locomotion  = 'SpnQA.Locomotion'   # direction reversal, rotation stability, obstacle collision (M2A4.1)
     Traversal   = 'SpnQA.ContinuousTraversal'   # one uninterrupted walk through two buildings, no repositioning (use -Map ...V3Interiors)
     Access      = 'SpnQA.BuildingAccess'   # one recorded visit of a building: approach, open, enter, explore, leave, close (use -Map ...V3Interiors)
+    Building    = 'SpnQA.HouseJourney'   # NightBuild04: Lvl_SpnBuildingTest - doors (locked/key/forced), light switch, interaction pick, save + reload (map is selected automatically)
 }
 $expected = @{
-    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Locomotion', 'Camera', 'SaveLoad', 'Performance')
+    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Locomotion', 'Camera', 'SaveLoad', 'Performance', 'HouseJourney')
     Quick       = @('Spawn', 'Doors', 'DoorReach', 'SaveLoad')
     Movement    = @('Movement', 'Turns', 'Jump', 'Locomotion')
     Doors       = @('Doors', 'DoorReach', 'Buildings')
@@ -118,6 +120,7 @@ $expected = @{
     InventoryUi = @('InventoryUi')
     Traversal   = @('ContinuousTraversal')
     Access      = @('BuildingAccess')
+    Building    = @('HouseJourney')
 }
 if ($Suite -eq 'Failed') {
     $last = Get-ChildItem $qaRoot -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'results.json') } | Sort-Object Name -Descending | Select-Object -First 1

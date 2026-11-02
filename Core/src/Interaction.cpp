@@ -1,4 +1,5 @@
 #include <spn/core/Interaction.h>
+#include <algorithm>
 #include <utility>
 #include <variant>
 
@@ -71,8 +72,15 @@ std::string_view ToString(InteractionVerb verb) noexcept {
     switch (verb) {
     case InteractionVerb::Use:
         return "use";
+    case InteractionVerb::Force:
+        return "force";
     }
     return "unknown";
+}
+
+const ContentId& UnsupportedVerbFeedback() {
+    static const ContentId feedback = *ContentId::Parse("placeholder:feedback.verb.unsupported");
+    return feedback;
 }
 
 std::string_view ToString(InteractionErrorCode code) noexcept {
@@ -135,6 +143,14 @@ InteractionRegistry::Interact(WorldFacts& facts, const InteractableRef& target,
         return MakeError(InteractionErrorCode::InvalidId, std::string(holder));
     }
     const InteractionHandler& rules = *handler.Value();
+    // The kind must offer the verb (a switch has no Force); otherwise nothing is planned or written.
+    const auto offered = rules.availableVerbs(facts, target, defaults);
+    if (!offered) {
+        return offered.Error();
+    }
+    if (std::find(offered.Value().begin(), offered.Value().end(), verb) == offered.Value().end()) {
+        return InteractionError{InteractionErrorCode::Refused, target.id, UnsupportedVerbFeedback(), std::nullopt};
+    }
     auto plan = rules.planForHolder ? rules.planForHolder(facts, target, verb, defaults, holder)
                                     : rules.plan(facts, target, verb, defaults);
     if (!plan) {

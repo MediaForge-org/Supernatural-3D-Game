@@ -77,6 +77,42 @@ namespace
 		return Wrapped;
 	}
 
+	spn::core::TravelMode ToCoreMode(ESpnTravelMode Mode)
+	{
+		return Mode == ESpnTravelMode::Driving ? spn::core::TravelMode::Driving : spn::core::TravelMode::OnFoot;
+	}
+
+	ESpnNavStatus ToNavStatus(NavigationStatus Status)
+	{
+		switch (Status)
+		{
+		case NavigationStatus::Active: return ESpnNavStatus::Active;
+		case NavigationStatus::Arrived: return ESpnNavStatus::Arrived;
+		case NavigationStatus::NoRoute: return ESpnNavStatus::NoRoute;
+		case NavigationStatus::Cancelled: return ESpnNavStatus::Cancelled;
+		default: return ESpnNavStatus::Idle;
+		}
+	}
+
+	/** The vertices of a route: first segment start, then every segment end (layer transitions have none in this build). */
+	std::vector<Vec2> RoutePoints(const Route& In)
+	{
+		std::vector<Vec2> Points;
+		for (const RouteSegment& Segment : In.segments)
+		{
+			if (Segment.kind != SegmentKind::Travel)
+			{
+				continue;
+			}
+			if (Points.empty())
+			{
+				Points.push_back(Segment.from.xy);
+			}
+			Points.push_back(Segment.to.xy);
+		}
+		return Points;
+	}
+
 	FSpnMapMarkerView ToView(const Marker& M)
 	{
 		FSpnMapMarkerView View;
@@ -114,6 +150,19 @@ const TCHAR* LexToString(ESpnMapResult Result)
 	case ESpnMapResult::UnknownTarget: return TEXT("UnknownTarget");
 	case ESpnMapResult::Rejected: return TEXT("Rejected");
 	case ESpnMapResult::InternalError: return TEXT("InternalError");
+	}
+	return TEXT("Unknown");
+}
+
+const TCHAR* LexToString(ESpnNavStatus Status)
+{
+	switch (Status)
+	{
+	case ESpnNavStatus::Idle: return TEXT("Idle");
+	case ESpnNavStatus::Active: return TEXT("Active");
+	case ESpnNavStatus::Arrived: return TEXT("Arrived");
+	case ESpnNavStatus::NoRoute: return TEXT("NoRoute");
+	case ESpnNavStatus::Cancelled: return TEXT("Cancelled");
 	}
 	return TEXT("Unknown");
 }
@@ -180,11 +229,374 @@ ESpnMapResult USpnMapSubsystem::InstallTestDefinition(const FSpnWorldFrame& InFr
 	State->Definition = std::make_shared<const WorldMapDefinition>(std::move(Definition.Value()));
 	State->SurfaceLayer = Layer.id;
 	State->Map.emplace(State->Definition);
+	State->Geometry.reset();
+	State->Region.reset();
+	State->Nav.reset();
+	State->Closed.clear();
+	State->LastPlayer.reset();
+	State->LastUpdate = NavigationUpdate{};
+	bSyntheticRegion = false;
 	bTestDefinition = true;
 	ResetStateInternal();
 	BroadcastReplaced();
 	UE_LOG(LogSpnCore, Log, TEXT("Map: installed the TEMPORARY test definition (%d POIs, placeholder, not geography)"), static_cast<int32>(State->Definition->Pois().size()));
 	return ESpnMapResult::Ok;
+}
+
+ESpnMapResult USpnMapSubsystem::InstallSyntheticRegion(const FSpnWorldFrame& InFrame)
+{
+	if (!State.IsValid())
+	{
+		return ESpnMapResult::InternalError;
+	}
+	Frame = InFrame;
+	synthetic::SyntheticMapRegion Region = synthetic::MakeSyntheticMapRegion();
+	State->Definition = Region.definition;
+	State->SurfaceLayer = Region.layer;
+	State->Map.emplace(State->Definition);
+	State->Geometry = Region.geometry;
+	State->Region = std::move(Region);
+	State->Closed.clear();
+	State->LastPlayer.reset();
+	State->LastUpdate = NavigationUpdate{};
+	State->Mode = ToCoreMode(TravelMode);
+	NavigationConfig Config;
+	Config.options.mode = State->Mode;
+	State->Nav = std::make_unique<NavigationSession>(State->Geometry, Config);
+	bTestDefinition = true; // still temporary test data
+	bSyntheticRegion = true;
+	ResetStateInternal();
+	BroadcastReplaced();
+	UE_LOG(LogSpnCore, Log, TEXT("Map: installed the SYNTHETIC test region (road routing active; not geography, not WorldForge data)"));
+	return ESpnMapResult::Ok;
+}
+
+double USpnMapSubsystem::NowSeconds() const
+{
+	return FPlatformTime::Seconds() + ClockSkew;
+}
+
+bool USpnMapSubsystem::HasRoadNetwork() const
+{
+	return HasDefinition() && State->Nav != nullptr && State->Geometry != nullptr;
+}
+
+bool USpnMapSubsystem::GetSyntheticPosition(const FString& Key, FVector2D& OutMetres) const
+{
+	if (!bSyntheticRegion || !State.IsValid() || !State->Region.has_value())
+	{
+		return false;
+	}
+	const auto& R = *State->Region;
+	const MapPosition* Position = nullptr;
+	if (Key == TEXT("westStreet")) { Position = &R.westStreet; }
+	else if (Key == TEXT("eastStreet")) { Position = &R.eastStreet; }
+	else if (Key == TEXT("westOpenField")) { Position = &R.westOpenField; }
+	else if (Key == TEXT("shopInside")) { Position = &R.shopInside; }
+	else if (Key == TEXT("houseInside")) { Position = &R.houseInside; }
+	else if (Key == TEXT("noEntranceInside")) { Position = &R.noEntranceInside; }
+	else if (Key == TEXT("warehouseInside")) { Position = &R.warehouseInside; }
+	else if (Key == TEXT("islandTarget")) { Position = &R.islandTarget; }
+	else if (Key == TEXT("hamletTarget")) { Position = &R.hamletTarget; }
+	if (Position == nullptr)
+	{
+		return false;
+	}
+	OutMetres = FVector2D(Position->xy.x, Position->xy.y);
+	return true;
+}
+
+void USpnMapSubsystem::SetTravelMode(ESpnTravelMode InMode)
+{
+	TravelMode = InMode;
+	if (!HasRoadNetwork())
+	{
+		return;
+	}
+	State->Mode = ToCoreMode(InMode);
+	// the session's configuration is fixed at construction: a new session, re-planned to the same waypoint
+	NavigationConfig Config;
+	Config.options.mode = State->Mode;
+	Config.options.closedSegments = State->Closed;
+	State->Nav = std::make_unique<NavigationSession>(State->Geometry, Config);
+	State->LastUpdate = NavigationUpdate{};
+	FSpnMapMarkerView Waypoint;
+	if (State->LastPlayer.has_value() && GetWaypoint(Waypoint))
+	{
+		auto Destination = DestinationFromMarker(*State->Map, MarkerId(static_cast<uint64>(Waypoint.Id)), ArrivalRadiusMetres);
+		if (Destination)
+		{
+			State->LastUpdate = State->Nav->SetDestination(*State->LastPlayer, Destination.Value(), NowSeconds());
+		}
+	}
+	OnMapChanged.Broadcast();
+}
+
+bool USpnMapSubsystem::GetRoute(FSpnRouteView& Out) const
+{
+	Out = FSpnRouteView();
+	if (!HasRoadNetwork())
+	{
+		return false;
+	}
+	const PlannedRoute* Route = State->Nav->CurrentRoute();
+	if (Route == nullptr)
+	{
+		return false;
+	}
+	Out.bValid = true;
+	Out.Generation = State->Nav->Generation();
+	Out.LengthMetres = Route->lengthMetres;
+	Out.RoadLengthMetres = Route->roadLengthMetres;
+	Out.ConnectorLengthMetres = Route->connectorLengthMetres;
+	Out.StraightLineMetres = Route->straightLineMetres;
+	for (const Vec2& Point : RoutePoints(Route->route))
+	{
+		Out.Points.Add(FVector2D(Point.x, Point.y));
+	}
+	for (const RouteLeg& Leg : Route->legs)
+	{
+		if (Leg.kind == LegKind::Road)
+		{
+			const uint64 Id = Leg.road.Value();
+			if (Out.RoadSegmentIds.Num() == 0 || Out.RoadSegmentIds.Last() != Id)
+			{
+				Out.RoadSegmentIds.Add(Id);
+			}
+		}
+	}
+	return true;
+}
+
+uint64 USpnMapSubsystem::GetRouteGeneration() const
+{
+	return HasRoadNetwork() ? State->Nav->Generation() : 0;
+}
+
+bool USpnMapSubsystem::SetRoadClosed(uint64 SegmentId, bool bClosed)
+{
+	if (!HasRoadNetwork() || !State->Geometry->Roads().SegmentIndex(RoadSegmentId(SegmentId)).has_value())
+	{
+		return false;
+	}
+	const RoadSegmentId Id(SegmentId);
+	if (bClosed)
+	{
+		State->Closed.insert(Id);
+	}
+	else
+	{
+		State->Closed.erase(Id);
+	}
+	const MapPosition Player = State->LastPlayer.value_or(State->Region->westStreet);
+	State->LastUpdate = State->Nav->SetClosedSegments(State->Closed, Player, NowSeconds());
+	OnMapChanged.Broadcast();
+	return true;
+}
+
+bool USpnMapSubsystem::IsRoadClosed(uint64 SegmentId) const
+{
+	return HasRoadNetwork() && State->Closed.count(RoadSegmentId(SegmentId)) > 0;
+}
+
+TArray<uint64> USpnMapSubsystem::GetClosedRoads() const
+{
+	TArray<uint64> Out;
+	if (HasRoadNetwork())
+	{
+		for (const RoadSegmentId& Id : State->Closed)
+		{
+			Out.Add(Id.Value());
+		}
+	}
+	return Out;
+}
+
+bool USpnMapSubsystem::FindRoadAt(const FVector2D& Metres, double RadiusMetres, uint64& OutSegmentId) const
+{
+	if (!HasRoadNetwork())
+	{
+		return false;
+	}
+	const MapPosition Position{State->SurfaceLayer, Vec2{Metres.X, Metres.Y}};
+	for (const spn::core::TravelMode Mode : {spn::core::TravelMode::Driving, spn::core::TravelMode::OnFoot})
+	{
+		SnapRules Rules;
+		Rules.mode = Mode;
+		Rules.allowEnclosed = true;
+		const auto Snaps = State->Geometry->Roads().Snap(Position, RadiusMetres, Rules, 1);
+		if (!Snaps.empty())
+		{
+			OutSegmentId = Snaps.front().segment.Value();
+			return true;
+		}
+	}
+	return false;
+}
+
+FSpnMapRenderFrame USpnMapSubsystem::BuildMapRenderFrame(const FSpnMapRenderRequest& Request) const
+{
+	FSpnMapRenderFrame Out;
+	if (!HasRoadNetwork() || !FMath::IsFinite(Request.CenterMetres.X) || !FMath::IsFinite(Request.CenterMetres.Y))
+	{
+		return Out;
+	}
+	MinimapConfig Viewport;
+	Viewport.shape = Request.bCircle ? MinimapShape::Circle : MinimapShape::Rectangle;
+	Viewport.halfWidthPx = Request.HalfSizePx.X;
+	Viewport.halfHeightPx = Request.bCircle ? Request.HalfSizePx.X : Request.HalfSizePx.Y;
+	Viewport.baseMetresPerPixel = Request.MetresPerPixel;
+	MinimapView View;
+	View.player = MapPosition{State->SurfaceLayer, Vec2{Request.CenterMetres.X, Request.CenterMetres.Y}};
+	View.headingRadians = Request.HeadingBearingRadians;
+	View.zoom = 1.0;
+	View.rotation = Request.bHeadingUp ? MinimapRotation::HeadingUp : MinimapRotation::NorthUp;
+	MapRenderConfig Config;
+	Config.respectDiscovery = Request.bRespectDiscovery;
+	RouteOverlay Overlay;
+	if (const PlannedRoute* Route = State->Nav->CurrentRoute();
+		Route != nullptr && (State->Nav->Status() == NavigationStatus::Active || State->Nav->Status() == NavigationStatus::Arrived))
+	{
+		Overlay.route = &Route->route;
+		Overlay.segmentIndex = State->LastUpdate.segmentIndex;
+		Overlay.alongSegmentMetres = State->LastUpdate.alongSegmentMetres;
+	}
+	auto Built = spn::core::BuildMapRenderFrame(*State->Geometry, &*State->Map, View, Viewport, Config, Overlay);
+	if (!Built)
+	{
+		return Out;
+	}
+	const MapRenderFrame& Core = Built.Value();
+	auto ToLine = [this](const RenderPolyline& In, bool bRoad)
+	{
+		FSpnRenderPolyline Line;
+		Line.Id = In.id;
+		Line.Kind = bRoad ? static_cast<uint8>(In.roadClass) : static_cast<uint8>(In.lineKind);
+		Line.Structure = static_cast<uint8>(In.structure);
+		Line.bOneWay = In.oneWay;
+		Line.bRoundabout = In.roundabout;
+		Line.bClosed = bRoad && State->Closed.count(RoadSegmentId(In.id)) > 0;
+		Line.Points.Reserve(static_cast<int32>(In.points.size()));
+		for (const Vec2& P : In.points) { Line.Points.Add(FVector2D(P.x, P.y)); }
+		return Line;
+	};
+	auto ToPoly = [](const RenderPolygon& In)
+	{
+		FSpnRenderPolygon Poly;
+		Poly.Id = In.id;
+		Poly.Kind = static_cast<uint8>(In.areaKind);
+		Poly.bBuilding = In.isBuilding;
+		for (const Vec2& P : In.points) { Poly.Points.Add(FVector2D(P.x, P.y)); }
+		for (const Vec2& P : In.entrances) { Poly.Entrances.Add(FVector2D(P.x, P.y)); }
+		return Poly;
+	};
+	Out.bValid = true;
+	Out.bTruncated = Core.stats.truncated;
+	Out.MetresPerPixel = Core.metresPerPixel;
+	Out.NorthOnScreenRadians = Core.northOnScreenRadians;
+	Out.PlayerHeadingOnScreenRadians = Core.playerHeadingOnScreenRadians;
+	for (const RenderPolygon& A : Core.areas) { Out.Areas.Add(ToPoly(A)); }
+	for (const RenderPolyline& L : Core.lines) { Out.Lines.Add(ToLine(L, false)); }
+	for (const RenderPolygon& B : Core.buildings) { Out.Buildings.Add(ToPoly(B)); }
+	for (const RenderPolyline& R : Core.roads) { Out.Roads.Add(ToLine(R, true)); }
+	auto CopyRoute = [](const std::vector<std::vector<Vec2>>& In, TArray<TArray<FVector2D>>& OutLines)
+	{
+		for (const auto& Line : In)
+		{
+			TArray<FVector2D>& Dest = OutLines.AddDefaulted_GetRef();
+			for (const Vec2& P : Line) { Dest.Add(FVector2D(P.x, P.y)); }
+		}
+	};
+	CopyRoute(Core.routeTravelled, Out.RouteTravelled);
+	CopyRoute(Core.routeRemaining, Out.RouteRemaining);
+	if (Core.destinationScreen)
+	{
+		Out.bHasDestination = true;
+		Out.DestinationScreen = FVector2D(Core.destinationScreen->x, Core.destinationScreen->y);
+		Out.bDestinationInside = Core.destinationInside;
+	}
+	if (Core.destinationIndicator)
+	{
+		Out.bHasDestinationIndicator = true;
+		Out.DestinationIndicator = FVector2D(Core.destinationIndicator->x, Core.destinationIndicator->y);
+	}
+	Out.Candidates = static_cast<int32>(Core.stats.candidates);
+	Out.Emitted = static_cast<int32>(Core.stats.emitted);
+	return Out;
+}
+
+FSpnGeometryView USpnMapSubsystem::GetGeometryView() const
+{
+	FSpnGeometryView Out;
+	if (!HasRoadNetwork())
+	{
+		return Out;
+	}
+	Out.bValid = true;
+	const RoadNetwork& Net = State->Geometry->Roads();
+	for (std::uint32_t I = 0; I < Net.Segments().size(); ++I)
+	{
+		const RoadSegmentDef& Def = Net.Segments()[I];
+		const auto& Info = Net.Info(I);
+		FSpnGeoRoad Road;
+		Road.Id = Def.id.Value();
+		Road.Class = static_cast<uint8>(Info.roadClass);
+		Road.Structure = static_cast<uint8>(Info.structure);
+		Road.bOneWay = Info.direction != RoadDirection::Both;
+		Road.bRoundabout = Info.roundabout;
+		for (const Vec2& P : Info.points) { Road.Points.Add(FVector2D(P.x, P.y)); }
+		Out.Roads.Add(MoveTemp(Road));
+	}
+	for (const BuildingDef& B : State->Geometry->Buildings())
+	{
+		FSpnGeoBuilding Building;
+		Building.Id = B.id.Value();
+		Building.Category = ToF(B.category.Value());
+		Building.Label = ToF(B.label);
+		Building.HeightMetres = B.heightMetres.value_or(0.0);
+		for (const Vec2& P : B.footprint) { Building.Footprint.Add(FVector2D(P.x, P.y)); }
+		for (const Vec2& P : B.entrances) { Building.Entrances.Add(FVector2D(P.x, P.y)); }
+		Out.Buildings.Add(MoveTemp(Building));
+	}
+	for (const AreaDef& A : State->Geometry->Areas())
+	{
+		FSpnGeoArea Area;
+		Area.Id = A.id.Value();
+		Area.Kind = static_cast<uint8>(A.kind);
+		Area.Label = ToF(A.label);
+		Area.ElevationMetres = A.elevationMetres.value_or(0.0);
+		for (const Vec2& P : A.outline) { Area.Outline.Add(FVector2D(P.x, P.y)); }
+		Out.Areas.Add(MoveTemp(Area));
+	}
+	return Out;
+}
+
+bool USpnMapSubsystem::PlanRouteLength(const FVector2D& FromMetres, const FVector2D& ToMetres, double& OutLength, FString& OutFailure) const
+{
+	OutLength = 0.0;
+	OutFailure.Reset();
+	if (!HasRoadNetwork())
+	{
+		OutFailure = TEXT("NoRoadNetwork");
+		return false;
+	}
+	RouteOptions Options;
+	Options.mode = State->Mode;
+	Options.closedSegments = State->Closed;
+	auto Destination = DestinationFromPosition(*State->Map, MapPosition{State->SurfaceLayer, Vec2{ToMetres.X, ToMetres.Y}}, ArrivalRadiusMetres);
+	if (!Destination)
+	{
+		OutFailure = ToF(std::string(ToString(Destination.Error().code)));
+		return false;
+	}
+	auto Planned = PlanRoute(*State->Geometry, MapPosition{State->SurfaceLayer, Vec2{FromMetres.X, FromMetres.Y}}, Destination.Value(), Options);
+	if (!Planned)
+	{
+		OutFailure = ToF(std::string(ToString(Planned.Error().code)));
+		return false;
+	}
+	OutLength = Planned.Value().lengthMetres;
+	return true;
 }
 
 bool USpnMapSubsystem::HasDefinition() const
@@ -212,7 +624,14 @@ void USpnMapSubsystem::Clear()
 	{
 		State->Map.reset();
 		State->Definition.reset();
+		State->Geometry.reset();
+		State->Region.reset();
+		State->Nav.reset();
+		State->Closed.clear();
+		State->LastPlayer.reset();
+		State->LastUpdate = NavigationUpdate{};
 	}
+	bSyntheticRegion = false;
 	bTestDefinition = false;
 	ResetStateInternal();
 	BroadcastReplaced();
@@ -261,6 +680,7 @@ void USpnMapSubsystem::ObservePlayer(const FVector& PlayerLocationCm)
 	{
 		return;
 	}
+	State->LastPlayer = MapPosition{State->SurfaceLayer, Vec2{Metres.X, Metres.Y}};
 	if (FVector2D::DistSquared(Metres, LastObserved) < 4.0)
 	{
 		return; // moved less than 2 m
@@ -388,7 +808,20 @@ ESpnMapResult USpnMapSubsystem::SetWaypointAt(const FVector2D& Metres, const FSt
 	Spec.position = MapPosition{State->SurfaceLayer, Vec2{Metres.X, Metres.Y}};
 	Spec.category = PlayerWaypointCategory();
 	Spec.label = SanitizeLabel(Label, "Waypoint");
-	auto Added = State->Map->AddMarker(std::move(Spec));
+	Result<MarkerId, MapError> Added = Result<MarkerId, MapError>(MarkerId());
+	if (HasRoadNetwork() && State->LastPlayer.has_value())
+	{
+		// plans the road route from the player; the waypoint exists even when there is none (NoRoute is a state, not an error)
+		Added = State->Nav->SetWaypoint(*State->Map, *State->LastPlayer, Spec.position, Spec.label, NowSeconds(), ArrivalRadiusMetres);
+		if (Added)
+		{
+			State->LastUpdate = State->Nav->Update(*State->LastPlayer, NowSeconds(), &*State->Map);
+		}
+	}
+	else
+	{
+		Added = State->Map->AddMarker(std::move(Spec));
+	}
 	if (!Added)
 	{
 		if (OutDetail != nullptr) { *OutDetail = ToF(Added.Error().detail); }
@@ -459,6 +892,11 @@ ESpnMapResult USpnMapSubsystem::RemoveMarker(int64 MarkerIdValue)
 bool USpnMapSubsystem::ClearWaypoint()
 {
 	bool bAny = false;
+	if (HasRoadNetwork())
+	{
+		State->Nav->Cancel(nullptr);
+		State->LastUpdate = NavigationUpdate{};
+	}
 	if (HasDefinition())
 	{
 		for (const FSpnMapMarkerView& Marker : GetMarkers())
@@ -602,6 +1040,48 @@ FSpnNavigationReading USpnMapSubsystem::GetNavigation(const FVector& PlayerLocat
 	{
 		return Reading;
 	}
+	if (HasRoadNetwork())
+	{
+		// Road navigation: the numbers come from the NavigationSession (a real route), never from an air line.
+		Reading.bActive = true;
+		Reading.bStraightLine = false;
+		Reading.MarkerId = Waypoint.Id;
+		Reading.Label = Waypoint.Label;
+		const NavigationUpdate& Last = State->LastUpdate;
+		Reading.Status = ToNavStatus(State->Nav->Status());
+		Reading.bArrived = Reading.Status == ESpnNavStatus::Arrived;
+		Reading.bOffRoute = Last.offRoute;
+		Reading.OffRouteMetres = Last.offRouteMetres;
+		Reading.DistanceMetres = Reading.Status == ESpnNavStatus::Active ? Last.remainingMetres : 0.0;
+		if (Reading.Status == ESpnNavStatus::NoRoute)
+		{
+			const auto Failure = State->Nav->LastFailure();
+			Reading.FailureText = Failure ? ToF(std::string(ToString(*Failure))) : FString(TEXT("NoRoute"));
+		}
+		FVector2D Target(Waypoint.Metres);
+		if (Reading.Status == ESpnNavStatus::Active)
+		{
+			if (const PlannedRoute* Route = State->Nav->CurrentRoute())
+			{
+				const std::vector<Vec2> Points = RoutePoints(Route->route);
+				if (Points.size() >= 2)
+				{
+					const std::vector<double> Cumulative = CumulativeLengths(Points);
+					const double Total = Cumulative.back();
+					const double Offset = FMath::Clamp(Total - Last.remainingMetres + 40.0, 0.0, Total);
+					const Vec2 Ahead = PointAtOffset(Points, Cumulative, Offset);
+					Reading.bHasNextPoint = true;
+					Reading.NextPointMetres = FVector2D(Ahead.x, Ahead.y);
+					Target = Reading.NextPointMetres;
+				}
+			}
+		}
+		Reading.BearingRadians = NormalizeAngle(std::atan2(Target.X - Metres.X, Target.Y - Metres.Y));
+		double Heading = 0.0;
+		SpnWorldFrame::YawDegreesToBearing(Frame.Axes, PlayerYawDegrees, Heading);
+		Reading.RelativeRadians = NormalizeSigned(Reading.BearingRadians - Heading);
+		return Reading;
+	}
 	const MapPosition Origin{State->SurfaceLayer, Vec2{Metres.X, Metres.Y}};
 	auto Destination = DestinationFromMarker(*State->Map, MarkerId(static_cast<uint64>(Waypoint.Id)), ArrivalRadiusMetres);
 	if (!Destination)
@@ -629,6 +1109,43 @@ FSpnNavigationReading USpnMapSubsystem::GetNavigation(const FVector& PlayerLocat
 
 void USpnMapSubsystem::UpdateNavigation(const FVector& PlayerLocationCm, float PlayerYawDegrees)
 {
+	if (HasRoadNetwork())
+	{
+		FVector2D Metres;
+		if (!UnrealToMap(PlayerLocationCm, Metres))
+		{
+			return;
+		}
+		const MapPosition Player{State->SurfaceLayer, Vec2{Metres.X, Metres.Y}};
+		State->LastPlayer = Player;
+		const double Now = NowSeconds();
+		FSpnMapMarkerView Waypoint;
+		const bool bHasWaypoint = GetWaypoint(Waypoint);
+		const NavigationStatus Before = State->Nav->Status();
+		if (bHasWaypoint && (Before == NavigationStatus::Idle || Before == NavigationStatus::Cancelled))
+		{
+			// a waypoint without a session destination (loaded save, placed before the player pose was known)
+			auto Destination = DestinationFromMarker(*State->Map, MarkerId(static_cast<uint64>(Waypoint.Id)), ArrivalRadiusMetres);
+			if (Destination)
+			{
+				State->LastUpdate = State->Nav->SetDestination(Player, Destination.Value(), Now);
+			}
+		}
+		else if (Before != NavigationStatus::Idle)
+		{
+			State->LastUpdate = State->Nav->Update(Player, Now, &*State->Map);
+		}
+		if (State->LastUpdate.routeChanged)
+		{
+			OnMapChanged.Broadcast();
+		}
+		if (bHasWaypoint && State->Nav->Status() == NavigationStatus::Arrived && ArrivalAnnouncedFor != Waypoint.Id)
+		{
+			ArrivalAnnouncedFor = Waypoint.Id;
+			OnWaypointReached.Broadcast(Waypoint);
+		}
+		return;
+	}
 	const FSpnNavigationReading Reading = GetNavigation(PlayerLocationCm, PlayerYawDegrees);
 	if (Reading.bActive && Reading.bArrived && ArrivalAnnouncedFor != Reading.MarkerId)
 	{

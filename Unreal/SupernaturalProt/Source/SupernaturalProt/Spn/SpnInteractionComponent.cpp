@@ -1,6 +1,8 @@
 #include "Spn/SpnInteractionComponent.h"
 
 #include "CollisionQueryParams.h"
+#include "Engine/OverlapResult.h"
+#include "Components/PrimitiveComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/GameViewportClient.h"
 #include "Framework/Application/SlateApplication.h"
@@ -12,6 +14,8 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Actor.h"
 #include "Spn/SpnInteractable.h"
+#include "Spn/UI/SpnUiText.h"
+#include "SpnInteractionPick.h"
 #include "Spn/UI/SpnUiNotify.h"
 #include "SupernaturalProt.h"
 
@@ -31,10 +35,19 @@ void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		return;
 	}
 
-	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(FindTarget());
+	AActor* Target = FindTarget();
+	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(Target);
 	const FString Verb = Interactable != nullptr ? Interactable->SpnPromptText(Pawn) : FString();
-	// "E - Verb": the key name comes from PromptKey (the character copies its interact key here), so a gamepad key shows its own name later.
-	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("%s \u2013 %s"), *PromptKey.GetDisplayName().ToString(), *Verb);
+	const FString Force = Interactable != nullptr ? Interactable->SpnForcePromptText(Pawn) : FString();
+	// "E / Quadrat - Verb": the key names come from the key properties (the character copies its keys here); the pad name is shown while a gamepad is attached.
+	const bool bPad = FSlateApplication::IsInitialized() && FSlateApplication::Get().IsGamepadAttached();
+	const FString UseKeys = bPad ? FString::Printf(TEXT("%s / %s"), *PromptKey.GetDisplayName().ToString(), *FSpnUiText::Get(TEXT("ui.interact.pad")).ToString()) : PromptKey.GetDisplayName().ToString();
+	const FString ForceKeys = bPad ? FString::Printf(TEXT("%s / %s"), *ForceKey.GetDisplayName().ToString(), *FSpnUiText::Get(TEXT("ui.interact.padforce")).ToString()) : ForceKey.GetDisplayName().ToString();
+	CurrentPrompt = Verb.IsEmpty() ? FString() : FString::Printf(TEXT("%s – %s"), *UseKeys, *Verb);
+	if (!CurrentPrompt.IsEmpty() && !Force.IsEmpty())
+	{
+		CurrentPrompt += FString::Printf(TEXT("     %s – %s"), *ForceKeys, *Force);
+	}
 	if (SpnUi::SetPrompt(this, CurrentPrompt))
 	{
 		HidePromptWidget(); // the unified HUD draws the prompt (Night Build 01)
@@ -122,19 +135,65 @@ AActor* USpnInteractionComponent::FindTargetAlong(const FVector& Start, const FV
 		return nullptr;
 	}
 
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(SpnInteractionTrace), /*bTraceComplex*/ false, GetOwner());
-	FHitResult Hit;
-	const FVector End = Start + Direction.GetSafeNormal() * InteractRange;
-	if (!World->SweepSingleByChannel(Hit, Start, End, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(TraceRadius), Params))
+	// 1. Everything usable whose collision lies within reach of the eyes.
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(SpnInteractionOverlap), /*bTraceComplex*/ false, GetOwner());
+	TArray<FOverlapResult> Overlaps;
+	World->OverlapMultiByChannel(Overlaps, Start, FQuat::Identity, TraceChannel, FCollisionShape::MakeSphere(InteractRange), Params);
+
+	TArray<AActor*> Actors;
+	TArray<FSpnPickCandidate> Candidates;
+	const FVector View = Direction.GetSafeNormal();
+	for (const FOverlapResult& Overlap : Overlaps)
 	{
-		return nullptr;
+		AActor* Actor = Overlap.GetActor();
+		UPrimitiveComponent* Component = Overlap.GetComponent();
+		if (Actor == nullptr || Component == nullptr || Actors.Contains(Actor) || !Actor->Implements<USpnInteractable>())
+		{
+			continue;
+		}
+
+		FVector Origin, Extent;
+		Actor->GetActorBounds(/*bOnlyCollidingComponents*/ true, Origin, Extent);
+
+		// 2. Line of sight to the nearest point of the object: a wall (or any other blocking actor) in between hides it.
+		FVector Nearest = Origin;
+		Component->GetClosestPointOnCollision(Start, Nearest);
+		FHitResult Block;
+		FCollisionQueryParams SightParams(SCENE_QUERY_STAT(SpnInteractionSight), /*bTraceComplex*/ false, GetOwner());
+		const FVector SightEnd = Nearest + (Start - Nearest).GetSafeNormal() * 2.f;
+		const bool bBlocked = World->LineTraceSingleByChannel(Block, Start, SightEnd, TraceChannel, SightParams) && Block.GetActor() != Actor;
+
+		FSpnPickCandidate Candidate;
+		Candidate.EyeCm = Start;
+		Candidate.ViewDirection = View;
+		Candidate.CentreCm = Origin;
+		Candidate.RadiusCm = FMath::Min(Extent.GetMax(), MaxTargetRadius);
+		Candidate.bLineOfSightClear = !bBlocked;
+		Candidate.Priority = Cast<ISpnInteractable>(Actor)->SpnInteractionPriority();
+		Actors.Add(Actor);
+		Candidates.Add(Candidate);
 	}
 
-	AActor* HitActor = Hit.GetActor();
-	return HitActor != nullptr && HitActor->Implements<USpnInteractable>() ? HitActor : nullptr;
+	// 3. The Core decides: in reach, in view, line of sight, then the most central and closest, ties by priority.
+	FSpnPickConfig Config;
+	Config.MaxDistanceCm = InteractRange;
+	Config.MaxAngleDegrees = MaxViewAngle;
+	Config.MaxHeightDifferenceCm = MaxHeightDifference;
+	const int32 Index = SpnInteractionPick::Pick(Config, Candidates);
+	return Index != INDEX_NONE ? Actors[Index] : nullptr;
 }
 
 bool USpnInteractionComponent::TryInteract()
+{
+	return TryVerb(/*bForce*/ false);
+}
+
+bool USpnInteractionComponent::TryForce()
+{
+	return TryVerb(/*bForce*/ true);
+}
+
+bool USpnInteractionComponent::TryVerb(bool bForce)
 {
 	AActor* Owner = GetOwner();
 	if (Owner == nullptr || !Owner->HasAuthority())
@@ -152,8 +211,8 @@ bool USpnInteractionComponent::TryInteract()
 		return false;
 	}
 
-	const FSpnInteractStatus Status = Interactable->SpnUse(Owner);
-	UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: %s used %s -> %s %s"), *GetNameSafe(Owner), *GetNameSafe(Target),
-		LexToString(Status.Result), *Status.Feedback);
+	const FSpnInteractStatus Status = bForce ? Interactable->SpnForce(Owner) : Interactable->SpnUse(Owner);
+	UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: %s %s %s -> %s %s"), *GetNameSafe(Owner), bForce ? TEXT("forced") : TEXT("used"),
+		*GetNameSafe(Target), LexToString(Status.Result), *Status.Feedback);
 	return true;
 }

@@ -12,6 +12,8 @@
 #include "EngineUtils.h"
 #include "SpnWorldStateSubsystem.h"
 #include "SupernaturalProt.h"
+#include "Spn/UI/SpnUiNotify.h"
+#include "Spn/UI/SpnUiText.h"
 #include "UObject/ConstructorHelpers.h"
 
 namespace
@@ -181,7 +183,7 @@ bool ASpnTestDoor::IsLocked() const
 {
 	const USpnWorldStateSubsystem* WorldState = GetWorldState();
 	const TOptional<bool> Fact = WorldState != nullptr ? WorldState->ReadFlag(USpnWorldStateSubsystem::TestDoorLockedKey(StableId)) : TOptional<bool>();
-	return Fact.Get(bAuthoredLocked);
+	return !IsBroken() && Fact.Get(bAuthoredLocked);   // a broken lock holds nothing
 }
 
 bool ASpnTestDoor::IsClosingObstructed() const
@@ -221,8 +223,19 @@ FSpnInteractStatus ASpnTestDoor::SpnUse(AActor* User)
 		Blocked.Feedback = TEXT("placeholder:feedback.door.blocked");
 		Blocked.Detail = TEXT("a pawn is in the swing of the door");
 		UE_LOG(LogSupernaturalProt, Log, TEXT("%s (%s): closing refused, a pawn is in the way"), *GetName(), *StableId);
+		ReportOutcome(Blocked);
 		return Blocked;
 	}
+	return RunVerb(ESpnInteractionVerb::Use, User);
+}
+
+FSpnInteractStatus ASpnTestDoor::SpnForce(AActor* User)
+{
+	return RunVerb(ESpnInteractionVerb::Force, User);
+}
+
+FSpnInteractStatus ASpnTestDoor::RunVerb(ESpnInteractionVerb Verb, AActor* User)
+{
 	USpnWorldStateSubsystem* WorldState = GetWorldState();
 	if (WorldState == nullptr)
 	{
@@ -232,9 +245,9 @@ FSpnInteractStatus ASpnTestDoor::SpnUse(AActor* User)
 		return Status;
 	}
 
-	const FString Cause = FString::Printf(TEXT("unreal.use:%s"), *GetNameSafe(User));
-	const FSpnInteractStatus Status = WorldState->TryInteract(USpnWorldStateSubsystem::TestDoorKind(), StableId,
-		ESpnInteractionVerb::Use, AuthoredDefaults(), Cause);
+	const FString Cause = FString::Printf(TEXT("unreal.%s:%s"), Verb == ESpnInteractionVerb::Force ? TEXT("force") : TEXT("use"), *GetNameSafe(User));
+	const FSpnInteractStatus Status = WorldState->TryInteract(USpnWorldStateSubsystem::TestDoorKind(), StableId, Verb,
+		AuthoredDefaults(), USpnWorldStateSubsystem::DefaultHolder(), Cause);
 
 	switch (Status.Result)
 	{
@@ -244,28 +257,78 @@ FSpnInteractStatus ASpnTestDoor::SpnUse(AActor* User)
 		break;
 	case ESpnInteractResult::Refused:
 		UE_LOG(LogSupernaturalProt, Log, TEXT("%s (%s) refused: %s"), *GetName(), *StableId, *Status.Feedback);
-#if !UE_BUILD_SHIPPING
-		if (GEngine != nullptr)
-		{
-			// Debug text only; player-facing feedback (UI, audio) maps the feedback id later.
-			GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, FString::Printf(TEXT("%s: %s"), *StableId, *Status.Feedback));
-		}
-#endif
 		break;
 	default:
-		UE_LOG(LogSupernaturalProt, Error, TEXT("%s (%s): Use failed: %s %s"), *GetName(), *StableId, LexToString(Status.Result), *Status.Detail);
+		UE_LOG(LogSupernaturalProt, Error, TEXT("%s (%s): %s failed: %s %s"), *GetName(), *StableId,
+			Verb == ESpnInteractionVerb::Force ? TEXT("Force") : TEXT("Use"), LexToString(Status.Result), *Status.Detail);
 		break;
 	}
+	ReportOutcome(Status);
 	return Status;
+}
+
+void ASpnTestDoor::ReportOutcome(const FSpnInteractStatus& Status) const
+{
+	// Player-facing message for the feedback ids; the HUD shows it (and logs it). Silent without a HUD.
+	const TCHAR* Key = nullptr;
+	SpnUi::ENote Kind = SpnUi::ENote::Warning;
+	if (Status.Feedback == TEXT("placeholder:feedback.door.locked")) { Key = TEXT("ui.door.msg.locked"); }
+	else if (Status.Feedback == TEXT("placeholder:feedback.door.unlocked")) { Key = TEXT("ui.door.msg.unlocked"); Kind = SpnUi::ENote::Good; }
+	else if (Status.Feedback == TEXT("placeholder:feedback.door.broken") && Status.Result == ESpnInteractResult::Changed) { Key = TEXT("ui.door.msg.broken"); Kind = SpnUi::ENote::Good; }
+	else if (Status.Feedback == TEXT("placeholder:feedback.door.disabled")) { Key = TEXT("ui.door.msg.blocked"); }
+	else if (Status.Feedback == TEXT("placeholder:feedback.door.unbreakable")) { Key = TEXT("ui.door.msg.unbreakable"); }
+	else if (Status.Feedback == TEXT("placeholder:feedback.door.blocked")) { Key = TEXT("ui.door.msg.obstructed"); }
+	if (Key != nullptr)
+	{
+		SpnUi::Notify(this, FSpnUiText::Get(Key), Kind);
+	}
 }
 
 FString ASpnTestDoor::SpnPromptText(const AActor* User) const
 {
+	if (IsBlocked())
+	{
+		return FSpnUiText::Get(TEXT("ui.door.blocked")).ToString();
+	}
 	if (IsOpen())
 	{
-		return TEXT("T\u00fcr schlie\u00dfen");
+		return FSpnUiText::Get(TEXT("ui.door.close")).ToString();
 	}
-	return IsLocked() ? TEXT("T\u00fcr (verschlossen)") : TEXT("T\u00fcr \u00f6ffnen");
+	if (IsLocked())
+	{
+		return FSpnUiText::Get(HasRequiredKey() ? TEXT("ui.door.unlock") : TEXT("ui.door.locked")).ToString();
+	}
+	return FSpnUiText::Get(TEXT("ui.door.open")).ToString();
+}
+
+FString ASpnTestDoor::SpnForcePromptText(const AActor* User) const
+{
+	// Offered only where Force can succeed: a closed, locked, breakable, not blocked door.
+	return bBreakable && !IsBlocked() && !IsOpen() && IsLocked() ? FSpnUiText::Get(TEXT("ui.door.force")).ToString() : FString();
+}
+
+bool ASpnTestDoor::IsBroken() const
+{
+	const USpnWorldStateSubsystem* WorldState = GetWorldState();
+	const TOptional<bool> Fact = WorldState != nullptr ? WorldState->ReadFlag(USpnWorldStateSubsystem::TestDoorBrokenKey(StableId)) : TOptional<bool>();
+	return Fact.Get(false);
+}
+
+bool ASpnTestDoor::IsBlocked() const
+{
+	const USpnWorldStateSubsystem* WorldState = GetWorldState();
+	const TOptional<bool> Fact = WorldState != nullptr ? WorldState->ReadFlag(USpnWorldStateSubsystem::TestDoorDisabledKey(StableId)) : TOptional<bool>();
+	return Fact.Get(bAuthoredBlocked);
+}
+
+bool ASpnTestDoor::HasRequiredKey() const
+{
+	const USpnWorldStateSubsystem* WorldState = GetWorldState();
+	if (RequiredKeyId.IsEmpty() || WorldState == nullptr)
+	{
+		return false;
+	}
+	return WorldState->ReadFlag(USpnWorldStateSubsystem::TestKeyHeldKey(RequiredKeyId)).Get(false);
 }
 
 bool ASpnTestDoor::IsOpen() const
@@ -281,9 +344,15 @@ USpnWorldStateSubsystem* ASpnTestDoor::GetWorldState() const
 	return GameInstance != nullptr ? GameInstance->GetSubsystem<USpnWorldStateSubsystem>() : nullptr;
 }
 
-TMap<FString, bool> ASpnTestDoor::AuthoredDefaults() const
+FSpnInteractDefaults ASpnTestDoor::AuthoredDefaults() const
 {
-	return {{OpenState, bAuthoredOpen}, {LockedState, bAuthoredLocked}};
+	FSpnInteractDefaults Defaults;
+	Defaults.Bools = {{OpenState, bAuthoredOpen}, {LockedState, bAuthoredLocked}, {TEXT("disabled"), bAuthoredBlocked}, {TEXT("breakable"), bBreakable}};
+	if (!RequiredKeyId.IsEmpty())
+	{
+		Defaults.Strings.Add(TEXT("key"), RequiredKeyId);
+	}
+	return Defaults;
 }
 
 void ASpnTestDoor::RefreshFromWorldState(bool bAnimate)
@@ -310,7 +379,8 @@ void ASpnTestDoor::HandleWorldStateReplaced()
 void ASpnTestDoor::SetCurrentAngle(float Angle)
 {
 	CurrentAngle = Angle;
-	Hinge->SetRelativeRotation(FRotator(0.f, CurrentAngle, 0.f));
+	// A broken door hangs off its hinge: the free edge sags (placeholder look, cosmetic only).
+	Hinge->SetRelativeRotation(FRotator(IsBroken() ? -7.f : 0.f, CurrentAngle, 0.f));
 }
 
 void ASpnTestDoor::WarnAboutDuplicateIds() const

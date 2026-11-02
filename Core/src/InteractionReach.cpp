@@ -58,4 +58,29 @@ bool MayInteract(const ActorInteractState& s) noexcept {
     return !s.incapacitated && !s.traversing && !s.inVehicle && !s.inDialogue;
 }
 
+std::optional<InteractionChoice> PickInteractionCandidate(const ReachConfig& config, const std::vector<InteractionCandidate>& candidates) noexcept {
+    constexpr double kTie = 0.02;
+    std::optional<InteractionChoice> best;
+    int bestPriority = 0;
+    for (std::size_t i = 0; i < candidates.size(); ++i) {
+        const InteractionCandidate& c = candidates[i];
+        if (CheckReach(config, c.query) != ReachResult::Ok) continue;
+        const ReachVec3& q = c.query.targetCentre;
+        const ReachVec3 to{q.x - c.query.eye.x, q.y - c.query.eye.y, q.z - c.query.eye.z};
+        const double distance = Length(to);
+        const double view = Length(c.query.viewDirection);
+        double angle = 0.0;
+        if (distance > 1e-9 && view > 1e-9) {
+            angle = std::acos(std::clamp((to.x * c.query.viewDirection.x + to.y * c.query.viewDirection.y + to.z * c.query.viewDirection.z) / (distance * view), -1.0, 1.0)) * 180.0 / kPi;
+        }
+        const double surface = std::max(0.0, distance - c.query.targetRadius);
+        const double score = angle / config.maxAngleDegrees + surface / config.maxDistance;
+        if (!best || score < best->score - kTie || (score <= best->score + kTie && c.priority > bestPriority)) {
+            best = InteractionChoice{i, score};
+            bestPriority = c.priority;
+        }
+    }
+    return best;
+}
+
 } // namespace spn::core

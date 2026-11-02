@@ -40,6 +40,22 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
 	FKey PromptKey = EKeys::E;
 
+	/** Widest angle in degrees between the view direction and the direction to an object's centre (widened by its size) that still counts as "looking at it" (placeholder). */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction", meta = (ClampMin = "1", ClampMax = "90"))
+	float MaxViewAngle = 35.f;
+
+	/** Largest height difference between the eyes and an object's centre, in cm (placeholder). */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction", meta = (ClampMin = "1"))
+	float MaxHeightDifference = 150.f;
+
+	/** Objects count as at most this big (cm radius) when judging how easy they are to aim at; keeps a huge door from being "hit" from everywhere. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction", meta = (ClampMin = "0"))
+	float MaxTargetRadius = 60.f;
+
+	/** Key named in the second prompt (Force, e.g. breaking a door); the character copies its force key here. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Interaction")
+	FKey ForceKey = EKeys::F;
+
 	/** The prompt text shown right now ("[E] Open door"), empty when nothing usable is in range. Read by the QA tests. */
 	UFUNCTION(BlueprintPure, Category = "Spn|Interaction")
 	const FString& GetCurrentPrompt() const { return CurrentPrompt; }
@@ -50,14 +66,19 @@ public:
 	/** The interactable in front of the owner's eyes, or nullptr. */
 	AActor* FindTarget() const;
 
-	/** The first actor hit from Start along Direction within InteractRange, if it is interactable. */
+	/** The interactable the player means when looking from Start along Direction: in reach, in view, line of sight clear (no wall), then the most central and closest (spn::core::PickInteractionCandidate). */
 	AActor* FindTargetAlong(const FVector& Start, const FVector& Direction) const;
 
 	/** Uses the target in front of the owner. Authority only. Returns true if a target was used. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
 	bool TryInteract();
 
+	/** The Force verb (break a door open, F / DualSense Triangle) on the target in front of the owner. Authority only. Returns true if a target was addressed. */
+	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
+	bool TryForce();
+
 private:
+	bool TryVerb(bool bForce);
 	void ShowPromptWidget(const FString& Text);
 	void HidePromptWidget();
 

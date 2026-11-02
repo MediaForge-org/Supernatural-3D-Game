@@ -51,6 +51,12 @@ class ASupernaturalProtCharacter : public ACharacter
 	UPROPERTY(Transient)
 	UInputMappingContext* RuntimeInteractMappingContext;
 
+	UPROPERTY(Transient)
+	UInputAction* RuntimeForceAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimeForceMappingContext;
+
 	/** Runtime sprint action and context (hold DefaultSprintKey), created in code like the interact fallback */
 	UPROPERTY(Transient)
 	UInputAction* RuntimeSprintAction;
@@ -94,6 +100,20 @@ protected:
 	/** Key for the runtime interact mapping, used only while InteractAction is empty (placeholder binding) */
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultInteractKey = EKeys::E;
+
+	/**
+	 * Gamepad key for Interact (DualSense Square = Gamepad_FaceButton_Left), mapped at runtime with DefaultInteractKey. Interaction and a normal
+	 * attack are separate actions on separate keys (there is no attack action in this character yet); a test keeps the key sets disjoint.
+	 */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultInteractGamepadKey = EKeys::Gamepad_FaceButton_Left;
+
+	/** Keys for the Force verb (break a locked door open): F, and DualSense Triangle (Gamepad_FaceButton_Top). Mapped at runtime. */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultForceKey = EKeys::F;
+
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultForceGamepadKey = EKeys::Gamepad_FaceButton_Top;
 
 	/** Key held to sprint (placeholder binding, mapped at runtime) */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -215,6 +235,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoInteract();
 
+	/** Force verb (F / DualSense Triangle): break a locked, breakable door open. Separate from Interact on purpose. */
+	virtual void DoForce();
+	UInputAction* ResolveForceAction();
+
 	/** Requests the Sprint gait; it applies while the input points forward (predicted through the movement component) */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoSprintStart();
@@ -254,5 +278,9 @@ public:
 
 	/** Returns the action bound to interact (InteractAction or the runtime fallback); null before input setup **/
 	FORCEINLINE UInputAction* GetBoundInteractAction() const { return InteractAction != nullptr ? InteractAction : RuntimeInteractAction; }
+
+	/** The runtime keys of Interact, Force and Sprint (keyboard and gamepad). For the prompt and the key-separation test. */
+	struct FSpnGameplayKeys { FKey Interact, InteractPad, Force, ForcePad, Sprint, SprintPad; };
+	FSpnGameplayKeys GetGameplayKeys() const { return {DefaultInteractKey, DefaultInteractGamepadKey, DefaultForceKey, DefaultForceGamepadKey, DefaultSprintKey, DefaultSprintGamepadKey}; }
 };
 

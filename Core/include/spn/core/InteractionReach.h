@@ -11,6 +11,8 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
+#include <cstddef>
 
 #include <spn/core/Vec.h>
 
@@ -52,5 +54,23 @@ struct ActorInteractState {
 };
 
 [[nodiscard]] bool MayInteract(const ActorInteractState& state) noexcept;
+
+/// One interactable the engine side found near the actor, with its reach measurements. `priority`: higher wins when two candidates score alike
+/// (e.g. a door handle over the door panel). `id` is opaque to the Core.
+struct InteractionCandidate {
+    std::string id;
+    ReachQuery query;
+    int priority = 0;
+};
+
+struct InteractionChoice {
+    std::size_t index = 0;   ///< into the candidates passed to PickInteractionCandidate
+    double score = 0.0;      ///< lower is better; see PickInteractionCandidate
+};
+
+/// Picks the candidate the actor means. Only candidates with CheckReach == Ok qualify (so nothing behind a wall, out of view or out of range).
+/// Score = angle to the target centre / maxAngleDegrees + surface distance / maxDistance (what is more central and closer wins). Scores within
+/// 0.02 of each other count as equal: then the higher `priority` wins, then the smaller index (stable). Nullopt when none qualifies.
+[[nodiscard]] std::optional<InteractionChoice> PickInteractionCandidate(const ReachConfig& config, const std::vector<InteractionCandidate>& candidates) noexcept;
 
 } // namespace spn::core

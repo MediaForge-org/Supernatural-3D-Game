@@ -14,6 +14,7 @@
 #include "Windows/HideWindowsPlatformTypes.h"
 #endif
 
+#include <spn/core/Devices.h>
 #include <spn/core/ContentId.h>
 #include <spn/core/Interaction.h>
 #include <spn/core/Pickup.h>
@@ -141,6 +142,11 @@ USpnWorldStateSubsystem::USpnWorldStateSubsystem()
 		UE_LOG(LogSpnCore, Error, TEXT("World state: registering the test pickup failed: %s"),
 			*ToFString(spn::core::ToString(Error->code)));
 	}
+	if (const auto Error = spn::core::RegisterDevices(State->Registry))
+	{
+		UE_LOG(LogSpnCore, Error, TEXT("World state: registering the devices failed: %s"),
+			*ToFString(spn::core::ToString(Error->code)));
+	}
 }
 
 USpnWorldStateSubsystem::~USpnWorldStateSubsystem() = default;
@@ -197,6 +203,7 @@ FSpnInteractStatus USpnWorldStateSubsystem::TryInteract(const FString& Kind, con
 	switch (Verb)
 	{
 	case ESpnInteractionVerb::Use: CoreVerb = spn::core::InteractionVerb::Use; break;
+	case ESpnInteractionVerb::Force: CoreVerb = spn::core::InteractionVerb::Force; break;
 	}
 
 	const std::string HolderUtf8 = ToUtf8(Holder);
@@ -400,6 +407,31 @@ FString USpnWorldStateSubsystem::TestDoorOpenKey(const FString& StableId)
 FString USpnWorldStateSubsystem::TestDoorLockedKey(const FString& StableId)
 {
 	return ToFString(spn::core::TestDoorLockedKey(ToUtf8(StableId)));
+}
+
+FString USpnWorldStateSubsystem::TestDoorBrokenKey(const FString& StableId)
+{
+	return ToFString(spn::core::TestDoorBrokenKey(ToUtf8(StableId)));
+}
+
+FString USpnWorldStateSubsystem::TestDoorDisabledKey(const FString& StableId)
+{
+	return ToFString(spn::core::TestDoorDisabledKey(ToUtf8(StableId)));
+}
+
+FString USpnWorldStateSubsystem::TestKeyHeldKey(const FString& KeyId)
+{
+	return ToFString(spn::core::TestKeyHeldKey(ToUtf8(KeyId)));
+}
+
+FString USpnWorldStateSubsystem::SwitchKind()
+{
+	return ToFString(spn::core::SwitchKind().Value());
+}
+
+FString USpnWorldStateSubsystem::SwitchOnKey(const FString& StableId)
+{
+	return ToFString(spn::core::SwitchOnKey(ToUtf8(StableId)));
 }
 
 bool USpnWorldStateSubsystem::IsValidHolderId(const FString& Holder)

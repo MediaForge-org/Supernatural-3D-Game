@@ -10,6 +10,7 @@
 // The placeholder. prefix marks the keys as non-final; renaming them later is a
 // save-compatibility event (Docs/Decisions/0004), not a silent rename.
 
+#include <cstdint>
 #include <optional>
 #include <spn/core/ContentId.h>
 #include <spn/core/Interaction.h>
@@ -36,9 +37,45 @@ inline constexpr std::string_view kTestDoorDisabledState = "disabled";
 [[nodiscard]] std::optional<FactError> SetTestDoorLocked(WorldFacts& facts, std::string_view id, bool locked, std::string_view cause);
 [[nodiscard]] std::optional<FactError> SetTestDoorDisabled(WorldFacts& facts, std::string_view id, bool disabled, std::string_view cause);
 
-/// Names of the authored defaults in InteractionDefaults::values (bool each).
+/// Names of the authored defaults in InteractionDefaults::values (bool each, except the key).
 inline constexpr std::string_view kTestDoorOpenState = "open";
 inline constexpr std::string_view kTestDoorLockedState = "locked";
+inline constexpr std::string_view kTestDoorBrokenState = "broken";       ///< a fact too (`.broken`)
+inline constexpr std::string_view kTestDoorBreakableState = "breakable"; ///< authored only: Force may break a locked door
+inline constexpr std::string_view kTestDoorKeyState = "key";             ///< authored only, string: key id that unlocks it (empty = none)
+
+// NightBuild04 (door states): Use opens/closes; on a locked door it unlocks when the key is held (fact placeholder.key.<id>.held) and
+// leaves the door shut; Force breaks a locked, breakable door (`.broken` = true, `.locked` = false, `.open` = true, permanent).
+// A disabled door (barricaded / jammed) refuses both verbs.
+[[nodiscard]] const ContentId& TestDoorUnlockedFeedback();    ///< placeholder:feedback.door.unlocked (Use + key: Changed)
+[[nodiscard]] const ContentId& TestDoorBrokenFeedback();      ///< placeholder:feedback.door.broken (Force: Changed; Refused when already broken)
+[[nodiscard]] const ContentId& TestDoorUnbreakableFeedback(); ///< placeholder:feedback.door.unbreakable
+[[nodiscard]] const ContentId& TestDoorNotLockedFeedback();   ///< placeholder:feedback.door.not_locked (Force on an unlocked/open door)
+[[nodiscard]] std::string TestDoorBrokenKey(std::string_view id);
+
+/// Key possession. A fact, so it saves with the WorldFacts like everything else; a key item in the inventory can set it later.
+[[nodiscard]] std::string TestKeyHeldKey(std::string_view keyId);
+[[nodiscard]] std::optional<FactError> SetTestKeyHeld(WorldFacts& facts, std::string_view keyId, bool held, std::string_view cause);
+[[nodiscard]] bool IsTestKeyHeld(const WorldFacts& facts, std::string_view keyId);
+
+/// One word for the state a player sees. Priority: Blocked (disabled) > Open > Locked > Broken (closed again after being broken) > Closed.
+enum class TestDoorStatus : std::uint8_t { Closed, Open, Locked, Blocked, Broken };
+[[nodiscard]] std::string_view ToString(TestDoorStatus status) noexcept;
+
+struct TestDoorInfo {
+    TestDoorStatus status = TestDoorStatus::Closed;
+    bool open = false;
+    bool locked = false;     ///< effective: false once broken
+    bool disabled = false;
+    bool broken = false;
+    bool breakable = false;
+    std::string keyId;       ///< authored key id, empty = none
+    bool keyHeld = false;
+};
+
+/// Reads the door the same way the handler does (facts, then authored defaults). StateCorrupt on a wrong-typed fact or default.
+[[nodiscard]] Result<TestDoorInfo, InteractionError> ReadTestDoorInfo(const WorldFacts& facts, std::string_view id,
+                                                                      const InteractionDefaults& defaults);
 
 [[nodiscard]] std::string TestDoorOpenKey(std::string_view id);
 [[nodiscard]] std::string TestDoorLockedKey(std::string_view id);

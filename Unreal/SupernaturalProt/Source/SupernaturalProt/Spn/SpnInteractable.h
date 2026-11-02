@@ -31,4 +31,22 @@ public:
 	 * feedback/prompt ids later. Called every frame for the object in front of the local player, so it must be cheap.
 	 */
 	virtual FString SpnPromptText(const AActor* User) const { return FString(); }
+
+	/**
+	 * The deliberate, violent alternative to Use (NightBuild04: breaking a locked door, F / DualSense Triangle). Default: not offered.
+	 * Call on the authority only.
+	 */
+	virtual FSpnInteractStatus SpnForce(AActor* User)
+	{
+		FSpnInteractStatus Status;
+		Status.Result = ESpnInteractResult::Refused;
+		Status.Feedback = TEXT("placeholder:feedback.verb.unsupported");
+		return Status;
+	}
+
+	/** Prompt of the Force verb, empty = not offered right now (so no second prompt is shown). */
+	virtual FString SpnForcePromptText(const AActor* User) const { return FString(); }
+
+	/** Tie-break when two usable objects score alike in the player's view (higher wins), e.g. a lever over the door it opens. */
+	virtual int32 SpnInteractionPriority() const { return 0; }
 };

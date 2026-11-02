@@ -42,10 +42,11 @@ struct FSpnSlotStatus
 	bool IsOk() const { return Result == ESpnSlotResult::Ok; }
 };
 
-/** D1 (Proposal 0004): only Use exists today. New values are appended. */
+/** Use = E / DualSense Square. Force (NightBuild04) = deliberate, violent alternative (break a door). New values are appended. */
 enum class ESpnInteractionVerb : uint8
 {
 	Use,
+	Force,
 };
 
 /** Result of TryInteract. */
@@ -172,6 +173,14 @@ public:
 	static FString TestDoorKind();
 	static FString TestDoorOpenKey(const FString& StableId);
 	static FString TestDoorLockedKey(const FString& StableId);
+	static FString TestDoorBrokenKey(const FString& StableId);
+	static FString TestDoorDisabledKey(const FString& StableId);
+	/** Fact `placeholder.key.<KeyId>.held`: the player owns this key (set by key objects, tests and, later, the inventory). */
+	static FString TestKeyHeldKey(const FString& KeyId);
+
+	/** Kind and fact key of the placeholder light switch (spn::core Devices: placeholder.switch.<id>.on). */
+	static FString SwitchKind();
+	static FString SwitchOnKey(const FString& StableId);
 
 	/** Broadcast after a successful LoadFromSlot replaced the store. */
 	FSimpleMulticastDelegate OnWorldStateReplaced;

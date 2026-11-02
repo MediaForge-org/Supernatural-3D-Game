@@ -53,11 +53,15 @@ public:
 	void PanMetres(const FVector2D& DeltaMetres);
 	void PanScreen(const FVector2D& DeltaPx);
 	void ZoomBy(double Factor);
+	/** Scripted camera (demo): sets the view centre and scale directly. */
+	void SetViewMetres(const FVector2D& Centre, double InMetresPerPixel) { CenterMetres = Centre; MetresPerPixel = FMath::Clamp(InMetresPerPixel, 0.02, 2000.0); }
 	void FitToBounds();
 	FVector2D GetCenterMetres() const { return CenterMetres; }
 	double GetMetresPerPixel() const { return MetresPerPixel; }
 	/** Map position under the widget centre (the keyboard / controller crosshair). */
 	FVector2D GetCrosshairMetres() const { return CenterMetres; }
+	/** Map position under the mouse pointer (last known while it was over the view). */
+	FVector2D GetCursorMetres() const { return CursorMetres; }
 	/** Highlighted entry (selection): a POI id or a marker id; both empty/0 = none. */
 	void SetSelection(const FString& InPoiId, int64 InMarkerId) { SelectedPoi = InPoiId; SelectedMarker = InMarkerId; }
 	bool IsMouseOver() const { return bPointerInside; }
@@ -71,6 +75,8 @@ public:
 	// --- minimap ---
 	void SetMinimapFrame(const FSpnMinimapFrameData& InFrame, bool bInHeadingUp) { Frame = InFrame; bHeadingUp = bInHeadingUp; }
 	void SetNavigation(const FSpnNavigationReading& InReading) { Navigation = InReading; }
+	/** Road map layer of the minimap (replaces nothing when invalid). */
+	void SetRoadFrame(const FSpnMapRenderFrame& InFrame) { RoadFrame = InFrame; }
 
 	virtual FVector2D ComputeDesiredSize(float) const override { return DesiredSizePx; }
 	void SetDesiredSizePx(const FVector2D& Size) { DesiredSizePx = Size; }
@@ -101,6 +107,7 @@ private:
 	FString SelectedPoi;
 	int64 SelectedMarker = 0;
 	bool bPointerInside = false;
+	FVector2D CursorMetres = FVector2D::ZeroVector;
 	bool bDragging = false;
 	bool bDragMoved = false;
 	FVector2D DragStartLocal = FVector2D::ZeroVector;
@@ -110,6 +117,7 @@ private:
 	FSpnMinimapFrameData Frame;
 	bool bHeadingUp = false;
 	FSpnNavigationReading Navigation;
+	mutable FSpnMapRenderFrame RoadFrame;
 };
 
 /** UMG wrapper so the map views can sit inside a UMG widget tree. */

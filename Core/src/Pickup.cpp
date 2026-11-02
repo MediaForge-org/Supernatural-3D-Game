@@ -141,6 +141,7 @@ InteractionHandler MakeTestPickupHandler() {
         // D1: Use is the only verb. Adding one makes this switch warn (-Wswitch, /W4).
         switch (verb) {
         case InteractionVerb::Use:
+        case InteractionVerb::Force: // never offered by this kind (Interact checks AvailableVerbs first)
             break;
         }
         if (taken.Value()) {

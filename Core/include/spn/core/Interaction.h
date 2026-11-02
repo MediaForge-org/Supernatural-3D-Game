@@ -38,13 +38,18 @@ inline constexpr std::size_t kMaxHolderIdLength = 24;
 inline constexpr std::string_view kDefaultInteractionHolder = "player.local";
 [[nodiscard]] bool IsValidHolderId(std::string_view holder) noexcept;
 
-/// D1: only `Use` exists today. New values are appended, never reordered.
+/// `Use` is the everyday verb (E / DualSense Square). `Force` (NightBuild04) is the deliberate, violent alternative (breaking a door open); it has its own
+/// input. New values are appended, never reordered.
 enum class InteractionVerb : std::uint8_t {
     Use,
+    Force,
 };
 
 /// Every verb, in enum order. Extend together with the enum (a test checks both agree).
-inline constexpr std::array kAllInteractionVerbs{InteractionVerb::Use};
+inline constexpr std::array kAllInteractionVerbs{InteractionVerb::Use, InteractionVerb::Force};
+
+/// placeholder:feedback.verb.unsupported: Refused when a kind does not offer the requested verb (Interact checks AvailableVerbs first).
+[[nodiscard]] const ContentId& UnsupportedVerbFeedback();
 
 [[nodiscard]] std::string_view ToString(InteractionVerb verb) noexcept;
 

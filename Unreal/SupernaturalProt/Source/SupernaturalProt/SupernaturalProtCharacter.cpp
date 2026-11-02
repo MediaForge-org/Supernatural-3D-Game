@@ -92,6 +92,8 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Interacting
 		EnhancedInputComponent->BindAction(ResolveInteractAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoInteract);
+		EnhancedInputComponent->BindAction(ResolveForceAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoForce);
+		Interaction->ForceKey = DefaultForceKey;
 		Interaction->PromptKey = DefaultInteractKey; // the on-screen prompt names the key that is actually mapped
 
 		// Sprinting (hold)
@@ -149,6 +151,14 @@ void ASupernaturalProtCharacter::Tick(float DeltaSeconds)
 
 void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (RuntimeForceMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimeForceMappingContext);
+		}
+	}
+
 	if (RuntimeInteractMappingContext != nullptr)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -261,6 +271,10 @@ UInputAction* ASupernaturalProtCharacter::ResolveInteractAction()
 
 		RuntimeInteractMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnInteract_Runtime"), RF_Transient);
 		RuntimeInteractMappingContext->MapKey(RuntimeInteractAction, DefaultInteractKey);
+		if (DefaultInteractGamepadKey.IsValid())
+		{
+			RuntimeInteractMappingContext->MapKey(RuntimeInteractAction, DefaultInteractGamepadKey);
+		}
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -415,4 +429,31 @@ void ASupernaturalProtCharacter::ResetStairCamera()
 	{
 		CameraBoom->SetRelativeLocation(StairBaseLocation);
 	}
+}
+
+UInputAction* ASupernaturalProtCharacter::ResolveForceAction()
+{
+	if (RuntimeForceAction == nullptr)
+	{
+		RuntimeForceAction = NewObject<UInputAction>(this, TEXT("IA_SpnForce_Runtime"), RF_Transient);
+		RuntimeForceAction->ValueType = EInputActionValueType::Boolean;
+
+		RuntimeForceMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnForce_Runtime"), RF_Transient);
+		RuntimeForceMappingContext->MapKey(RuntimeForceAction, DefaultForceKey);
+		if (DefaultForceGamepadKey.IsValid())
+		{
+			RuntimeForceMappingContext->MapKey(RuntimeForceAction, DefaultForceGamepadKey);
+		}
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimeForceMappingContext, RuntimeInteractContextPriority);
+	}
+	return RuntimeForceAction;
+}
+
+void ASupernaturalProtCharacter::DoForce()
+{
+	Interaction->TryForce();
 }

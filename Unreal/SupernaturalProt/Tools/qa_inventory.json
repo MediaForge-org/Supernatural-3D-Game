@@ -539,6 +539,71 @@
       ]
     },
     {
+      "id": "nb04.building_doors",
+      "keys": [
+        "DefaultInteractGamepadKey",
+        "DefaultForceKey",
+        "DefaultForceGamepadKey"
+      ],
+      "title": "Doors with states (closed/open/locked/blocked/broken), keys, forcing, light switches and the candidate-based interaction pick (NightBuild04)",
+      "classes": [
+        "ASpnTestKey",
+        "ASpnLightSwitch"
+      ],
+      "tests": [
+        "SpnGame.NightBuild04.DoorLockedKeyUnlock",
+        "SpnGame.NightBuild04.DoorForceBreaks",
+        "SpnGame.NightBuild04.DoorBlockedRefusesBoth",
+        "SpnGame.NightBuild04.DoorDoesNotCloseOnPawn",
+        "SpnGame.NightBuild04.PersistenceAcrossSaveLoad",
+        "SpnGame.NightBuild04.LightSwitchAndPersistence",
+        "SpnGame.NightBuild04.InteractionPickWallsRangeAnglePriority",
+        "SpnGame.NightBuild04.InteractAndForceAreSeparate",
+        "SpnGame.NightBuild04.InputKeysAreSeparate",
+        "SpnGame.NightBuild04.PickCoreReachNames",
+        "SpnGame.NightBuild04.DoorSwingIsFrameRateIndependent",
+        "SpnQA.HouseJourney",
+        "core:Tests/Core/DoorStatesTests.cpp"
+      ],
+      "gap": "The rendered, walked journey through Lvl_SpnBuildingTest is the gameplay validation run documented in Docs/NightBuild04, not an automated pixel test. A pawn standing in the closing door's swing is covered by SpnQA.Doors, not by the headless NightBuild04 tests. No hardware gamepad test (keys are checked by name only)."
+    },
+    {
+      "id": "nb02.road_navigation",
+      "title": "Map geometry, road routing, navigation session, NPC memory and the NightBuild03 navigation tech demo (USpnMapSubsystem road mode, ASpnNavDemo)",
+      "classes": [
+        "ASpnNavDemo"
+      ],
+      "core_headers": [
+        "GeometryMath.h",
+        "MapGeometry.h",
+        "MapRender.h",
+        "NavigationSession.h",
+        "NpcMemory.h",
+        "Routing.h",
+        "SyntheticMapRegion.h"
+      ],
+      "console": [
+        "Spn.NavDemo.Drive",
+        "Spn.NavDemo.Run"
+      ],
+      "tests": [
+        "SpnCore.Navigation.CoordinateAdapter",
+        "SpnCore.Navigation.WorldToMapRoundTrip",
+        "SpnCore.Navigation.WaypointRoadRoute",
+        "SpnCore.Navigation.ClosureAndReroute",
+        "SpnCore.Navigation.DeviationReroute",
+        "SpnCore.Navigation.UnreachableTargets",
+        "SpnCore.Navigation.RenderFrameZoomRotation",
+        "SpnCore.Navigation.Performance",
+        "core:Tests/Core/MapGeometryTests.cpp",
+        "core:Tests/Core/MapRenderTests.cpp",
+        "core:Tests/Core/NavigationSessionTests.cpp",
+        "core:Tests/Core/NpcMemoryTests.cpp",
+        "core:Tests/Core/RoutingTests.cpp"
+      ],
+      "gap": "Road drawing on map/minimap and the 3D demo region are verified by scripted rendered runs (Docs/NightBuild03, demo video), not by automated pixel tests. The demo autopilot is not a vehicle; NpcMemory has no Unreal owner yet."
+    },
+    {
       "classes": [
         "ASpnWorldPickup",
         "ASpnWorldContainer"

@@ -131,22 +131,24 @@ TEST_CASE("Interact and AvailableVerbs reject invalid ids without touching the s
 
 // --- D1: verbs ------------------------------------------------------------------
 
-TEST_CASE("Verbs: exactly one verb exists today (adding one must update this test)") {
-    CHECK(kAllInteractionVerbs.size() == 1);
+TEST_CASE("Verbs: exactly two verbs exist today (Use, Force) (adding one must update this test)") {
+    CHECK(kAllInteractionVerbs.size() == 2);
     CHECK(kAllInteractionVerbs[0] == InteractionVerb::Use);
+    CHECK(kAllInteractionVerbs[1] == InteractionVerb::Force);
+    CHECK(ToString(InteractionVerb::Force) == "force");
     CHECK(ToString(InteractionVerb::Use) == "use");
     // The value after the last listed verb has no name: the list and enum agree.
     const auto next = static_cast<InteractionVerb>(kAllInteractionVerbs.size());
     CHECK(ToString(next) == "unknown");
 }
 
-TEST_CASE("Verbs: a door offers exactly Use, locked or not") {
+TEST_CASE("Verbs: a door offers Use and Force, locked or not") {
     WorldFacts facts;
     const auto registry = MakeRegistry();
     for (const bool locked : {false, true}) {
         const auto verbs = registry.AvailableVerbs(facts, Door("door_a"), Defaults(false, locked));
         REQUIRE(verbs.HasValue());
-        CHECK(verbs.Value() == std::vector<InteractionVerb>{InteractionVerb::Use});
+        CHECK(verbs.Value() == std::vector<InteractionVerb>{InteractionVerb::Use, InteractionVerb::Force});
     }
 }
 
@@ -372,7 +374,7 @@ TEST_CASE("Case 8: every offered verb either succeeds or is Refused with feedbac
                 const auto result =
                     registry.Interact(facts, Door("door_a"), verb, defaults, "test");
                 // The lock guards opening only: refused exactly when the door is closed and locked.
-                const bool refused = locked && !open;
+                const bool refused = verb == InteractionVerb::Force || (locked && !open);   // Force: these doors are not breakable
                 if (result.HasValue()) {
                     CHECK_FALSE(refused);
                 } else {

@@ -65,6 +65,7 @@ private:
 	FVector LastLocation = FVector(1e18);
 	float LastYaw = 1e9f;
 	uint64 LastRevision = ~0ull;
+	uint64 LastRouteGeneration = ~0ull;
 	float LastZoom = -1.f;
 	bool LastHeadingUp = false;
 	double LastRebuild = -1e9;

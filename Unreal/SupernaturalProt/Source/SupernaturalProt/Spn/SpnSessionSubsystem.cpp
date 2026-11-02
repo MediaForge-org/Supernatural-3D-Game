@@ -181,7 +181,15 @@ void USpnSessionSubsystem::ResetForNewGame()
 	}
 	if (USpnMapSubsystem* Map = Instance->GetSubsystem<USpnMapSubsystem>())
 	{
-		Map->InstallTestDefinition(Map->GetFrame()); // a fresh state on the same definition: no markers, nothing discovered
+		// a fresh state on the same definition: no markers, nothing discovered
+		if (Map->IsSyntheticRegion())
+		{
+			Map->InstallSyntheticRegion(Map->GetFrame());
+		}
+		else
+		{
+			Map->InstallTestDefinition(Map->GetFrame());
+		}
 	}
 	ActiveSlot.Reset();
 }

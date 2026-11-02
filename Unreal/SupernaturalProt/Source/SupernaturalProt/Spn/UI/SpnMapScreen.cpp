@@ -161,6 +161,8 @@ void USpnMapScreen::BuildTree()
 	AddButton(TEXT("ui.map.btn.waypoint"), [this] { PlaceWaypoint(); });
 	AddButton(TEXT("ui.map.btn.remove"), [this] { RemoveWaypoint(); });
 	AddButton(TEXT("ui.map.btn.center"), [this] { CenterOnPlayer(); });
+	AddButton(TEXT("ui.map.btn.closure"), [this] { ToggleRoadClosure(); });
+	AddButton(TEXT("ui.map.btn.modelabel"), [this] { ToggleTravelMode(); });
 	AddButton(TEXT("ui.map.btn.close"), [this] { OnCloseRequested.ExecuteIfBound(); });
 
 	UTextBlock* LegendHead = NewText(11, true, SpnUi::TextDim);
@@ -354,6 +356,39 @@ void USpnMapScreen::RemoveWaypoint()
 	LastRevision = ~0ull;
 }
 
+void USpnMapScreen::ToggleRoadClosure()
+{
+	USpnMapSubsystem* M = Map.Get();
+	SSpnMapView* View = MapView != nullptr ? MapView->GetView() : nullptr;
+	if (M == nullptr || View == nullptr || !M->HasRoadNetwork())
+	{
+		return;
+	}
+	const FVector2D At = View->IsMouseOver() ? View->GetCursorMetres() : GetCrosshairMetres();
+	uint64 Segment = 0;
+	if (!M->FindRoadAt(At, FMath::Max(8.0, 14.0 * View->GetMetresPerPixel()), Segment))
+	{
+		ShowMessage(FSpnUiText::Get(TEXT("ui.map.msg.noroad")), SpnUi::Error);
+		return;
+	}
+	const bool bClose = !M->IsRoadClosed(Segment);
+	if (M->SetRoadClosed(Segment, bClose))
+	{
+		ShowMessage(FSpnUiText::Get(bClose ? TEXT("ui.map.msg.closed") : TEXT("ui.map.msg.opened"), {FText::AsNumber(static_cast<int64>(Segment))}), bClose ? SpnUi::Warning : SpnUi::Good);
+	}
+	LastRevision = ~0ull;
+}
+
+void USpnMapScreen::ToggleTravelMode()
+{
+	if (USpnMapSubsystem* M = Map.Get())
+	{
+		M->SetTravelMode(M->GetTravelMode() == ESpnTravelMode::Driving ? ESpnTravelMode::OnFoot : ESpnTravelMode::Driving);
+		ShowMessage(FSpnUiText::Get(TEXT("ui.map.btn.mode"), {FSpnUiText::Get(M->GetTravelMode() == ESpnTravelMode::Driving ? TEXT("ui.map.route.mode.car") : TEXT("ui.map.route.mode.foot"))}), SpnUi::Good);
+		LastRevision = ~0ull;
+	}
+}
+
 void USpnMapScreen::OnMapClick(const FVector2D& Metres, bool bRight)
 {
 	USpnMapSubsystem* M = Map.Get();
@@ -453,6 +488,8 @@ bool USpnMapScreen::HandleKey(const FKey& Key, bool bRepeat, bool bShift)
 	if (Key == EKeys::Gamepad_LeftShoulder) { Keyboard(); SelectNext(-1); return true; }
 	if (Key == EKeys::C || Key == EKeys::Home || Key == EKeys::Gamepad_LeftThumbstick) { CenterOnPlayer(); return true; }
 	if (Key == EKeys::F) { View->FitToBounds(); return true; }
+	if (Key == EKeys::X) { ToggleRoadClosure(); return true; }
+	if (Key == EKeys::T) { ToggleTravelMode(); return true; }
 	return true; // modal: nothing else reaches the game while the map is open
 }
 
@@ -563,7 +600,27 @@ void USpnMapScreen::RefreshTexts()
 	if (bPose)
 	{
 		const FSpnNavigationReading Reading = M->GetNavigation(Location, Yaw);
-		if (Reading.bActive)
+		if (Reading.bActive && !Reading.bStraightLine)
+		{
+			// road navigation: the numbers are those of the Core route, never an air line
+			if (Reading.Status == ESpnNavStatus::NoRoute)
+			{
+				const FText Why = FSpnUiText::Get(*(FString(TEXT("ui.nav.fail.")) + Reading.FailureText));
+				WaypointInfo = FSpnUiText::Get(TEXT("ui.map.route.noroute"), {FText::FromString(Reading.Label), Why});
+			}
+			else if (Reading.bArrived)
+			{
+				WaypointInfo = FSpnUiText::Get(TEXT("ui.map.waypoint.arrived"), {FText::FromString(Reading.Label)});
+			}
+			else
+			{
+				FSpnRouteView Route;
+				M->GetRoute(Route);
+				WaypointInfo = FSpnUiText::Get(TEXT("ui.map.route.info"), {FText::FromString(Reading.Label), Distance(Reading.DistanceMetres), Distance(Route.StraightLineMetres),
+					Reading.bOffRoute ? FSpnUiText::Get(TEXT("ui.map.route.offroute")) : FText::GetEmpty()});
+			}
+		}
+		else if (Reading.bActive)
 		{
 			WaypointInfo = Reading.bArrived
 				? FSpnUiText::Get(TEXT("ui.map.waypoint.arrived"), {FText::FromString(Reading.Label)})
