@@ -56,6 +56,7 @@ Gruppe zu [Modul 02](02-Vision-und-Grundprinzipien.md).
 | VEH-DEC-GP-011 | Die Weltgröße ist nirgends fest verdrahtet; das Fahrzeug- und Verkehrssystem skaliert mit Netz und Siedlung | 📋 BESCHLOSSEN | `N-LT-007`; `M-PD` ‚Final map size … calibrated‘ | ALL | Kalibrierung der Weltgröße an Fahrzeiten: `W-GE-026` |
 | VEH-DEC-GP-012 | Zug und Bus sind für lange Strecken bevorzugt; Radio-Verkehrsmeldungen bei Stau | 📋 BESCHLOSSEN | `W-VK-014` | VKR OPV | – |
 | VEH-DEC-GP-013 | Verkehr ist Teil der NPC-Gesellschaft: NPC-Fahrzeuge gehören NPC-Haushalten und Firmen, es gibt keine eigenständige Verkehrspopulation | 🧩 ABGELEITET | `N-ID-005`, `N-ID-007`, `N-LE-006`, `N-LT-008` | NPC VKR | Begründung und Ausnahmen (Statisten) in Modul 14 |
+| VEH-DEC-GP-020 | Fahren ist kein Zwang: Parken, Fahren und Mitfahren sind Angebote; Zug und Bus sind für lange Strecken bevorzugt (SY-FAHR-028) | 📋 | `Fahrzeuge-und-Verkehr/02-Vision-und-Grundprinzipien.md` P10 (Zeile 59) | ALL | Ergänzt; GP-012 bleibt unverändert |
 | VEH-DEC-GP-014 | Verhalten wird über austauschbare Datenprofile je Region und Straßenklasse beschrieben, nicht über feste Konstanten | 💡 VORSCHLAG | `CLAUDE.md` §4; `WF-RG` | ALL | Profilformat offen: `CQ-01` |
 | VEH-DEC-GP-015 | Besitzer, Zustand, Standort und Rechtslage eines Fahrzeugs haben je genau einen Eigentümer; Änderungen laufen über Ereignisse | 💡 VORSCHLAG | Folge aus `N-LT-008` | FZ PER | Eigentümerliste in Modul 22 |
 | VEH-DEC-GP-016 | Wie viele Wiedergabetreue-Stufen und Assistenzoptionen der Straßenverkehr bietet, ist nicht beschlossen | ❓ OFFEN | `W-FP-007` (🧭 Hooks); `W-FP-010` | FZ UI | `CQ-02` |
@@ -85,7 +86,7 @@ Gruppe zu [Modul 03](03-Fahrzeugklassen-und-Fahrzeugdaten.md).
 | VEH-DEC-KL-012 | Die Anzahl der Fahrzeugtypen ist nicht beschlossen; das Beispiel 250/120 aus dem Assistentenvorschlag ist Illustration | 💡 VORSCHLAG | `W-FZ-018` | FZ | – |
 | VEH-DEC-KL-013 | Antriebsarten jenseits Verbrenner und Elektro (Hybrid, Wasserstoff) sind nicht belegt | 🔍 UNBELEGT | `W-FZ-019` nennt nur Verbrenner und E-Laden | FZ | `CQ-07` |
 | VEH-DEC-KL-014 | Spezialfahrzeuge der Hunter sowie Rettungs- und Feuerwehrfahrzeugtypen sind nicht belegt; Polizei- und Taxi/Fleet-Varianten nennt der Master als Trim-Familien | 🔍 UNBELEGT | [Welt 13](../World/13-Fahrzeuge-und-Fahrzeugklassen.md) §9; `M-PS31` §40 (Familien) | FZ | Verkehrsrolle bleibt davon unberührt; Trim-Familien: `VEH-DEC-KL-017` |
-| VEH-DEC-KL-015 | Luft-, Wasser- und Schienenfahrzeuge sind Besitz- und Persistenzfälle dieses Ordners, ihre Betriebsregeln liegen in der Welt-Dokumentation | 💡 VORSCHLAG | `W-VK-004`, `W-VK-011`, `W-VK-012` | FZ PER | – |
+| VEH-DEC-KL-015 | Luft-, Wasser- und Schienenfahrzeuge sind Besitz- und Persistenzfälle dieses Ordners, ihre Betriebsregeln liegen in der Welt-Dokumentation ([World/09](../World/09-Strassen-Schiene-und-Verkehrsinfrastruktur.md) §3: Anlagenbereiche 📋, Fahren nur mit Job/Berechtigung, NPC-Betreiber; SY-FAHR-027) | 💡 VORSCHLAG | `W-VK-004`, `W-VK-011`, `W-VK-012` | FZ PER | – |
 | VEH-DEC-KL-016 | Das Getriebe gehört zur konkreten Fahrzeugvariante: Man kauft nicht ein Fahrzeug und schaltet es beliebig per Menü zwischen Handschaltung, Doppelkupplung und Automatik um; Handschaltung, Wandlerautomatik, Doppelkupplung, sequenzielle und weitere Getriebearten können nebeneinander bestehen | 📋 BESCHLOSSEN | `M-DC31` §30; `M-PS31` §39; `W-FZ-004` | FZ | Ergänzt `VEH-DEC-KL-006` |
 | VEH-DEC-KL-017 | Fahrzeugfamilien können Economy, Sport, GT, Track Edition, Rally Homologation, Rally Version, Off-Road, Police, Taxi/Fleet, Utility, Luxury, Performance, Limited und Modelljahrvarianten enthalten; auch Kleinwagen können echte Rallye- und Homologationsversionen mit anderem Antrieb, Bremsen, Fahrwerk, Übersetzung, Verstärkung und Aero haben | 📋 BESCHLOSSEN | `M-DC31` §31; `M-PS31` §40 | FZ RAC | Liste nicht abschließend (‚können‘) |
 
@@ -674,7 +675,7 @@ Gruppe zu [Modul 27](27-Performance-und-Skalierung.md).
 | VEH-DEC-PF-010 | Ein Messplan mit Szenarien (Innenstadt, Autobahn, Zeitsprung, Koop, Streaming) liefert die Zahlen; sie stehen erst nach der Ausführung in Berichten | 💡 VORSCHLAG | Ableitung aus `CLAUDE.md` §7 | PF TST | `CQ-118` |
 | VEH-DEC-PF-011 | Große Städte brauchen kein anderes System, nur andere Profile (Bezirksprofile) und einen strengeren Blick auf Darstellungskosten | 💡 VORSCHLAG | Ableitung aus `W-UR-015`, `VEH-DEC-SP-010` | PF WLT | `CQ-117` |
 | VEH-DEC-PF-012 | Für Fahrzeuge und Verkehr liegen weder Leistungsmessungen noch Budgets noch Zielhardware vor | 🔍 UNBELEGT | – | PF | – |
-| VEH-DEC-PF-013 | Stadtgrößen sind Szenarien: bei 2.200 km² etwa 20 bis 25 km² für die Metropole und 8 bis 10 km² für andere große Städte; das städtische Flächenwachstum soll mit der Weltgröße unterlinear steigen | 🧭 RICHTUNG | `M-A1015` (PROVISIONAL) | PF WLT | Keine Entscheidung; ältere Kandidaten weichen ab (Welt 03) |
+| VEH-DEC-PF-013 | Stadtgrößen sind Szenarien: bei 2.200 km² etwa 20 bis 25 km² für die Metropole und 8 bis 10 km² für andere große Städte; das städtische Flächenwachstum soll mit der Weltgröße unterlinear steigen | 🧭 RICHTUNG | `M-A1015` (PROVISIONAL) | PF WLT | Keine Entscheidung; ältere Kandidaten weichen ab (Welt 03). **Die Basis 2.200 km² ist überholt (N-01, 08.11.2026); die Stadtgrößen hängen an der offenen Weltgröße (SY-WELT-006).** |
 
 ---
 
@@ -709,3 +710,15 @@ Gruppe zu [Modul 27](27-Performance-und-Skalierung.md).
 | LS | 14 |
 | PF | 13 |
 | **gesamt** | **407** |
+
+## Konsolidierung 08.11.2026 (Systemintegration)
+
+| Lücke | Inhalt | Status |
+|---|---|---|
+| L-05 Gehen/Fahren-Kreuz (ST-011) | siehe Kampfsystem/27 | Entscheidung offen |
+| L-06 L2-Doppelbelegung im Prototyp (ST-003) | zwei Belegungen von L2 | Prototyp-Entscheidung offen |
+| L-07 Schadenstiefe (ZV-003, ZV-004, ZV-013) | nicht festgelegt (W-10) | Entscheidung offen |
+| L-08 Speichergröße (PE-015) | siehe Ermittlung/20, L-08 | Entscheidung offen |
+| L-09 Unreal-Version (UE-003) | Projektangabe 5.8.4, im Kanon nicht genannt | Abgleich offen |
+| L-10 Fahndung (PV-005) | siehe Ermittlung/20, L-10 | Entscheidung offen |
+| L-17 Schienen-Betriebsmodul (KL-015) | nicht im Ordner | Lücke, nicht ergänzt |

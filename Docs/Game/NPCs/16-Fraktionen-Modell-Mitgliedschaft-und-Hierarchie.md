@@ -389,7 +389,7 @@ Das Ziel ist ‚nicht dasselbe Missionssystem mit anderem Skin‘ (`23#680A`). D
 9. **Gruppenkrieg trifft Zivilisten.** Opferzahl, Polizeieinsatz, öffentliche Reaktion (Modul 15).
 10. **Mod-Fraktionen.** Registrierung additiv; unbekannte Fraktionsdaten bleiben unverändert (Modul 23).
 11. **Hauptstory-Fraktionen.** Autorenschutz (Modul 11 §12).
-12. **Fraktionen im Untergrund.** Offen (Q-N25).
+12. **Fraktionen im Untergrund.** **historisch (N-02, 08.11.2026)** für die Untergrundzivilisation; Restfrage für Bunker, Höhlen und kleinere Untergrundbereiche bleibt offen (Q-N25).
 13. **Koop.** Fraktionsmitgliedschaft je Spieler im Host-Speicherstand (N-FR-028, Q-N15).
 14. **Spieler tritt aus der Hunter-Crew aus?** Die Quellen sehen das nicht vor; offen.
 

@@ -135,10 +135,12 @@ Aus `M-WB17` Block 6 (📋; als Planung, nicht implementiert):
 - Tiefe Tierwelt: große Tiere, Raubtiere, Kleintiere, Vögel, Wassertiere, Haustiere, Nutztiere, Pferde, Fortpflanzung, Kadaver/Aasfresser, Überfahrene (M-WB17 Block 6).
 - Tiere reagieren auf Übernatürliches ohne perfekte Detektoren.
 - Jagd in legalen/besonderen Gebieten, tiefe Angelmechanik, Tierstudium und Fotografie.
+- **Artenzahl (Zielbereich, vorläufig, V-07):** etwa 220–280 Tier-, Vogel- und Fischarten auf der Hauptkarte; auf späteren Karten oder im DLC mehr (`Spielwelt-und-Untergrund.md` §9.2, 📋 Ziel; `Entscheidungsstatus.md` §3). Keine Festlegung.
+- **Studium einer Art** braucht eine bewusste Studier-Aktion; bloßes Sehen genügt nicht für vollständige Dokumentation. Archivpflichtige gewöhnliche Arten sind nicht dauerhaft verpassbar (`Spielwelt-und-Untergrund.md` §9.2).
 - Unterwasserwelt mit Schwärmen, Vegetation, Felsen, Wracks, Höhlen, Tiefzonen und überfluteten Ruinen.
 - **Monsterökologie** (Territorien, Nester, Rudel, Wanderung) braucht Wildnis; **Fegefeuer** ist das stärkste Ökologie-Reich ([Modul 26](26-Reiche-Zeitreise-und-historische-Weltzustaende.md)).
 
-Die Details der Tierarten liegen **nicht** in den Weltquellen; die Prompt-Entwürfe `37-wildlife-study-harvest-forensics` führen sie nur als Planungsinventar.
+Die vollständige Artenliste liegt **nicht** vor (Artenliste, Klassenabdeckung und Studienkriterien sind laut `Spielwelt-und-Untergrund.md` §9.2 ❓ offen); die Prompt-Entwürfe `37-wildlife-study-harvest-forensics` führen sie nur als Planungsinventar.
 
 ---
 
@@ -173,3 +175,12 @@ Die Details der Tierarten liegen **nicht** in den Weltquellen; die Prompt-Entwü
 5. Anzahl und Lage von Naturhöhlen und deren Verhältnis zum Untergrund.
 6. Fläche und Gestalt der Ostinsel; ob sie Berge hat.
 7. Ob die Außengrenze Gebirge, Tal, Wald oder Straße ist (nur ‚natürlich‘ festgelegt).
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Ergänzung: Ostinsel (08.11.2026)
+- Die bevorzugte Variante der Ostinsel ist nicht eindeutig identifizierbar (Master: `D19-REQ:24`). Eine Festlegung fehlt.

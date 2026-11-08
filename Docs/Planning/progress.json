@@ -1,0 +1,20 @@
+{
+  "package": 2,
+  "references_checked": 161,
+  "broken_references": [],
+  "files": [
+    "README.md",
+    "DECISIONS.md",
+    "SOURCES.md",
+    "CONFLICTS.md",
+    "OPEN_QUESTIONS.md",
+    "CHANGELOG.md"
+  ],
+  "next": [
+    "Paket 2: Docs/Game/Entscheidungsstatus.md §6.5–7",
+    "Paket 3: Docs/Game/Gameplay-Systeme.md",
+    "Paket 4: Docs/Game/Spielvision.md",
+    "Paket 5: Docs/Game/Spielwelt-und-Untergrund.md",
+    "Paket 6: 01_CURRENT_CANONICAL_STATE (Master)"
+  ]
+}

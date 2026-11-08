@@ -21,6 +21,8 @@ Teil der Welt-Dokumentation ([Index](README.md)).
 
 ## 1. Untergrundgesellschaft
 
+> ⚠️ **historisch (N-02, 08.11.2026): Die vollständige unterirdische Zivilisation entfällt. Die Aussagen dieses Abschnitts beschreiben den früheren Stand. Welche davon für Bunker und kleinere Untergrundbereiche gelten, ist offen. Die Geltung der U24–U36-Inhalte nach N-02 ist durch K-29 zu klären.**
+
 | Merkmal | Status | Quelle |
 |---|:---:|---|
 | Keine konventionelle Regierung, keine Steuern; Selbstorganisation; Grundbedürfnisse am Nutzungspunkt kostenlos | 📋 | D15-U; D16-AI; M-AD1018 |
@@ -73,6 +75,8 @@ Für Oberflächen-NPCs belegt (M-WB89 Block 8, 📋 als Planung): Routinen nach 
 ## 6. Oberflächenwirtschaft
 
 (M-WB17 Block 2/3, 📋 Planung): dynamische Wirtschaft; 20–40 Konzerne plus lokale Firmen; Branchen (Finanz, Forschung, Medien, Gesundheit, Tourismus, Landwirtschaft, Forst, Bergbau, Lebensmittel, Häfen, Fischerei, Energie, Telekom); ISPs mit bis ~50 Gbit/s; Börse mit Aufträgen, Short, Dividenden; Krypto; 12–18 Buchmacher (sharp/soft); Glücksspiel; Firmenjobs optional; Taxi, Rideshare, Lieferung, Trucking; Immobilienmarkt mit Mieten und Weitervermietung; Bargeld nur am Körper gefährdet; optionale Echtgeld-Abkürzung nicht notwendig (23#575E). Details: [Gameplay-Systeme](../Gameplay-Systeme.md).
+
+**Optionale Systeme (W-WI-003 bis W-WI-006, 📋):** Börse nur mit fiktiven börsennotierten Firmen; Krypto mit etwa 10–20 Münzen; Sportwetten mit 12–18 Buchmacher und Wettbörse; Glücksspiel und Pferderennen. Börse, Krypto, Wetten und Glücksspiel sind **optionale** Systeme. Firmenjobs sind optionales Geldverdienen, nicht die Hunter-Hauptstory. Taxi, Rideshare, Lieferung und Trucking sind Geldquellen. Bargeld: nur das Geld am Körper ist gefährdet (Fahrzeug, Safe, HQ und Bank nicht automatisch).
 
 ---
 

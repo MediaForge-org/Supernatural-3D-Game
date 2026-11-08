@@ -122,3 +122,13 @@ Reihenfolge laut Quellen: (1) Anforderungen und Spatial Allocation (M-W15R), (2)
 ## 12. Offene Punkte
 
 CRS und Toleranzen; Quelle der Geometrie (Handzeichnung, Generator, GIS-Digitalisierung der Skizze); Verhältnis zu `SPN_SCALE_MASTER_V1`; Rohdaten der Kandidaten; DEM-Auflösung; Form der Landmaske; Format für Landschaft → Unreal.
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Ergänzungen aus dem Master-Abgleich (08.11.2026)
+- **Flächenbilanz mit Toleranz** (Master: `D19-CHK:8`): Die Akzeptanz verlangt eine Bilanz mit Toleranz. Die Toleranz ist nicht festgelegt und bleibt offen.
+- **Phase-A-Freigabe** (Master: `W700-PA:24–25`): Das Manifest ist erst nach Freigabe maßgeblich. Welche Fassung gilt (9 oder 11 Regionen), ist *blockiert (K-19)*.

@@ -63,6 +63,8 @@ Feuerwehr, Rettung, Polizei, Abschleppdienst, Bergrettung, Wasserrettung, Suchak
 
 Stabile IDs für wichtige Entitäten; segmentierte, absturzsichere Saves (M-PD §World state). Für Verkehr: Fahrzeuge persistieren (Fahrzeugzustand), Menge/Zugidentitäten sind Vorschlag. Host-Save-autoritativ im Koop (CLAUDE.md §6).
 
+**Save-Größe, Konflikt K13 (offen):** Master langfristig 20–50 MB (M-PD, Ziel); Assistentenvorschlag 50–150 MB (💡, 11.09.); der Entwickler hält Saves für „eher kleiner“ (35#279E). Keine Zahl ist entschieden; die Auswirkung auf Delta-Save und NPC-Zustände bleibt offen (`World/21` K13, `World/18` §9).
+
 ---
 
 ## 8. Leistung und Budgets

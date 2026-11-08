@@ -285,7 +285,7 @@ Die Quellen verlangen, dass die Welt nach Ereignissen nicht sofort perfekt wird;
 8. **Hunter bei Ereignissen.** Hunter kommen nach Gerüchten; sie bemerken Anzeichen früher.
 9. **Zusammenbruch von Kommunikation.** Funkloch, Blackout: Gerüchte laufen langsamer, Panik anders.
 10. **Ereignis zu Feiertagen.** Menschenmenge, Familienbesuche, Verkehr; Halloween: Kostüme verwechselt (N-WE-016).
-11. **Katastrophen im Untergrund.** Offen (Q-N25).
+11. **Katastrophen im Untergrund.** **historisch (N-02, 08.11.2026)** für die Untergrundzivilisation; Restfrage für Bunker, Höhlen und kleinere Untergrundbereiche bleibt offen (Q-N25).
 12. **Behörden leugnen.** NPCs glauben offiziellen Erklärungen unterschiedlich (Modul 06 §4).
 
 ---

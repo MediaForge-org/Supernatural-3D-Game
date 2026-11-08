@@ -36,6 +36,7 @@ add_library(spn_core STATIC
     src/NpcMemory.cpp
     src/ObjectPersistence.cpp
     src/Pickup.cpp
+    src/CasePrototype.cpp
     src/TestDoor.cpp
     src/Traversal.cpp
     src/SpatialGrid.cpp

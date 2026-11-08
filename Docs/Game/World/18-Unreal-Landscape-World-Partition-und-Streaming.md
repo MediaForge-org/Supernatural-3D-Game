@@ -36,6 +36,7 @@ Teil der Welt-Dokumentation ([Index](README.md)). Daten: [Modul 17](17-Weltgener
 | Stabile IDs, segmentierte Saves | 📋 | M-PD §World state |
 | Performance-Budgets von Anfang an, gemeinsam geplant; Hardwarestufen offen | 📋 / ❓ | M-PD §Rendering |
 | Engine-neutrale Simulationsgrenzen wo sinnvoll | 📋 | M-AD1015 |
+| Open-World-Simulationskern (Welt, NPCs, Wirtschaft, Fahrzeuge, Verkehr, Wetter, Immobilien, Innenräume, Bau, Sport, Polizei, Internet, Persistenz) bleibt IP-neutral wiederverwendbar | 📋 | W-TE-013 (`20-Entscheidungsregister.md`); M-LATE (nicht im Detail geprüft) |
 
 ---
 
@@ -85,7 +86,7 @@ Entwurf `022_create-road-network-gameplay-metadata-layer`, `023_create-road-rele
 
 ## 9. Save/Load und Persistenz
 
-📋 Saves: segmentiert, inkrementell, absturzsicher, migrierbar, wiederherstellbar, komprimiert; Ziel 20–50 MB langfristig; Korrektheit vor Größe. Weltzustand verfolgt Falllösung, NPC lebend/tot, Beziehungen, veränderte Orte, Wissen, Monsteraktivität, Ruf, Fahrzeuge, Safehouses, Ereignisse, Zeit (M-PD). Host-Save-autoritativ im Koop (CLAUDE.md). Zeitreise: Saves müssen Epochenvarianten tragen (M-CA0905 §2). Repository-Realität: WorldFacts/Save-Prototyp berichtet (D19, nicht geprüft); eigene Entscheidungen in `Docs/Decisions/`.
+📋 Saves: segmentiert, inkrementell, absturzsicher, migrierbar, wiederherstellbar, komprimiert; Ziel 20–50 MB langfristig (M-PD); Korrektheit vor Größe. **Konflikt K13, offen:** Der Assistent schlug 50–150 MB (💡, 11.09.) und für extrem veränderte Stände 150–300 MB vor; der Entwickler sagte „eher kleiner“ (35#279E). Keine der Zahlen ist entschieden (`World/21` K13). Weltzustand verfolgt Falllösung, NPC lebend/tot, Beziehungen, veränderte Orte, Wissen, Monsteraktivität, Ruf, Fahrzeuge, Safehouses, Ereignisse, Zeit (M-PD). Host-Save-autoritativ im Koop (CLAUDE.md). Zeitreise: Saves müssen Epochenvarianten tragen (M-CA0905 §2). Repository-Realität: WorldFacts/Save-Prototyp berichtet (D19, nicht geprüft); eigene Entscheidungen in `Docs/Decisions/`.
 
 ---
 

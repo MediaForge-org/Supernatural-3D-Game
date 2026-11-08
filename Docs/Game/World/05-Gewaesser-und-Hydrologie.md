@@ -25,6 +25,7 @@ Teil der Welt-Dokumentation ([Index](README.md)). Register: [Modul 20](20-Entsch
 |---|:---:|---|
 | Flüsse, Kanäle, Sumpfarme und zersplittertes Wasser **deutlich reduzieren**; wenige zusammenhängende natürliche Entwässerungssysteme, glaubhafte Seeabflüsse | 📋 | D18-MAP |
 | Wasser dominiert das bewohnbare Land nicht; nicht alle Siedlungen werden Wasserstädte | 📋 | D18-MAP |
+| Keine freien Flussenden, ungeklärte Gabelungen oder unplausible Kreuzungen (Anforderung 📋; die Prüfmethode ist 💡, siehe §5) | 📋 / 💡 | D19-REQ; D19-CHK; W-WA-007 |
 | Benannte Seen: Lake Alder (mit Alder Isle), Lake Meridian, South Reservoir; dazu Greywater Bay | 🧭 | D18-MAP; D19-REQ |
 | Ruhigere, organisch regelmäßige Ostküste; eine große Insel | 📋 | D18-MAP; D19-REQ |
 | Natürliche Seeabläufe und durchgängige Flusstopologie | 📋 | D19-REQ |
@@ -82,7 +83,7 @@ Maßgeblich (D19-REQ, D19-CHK):
 
 ## 5. Hydrologische Regeln und Prüfungen
 
-Aus D19-CHK (Prüfvorschlag, 💡; keine genehmigte Methode):
+Aus D19-CHK (Prüfvorschlag, 💡; keine genehmigte Methode). Quantitative Toleranzen sind nicht festgelegt: Die verbindliche Regel (W-WA-003) nennt keine Zahl, und die Toleranz ist vor der Abnahme zu definieren (Punkt 2).
 
 1. Ein autoritatives Koordinatensystem mit Einheiten, Grenzen und Maßstab; Flächen in km² mit geeigneter flächentreuer Methode oder kontrolliertem planarem CRS.
 2. Trockenes Festland = 2.200 km²; Metropolis-Polygon = 110 km² innerhalb des Festlands; `Festland − Metropolis` = 2.090 km²; Insel getrennt; Seen und Reservoir **abziehen**; Toleranz vorher definieren.

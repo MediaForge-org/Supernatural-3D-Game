@@ -23,7 +23,7 @@ Teil der Welt-Dokumentation ([Index](README.md)). Raum und Technik: [Modul 11](1
 
 ## 1. Überblick
 
-Unter der Oberfläche liegt eine **eigenständige Zivilisation**, kein Ausbau der Hunter-Basis, in mehreren verborgenen Städten, verbunden durch ein unterirdisches Transportsystem (D14-UC). Sie ist weitgehend ohne konventionelle Regierung und Steuern, mit kostenlosen Grundbedürfnissen am Nutzungspunkt, getragen von fiktiver Energie und Automatisierung (D15-U, D16-AI). Ihre Technik ist **fiktiv** („free energy“), kein Anspruch auf reale Physik.
+> ⚠️ **historisch (N-02, 08.11.2026): Die vollständige Untergrundzivilisation entfällt. Dieser Abschnitt beschreibt den früheren Stand.** Unter der Oberfläche liegt eine **eigenständige Zivilisation**, kein Ausbau der Hunter-Basis, in mehreren verborgenen Städten, verbunden durch ein unterirdisches Transportsystem (D14-UC). Sie ist weitgehend ohne konventionelle Regierung und Steuern, mit kostenlosen Grundbedürfnissen am Nutzungspunkt, getragen von fiktiver Energie und Automatisierung (D15-U, D16-AI). Ihre Technik ist **fiktiv** („free energy“), kein Anspruch auf reale Physik.
 
 ---
 
@@ -86,7 +86,7 @@ Eine **fiktive Machtgruppe** einzelner Personen verschiedener Herkunft; keine re
 
 ## 7. Größe und Bevölkerung
 
-| Wert | Status | Quelle |
+> ⚠️ **historisch (N-02, 08.11.2026): Größen und Bevölkerungszahlen der Untergrundstädte sind nicht mehr verbindlich. Die Weltgröße ist offen (N-01).** | Wert | Status | Quelle |
 |---|:---:|---|
 | Größte Stadt: horizontale Fläche tentativ 50–100 km² | 🧭 | M-AD1015; M-AD1018 |
 | Gesamtbevölkerung grob mehrere hunderttausend bis ~1 Mio. | 🧭 | D14-CL; M-AD1015 |
@@ -120,7 +120,7 @@ Beispielrechnungen siehe [Modul 11](11-Untergrund-Architektur-und-Infrastruktur.
 
 ## 10. Spielerische Möglichkeiten (nicht kanonisch)
 
-Nur 💡 aus D14-NS: beschränkte Bahnhöfe und Fahrten zwischen Stadtkulturen; verstecktes Archiv, das zeigt, dass die Elite die Technik falsch einschätzt; Ermittlung zu einer gefälschten Identität; seltene Begegnungen mit geschwächten Erbauern. Keine gesperrten Missionen oder Enthüllungen.
+Nur 💡 aus D14-NS (**historisch nach N-02**): beschränkte Bahnhöfe und Fahrten zwischen Stadtkulturen; verstecktes Archiv, das zeigt, dass die Elite die Technik falsch einschätzt; Ermittlung zu einer gefälschten Identität; seltene Begegnungen mit geschwächten Erbauern. Keine gesperrten Missionen oder Enthüllungen.
 
 ---
 

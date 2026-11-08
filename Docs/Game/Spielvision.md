@@ -181,7 +181,7 @@ Konkrete Figurennamen, Handlungsstränge oder Kapitelinhalte gehören deshalb **
 - 📋 Ein **dauerhaftes Hauptquartier** ist das emotionale und soziale Zentrum. Es **wächst**, statt dass die Gruppe grundlos umzieht. Bereiche können Schlafzimmer, Küche, Wohnzimmer, Garage, Waffenraum, Archiv, Werkstatt, Training, Krankenzimmer, Sicherheitsräume, Lager und Forschung umfassen.
 - 📋 Die Crew lebt dort: schlafen, essen, trainieren, recherchieren, Fahrzeuge reparieren, Waffen pflegen, telefonieren, fernsehen, reden, streiten, feiern, gehen und zurückkommen.
 - 📋 Versorgung (Lebensmittel, Medikamente, Munition, Waffenpflege, Ritualmaterial, Treibstoff, Werkstattmaterial) soll **organisch** sein, ohne lästigen Verwaltungszwang. Die Crew kann selbst Geld, Vorräte, Ersatzteile und Informationen beisteuern. Optionale Arbeiten (Waffen reinigen, Munition sortieren, Fahrzeug warten, Garage aufräumen, Archiv sortieren, Vorräte verstauen) und spontane Feiern nach Erfolgen oder Geburtstagen sind möglich, aber nie Pflichtmissionen. Große Vorräte werden nachgefüllt, damit Munition kein sinnloses Mikromanagement erzeugt.
-- 📋 **Feldbasen** (Motels, Hütten, gemietete Häuser, Unterschlupfe, Bunker) dienen entfernten Handlungsbögen; ein kleines mobiles Wildnislager aus Fahrzeug- und Campingausrüstung ist möglich.
+- 📋 **Feldbasen** (Motels, Hütten, gemietete Häuser, Unterschlupfe, Bunker) dienen entfernten Handlungsbögen; ein kleines mobiles Wildnislager aus Fahrzeug- und Campingausrüstung ist möglich. Der Bunker als Feldbasis ist ❓ offen (K-28).
 - ❓ Der Standort, Aufbau, die Ausbaufolge und mögliche geschichtsbedingte Umzüge sind offen.
 - Eine **öffentliche Spielerkarte** zeigt das Hauptquartier nicht auffällig; geheime Orte bleiben an Entdeckung und Handlung gebunden.
 
@@ -240,7 +240,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 - **Qualitative Anzeige** des Wissens statt ständiger Prozentzahlen. Unbekannter Inhalt verrät seine Kategorie nicht: Kennt man sieben von zehn Einträgen eines Gebiets, erscheinen die übrigen drei nur als „Unbekannt“. Gebiete haben absichtlich unterschiedliche Kategorie-Mischungen, damit die Oberfläche nicht verrät, was fehlt. Eine optionale exakte Fortschrittsanzeige ist später denkbar.
 - **Kartenhierarchie:** Welt → Region/County → Stadt → Bezirk → relevante Straße/Ort → Gebäude/Komplex.
 - **Hunter-Aufzeichnung:** Ein eigenes Fortschrittsmenü zeigt Geschichte, Fälle, Scheitern und ungelöste Fälle, Monster, Orte, Sammelobjekte, Erkundung, Artefakte, Waffen, Rituale und Personen. Der Monsterstatus ist reicher als „getötet“: begegnet, identifiziert, erforscht, vertrieben, gebannt, gefangen, getötet, Fluch gebrochen und mehr.
-- **Sammelobjekte:** Der ursprüngliche Plan sah etwa 1.200–1.500 physische Sammelobjekte vor, das galt für das frühere, viel kleinere Weltkonzept (🕰️). **Für die heutige Welt sind die Zahlen offen** und müssen je Kategorie neu zugeordnet werden (nicht linear skalieren). Sammelobjekte sind optional. Entdeckungen (Orte, Straßen, Gebäude, Höhlen, Gewässer, Geschichte) sind eine getrennte Ebene und nicht alle physische Funde. Die Gesamtzahl der verfolgten Einträge lag früher bei etwa 5.000, ebenfalls ❓.
+- **Sammelobjekte:** Der ursprüngliche Plan sah etwa 1.200–1.500 physische Sammelobjekte vor, das galt für das frühere, viel kleinere Weltkonzept von etwa 200 km² (🕰️, **historisch; keine aktuelle Weltgröße**; Master `CANONICAL_ADDENDUM_2026-09-05.md` §6, Zeile 79). Die heutige Weltgröße ist offen (N-01). **Für die heutige Welt sind die Zahlen offen** und müssen je Kategorie neu zugeordnet werden (nicht linear skalieren). Sammelobjekte sind optional. Entdeckungen (Orte, Straßen, Gebäude, Höhlen, Gewässer, Geschichte) sind eine getrennte Ebene und nicht alle physische Funde. Die Gesamtzahl der verfolgten Einträge lag früher bei etwa 5.000, ebenfalls ❓.
 
 ---
 
@@ -261,7 +261,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 
 ### 9.2 Schwächen, Widerstände und Anatomie
 
-- **Schwächen wirken nicht nur als Bonusschaden.** Eine kanonische Schwäche kann tödlich, stark schädigend, regenerationshemmend, abwehrend, lähmend, schutzbrechend, manifestationszwingend, wahre Gestalt enthüllend oder fähigkeitsstörend sein.
+- **Schwächen wirken nicht nur als Bonusschaden.** Eine Schwäche kann tödlich, stark schädigend, regenerationshemmend, abwehrend, lähmend, schutzbrechend, manifestationszwingend, wahre Gestalt enthüllend oder fähigkeitsstörend sein. Vorbereitung und mehrere Tötungswege sind akzeptiert (Master `BLOCK_09_STATUS.md:5`); die frühere Formulierung „eine kanonische Schwäche“ ist nicht Master-konform.
 - **Widerstände** sind intern abgestuft (immun bis empfindlich), die Oberfläche zeigt aber beobachtete Belege, keine Prozentwerte.
 - **Anatomie ist modular und artspezifisch** (Körperregionen, Strukturen, lebenswichtige Organe, Fortbewegung, Sinnesorgane, übernatürliche Strukturen). Wo ein Wesen körperlich ist, gelten funktionale Verletzungen (ein zerstörtes Bein beeinträchtigt die Bewegung, außer es gibt eine Regenerations- oder Ausgleichsregel).
 - **Regeneration** wird in Rate, regenerierbare Gewebe, Knochen/Organe/Gliedmaßen, Ressourcen, Umweltbedingungen, Unterdrücker und absolute Grenzen zerlegt.
@@ -349,7 +349,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 | Modus | Planung | Status |
 |---|---|---|
 | **Einzelspieler** | Komplett offline spielbar; Mods ja; Cheats ja; lokale Spielstände | 📋 |
-| **Koop-Kampagne** | Die Einzelspieler-Kampagne mit Freunden, **primär 2–4 Spieler**; keine eigene Koop-Geschichte nötig; Mods ja; Cheats ja; **kein Transfer zur offiziellen Online-Progression**. Fortschritt gehört dem Spielstand des Gastgebers; Gast-Fortschritt ist an den Host-Spielstand gebunden. | 📋 Richtung; ❓ Netzwerkarchitektur und Zeitpunkt |
+| **Koop-Kampagne** | Die Einzelspieler-Kampagne mit Freunden, **primär 2–4 Spieler**; keine eigene Koop-Geschichte nötig; Mods ja; Cheats ja; **kein Transfer zur offiziellen Online-Progression**. Fortschritt gehört dem Spielstand des Gastgebers; Gast-Fortschritt ist an den Host-Spielstand gebunden. | 📋 Richtung; ❓ Netzwerkarchitektur und Zeitpunkt (Host-Speicherstand: K-25 bestätigt, 08.11.2026) |
 | **Offizieller Online-Modus** | Öffentliche, Freunde- und private Lobbys teilen **eine** persistente Online-Fortschrittsspur je Slot; **keine Mods, keine Cheats**; serverautoritativ, Anti-Cheat, Wirtschaftssicherheit, Crossplay-Kompatibilität; Sprach-Chat (gegebenenfalls über das Ingame-Handy). Mehr kooperative Jagd, Ermittlung, Jobs, Geschäfte, Erkundung, Motorsport, Freizeit, Crew-Aktivitäten und dynamische Ereignisse; weniger Griefing, bessere Spawn- und Polizeiregeln, keine übermächtigen Griefer-Fahrzeuge. Mögliche dauerhafte Hunter-Crews mit Spezialisierungen ohne harte Klassen, Feindseligkeits-/Verteidigungsmodus, Kopfgelder und Geschäfte. | 🔭 / ❓ |
 
 - 🧭 **Lobbygröße:** Langfristig ist grob **64–100 Spieler pro großer Weltinstanz** ein technisches Ziel, **keine Zusage** für den Start. Die Zahl der Online-Slots pro Konto ist offen.
@@ -394,7 +394,7 @@ Folgende Punkte wurden **diskutiert, aber nicht endgültig beschlossen**. Sie si
 - **Gesprächsarten:** natürliches Gespräch, Ermittlungsdialog über tatsächlich bekannte Themen und Beweise, wichtige Entscheidungsdialoge, dynamischer Kontextdialog beim Fahren, Kämpfen, Schleichen und Erkunden.
 - Beziehung und NPC-Gedächtnis wählen Dialogvarianten, ohne verborgene Beziehungszahlen offenzulegen. Gespräche sind unterbrechbar und werden kontextbewusst fortgesetzt. Man kann beim Gehen, Fahren, Ausrüsten, Wundversorgen und Ermitteln sprechen, ohne in statischen Posen einzufrieren. Gespräche im Fahrzeug („Roadtrip-Gespräche“) sind ein wichtiger Kanal der Charakterentwicklung.
 - **Tiefe nach Rang:** Hauptfiguren extrem tief, wiederkehrende Nebenfiguren tief, gewöhnliche Einwohner flacher, aber mit Ort, Wetter, Gerüchten, Polizeiaktivität und Weltzustand. Praktisch alle relevanten NPCs sind ansprechbar. NPCs sprechen auch untereinander, sodass Gerüchte organisch wandern und der Spieler Gespräche belauschen kann.
-- **Umfang:** Frühere kleine Zeilenannahmen sind ausdrücklich verworfen. Hauptfiguren können insgesamt **Hunderttausende** Dialog- und Textzeilen mit Varianten erreichen, wichtige wiederkehrende Nebenfiguren 10.000–50.000 und mehr, insgesamt potenziell mehrere Millionen Datensätze. Die genaue Zahl ist ❓ offen; Architektur, Werkzeuge, Prüfung, Lokalisierung und Stimmenproduktion müssen darauf ausgelegt sein.
+- **Umfang:** Frühere kleine Zeilenannahmen sind ausdrücklich verworfen. Hauptfiguren können insgesamt **Hunderttausende** Dialog- und Textzeilen mit Varianten erreichen, wichtige wiederkehrende Nebenfiguren 10.000–50.000 und mehr, insgesamt potenziell mehrere Millionen Datensätze. Die genaue Zahl ist ❓ offen; Architektur, Werkzeuge, Prüfung, Lokalisierung und Stimmenproduktion müssen darauf ausgelegt sein. Die Zeilenzahlen sind vorläufig; die Zuordnung Haupt-/Nebenfiguren ist offen (W-05).
 
 ### 15.2 Stimmen
 
@@ -424,3 +424,30 @@ Folgende Punkte wurden **diskutiert, aber nicht endgültig beschlossen**. Sie si
 ## 17. Was nicht festgelegt ist
 
 Zusammengefasst ❓ **offen**: Handlung, Figuren und Fraktionen; Akt- und Kapitelzahl; genaue Bedrohungen und Kosmologie; Zahl und Art der Nebenfälle; Hauptquartier-Details; das Todes-/Scheiterns-System; Fortschrittsdesign; Monsterliste; Trophäenliste; Zahl der Sammelobjekte; Online-Details und Monetarisierung; Stimmenproduktion; Spieltitel. Die vollständige Übersicht mit Quellen steht in [Entscheidungsstatus](Entscheidungsstatus.md).
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Reiche (Ergänzung zu §4)
+- Hölle, Fegefeuer (Purgatorium) und Himmel sind eigene Open Worlds im Basisspiel, mit eigener Persistenz (Master: `CANONICAL_ADDENDUM_2026-09-06.md:16–22, 72–75`). Größen sind nicht gewählt: Hölle 350–500 km² (Favorit 420), Purgatorium 500–750 km² (650), Himmel 250–400 km² (320) plus Erinnerungsdomänen (Planungsbereiche). Die Reichsgrößen (350–500 km² Hölle, 500–750 km² Fegefeuer, 250–400 km² Himmel) sind Planungsbereiche ohne Festlegung; die Hauptwelt-Größe ist offen (N-01).
+- Ausführlicher in `Spielwelt-und-Untergrund.md` und `World/26-Reiche-Zeitreise-und-historische-Weltzustaende.md`.
+
+### Tötungswege (Ergänzung zu §9.2)
+- Vorbereitung und mehrere Tötungswege gehören zum Kreaturdesign (Master: `BLOCK_09_STATUS.md:5`). Der Abgleich hat festgehalten, dass der Begriff „eine kanonische Schwäche“ in §9.2 mit dem Master nicht übereinstimmt. Die Formulierung ist zu prüfen.
+
+### Kalender und Freizeit (Ergänzung zu §11.3)
+- Feiertage, Tourismus, saisonale Ereignisse, Urbex, Metalldetektor, Geocaching, Flohmärkte, Nachlassverkäufe und Auktionen sind akzeptierte Sandbox-Schichten (Master: `CANONICAL_ADDENDUM_2026-09-05.md:55`).
+
+### Begleiter (Ergänzung zu §6.3)
+- Begleiter unterscheiden sich in Kampf, Medizin, Forschung, Technik, Spurensuche, Persönlichkeit und Moral. Sie können den Spieler begleiten oder getrennt reisen (Master: `CANONICAL_ADDENDUM_2026-09-05.md:43`).
+- Gewöhnliche oder anwerbbare Begleiter können dauerhaft sterben. Story-kritische Hunter-HQ-Figuren sind vor willkürlichem Tod geschützt, explizite Story-Tode bleiben endgültig (CA5:44). *Geltung für den Spieler offen (K-24).*
+
+### Stimmen (Ergänzung zu §15.2)
+- Freiwillige Freunde oder Familie können saubere Referenzaufnahmen liefern. Einwilligung, kommerzielle Rechte, Nutzungsumfang und Löschregeln sind Pflicht (Master: `VOICE_PRODUCTION_AND_REFERENCE_WORKFLOW_2026-09-10.md:3–6`).
+- Standardinstallation mit komprimierter Stimme; verlustfreie Stimmenpakete (48 kHz) und Zusatzsprachen einzeln wählbar (Master: `OPTIONAL_CONTENT_PACKS_2026-09-10.md:5–10`).
+
+### Krankenhaus und Koop-Abwesenheit (Ergänzung zu §14.2)
+- *Nutzeraussage, nicht Kanon (Chat 10.10.2026):* Krankenhaus heilt schneller, Zeit vergeht schneller, Mitspieler spielen weiter, Abwesenheit wenige Minuten bis 15 Minuten. Zur Bestätigung vorgemerkt.

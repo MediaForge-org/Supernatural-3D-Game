@@ -105,6 +105,7 @@ Kein Test hier ist „bestanden“. Es gibt keinen Code.
 | T-B13 | Das Archiv zeigt eine unbekannte Kategorie nicht; es zeigt „Unbekannt“ für unbekannte Einträge | U | `23#56E`, `23#60E` |
 | T-B14 | Zwei Gebiete mit gleich vielen Einträgen zeigen nicht dieselbe Kategorienmischung | I | `23#60E` Punkt 4 |
 | T-B15 | Die Hauptgeschichte hängt nie von einem Sammelobjekt ab | I | V2; `M-PD` |
+| T-B16 | Die Wissensanzeige ist qualitativ (bestätigt, vermutet, umstritten, widerlegt, historisch/unverifiziert), nie eine Prozentzahl | U | `M-PD`; `Ermittlung/20` E-AR-013 (SY-ERM-007) |
 
 ---
 
@@ -143,6 +144,7 @@ Kein Test hier ist „bestanden“. Es gibt keinen Code.
 | T-Z10 | Ein Zeuge, der die Polizei ruft, löst die Meldekette mit Latenz aus | C | P7 |
 | T-Z11 | Das Wiedererkennen des Spielers hängt von Sicht, Kleidung, Maskierung ab | C | `23#1057E` Punkte 28–30 |
 | T-Z12 | Ein NPC kann ohne Zeugenstatus gesprochen werden (Alltagsgespräch) | U | `23#1057E` Punkt 31 |
+| T-Z13 | NPCs wissen nur, was sie gesehen, gehört oder erzählt bekommen haben; Zeugenaussagen gelten nicht als garantiert wahr | C | `M-PD`; `Ermittlung/20` E-ZE-001, E-ZE-002 (SY-ERM-011) |
 
 ---
 

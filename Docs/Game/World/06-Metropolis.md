@@ -128,8 +128,9 @@ Der frühere Assistentenvorschlag einer Flussstadt (‚Chicago River‘-Muster) 
 - **Unternehmen:** ca. 20–40 große fiktive Konzerne plus lokale Firmen, dynamisch (M-WB17 Block 2).
 - **Kriminalität:** unabhängig vom Spieler; mehrere Polizeitypen und Gerichtsbarkeiten (M-WB89 Block 8). Eine Zuordnung nach Bezirken ist offen.
 - **Dienste:** Feuerwehr, Rettung, Polizei, Abschleppdienst (W-TV-006).
+- **Rechenzentren:** große Rechenzentren liegen in eigenen Industrie- oder Tech-Gebieten („so wie Silicon Valley“), nicht in Downtown (W-UR-018, 23#1023E, 📋).
 
-**Ergänzung aus Chat 35:** Gewerbedichten aus der Planung der Erwachsenen- und Tattoo-Branche: „alle 15-30“ Stripclubs in Metropolis, in kleineren Städten weniger, dazu ein riesiger mehrstöckiger Club (35#526E, W-ST-031); große mehrstöckige Tattoo-Studios in Metropolis, kleine im Dorf, deutlich höhere Preise „in der downtown“ als auf dem Land (35#775E, 35#767E, W-ST-032). Das sind Aussagen des Entwicklers über Gewerbe, keine Bezirkszuordnung. Die Zahl „30 Stripclubs“ im Beispiel des Assistenten (35#603A) ist Illustration. Details: [Adult/26](../Adult/26-Spezifikation-Weltintegration-Branche-Wirtschaft.md).
+**Ergänzung aus Chat 35:** Gewerbedichten aus der Planung der Erwachsenen- und Tattoo-Branche: „alle 15-30“ Stripclubs in Metropolis, in kleineren Städten weniger, dazu ein riesiger mehrstöckiger Club (35#526E, W-ST-031); große mehrstöckige Tattoo-Studios in Metropolis, kleine im Dorf, deutlich höhere Preise „in der downtown“ als auf dem Land (35#775E, 35#767E, W-ST-032). Tattoos sind in der Stadt häufiger als auf dem Land (35#775E, W-ST-032). Die Dichte je Stadt in Prozent ist nicht festgelegt („stellen wir gleich auf“, 35#775E). Die Zuordnung der Stripclubs zu Nachtclub oder Bordell ist offen (W-ST-031, ❓). Das sind Aussagen des Entwicklers über Gewerbe, keine Bezirkszuordnung. Die Zahl „30 Stripclubs“ im Beispiel des Assistenten (35#603A) ist Illustration. Details: [Adult/26](../Adult/26-Spezifikation-Weltintegration-Branche-Wirtschaft.md) (Zahlen 🧭 Entwicklerwunsch, Zeile 45; Bordell-Matching K6 offen).
 
 ---
 

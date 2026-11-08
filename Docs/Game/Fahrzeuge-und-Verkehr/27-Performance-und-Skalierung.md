@@ -118,7 +118,7 @@ Metropolis soll eine starke Hochhausdichte haben (`W-UR-015`, 🧭) und ist der 
 | VEH-DEC-PF-010 | Ein Messplan mit Szenarien (Innenstadt, Autobahn, Zeitsprung, Koop, Streaming) liefert die Zahlen; sie stehen erst nach der Ausführung in Berichten | 💡 VORSCHLAG | Ableitung aus `CLAUDE.md` §7 | PF TST | `CQ-118` |
 | VEH-DEC-PF-011 | Große Städte brauchen kein anderes System, nur andere Profile (Bezirksprofile) und einen strengeren Blick auf Darstellungskosten | 💡 VORSCHLAG | Ableitung aus `W-UR-015`, `VEH-DEC-SP-010` | PF WLT | `CQ-117` |
 | VEH-DEC-PF-012 | Für Fahrzeuge und Verkehr liegen weder Leistungsmessungen noch Budgets noch Zielhardware vor | 🔍 UNBELEGT | – | PF | – |
-| VEH-DEC-PF-013 | Stadtgrößen sind Szenarien: bei 2.200 km² etwa 20 bis 25 km² für die Metropole und 8 bis 10 km² für andere große Städte; das städtische Flächenwachstum soll mit der Weltgröße unterlinear steigen | 🧭 RICHTUNG | `M-A1015` (PROVISIONAL) | PF WLT | Keine Entscheidung; ältere Kandidaten weichen ab (Welt 03) |
+| VEH-DEC-PF-013 | Stadtgrößen sind Szenarien: bei 2.200 km² etwa 20 bis 25 km² für die Metropole und 8 bis 10 km² für andere große Städte; das städtische Flächenwachstum soll mit der Weltgröße unterlinear steigen | 🧭 RICHTUNG | `M-A1015` (PROVISIONAL) | PF WLT | **Richtwert 2.200 km² überholt (N-01/K-20, 08.11.2026)**; Keine Entscheidung; ältere Kandidaten weichen ab (Welt 03) |
 
 ---
 

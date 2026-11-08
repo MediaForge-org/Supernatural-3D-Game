@@ -842,3 +842,11 @@ Gruppe zu [Modul 25](25-Performance-Skalierung-und-Simulationsstufen.md).
 | SP | 20 |
 | PF | 16 |
 | **gesamt** | **562** |
+
+## Konsolidierung 08.11.2026 (Systemintegration)
+
+| Lücke | Inhalt | Status |
+|---|---|---|
+| L-01 Todesmodell (BW-001, BW-012, BW-028) | Checkpoint nach echtem Tod widerspricht C-21 | **blockiert (K-26)** |
+| L-02 Todesursache wichtiger NPCs (PO-020, ⚠️) | siehe Ermittlung/20 | **blockiert (K-27)** |
+| L-05 Gehen/Fahren-Kreuz (ST-009, BT-008) | Belegung nicht entschieden (W-03) | Entscheidung offen |

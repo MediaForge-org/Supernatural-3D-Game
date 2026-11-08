@@ -28,8 +28,8 @@ Die Aufgabenstellung nennt für die zentrale Höhle ‚fortschrittliche Material
 
 | Aussage | Status | Quelle |
 |---|:---:|---|
-| Horizontale Fläche der größten Stadt 50–100 km² (tentativ) | 🧭 | M-AD1015 |
-| Mehrere Städte; Transport per Schiene oder Ähnlichem | 📋 | D14-UC |
+| Horizontale Fläche der größten Stadt 50–100 km² (tentativ) | 🧭 **historisch (N-02, 08.11.2026)** | M-AD1015 |
+| Mehrere Städte; Transport per Schiene oder Ähnlichem | 📋 **historisch (N-02, 08.11.2026)** | D14-UC |
 | Bunker als gesicherte Teilzone; eigener Garten im Bunker | 📋 | D14-HB; 48#209E |
 | Außergewöhnliche Infrastruktur, fiktive Energie | 📋 / 🔭 | D14-UC |
 | Unterirdischer Fluss, Seen, Höhlenökosysteme, offene Naturzonen erwünscht | 📋 Richtung | D14-UC |

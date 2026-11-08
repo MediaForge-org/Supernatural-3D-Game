@@ -91,7 +91,7 @@ TEST_CASE("Door states: key unlocks, the door stays shut, the next Use opens it"
 TEST_CASE("Door states: an open locked door can be closed, then the lock holds it shut again") {
     const auto registry = MakeRegistry();
     WorldFacts facts;
-    const auto d = Defaults({.open = true, .locked = true});
+    const auto d = Defaults({.open = true, .locked = true, .key = {}});
     REQUIRE(registry.Interact(facts, Door("d"), InteractionVerb::Use, d, "t").HasValue());   // closes
     CHECK(Status(facts, d) == TestDoorStatus::Locked);
     CHECK_FALSE(registry.Interact(facts, Door("d"), InteractionVerb::Use, d, "t").HasValue());
@@ -100,7 +100,7 @@ TEST_CASE("Door states: an open locked door can be closed, then the lock holds i
 TEST_CASE("Door states: Force breaks a locked breakable door for good") {
     const auto registry = MakeRegistry();
     WorldFacts facts;
-    const auto d = Defaults({.locked = true, .breakable = true});
+    const auto d = Defaults({.locked = true, .breakable = true, .key = {}});
     const auto forced = registry.Interact(facts, Door("d"), InteractionVerb::Force, d, "t");
     REQUIRE(forced.HasValue());
     CHECK(forced.Value().feedback == TestDoorBrokenFeedback());
@@ -125,9 +125,9 @@ TEST_CASE("Door states: Force is refused on unbreakable, unlocked and open doors
     const auto registry = MakeRegistry();
     struct Case { Authored a; const ContentId* feedback; };
     const Case cases[] = {
-        {{.locked = true, .breakable = false}, &TestDoorUnbreakableFeedback()},
-        {{.locked = false, .breakable = true}, &TestDoorNotLockedFeedback()},
-        {{.open = true, .locked = true, .breakable = true}, &TestDoorNotLockedFeedback()},
+        {{.locked = true, .breakable = false, .key = {}}, &TestDoorUnbreakableFeedback()},
+        {{.locked = false, .breakable = true, .key = {}}, &TestDoorNotLockedFeedback()},
+        {{.open = true, .locked = true, .breakable = true, .key = {}}, &TestDoorNotLockedFeedback()},
     };
     for (const auto& c : cases) {
         WorldFacts facts;
@@ -142,7 +142,7 @@ TEST_CASE("Door states: Force is refused on unbreakable, unlocked and open doors
 TEST_CASE("Door states: a disabled (blocked) door refuses both verbs, clearing the block restores it") {
     const auto registry = MakeRegistry();
     WorldFacts facts;
-    const auto d = Defaults({.locked = true, .disabled = true, .breakable = true});
+    const auto d = Defaults({.locked = true, .disabled = true, .breakable = true, .key = {}});
     CHECK(Status(facts, d) == TestDoorStatus::Blocked);
     for (const auto verb : kAllInteractionVerbs) {
         const auto result = registry.Interact(facts, Door("d"), verb, d, "t");
@@ -177,7 +177,7 @@ TEST_CASE("Door states: verbs a kind does not offer are refused (nothing is plan
 TEST_CASE("Door states: key, lock, break and open state survive a save and load") {
     const auto registry = MakeRegistry();
     WorldFacts facts;
-    const auto locked = Defaults({.locked = true, .breakable = true});
+    const auto locked = Defaults({.locked = true, .breakable = true, .key = {}});
     const auto keyed = Defaults({.locked = true, .key = "key.cellar"});
     REQUIRE(registry.Interact(facts, Door("front"), InteractionVerb::Force, locked, "t").HasValue());
     REQUIRE_FALSE(SetTestKeyHeld(facts, "key.cellar", true, "t").has_value());

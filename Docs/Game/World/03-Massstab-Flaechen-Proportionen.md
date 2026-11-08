@@ -40,7 +40,7 @@ Quelle: `D19-REQ` (Tabelle „Area accounting“), Status 🧭 (Arbeitsvorgabe f
 
 | Bereich | Wert | Bedeutung |
 |---|---:|---|
-| Zusammenhängendes trockenes Festland | **2.200 km²** | Zielfläche ohne Wasser |
+| Zusammenhängendes trockenes Festland | **2.200 km²** | Zielfläche ohne Wasser; **Kandidatenmaß, kein Richtwert mehr (N-01, K-20, 08.11.2026)** |
 | davon Metropolis | **110 km²** | Teilmenge, ca. 5 % |
 | Festland außerhalb von Metropolis | **2.090 km²** | 2.200 − 110 |
 | Östliche bewohnte Insel | **80–100 km²** | zusätzliches Land, 90 km² als Testgeometrie |
@@ -214,10 +214,19 @@ Weitere Zahlen und die berechneten Stadt-, Flughafen- und Staatsflächen: [Modul
 
 ## 11. Verwechslungsfallen
 
-1. **Festland vs. Gesamtkarte:** 2.200 km² sind trockenes Festland; Meer, Seen und Insel kommen hinzu (`D19-REQ`).
+1. **Festland vs. Gesamtkarte:** 2.200 km² sind trockenes Festland (Kandidatenmaß, N-01/K-20); Meer, Seen und Insel kommen hinzu (`D19-REQ`).
 2. **Planungshülle vs. Spielwelt:** die 66 × 34 km (2.244 km²) waren ein Prototyp-Bildrahmen, ausdrücklich ‚kein physischer Rand‘ (`30#232E`); das Höhenraster der Testwelt mit 1.348 × 680 Zellen à 50 m deckt 67,4 × 34,0 km (≈ 2.292 km² Rechteck, **Rechnung**) (`45#253E`, berichtet).
 3. **110 vs. 22,5 vs. 70 vs. 30:** vier Metropolis-Werte aus vier Weltgrößen (Abschnitt 4). Nur 110 gehört zum Kandidaten vom 18./19.10.
-4. **Seen vs. Land:** Seeflächen zählen nicht zu den 2.200 km².
+4. **Seen vs. Land:** Seeflächen zählen nicht zu den 2.200 km² (Kandidatenmaß, N-01/K-20).
 5. **Stadtfläche vs. Verwaltungsgebiet:** die Vergleichsstädte (New York 778 km², Chicago 590 km², San Francisco 121 km², Boston 125 km²; US-Census 2020, nach `45#60A`) sind Verwaltungsflächen und ausdrücklich **keine Vorgabe** (`M-MS1013`).
 6. **Alter Kollektiv-Zähler:** ‚1.200–1.500 Sammelobjekte‘ gehörten zur alten ~200-km²-Idee (`M-LATE`), nicht zu einer der heutigen Karten.
 7. **WORLD_700 vs. WORLD_1500:** Zahlen der gesperrten Welt dürfen nicht für die größere Welt übernommen werden und umgekehrt (`W-GE-004`).
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Ergänzung: Verwechslungsfallen (08.11.2026)
+- Stadtflächen an der Oberfläche dürfen nicht mit dem Footprint einer Untergrundstadt gleichgesetzt werden (Master: `D14-CMP:8`). Der Untergrundbezug entfällt nach N-02 weitgehend.
