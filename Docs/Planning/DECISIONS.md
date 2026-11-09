@@ -235,3 +235,27 @@ Abschnitte des Registers, die in Paket 3 noch nicht gelesen wurden: 3 bis 8 und 
 | PH-02 | POST-LAUNCH | Verbindlich | Langfristiger Planungsbereich, keine Zusage. |
 
 **Weiter offen (nicht entschieden):** K-19, K-22, K-23, K-24, K-26, K-27, K-28.
+
+## J. Dialog, Beweis, Ermittlungsunterstützung (SPN-DEV-02, 08.11.2026)
+
+Quellenstatus aller Einträge: **Verbindlich (Entwicklerangabe 08.11.2026, SPN-DEV-02)**, sofern nicht anders angegeben. Die Umsetzung im Core ist in `Docs/Setup/Core-QA-Status-2026-11-08.md` und `Docs/Planning/Nachweis/dialog-beweis-grundlagen.md` belegt.
+
+| ID | Thema | Status | Festlegung | Quelle | Konsistenz |
+|---|---|---|---|---|---|
+| DLG-01 | Dialogsystem langfristig | Verbindlich | Hybrid aus klassischen Dialogoptionen und begrenzter freier Texteingabe. | Entwicklerangabe 08.11.2026 | Keine Gegenaussage gefunden. |
+| DLG-02 | Dialog im ersten Prototyp | Verbindlich | Keine übermäßig komplexe Implementierung; nur Optionen, Bedingungen, Übergänge. | Entwicklerangabe 08.11.2026 | Konsistent. |
+| DLG-03 | Dynamische NPC-Gespräche | Verbindlich (Zielbild) | Ziel für Version 1.0, nicht für den ersten technischen Prototyp. | Entwicklerangabe 08.11.2026 | Konsistent mit NPCA-01/02. |
+| DLG-04 | Externe KI-Dienste | Verbindlich | Keine zwingende Abhängigkeit von externen KI-Diensten oder Laufzeit-LLMs. | Entwicklerangabe 08.11.2026 | Konsistent mit `Spielvision.md` (Ereignisse datengetrieben, „nicht durch freie Sprachmodelle“). |
+| EVD-01 | Beweis finden und sammeln | Verbindlich | Ein Beweis muss tatsächlich gefunden und gesammelt werden, bevor er als gesammelter Beweis im Journal registriert wird. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/04` (Journal = Fortschritt). |
+| EVD-02 | Journal-Persistenz | Verbindlich | Das Journal speichert den Ermittlungsfortschritt persistent. | Entwicklerangabe 08.11.2026 | Konsistent. |
+| EVD-03 | Monsterbeweise | Verbindlich (Vorbehalt) | Monsterbezogene Beweise und Untersuchungen dürfen später komplexer sein. Nicht Teil des ersten Prototyps. | Entwicklerangabe 08.11.2026 | Konsistent mit `Kreaturen/`. |
+| EVD-04 | Keine automatische Fallauflösung | Verbindlich | Ein Ermittlungsfall wird nicht automatisch abgeschlossen, nur weil genügend Hinweise oder Beweise gesammelt wurden. | Entwicklerangabe 08.11.2026 (SPN-DEV-02) | Konflikt K-35 durch EVD-05 geschlossen (SPN-DEV-03). |
+| EVD-05 | Abschluss durch Spielerhandlung | Verbindlich | Beweise und Erkenntnisse dürfen neue Dialoge, Aktionen und Schlussfolgerungen freischalten. Der eigentliche Abschluss erfordert eine bewusste Spielerhandlung. Die Abschlussbedingungen sind fallspezifisch; falsche Schlussfolgerungen können je nach Fall möglich sein. | Entwicklerangabe 08.11.2026 (SPN-DEV-03) | Schließt K-35. T-F02 umformuliert (Ermittlung/23). Konsistent mit CasePrototype (manueller Abschluss). |
+| DIF-01 | Ermittlungsschwierigkeit | Verbindlich (Anzahl offen) | Mehrere Schwierigkeitsgrade. Anzahl und Benennung sind offen. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/03` („viele Schwierigkeitsgrade“). |
+| DIF-02 | Hilfen unabhängig | Verbindlich | Einzelne Ermittlungshilfen sind unabhängig vom Schwierigkeitsgrad konfigurierbar. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/03` Abschnitt 1 (📋). |
+| DIF-03 | Wissensstand | Verbindlich | Schwierigkeit verändert den tatsächlichen Wissensstand der Spielfigur nicht ohne ausdrückliche Regel. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/23` T-H06. |
+| NPCA-01 | NPC-Aussagen langfristig | Verbindlich (Zielbild) | Dynamische Gespräche, Wissensstand, Erinnerungen, mögliche widersprüchliche Aussagen. | Entwicklerangabe 08.11.2026 | Konsistent mit `NPCs/` und `Gameplay-Systeme` §8. |
+| NPCA-02 | NPC-Aussagen im Prototyp | Verbindlich | Nur ein schlanker, deterministisch testbarer Umfang. | Entwicklerangabe 08.11.2026 | Konsistent. |
+| NPCA-03 | Keine Modelle ohne Festlegung | Verbindlich | Keine automatische Festlegung umfassender Lügen-, Wahrheits- oder Persönlichkeitsmodelle; keine automatisch erzeugten NPC-Erinnerungen. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/05` (Aussagen sind Information, keine garantierte Wahrheit). |
+
+Offen (ausdrücklich nicht entschieden): Anzahl und Namen der Schwierigkeitsgrade (DIF-01), konkrete Beweiskategorien über Monster hinaus (EVD-03), Umfang der freien Texteingabe (DLG-01), Abschlussbedingungen des Falls (siehe K-35).

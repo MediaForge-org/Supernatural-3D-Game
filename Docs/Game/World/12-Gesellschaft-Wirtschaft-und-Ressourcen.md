@@ -60,6 +60,16 @@ Strikte Trennung: Autonomie ≠ Bewusstsein ≠ Rechtspersönlichkeit ≠ Rechte
 
 ---
 
+**Kommunikation nach U36 (Delta 17.10.2026, `COMMUNICATION_MODALITIES`; 💡 Vorschlag, nicht kanonisch):**
+
+- Gesichert ist nur die Richtung: Persönliche Geräte, holografische Kommunikation mit Raum- und 3D-Bezug, intelligente Räume und freiwillige neurale Links stehen nebeneinander; Bewohner wählen ihre Mittel.
+- Vorgeschlagene Architektur: Absicht und Darstellung trennen. Ablauf: Absicht → Identitäts- und Einwilligungsprüfung → Sitzungsaushandlung → gesicherter Transport → gerätespezifische Darstellung. Der Netzwerkentwurf ist offen.
+- Neurale Schnittstellen: ausdrücklich freiwillig, reversibel, mit Recht, eingehende Kommunikation abzulehnen. **Kein Pflichtimplantat** für zivile Grundleistungen. Neurale Signaldaten gelten als besonders sensibel; ob sie gespeichert werden, ist offen.
+- Spielchancen (💡): Die Wahl zwischen Handgerät und Raumhologramm zur Planung; NPCs mit unterschiedlichen Präferenzen; Hologramme für Infrastrukturmodelle oder historische Rekonstruktionen. Ein neuraler Link gilt nie als Standardvoraussetzung für den Alltag.
+- **Offen** (Folgeliste zu U37): Verhältnis zum Internet der Oberfläche; Betrieb ohne Netz; Verfügbarkeit bei Störungen; Fernkommunikation an die Oberfläche; anonyme Nachrichten; Abhörrisiko; Identitätsmodell; Notfallsendungen; Einwilligungs- und Aufzeichnungsregeln; Fähigkeiten neuraler Schnittstellen. Anrufe über Stadtgrenzen und Signalverlust sind erst nach der Entscheidung zur U37-Topologie als Ereignisquelle nutzbar.
+
+---
+
 ## 4. Was zu Wirtschaft und Ressourcen nicht belegt ist
 
 Die Aufgabenstellung verlangt, Ressourcenverteilung, Konfliktlösung und Infrastrukturfinanzierung als offen zu führen. Im Master gibt es dazu **keine Antwort**; ebenso keine Währung, keine Preise, keine Berufsliste des Untergrunds. Offen sind außerdem Konfliktlösung ohne Staat, Eigentum, Streit über KI-Status (D16-REC) und Notfallhoheit.

@@ -1,5 +1,33 @@
 # Änderungsprotokoll der Planungskonsolidierung
 
+## Paket MASTER-MIGRATION-02 (08.11.2026): Quellen abschließen, Verzeichnisse 02, 99 und 04 klassifizieren
+
+- Neu ergänzt: `Docs/Game/World/24-WORLD700-GIS-Referenz.md` §11 (OWP-LCS-1-Koordinatenformel, Zoomstufen, Kennungen, Genauigkeitsgrenzen, Verteilung, Phase-A-Abnahmeschranken, Stil-Vorschlag `MAP_RENDER_STYLE_V1` nicht gesperrt, Wiederherstellungsstand, Ebenen-Manifest Iteration 6). Widerspruch Phase A (Master PROPOSED vs. Register APPROVED_LOCKED) vermerkt; K-19 bleibt offen.
+- Neu ergänzt: `Docs/Game/World/12` §3 (Kommunikation nach U36: Absicht/Darstellung, kein Pflichtimplantat, offene U37-Liste; 💡/offen markiert).
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` (aus Paket 1, Abschnitt 2 Richtung; System offen).
+- Korrigiert: `Docs/Game/Kampfsystem/27` COMBAT-DEC-VL-012 (Status Master-Vorgabe; K-22 offen).
+- Geprüft: CA5 §4 (Verletzung, Körper, Alltag; Versorgung; Sandbox-Prinzip) punktweise belegt; Verletzungsarten und Krankenhausstufe in `Gameplay-Systeme` §8 und `Kampfsystem/13`.
+- Geprüft, ohne Änderung: Modding Block 5 (Startsynchronisation und Manifest-Abbildung bereits in `Gameplay-Systeme` Abschnitt „Mod-Laden“). Eine Dublette aus dieser Sitzung wurde entfernt.
+- Geprüft: `99_CANON_AUDITS` (Entscheidungsregister, Konflikte, Duplikate per Byte-Vergleich). Keine neuen Anforderungen; Untergrundeinträge durch N-02 historisch.
+- Geprüft: neun Tagesdelta-Dokumente mit bestätigten Nutzerentscheidungen (Karten, Bahn, Fahrzeuge, KI, Kommunikation). Übrige Deltas offen (siehe Register H).
+- Klassifiziert: `04_HISTORY`, `99_RECONSTRUCTION_SOURCES` (privater Inhalt, nicht übertragen), `02_EMBEDDED_BASE_ARCHIVES`, `_SOURCE_*` (siehe Register I).
+- Nicht entschieden: K-19, K-21, K-22, K-28, K-29, K-33, N-01 (Weltgröße).
+- Keine Änderungen an Master-Dateien; keine Commits.
+
+## Paket MASTER-MIGRATION-01 (08.11.2026): Inhaltsmigration 01_CURRENT, Abschnitte CA5 §2–§6
+
+- Quelle: `01_CURRENT_CANONICAL_STATE` (57 Dateien, Inventar im Register `Nachweis/master-zuordnung-01-current.md`).
+- Neu: `Docs/Planning/Nachweis/master-zuordnung-01-current.md` (Zuordnung je Quelle, Übertragungs- und Prüfstatus, Abschnitt E mit Zielstellen).
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` (Richtung aus CURRENT_CANON_2026-09-16 und VOICE_PRODUCTION_…; System offen).
+- Ergänzt: `Docs/Game/World/26` §5 (historische Ebenen statt Jahreskarten; Freie-Energie-Passage als historisch markiert).
+- Ergänzt: `Docs/Game/Spielvision.md` (WWII-Ära und Original-IP-Vorgabe, CA5 §3).
+- Geprüft, ohne Änderung: `Docs/Game/Gameplay-Systeme.md` Modding Block 5 (Anbieterunabhängigkeit, Manifest-Abbildung und Startsynchronisation waren bereits im Abschnitt „Mod-Laden“ enthalten).
+- Ergänzt: `Docs/Game/Kreaturen/21` Q-K32 (Progenitor-/Erste-Art-Konzept offen; bisher nicht in Docs).
+- Korrigiert: `Docs/Game/Kampfsystem/27` COMBAT-DEC-VL-012 war als BESCHLOSSEN geführt, obwohl K-22 (Amputation) offen ist; Statusvermerk entsprechend angepasst.
+- Nicht entschieden: K-22 (Amputation), K-21 (Zeitverhältnis Hölle, Docs-Bestätigung vs. Konfliktregister), K-33 (Geografie bei Zeitreisen), K-28 (Bunker als Feldbasis vs. Tesla-Aufenthalt laut MS 10-13), Weltgröße (N-01).
+- Keine Änderungen an Master-Dateien; keine Commits.
+- Prüfung: `verify_planning.py` 165 Referenzen, 0 defekt.
+
 ## Paket 1 (08.11.2026): Grundstruktur und bestätigte Festlegungen
 
 **Geändert bzw. neu:**
@@ -305,3 +333,22 @@ Keine Spielentscheidungen, keine Spielcodeänderungen, keine Commits oder Pushes
 - **Ergebnis:** Alle vier Linux-Presets bestehen (configure, build, 608/608 Tests; Clang, GCC, mit ASan/UBSan).
 - **TASKS:** PROTOTYPE-CASE-01 auf `in Arbeit`; neue Aufgabe `TECH-VARIANT-CLEANUP` (geplant, nur mit Freigabe).
 - **Nicht geprüft:** Unreal-Build und Editor-PIE (Unreal nicht verfügbar), MSVC nach dem Fix.
+
+## SPN-DEV-02: Dialog-, Beweis- und Ermittlungsgrundlagen (08.11.2026)
+
+- **Entscheidungen** in `DECISIONS.md` Abschnitt J (DLG-01..04, EVD-01..04, DIF-01..03, NPCA-01..03), Quellenstatus Entwicklerangabe 08.11.2026.
+- **Konflikt K-35:** `Ermittlung/23` T-F02 (automatischer Abschluss) gegen EVD-04 (keine automatische Fallauflösung). Nicht aufgelöst.
+- **Neu im Core:** `InvestigationIds.h`, `Evidence.h/.cpp` (bekannt/gefunden/registriert, Registrierung erst nach Sammeln), `Dialogue.h/.cpp` (Knoten, Optionen, Bedingungen, Effekte, atomare Auswahl), `InvestigationAssist.h/.cpp` (Presets als Daten, Überschreibungen getrennt), `CasePrototype::AdoptInvestigationProgress` (Integration über Fakt-Schlüssel).
+- **Tests:** 37 neue (Evidence 9, Dialogue 13, Assist 10, Integration 5) plus 9 bestehende CasePrototype-Tests. Gesamt 645 je Preset.
+- **Ergebnis:** `fedora-clang`, `fedora-clang-asan-ubsan`, `fedora-gcc`, `fedora-gcc-asan-ubsan`: je 645/645 bestanden.
+- **Statische Analyse:** `clang-tidy` (bugprone, performance, clang-analyzer) auf den neuen Quellen: keine Befunde außer Stilhinweisen zu leicht vertauschbaren String-Parametern und einem Fehlalarm (`Dialogue.cpp`, Zugriff hinter `has_value()`). Nicht geändert.
+- **Behebung:** toter Parameter in `Dialogue.cpp` entfernt.
+- **Nicht implementiert:** Schwierigkeitsnamen (DIF-01), Freitext (DLG-01), Monsterbeweise (EVD-03), Unreal-Anbindung.
+
+## SPN-DEV-03: Ermittlungsabschluss und Architekturprüfung (08.11.2026)
+
+- **K-35 entschieden und geschlossen:** Ermittlungsfall wird nicht automatisch abgeschlossen. Neue Entscheidung EVD-05 (`DECISIONS.md` J). EVD-04 verweist darauf. `Ermittlung/23` T-F02 umformuliert, ursprünglicher Wortlaut als Historie erhalten. `Spielvision.md` Zeile 60 mit Klarstellung versehen. `CONFLICTS.md` K-35 als entschieden markiert.
+- **Architekturprüfung:** `Docs/Planning/Nachweis/architektur-pruefung-dev03.md`. WorldFacts bleibt Zustandsquelle; neue Module veröffentlichen keine Ereignisse; lokale Kennungen sind kollisionsfrei und unter den Schlüssellängen.
+- **Codeänderungen (Befunde der Prüfung):** (1) Dialogeffekte dürfen fremde Zustandsnamensräume nicht schreiben (`placeholder.journal.`, `.dialogue.`, `.evidence.`, `.assist.`, `.case.`). (2) NPC-ID `player` reserviert. (3) `AdoptInvestigationProgress` prüft Kennungen (neuer Fehlercode `InvalidId`).
+- **Tests:** 6 Regressionstests neu (Dialog 3, Integration 3), inkl. Ende-zu-Ende-Ablauf mit Save/Load. Gesamt 651 je Preset.
+- **Nicht behauptet:** Unreal-Abnahme.

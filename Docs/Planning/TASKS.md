@@ -51,7 +51,7 @@ Regeln:
 
 | ID | Titel | Status | Quelle | Bemerkung |
 |---|---|---|---|---|
-| PROTOTYPE-CASE-01 | Ein Raum, ein Zeuge, ein Beweis, ein Abschluss | in Arbeit | – | `NAMING_PROPOSAL.md` §4; `Core/include/spn/core/CasePrototype.h` | Core-Grundlage (Platzhalter-Zustand, 9 Tests) fertig; Raum, Zeuge/Dialog, Beweis-Platzierung und Unreal-Umsetzung offen. Spielbarkeit nicht geprüft. |
+| PROTOTYPE-CASE-01 | Ein Raum, ein Zeuge, ein Beweis, ein Abschluss | in Arbeit | – | `NAMING_PROPOSAL.md` §4; `Core/include/spn/core/CasePrototype.h`, `Evidence.h`, `Dialogue.h`; `Nachweis/dialog-beweis-grundlagen.md` | Core-Bausteine fertig (Beweis, Dialog, Ermittlungshilfe, Integration; 37 neue Tests). Unreal-Actor für Zeuge und Beweis, Journal-UI und PIE offen. Abschlusslogik bleibt manuell (K-35). |
 
 ## Vertical Slice und folgende Phasen
 
@@ -105,3 +105,13 @@ Quelle für alle Einträge: `Docs/Planning/CHANGELOG.md` (Pakete) und `Docs/Plan
 | QA-TROCKENLAUF | Aufgabensteuerung über Kennungen testen | abgeschlossen | – | `Nachweis/trockenlauf-aufgaben.md` | 5 Aufgaben geprüft; PROTOTYPE-TESTMAP-Status offen (Entwicklerfrage) |
 | QA-SCOPE | Architektur- und Scope-Audit | abgeschlossen | – | `Nachweis/scope-audit.md` | Befunde dokumentiert; Vorschläge nicht beschlossen |
 | TECH-VARIANT-CLEANUP | Unreal-Vorlagenvarianten `Variant_Combat`, `Variant_Platforming`, `Variant_SideScrolling` entfernen | geplant | – | `Unreal/SupernaturalProt/Source/SupernaturalProt/Variant_*`, `Docs/Setup/Core-QA-Status-2026-11-08.md` | Im Build aktiv, nicht genutzt. Nur nach Entwicklerfreigabe. |
+
+## Ermittlungs- und Dialoggrundlagen (SPN-DEV-02, 08.11.2026)
+
+| ID | Titel | Status | Alias | Quelle | Bemerkung |
+|---|---|---|---|---|---|
+| CORE-EVIDENCE | Beweis: bekannt, gefunden, registriert | abgeschlossen | – | `Core/include/spn/core/Evidence.h`, `Tests/Core/EvidenceTests.cpp` | Core-Stand; Unreal-Objekt offen |
+| CORE-DIALOGUE | Dialogkern: Knoten, Optionen, Bedingungen, Effekte | abgeschlossen | – | `Core/include/spn/core/Dialogue.h`, `Tests/Core/DialogueTests.cpp` | Core-Stand; Effekte dürfen fremde Zustandsnamensräume nicht schreiben (Regression); keine Freitexteingabe (DLG-01 offen) |
+| CORE-ASSIST | Ermittlungshilfe: Presets als Daten, Überschreibungen | abgeschlossen | – | `Core/include/spn/core/InvestigationAssist.h`, `Tests/Core/InvestigationAssistTests.cpp` | Core-Stand; Schwierigkeitsnamen offen (DIF-01) |
+| UNREAL-WITNESS-EVIDENCE | Zeugen-Actor, Beweisobjekt, Journal-UI in Unreal | geplant | – | `Nachweis/dialog-beweis-grundlagen.md` | Braucht PIE-Prüfung (`P0-ACCEPT-EDITOR`) |
+| CASE-AUTO-CLOSE | Automatische Fallauflösung (T-F02) | abgeschlossen | – | `CONFLICTS.md` K-35, `DECISIONS.md` EVD-04, EVD-05 | Entschieden 08.11.2026 (SPN-DEV-03): kein automatischer Abschluss; T-F02 umformuliert. Core ohne automatische Abschlusslogik. |

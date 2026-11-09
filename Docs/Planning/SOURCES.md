@@ -40,6 +40,20 @@ Nicht geprüft und nicht behauptet: Der Gesamtbestand des 2,9-GB-Masters wurde n
 
 Legende für **Lesestatus**: *vollständig* / *teilweise* (Zeilenbereich angegeben) / *Überschriften* / *Suchtreffer* / *nicht gelesen*.
 
+### 0a. Inhaltsmigration 08.11.2026 (MASTER-MIGRATION-01)
+
+Geprüft abschnittsweise (Zielstellen je Regel, nicht Zeile für Zeile): `CANONICAL_ADDENDUM_2026-09-05.md` §2–§6; `BLOCK_09_STATUS.md`; `MODDING_ARCHITECTURE_V1_BLOCK_05_CONFIRMED_2026-09-11.md`; `CURRENT_CANON_2026-09-16.md` (Produktionsprompts); `VOICE_PRODUCTION_AND_REFERENCE_WORKFLOW_2026-09-10.md`. Vollständiger Stand je Quelle: `Docs/Planning/Nachweis/master-zuordnung-01-current.md`, Abschnitt E.
+
+Nicht eingebettet, im Master als „EXTERNAL / NOT EMBEDDED“ geführt: 2026-09-27-Archivteile. Prompt-Bibliothek (`02_EMBEDDED_BASE_ARCHIVES`) bleibt Entwurf.
+
+### 0b. Inhaltsmigration MASTER-MIGRATION-02 (08.11.2026)
+
+- `02_WORLD_700`: Textdateien vollständig geprüft, Ziel `Game/World/24` §11. Binär-PNG nicht übertragen. Phase-A-Dateien `region_table.csv`, `regional_boundaries_overlay.svg`, `storage_estimates.json` nicht wiederherstellbar.
+- `99_CANON_AUDITS`: Prüfbericht, kein Kanon; Duplikate `REFERENCE_CANON_2026-09-27` byte-identisch mit `01_CURRENT`.
+- `99_DAILY_DELTAS`: neun Dokumente mit bestätigten Nutzerentscheidungen geprüft; übrige rund 60 Dateien offen.
+- `04_HISTORY`, `99_RECONSTRUCTION_SOURCES`, `02_EMBEDDED_BASE_ARCHIVES`, `_SOURCE_*`: klassifiziert, nicht übertragen. Begründung in Register I.
+- Gesprächsexport: 56 von 521 Gesprächen im Master-Nachweis; der Vollexport ist extern nicht verfügbar.
+
 ## 1. Repo: `Docs/` (Planungsdokumente; Lesestatus **überholt**, siehe Abschnitt 0)
 
 | Quelle | Umfang | Lesestatus | Anmerkung |
