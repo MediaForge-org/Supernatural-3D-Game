@@ -37,6 +37,9 @@ add_library(spn_core STATIC
     src/ObjectPersistence.cpp
     src/Pickup.cpp
     src/CasePrototype.cpp
+    src/Dialogue.cpp
+    src/InvestigationAssist.cpp
+    src/Evidence.cpp
     src/TestDoor.cpp
     src/Traversal.cpp
     src/SpatialGrid.cpp

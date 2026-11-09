@@ -26,7 +26,8 @@ enum class CaseProtoErrorCode : std::uint8_t {
     NotReady,         ///< closure refused: witness and evidence are not both done
     AlreadyResolved,  ///< the case is closed; no further change is accepted
     StateCorrupt,     ///< a case fact exists with the wrong type
-    Store             ///< the store refused the write (see FactError)
+    Store,            ///< the store refused the write (see FactError)
+    InvalidId         ///< an evidence or dialogue id passed to the adoption is malformed
 };
 
 struct CaseProtoError {
@@ -52,6 +53,15 @@ struct CaseProtoError {
 /// Closes the case. Refused (NotReady) unless witness and evidence are both done;
 /// refused (AlreadyResolved) if the case is already closed.
 [[nodiscard]] Result<CaseProtoStatus, CaseProtoError> CloseCaseProto(WorldFacts& facts);
+
+/// Adopts real investigation progress into the placeholder flags (Integration, SPN-DEV-02 section 6).
+/// Reads two fact contracts by key only, so this module has no header dependency on Evidence or Dialogue:
+///   placeholder.journal.evidence.<evidenceId>  bool  (Evidence.h: the evidence is registered in the journal)
+///   placeholder.dialogue.<dialogueId>.done    bool  (Dialogue.h: the witness dialogue has ended)
+/// If the evidence is registered, the evidence flag is set; if the dialogue is done, the witness flag is set.
+/// Nothing is set otherwise. Returns true if a flag changed. Closure rules are unchanged (placeholder).
+[[nodiscard]] Result<bool, CaseProtoError> AdoptInvestigationProgress(WorldFacts& facts, std::string_view evidenceId,
+                                                                      std::string_view dialogueId);
 
 [[nodiscard]] std::string_view ToString(CaseProtoStatus status) noexcept;
 [[nodiscard]] std::string_view ToString(CaseProtoErrorCode code) noexcept;

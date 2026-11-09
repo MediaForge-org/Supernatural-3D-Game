@@ -1,4 +1,5 @@
 #include <spn/core/CasePrototype.h>
+#include <spn/core/InvestigationIds.h>
 
 namespace spn::core {
 
@@ -85,6 +86,29 @@ Result<CaseProtoStatus, CaseProtoError> CloseCaseProto(WorldFacts& facts) {
     return CaseProtoStatus::Resolved;
 }
 
+Result<bool, CaseProtoError> AdoptInvestigationProgress(WorldFacts& facts, std::string_view evidenceId,
+                                                        std::string_view dialogueId) {
+    if (!IsValidLocalId(evidenceId) || !IsValidLocalId(dialogueId)) {
+        return CaseProtoError{CaseProtoErrorCode::InvalidId, {}};
+    }
+    bool changed = false;
+    const std::string journal = "placeholder.journal.evidence." + std::string(evidenceId);
+    const std::string done = "placeholder.dialogue." + std::string(dialogueId) + ".done";
+    const bool* registered = facts.FindAs<bool>(journal);
+    if (registered != nullptr && *registered) {
+        const auto set = SetFlag(facts, kEvidence, "case-proto:adopt-evidence");
+        if (!set) return set.Error();
+        changed = changed || set.Value();
+    }
+    const bool* ended = facts.FindAs<bool>(done);
+    if (ended != nullptr && *ended) {
+        const auto set = SetFlag(facts, kWitness, "case-proto:adopt-witness");
+        if (!set) return set.Error();
+        changed = changed || set.Value();
+    }
+    return changed;
+}
+
 std::string_view ToString(CaseProtoStatus status) noexcept {
     switch (status) {
         case CaseProtoStatus::Open: return "open";
@@ -100,6 +124,7 @@ std::string_view ToString(CaseProtoErrorCode code) noexcept {
         case CaseProtoErrorCode::AlreadyResolved: return "already_resolved";
         case CaseProtoErrorCode::StateCorrupt: return "state_corrupt";
         case CaseProtoErrorCode::Store: return "store";
+        case CaseProtoErrorCode::InvalidId: return "invalid_id";
     }
     return "unknown";
 }
