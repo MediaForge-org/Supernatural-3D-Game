@@ -46,6 +46,10 @@ Geprüft abschnittsweise (Zielstellen je Regel, nicht Zeile für Zeile): `CANONI
 
 Nicht eingebettet, im Master als „EXTERNAL / NOT EMBEDDED“ geführt: 2026-09-27-Archivteile. Prompt-Bibliothek (`02_EMBEDDED_BASE_ARCHIVES`) bleibt Entwurf.
 
+### 0c. Inhaltsmigration MASTER-MIGRATION-04 (09.11.2026)
+
+- Tagesdeltas `AI_RECOGNITION_AND_CONFLICTS`, `AI_SIMULATION_BOUNDARIES`, `PRIVACY_SECURITY_AND_FAILURE_REQUIREMENTS`, `MASTER_MAP_ACCEPTANCE_SPEC` übertragen (`Game/World/12` §3, `Game/World/17` §6). Übrige Delta-Dokumente siehe Register H.
+
 ### 0b. Inhaltsmigration MASTER-MIGRATION-02 (08.11.2026)
 
 - `02_WORLD_700`: Textdateien vollständig geprüft, Ziel `Game/World/24` §11. Binär-PNG nicht übertragen. Phase-A-Dateien `region_table.csv`, `regional_boundaries_overlay.svg`, `storage_estimates.json` nicht wiederherstellbar.

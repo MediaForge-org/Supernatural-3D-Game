@@ -1,5 +1,132 @@
 # Änderungsprotokoll der Planungskonsolidierung
 
+## Paket MASTER-MIGRATION-19 (10.11.2026): Restliche Tages-Deltas, PROJECT_STATE 83, Blöcke 8–9, Prompt-Archiv, Textpakete
+
+- **A, Tages-Deltas:** alle 9 Status- und Vergleichsberichte gelesen; begründet ausgeschlossen (Entwicklerberichte oder Vergleiche, deren Inhalte in `Docs/` belegt sind). Nachweis `daily-deltas-changelogs.md`.
+- **B, PROJECT_STATE 83:** Gesamtphilosophie ergänzt (`Spielvision` §2.1, 🧭). Vorbehalt aufgehoben; Quelle formal abgeschlossen.
+- **C, Blöcke 8–9:** alle ~90 Regeln einer Fundstelle in `Docs/` zugeordnet; sieben unsichere Punkte im Wortlaut geprüft. Keine fehlende Regel. Nachweis `embedded-klassifikation.md`.
+- **D, Prompt-Archiv:** 866 Inhalte normalisiert: außer Titel und Baustein-Gerüst nur 31 Anforderungsbullets und Track-Kontexte; Version 0.1 und 0.5 nur durch den Entwurfsvermerk verschieden. Zuordnung `prompt-archiv-zuordnung.csv` (527 Spielthemen, 321 technische Aufgaben, 18 Track-Kontexte). Vorschläge als 💡 (Case-Tag-, Waffen-, Ballistik-, Verletzungs-Debugger; Modding-Pflichten; Wiederverletzung).
+- **E, Textpakete:** 143 eindeutige Textdateien gescannt; GIS-Methodenregeln (fiktive Web-Projektion, Renderquelle DEM) als 🧭 in `World/24` §12 übernommen; Geometrie begründet ausgeschlossen.
+- **Neue Anforderungen (Stufe D/🧭/💡):** Gesamtphilosophie (`Spielvision` §2.1), Wiederverletzung (`Kampfsystem/13`, 💡), Steam-Unabhängigkeit und Entitlements je Produkt (`Spielvision` §16, 🧭), Modding-Pflichten (`Gameplay-Systeme` §15, 💡), Debugger (`Produktions-Referenzen` §12, 💡), GIS-Methodik (`World/24` §12, 🧭).
+- **Zählung:** 148 von 2.440 abgeschlossen (6,07 %); 37 begründet ausgeschlossen; 2.255 offen. Korrektur: Offen-Zahl bisher ohne Abzug der ausgeschlossenen Metadaten angegeben.
+- Keine Master-Dateien verändert; keine Commits, Pushes oder Tags; kein C++ oder Unreal; `99_RECONSTRUCTION_SOURCES` nicht gelesen. `verify_planning.py`: 167 Referenzen, 0 defekt.
+
+## Paket MASTER-MIGRATION-18 (09.11.2026): PROJECT_STATE, Tages-Deltas, Embedded-Entwürfe, Textpakete
+
+- **PROJECT_STATE_2026-08-31_COMPACT:** alle 85 Abschnitte gelesen und geprüft; formal abgeschlossen mit Vorbehalt (Abschnitt 83 thematisch; `Nachweis/project-state-compact.md`). Neu in `Docs/`: Modding-API-Familien und Manifest (`Gameplay-Systeme` §15), Distribution (Disc, Updates, Blu-ray, `Spielvision` §16), Sekundärphysik (`Gameplay-Systeme` §9), seltene Einzeltiere (`Spielwelt` §9.2a), DLC-Grundsatz (`Spielvision`), Arbeitspaket-Hierarchie und -Felder (`Produktions-Referenzen` §12, 💡). Missionszustände als 💡 Vorschlag (`Spielvision` §6).
+- **Tages-Deltas:** alle Entscheidungs-Ledger (16.–19.10.) gegen `Docs/` geprüft; Vorschläge (C++-Notizen, Phase-0.4-Erscheinungsbild) und Berichte (Status, Vergleich, Herkunft) getrennt; Prozessdateien ausgeschlossen (`Nachweis/daily-deltas-changelogs.md`).
+- **Embedded:** 1.732 Prompt-Entwürfe in zwei Versionen zu je 866 Titeln, hash-dedupliziert; 31 verschiedene Anforderungsbullets extrahiert und am Text geprüft (Spielregeln belegt, übrige technische Vorgaben); SPN_Prompt_Pack 12 von 22 gelesen, Inhalte gegen Docs geprüft. Die Case-Tag-Idee als 💡 in `Produktions-Referenzen` §12.
+- **_SOURCE_ARCHIVE:** 143 Textdateien klassifiziert (WORLD_700-Iterationspakete, technische Geometrie- und Prüfdaten); keine Spielanforderung; Geometrie gesperrt; R05A-Archivierung (03.09.) in `World/19` ergänzt.
+- **Zählung:** 125 von 2.440 eindeutigen Inhalten inhaltlich abgeschlossen (5,12 %), 2.315 offen. Zuwachs: 6 CHANGELOGs, 4 Entscheidungs-Ledger, PROJECT_STATE, zwei Spezifikationen vom 17.10. (Kommunikation, Datenschutz).
+- Keine Master-Dateien verändert; keine Commits, Pushes oder Tags; kein C++ oder Unreal; `99_RECONSTRUCTION_SOURCES` nicht gelesen. `verify_planning.py`: 167 Referenzen, 0 defekt.
+
+## Paket MASTER-MIGRATION-17 (09.11.2026): 01_CURRENT vollständig, Abschnitte 13 bis 28, Zählkorrektur
+
+- **01_CURRENT_CANONICAL_STATE** (57 von 57 Dateien) vollständig gelesen und gegen `Docs/` geprüft. Nachweis: `master-zuordnung-01-current.md`, Abschnitt J. Keine fehlende Anforderung gefunden; offene Konflikte K-21 (Hölle-Zeitverhältnis) und K-28 (Bunker/HQ) bleiben offen.
+- **Zählkorrektur:** Eindeutige Inhalte 2.440 (nicht 2.444), redundante Kopien 2.429 (nicht 2.425). Ursache: 14 Dateien über 50 MB sind nur 10 verschiedene Inhalte; die frühere Zählung hatte sie als 14 Einheiten gezählt. `_SOURCE_ARCHIVE` 323 eindeutige (nicht 327).
+- **Messung statt Schätzung:** Inhaltlich abgeschlossen 112 von 2.440 eindeutigen Inhalten (4,59 %; Stand nach Aufnahme der aktuellen Fassungen von PROJECT_DECISIONS und OPEN_DECISIONS); 28 Metadaten- und Prozessdateien begründet ausgeschlossen (nicht als migriert gezählt). Offen 2.328.
+- **Kleine Gruppen:** `00_START_HERE` (3) abgeglichen; `03_EXTERNAL_LIBRARY_REGISTRY` (18), `99_MANIFESTS` (3), Wurzeldateien (5), `06` (2) als Metadaten gelesen. Widerspruch dokumentiert: Die Registry führt `R05A_phase_B3_true_highfreq_regional_master_24k.png` als „not embedded“, die Hash-Liste zeigt die Datei aber unter `_SOURCE_ARCHIVE/World History B`. Registry nicht geändert.
+- **PROJECT_DECISIONS Abschnitte 13 bis 28** im Wortlaut geprüft (Stand 28 von 58). Ergänzt wurden: Modding ausdrücklich unterstützt und ohne Reverse Engineering (§15), gezieltes Prüfen bei belegtem Versteckverhalten (§7), Nicht-Besitzer-Sicht auf Guides (§16), Path Tracing und Upscaling (§15 Rendering), Entwicklerwerkzeuge, Pflichttests und Prompt-Governance (`Produktions-Referenzen-und-Prompts.md` §12). Belegt ohne Ergänzung: Ballistik, Nahkampf, Fahrzeuge, Fortschritt (OFFEN), Begleiter, Audio, Testphilosophie, Genre, Scrum-Prozess.
+- **Konflikt dokumentiert, nicht aufgelöst:** Xbox-artige Controller-Belegung (älteres Konzept) gegen DualSense vom 15.10.2026. Die spätere Entwicklerentscheidung hat Vorrang; das ältere Konzept bleibt als Richtung erhalten (VEH-DEC-ST-004).
+- Keine Master-Dateien verändert; keine Commits, Pushes oder Tags; kein C++ oder Unreal. `verify_planning.py`: 167 Referenzen, 0 defekt.
+- **PROJECT_DECISIONS** ist mit Abschnitt 58 vollständig im Wortlaut erfasst (Stand 58 von 58). Die Protokolltabelle enthält 58 eindeutige Abschnitte; Abschnitt 8 hat eine überholte Vorfassung, die als Verlauf bleibt.
+- **OPEN_DECISIONS** (124 Punkte, 17 Gruppen) je Gruppe gegen Zielstellen geprüft: `Nachweis/entscheidungsabgleich-open-decisions.md`. Neu in `OPEN_QUESTIONS.md`: Q-OD-42 bis Q-OD-53 (Punkte ohne offene Zielstelle). Eine Dublette wurde vor Abschluss entfernt.
+- **Ergänzt** in `Gameplay-Systeme.md`: Modding ohne Reverse Engineering (§15), gezieltes Prüfen bei belegtem Versteckverhalten (§7), Path Tracing und Upscaling (Rendering), Sekundärphysik (§9). In `Spielvision.md`: Sicht Nicht-Besitzer (§16), Missionszustände als 💡 Vorschlag (§6). In `Produktions-Referenzen-und-Prompts.md`: §10 Barks, Laden nur bei Bedarf, Explorer-Mindestfunktionen; §11 Blender-Automation, Testpawns, Freigabeaktionen; §12 Tests, Werkzeuge, Prompt-Governance, Arbeitspaket-Schätzungen als 💡.
+- **Statusdifferenzen dokumentiert:** Trophäengruppen (`PROJECT_DECISIONS` §47 entschieden, `Entscheidungsstatus` offen); Creator-Wirtschaft (Wunschrichtung, Details offen). Keine davon aufgelöst.
+- `PROJECT_STATE_2026-08-31_COMPACT.md` teilweise geprüft; `CURRENT_COVERAGE.md` gelesen (Prozentangaben nicht übernommen).
+- **02_EMBEDDED klassifiziert** (1.860 verschiedene Inhalte; 1.732 Prompt-Entwürfe in zwei Versionen, keine Anforderungsquelle). Byte-identische Dubletten belegt: Projektzusammenfassung (01 alt = PROJECT_STATE), Blöcke 1–7 und WORLD_1500-Anforderungen (01 alt = 06). Nachweis `embedded-klassifikation.md`.
+- **_SOURCE_ARCHIVE klassifiziert:** 323 verschiedene Inhalte (179 Binär, 128 Text nur dort, Rest Kopien). Binär begründet ausgeschlossen; Text sind WORLD_700-Iterationspakete ohne Anforderungsstatus. Archivierung der R05A-Pilote (03.09.) in `World/19` ergänzt.
+- **Abgleich Vorstufe 03.09.:** Börse, Krypto, 12–18 Buchmacher (scharf, halbscharf, weich) und Wettbörse (Back/Lay) sind in `Gameplay-Systeme` §13 belegt (zunächst übersehen, weil der Text deutsche Begriffe nutzt). Offen bleibt das Preis- und Liquiditätsmodell (Q-OD-54). Reihenfolge der Reichsplanung (🧭) in `Spielwelt` §15 ergänzt.
+- **99_DAILY_DELTAS:** Die sechs CHANGELOGs (14.–19.10.) sind je Entscheidung gegen `Docs/` geprüft (`Nachweis/daily-deltas-changelogs.md`). Keine fehlende bestätigte Entscheidung gefunden. Canon-, Spec- und Design-Dokumente der Tage bleiben teilweise (Zeile-für-Zeile-Prüfung offen).
+
+## Paket MASTER-MIGRATION-15 (09.11.2026): Inventurvalidierung und Abschnitt 12
+
+- Inventur validiert: 4.869 Dateien, 18 überschneidungsfreie Gruppen, 2.444 globale eindeutige Inhalte, 2.425 Kopien. Registerzählungen für 99_CANON_AUDITS und 99_DAILY_DELTAS korrigiert; gruppenübergreifende Duplikate (8+8 nach _SOURCE_ARCHIVE) ergänzt.
+- PROJECT_DECISIONS Abschnitt 12 (Gunplay) im Wortlaut geprüft, ohne Ergänzung. Gesamt: 12 von 58.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-14 (09.11.2026): PROJECT_DECISIONS, Abschnitte 8, 10, 11
+
+- Wortlaut geprüft: Abschnitte 8, 10, 11. Insgesamt 11 von 58 Abschnitten.
+- Konflikt offen: Checkpoint-Schleife (`Kampfsystem/14` Punkt 4 gegen `Spielvision` §14.2 und `COMBAT-DEC-BW-001`).
+- StateTree-Status vereinheitlicht in `Game/Kreaturen/10` §11 (Technikrahmen 📋, Aufteilung 💡).
+- Ergänzt: Munitionsanzeige binär (`Game/Kampfsystem/02`).
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-13 (09.11.2026): PROJECT_DECISIONS im Wortlaut (Teil)
+
+- Wortlaut-Protokoll: 9 von 58 Abschnitten geprüft (1–7, 9 vollständig; 8 teilweise).
+- Ergänzt: `Game/Spielwelt-und-Untergrund.md` (Fall- und Story-Gebäude handgebaut).
+- Konflikt dokumentiert: StateTree-Regel (PROJECT_DECISIONS) gegen 💡-Status in `Game/Kreaturen/10`.
+- PROJECT_DECISIONS.md nicht formal abgenommen. Nächster Abschnitt: 10 (Zeile 116, Tod und Scheitern, OPEN).
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-12 (09.11.2026): PROJECT_DECISIONS erfasst
+
+- Neu: `Nachweis/entscheidungsabgleich-project-decisions.md` (58 Abschnitte, Prüfstufe je Abschnitt). Keine Abschnitte formal abgeschlossen.
+- Ergänzt: `Development/Produktions-Referenzen-und-Prompts.md` §10 und §11.
+- Offen: OPEN_DECISIONS, PROJECT_DECISIONS Zeilen 1–400 im Wortlaut, zwei weitere reference-Dateien.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-10 (09.11.2026): Changelog 24.08., OPEN_DECISIONS, PROJECT_DECISIONS (Teil)
+
+- Changelog 24.08. formal verarbeitet; offen: Pre-1.0-Builds (Q-BUILD-1), Platzhalterstimmen (Q-VOICE-1).
+- `OPEN_DECISIONS.md`: 41 Punkte ohne Treffer in `Planning/OPEN_QUESTIONS.md` als Q-OD-01 bis Q-OD-41 übertragen. 83 Treffer nur automatisch abgeglichen.
+- `PROJECT_DECISIONS.md`: Zeilen 1–260 stichprobenartig geprüft; Zeilen 260–707 offen.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-09 (09.11.2026): Wortlaut-Prüfung 31.08., Entscheidungen 23./24.08.
+
+- Prüfstufen im Abgleich 31.08. eindeutig: 33 Zeilen „Text geprüft“, 26 Zeilen „Wortlaut“, 1 informell.
+- Changelog 31.08. formal verarbeitet; offene Entscheidungen dokumentiert.
+- Ergänzt: `Game/Gameplay-Systeme.md` (Kosmetik ohne Spielkraft), `Game/Fahrzeuge-und-Verkehr/04` (Vertrautheit, Luftlenkung, Bergung), `Game/Kreaturen/10` (Monsterreaktion, Ernte), `Game/Kampfsystem/13` (Insassenverletzung), `Game/Kampfsystem/11` (Rauchen), `Game/Ermittlung/27` (NPC-Aufnahmen, Behördenzugriff), `Game/NPCs/04` (Kommunikation ohne Malus), `Game/Ermittlung/14` (Statusvermerk Eskalation).
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` §9 (Audio-Qualität und Audio-QA, Entscheidungen 23.08.).
+- Neu in `Planning/OPEN_QUESTIONS.md`: Q-BUILD-1 (Pre-1.0-Builds), Q-VOICE-1 (Platzhalterstimmen).
+- Changelog 24.08.: nur teilweise geprüft. `PROJECT_DECISIONS.md` und `OPEN_DECISIONS.md`: nicht geprüft.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-08 (09.11.2026): Abgleich DECISION_CHANGELOG 08-31
+
+- Neu: `Nachweis/entscheidungsabgleich-2026-08-31.md` (55 Abschnitte, 60 Prüfzeilen; Prüfstufe je Zeile).
+- Ergänzt: `Game/Spielvision.md` (Geografie vor Story §5.2; Missionszustände; Online-Richtung und Modus-Grenzen); `Game/Spielwelt-und-Untergrund.md` §9.2a (Kadaverzustände, Aasfresser-Hinweis); `Game/NPCs/14` (Alterung nach Story- und Weltzeit).
+- Nicht abgenommen: 26 Stichwort-Zeilen; DECISION_CHANGELOG 08-23/08-24, PROJECT_DECISIONS.md und OPEN_DECISIONS.md noch nicht geprüft.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-07 (09.11.2026): Governance, Prompt-Tracks, Plattform
+
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` §8 (Plattform-Grundlagen Track 17, plattformneutral, Glyphen offen).
+- Fortschrittsübersicht um Governance-, Prompt- und Track-Kontext-Stand erweitert. Governance-Prozessregeln bewusst nicht übernommen.
+- Track-Kontexte der Prompt-Bibliothek (18 Dateien) gegen `Docs/` abgeglichen. Einzelprompts (866) und Changelogs 08-23/08-24 nicht vollständig geprüft.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-06 (09.11.2026): Inventare, Duplikatprüfung, Fortschrittsübersicht
+
+- Neu: `Nachweis/fortschritt-master-migration.md` (drei Stufen getrennt: inventarisiert, geprüft, migriert).
+- Neu: `Nachweis/inventar-04-history.csv` (402 Dateien, SHA-256, Duplikatgruppen).
+- `04_HISTORY`: 402 Dateien, 44 eindeutige Inhalte, alle byte-identisch mit `01_CURRENT`. Kein Eigeninhalt.
+- `99_RECONSTRUCTION_SOURCES`: 60 Dateien, alle eindeutig. Inventar bewusst nicht in `Docs/` (private Überschriften); nicht geprüft.
+- `02_EMBEDDED_BASE_ARCHIVES`: 3.689 Dateien, 1.860 eindeutige Inhalte (heuristische Einordnung). Planungsbacklog (26 Dateien) vollständig gelesen.
+- Neu: `Docs/Game/Spielwelt-und-Untergrund.md` §9.2a (Wildtier-Studium, Verarbeitung, Forensik; Track 37).
+- Ergänzt: `Docs/Game/Gameplay-Systeme.md` (Minderjährige NPCs als aktuelle Darstellungsrichtung mit offener Prüfung; Darstellungsprofile Voll/Reduziert/Minimal; Track 44).
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` §7 (Blender-Pipeline Track 29; Werkzeuganforderungen 23, 27, 28, 30, 31).
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-05 (09.11.2026): Register H abgeschlossen
+
+- Neu: `Docs/Game/World/12` §3 um Autonomiegrenzen (U35-Richtung, Berechtigungsmodell 💡, Infrastruktur-Isolation, Ausfall-Szenarien, Verbote).
+- Neu: `Docs/Development/Produktions-Referenzen-und-Prompts.md` §6 (KI-3D-Pipeline als Recherche, Herstellerangaben nicht unabhängig geprüft).
+- Neu: `Docs/Planning/OPEN_QUESTIONS.md` Q-ASSET-1/2 und Q-PUB-1/2.
+- Ergänzt: `Docs/Decisions/0004` §6 (berichtete Risiken Phase 0.3, nicht unabhängig geprüft).
+- Register `Nachweis/master-zuordnung-01-current.md` Abschnitt H: alle Delta-Dokumente mit Zielstelle oder Prozessstatus.
+- Keine Master-Dateien verändert; keine Commits.
+
+## Paket MASTER-MIGRATION-04 (09.11.2026): offene Tagesdeltas übertragen
+
+- Neu: `Docs/Game/World/12` §3 um KI-Anerkennung nach U34 (sechs Dimensionen, offene Fragen, Freitext-Regel), Simulationsgrenzen (bestätigter Rahmen, Architektur 💡, Abnahmebedingungen, Verbotsliste) und Datenschutz/Ausfallsicherheit (bestätigte Grundsätze, Vorschläge, Prüffälle; U37 offen) ergänzt.
+- Neu: `Docs/Game/World/17` §6 Abnahme-Gates der Karten-Spezifikation (visuelle Freigabe zuerst, Topologie, Render-Ehrlichkeit, Paketintegrität, Statustransparenz, Nicht-Ziele).
+- Register `Nachweis/master-zuordnung-01-current.md` Abschnitt H aktualisiert.
+- Keine Master-Dateien verändert; keine Commits.
+
 ## Paket MASTER-MIGRATION-02 (08.11.2026): Quellen abschließen, Verzeichnisse 02, 99 und 04 klassifizieren
 
 - Neu ergänzt: `Docs/Game/World/24-WORLD700-GIS-Referenz.md` §11 (OWP-LCS-1-Koordinatenformel, Zoomstufen, Kennungen, Genauigkeitsgrenzen, Verteilung, Phase-A-Abnahmeschranken, Stil-Vorschlag `MAP_RENDER_STYLE_V1` nicht gesperrt, Wiederherstellungsstand, Ebenen-Manifest Iteration 6). Widerspruch Phase A (Master PROPOSED vs. Register APPROVED_LOCKED) vermerkt; K-19 bleibt offen.

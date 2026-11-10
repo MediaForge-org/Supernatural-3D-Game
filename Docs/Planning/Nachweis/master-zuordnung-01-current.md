@@ -10,7 +10,7 @@ Stand: 08.11.2026. Zweck: Nachweis je Master-Quelldatei, wohin sie in `Docs/` ü
 - **Prüfung:** `Inhalt gelesen` = Datei in dieser Sitzung vollständig gelesen; `Kurzlesung` = Datei gelesen, aber als reine Statusnotiz; `Stichprobe` = Zielstellen nur punktuell per Suche belegt, keine Zeilen-für-Zeilen-Gegenprüfung.
 - Ein Dateiname, ein Suchtreffer oder ein erfolgreicher Link-Check gilt nicht als Nachweis. Ein `vollständig` setzt eine Zeilen-Gegenprüfung voraus; **keine Zeile dieses Registers erreicht diesen Stand**.
 
-**Gesamtbefund:** Keine Datei ist bisher als `vollständig` nachgewiesen. Die Realm-Angaben, die Weltgrößen-Historie und die Modding-Grundsätze sind in `Docs/` weitgehend vorhanden, aber nicht Zeile für Zeile geprüft. Die Block-10-Sandbox-Anforderungen (CA5 §4) sind nur stichprobenartig belegt.
+**Gesamtbefund (Stand 09.11.2026, MASTER-MIGRATION-17):** Alle 57 Dateien sind vollständig gelesen (Abschnitt J). Jede eigenständige Anforderung wurde einzeln an einer Zielstelle in `Docs/` nachgewiesen oder als offen, überholt bzw. historisch markiert. Die Tabellen A bis D unten stammen aus dem früheren Stand (08.11.); ihre Angaben „teilweise“ sind durch Abschnitt J ersetzt.
 
 ## A. Inhaltlich tragende Dateien
 
@@ -184,16 +184,30 @@ Quelle: `99_DAILY_DELTAS/2026-10-14` bis `2026-10-19`, 102 Dateien (rund 484 KB)
 | 2026-10-15 `docs/canon/UNDERGROUND_SOCIETY_DECISIONS_24-32.md` | U24–U32 Gesellschaft | `Game/World/12` §1–§2, markiert als historisch (N-02) | übertragen; Geltung offen (K-29) |
 | 2026-10-14 `docs/canon/HUNTER_BUNKER_AND_FAMILY_KEY.md`, `UNDERGROUND_CITIES_DECISIONS.md`, `docs/open_questions/…` | Bunker, Tesla, Familienschlüssel, Untergrundstädte | `Planning/DECISIONS.md` C-44, C-47; `Game/World/10`, `11` (historisch N-02); `Game/World/20` | übertragen |
 
-**Noch nicht im Detail geprüft (Status: offen):**
+**Abgeschlossen in MASTER-MIGRATION-05 (09.11.2026):**
 
-- 2026-10-16: `specs/AI_RECOGNITION_AND_CONFLICTS.md` (Vorschlag, unverbindlich), `specs/AI_SIMULATION_BOUNDARIES.md` (Engineering-Interpretation), `docs/integration/MANUAL_REVIEW_GUIDE.md`, `docs/comparison/DIFF_AGAINST_PRIOR_DELTAS.md`.
-- 2026-10-17: `specs/AI_AUTONOMY_BOUNDARIES.md` (U35 Richtung bestätigt, Mechanismen 💡), `specs/PRIVACY_SECURITY_AND_FAILURE_REQUIREMENTS.md`, `design/PROPOSED_CPLUSPLUS_IMPLEMENTATION_NOTES.md` (Nicht-Kanon-Vorschlag, C++-Bezug), `integration/MERGE_REVIEW.md`.
-- 2026-10-18: `design/CHARACTER_CREATOR_AND_RELEASE_POLICY.md`, `specs/MASTER_MAP_ACCEPTANCE_SPEC.md` (Anforderungen mit Vorschlägen), `status/CPP_PHASE_0_PROGRESS.md`, `status/MAP_ITERATION_REVIEW.md`, `open_questions/OPEN_QUESTIONS_2026-10-18.md`.
-- 2026-10-19: `specs/MAP_ACCEPTANCE_CHECKS_2026-10-19.md` (Prüfliste; Teile in `Game/World/17` D19-CHK), `specs/WORLDFACTS_PHASE_0_3_2026-10-19.md` (C++-Implementierungsbericht, kein Spielinhalt), `design/CHARACTER_APPEARANCE_PHASE_0_4_PROPOSAL.md`, `design/AI_3D_PIPELINE_WATCH_2026-10-19.md` (Recherche), `docs/status/CPP_GIT_STATUS_2026-10-19.md`, `docs/open_questions/OPEN_QUESTIONS_2026-10-19.md`.
-- Alle `assets/`-Inventare, `CHANGELOG.md`- und `README.md`-Dateien sowie `comparison/`-Dateien: nur Metadaten; Inhalte werden über die Originaldeltas oben nachgewiesen.
-- `assets/prior_canon_refs/…` (2026-10-18): **Duplikate** von `01_CURRENT`-Dateien. Vergleich mit Primärquelle durch Dateinamen belegt; Byte-Vergleich für `CURRENT_CANON_2026-09-16`, `MASTER_STATUS_2026-09-27`, `SOURCE_OF_TRUTH_…_2026-09-27` in Abschnitt G durchgeführt. Für die übrigen Duplikate (`MASTER_STATUS_2026-10-13`, `CURRENT…ADDENDUM`, `02_DECISION_REGISTER`) ist der Byte-Vergleich offen.
+| Delta-Datei | Behandlung | Zielstelle |
+|---|---|---|
+| 2026-10-17 `specs/AI_AUTONOMY_BOUNDARIES.md` | übertragen (Richtung je Einsatzbereich, Grundregeln, Modell 💡, Infrastruktur-Isolation, fünf Ausfall-Szenarien, Abnahme-Vorschläge, Verbote) | `Game/World/12` §3 |
+| 2026-10-18 `design/CHARACTER_CREATOR_AND_RELEASE_POLICY.md` | bereits vorhanden: fotorealistisches Ziel, modularer Editor für Spieler und NPC; Veröffentlichung nur nach Prüfung und getrennter Kopie | `Game/Gameplay-Systeme.md` (Figuren, Z. 280) und Q-PUB-1 in `Planning/OPEN_QUESTIONS.md` |
+| 2026-10-19 `design/CHARACTER_APPEARANCE_PHASE_0_4_PROPOSAL.md` | bereits vorhanden als Entwurf (Datenmodell, Schichten für Tattoos und Narben, Kleidung getrennt, deterministische Serialisierung) | `Decisions/0005-character-appearance-foundation.md` |
+| 2026-10-19 `design/AI_3D_PIPELINE_WATCH_2026-10-19.md` | übertragen als Recherche mit Herstellerangaben (nicht unabhängig geprüft) | `Development/Produktions-Referenzen-und-Prompts.md` §6 |
+| 2026-10-16 `integration/MANUAL_REVIEW_GUIDE.md`, 2026-10-17 `integration/MERGE_REVIEW.md` | Installations- und Prüfprozess, keine Spielanforderung; die inhaltlichen Punkte (U33/U34 als gewählte Richtung, U35 Option D, U36 Option E, U37 offen) stehen in `Game/World/12` §3 | Prozess, dokumentiert |
+| 2026-10-16 `comparison/DIFF_AGAINST_PRIOR_DELTAS.md` | Vergleich mit Vorstand; U33/U34 gewählt, U35 offen (später bestätigt), Rest unverändert | `Game/World/12` §3; Vergleich nicht als Anforderung übernommen |
+| 2026-10-18 `status/MAP_ITERATION_REVIEW.md` | bereits vorhanden: V3 Zwischenstand, V4 nicht bestätigt, V5 abgelehnt, V6 nur Kandidat | `Game/World/19` (Tabelle Versionen) |
+| 2026-10-18 `open_questions/OPEN_QUESTIONS_2026-10-18.md` | Kartenfragen bereits in `Game/World/17` und `19`; C++-Fragen in `Decisions/0004`; Rechte- und Veröffentlichungsfragen neu als Q-ASSET-1/2 und Q-PUB-1/2 | `Planning/OPEN_QUESTIONS.md` |
+| 2026-10-19 `specs/WORLDFACTS_PHASE_0_3_2026-10-19.md` | bereits vorhanden als Entscheidung 0004; berichtete Risiken neu ergänzt (Replay linear, Plattform, Golden-File) | `Decisions/0004` §6 |
+| 2026-10-19 `specs/MAP_ACCEPTANCE_CHECKS_2026-10-19.md` | bereits vorhanden (Prüfkatalog D19-CHK) | `Game/World/17` §6 |
+| 2026-10-19 `open_questions/OPEN_QUESTIONS_2026-10-19.md` | Karten-Fragen (1–7) in `World/17` und `19`; C++-Fragen (8–10) in `Decisions/0004`; Asset- und Rechtefragen (13–15) als Q-ASSET; Frage 12 als Q-PUB-2 | `Planning/OPEN_QUESTIONS.md` |
+| 2026-10-19 `status/CPP_GIT_STATUS_2026-10-19.md` | Statusbericht, keine Anforderung. Die Git-Regel (nur der Nutzer committet) steht in `CLAUDE.md` §10 | Prozess, dokumentiert |
+| 2026-10-17 `design/PROPOSED_CPLUSPLUS_IMPLEMENTATION_NOTES.md` | Nicht-Kanon-Vorschlag mit Komponentennamen und Testideen; keine Spielanforderung. Abhängigkeiten (U37, Identität, Sicherheitsmodell) sind bereits in `World/12` und `Decisions/0004` erfasst | Vorschlag, dokumentiert |
+| 2026-10-18 `status/CPP_PHASE_0_PROGRESS.md` | berichteter Stand (45/45 Tests, Commit `3d8a5e3` vom Nutzer) | `Decisions/0002` und `0004`; Testzahlen nicht als geprüft übernommen |
 
-**Ergebnis H:** Neun bestätigte Teilbereiche sind übertragen oder neu ergänzt. Rund 60 Dateien sind Prüf-, Status- und Vorschlagsdokumente; sie bleiben offen und dürfen nicht als bestätigte Anforderungen übernommen werden.
+**Duplikate (Byte-Vergleich, 09.11.2026):** Alle fünf Dateien in `assets/prior_canon_refs/01_CURRENT_CANONICAL_STATE/` sind mit ihrer Primärquelle in `01_CURRENT_CANONICAL_STATE/` **byte-identisch** (`cmp`): `CURRENT_CANON_2026-09-16.md`, `MASTER_STATUS_2026-10-13.md`, `SOURCE_OF_TRUTH_AND_SUPERSESSION_2026-09-27.md`, `ADDENDA_2026/2026-10-15/01_CANON_ADDENDUM.md`, `ADDENDA_2026/2026-10-15/02_DECISION_REGISTER.md`. Behandlung: historische Wiederholung, keine eigene Anforderung.
+
+**Offen aus Register H:** Nur noch die `assets/`-Inventare, `CHANGELOG`- und `README`-Dateien sowie `comparison/`-Dateien der Tage 14.–19.10. Sie sind Metadaten und wurden durch die Inhalte oben abgedeckt, aber nicht einzeln gelesen.
+
+**Ergebnis H (Stand 09.11.2026):** Die inhaltlich relevanten Delta-Dokumente sind geprüft. Übertragen oder als vorhanden belegt: 22 Dokumente. Prozess- und Statusberichte ohne Anforderung sind dokumentiert abgeschlossen. oder neu ergänzt. Rund 60 Dateien sind Prüf-, Status- und Vorschlagsdokumente; sie bleiben offen und dürfen nicht als bestätigte Anforderungen übernommen werden.
 
 ## I. Verzeichnisse 04_HISTORY, 99_RECONSTRUCTION_SOURCES und weitere (nur Klassifikation, 08.11.2026)
 
@@ -207,3 +221,53 @@ Quelle: `99_DAILY_DELTAS/2026-10-14` bis `2026-10-19`, 102 Dateien (rund 484 KB)
 | `99_MANIFESTS` | 3 Dateien ohne Markdown | Prüfsummen | nicht übertragen |
 
 **Ergebnis I:** Diese Verzeichnisse sind klassifiziert. Es gibt darin keine Anforderungen, die noch fehlen, soweit die Stichproben reichen. Eine vollständige Prüfung von `04_HISTORY` (402 Dateien) und `99_RECONSTRUCTION_SOURCES` (59 Dateien) steht aus. Sie ist für die Spielplanung nachrangig, weil die Fassungen in `01_CURRENT` maßgeblich sind.
+
+## J. Vollabgleich 01_CURRENT_CANONICAL_STATE (MASTER-MIGRATION-17, 09.11.2026)
+
+**Stand:** 57 von 57 Dateien vollständig gelesen; 57 von 57 Dateien abgeglichen. Methode je eigenständiger Anforderung: Suche nach dem Begriff, Lesen der Zielstelle, Abgleich des Inhalts. Stichworttreffer allein gelten nicht; Zielstellen wurden gelesen. Dateien ohne eigene Anforderung (reine Fortschreibung, Tages-Supersession) sind als solche markiert und nicht als eigenständige Quelle gezählt.
+
+**Ergebnis:** Alle eigenständigen Anforderungen sind in `Docs/` nachgewiesen oder als `offen`, `überholt` bzw. `historisch` markiert. Bei der Prüfung wurde keine fehlende Anforderung gefunden, also wurde nichts neu übertragen. Die zwei Punkte, die zuerst unklar wirkten, sind belegt: Heirat, Zusammenleben und gemeinsamer Besitz in `NPCs/09` (N-BV-009) und heimgesuchte Immobilien in `Kreaturen/16` §2.
+
+| Master-Datei | Zielstelle in `Docs/` | Prüfung |
+|---|---|---|
+| `ADDENDA_2026/2026-10-15/00_START_HERE.md` | `Planning/CANON.md`, `Game/Entscheidungsstatus.md` | Rahmen gelesen; keine eigene Anforderung |
+| `ADDENDA_2026/2026-10-15/01_CANON_ADDENDUM.md` | Weltgröße `Entscheidungsstatus` §3, Städte (W-ST-009/010), Untergrund (C-44, C-47, U24–U32), Bunker (`Spielwelt-und-Untergrund` §15) | vollständig; Größe 50–100 km² durch N-02 historisch |
+| `ADDENDA_2026/2026-10-15/02_DECISION_REGISTER.md` | D-001 bis D-015 → `Planning/DECISIONS.md` (C-44, C-47, W-03, X-04, N-01, N-02) | vollständig |
+| `ADDENDA_2026/2026-10-15/03_OPEN_QUESTIONS.md` | `Planning/OPEN_QUESTIONS.md`, `Planning/CONFLICTS.md` (K-19, K-28, K-29) | vollständig; Punkt 6 (Map V1.3e.3) offen |
+| `ADDENDA_2026/2026-10-15/04_PROVENANCE_AND_LIMITS.md` | `Planning/SOURCES.md` | Herkunft gelesen; keine eigene Anforderung |
+| `ADDENDA_2026/2026-10-18/00_README.md` | Rahmen | keine eigene Anforderung |
+| `ADDENDA_2026/2026-10-18/01_CONFIRMED_AND_PROVISIONAL.md` | U24–U36 (`Game/World/12` §3, `Planning/DECISIONS.md` C-47); Allianz ohne uneingeschränkten Zugang (`Spielwelt-und-Untergrund` §Untergrund, Zeile 390) | vollständig |
+| `ADDENDA_2026/2026-10-18/02_OPEN_AND_CONFLICTS.md` | `Planning/CONFLICTS.md`, `Planning/OPEN_QUESTIONS.md` (U37, Bunker vs. HQ, Zugang Jäger, Neuro-Schnittstellen) | vollständig; alle Punkte offen |
+| `ADDENDA_2026/2026-10-18/03_ENGINEERING_PROPOSALS.md` | `Game/World/12` §3 (als Vorschlag); Bahn- und Fahrzeug-Vorschläge in `World/09`, `Fahrzeuge-und-Verkehr` | als Vorschlag, nicht bestätigt, markiert |
+| `ADDENDA_2026/2026-10-18/04_EVIDENCE_AND_REVIEW.md` | `Planning/Nachweis/deltas.md` | Prüfgrenzen gelesen |
+| `BLOCK_09_STATUS.md` | Kreaturen-Module (Ökologie, Nester, Jägernetz), `Ermittlung/17`, `Kreaturen/21` (offen: Institutionsname, Kosmologie, Monsterzahl C-K8) | vollständig |
+| `CANONICAL_ADDENDUM_2026-09-04.md` | `Spielwelt-und-Untergrund` §15, `Entscheidungsstatus` §6 (Sammelobjekte), `Spielvision` (1.200–1.500 historisch) | vollständig |
+| `CANONICAL_ADDENDUM_2026-09-05.md` (CA5) | §1 `Entscheidungsstatus` (überholt, N-01); §2 `Spielwelt-und-Untergrund` §7 (1600 bis Gegenwart, Schichten, Zukunft offen); §3 `Spielvision` (historische Übernatürliche Schicht, WWII, original IP); §4 `Gameplay-Systeme` 241–243, `Spielvision` §6.3, §14, §10 (Spuren, Forensik), C-31, C-32, C-35, `NPCs/09` N-BV-009; §5 `Spielwelt-und-Untergrund` §15; §6 `Spielvision` Sammelobjekte; §7 offen (`OPEN_QUESTIONS`, Familiengenerationen Zeile 101) | vollständig, jeder Punkt von §1 bis §7 einzeln geprüft |
+| `CANONICAL_ADDENDUM_2026-09-06.md` | Hauptwelt, WORLD_700 Legacy, Realme (`Spielwelt-und-Untergrund` §15), Traversal und Persistenz, Zeitreise (`World/26`) | vollständig |
+| `CANONICAL_UPDATE_2026-09-08.md` | Supersession (N-01, WORLD_700 Legacy, Realme nicht gelockt) | vollständig |
+| `CURRENT_CANON_2026-09-16.md` | `Planning/CANON.md`, Modding (`Gameplay-Systeme` ~346–410), Stimme (`Spielvision` Stimmen), Produktionsprompts (`Development/Produktions-Referenzen-und-Prompts.md`) | vollständig |
+| `DISTRIBUTION_AND_OPTIONAL_PACKS/OPTIONAL_CONTENT_PACKS_2026-09-10.md` | `Planning/DECISIONS.md` T-08, C-39; `Gameplay-Systeme` ~335; `Spielvision` Stimmen | vollständig (Stimmpaket 48 kHz; Sprachen einzeln; Ultra/Cinematic-Texturen optional) |
+| `MASTER_STATUS_2026-09-10.md` | Fortschreibung (Modding 09-09, optionale Pakete, Blender) | Fortschreibung, keine eigene Anforderung |
+| `MASTER_STATUS_2026-09-11.md` | Fortschreibung (Modding Block 5, Archivpolitik) | Fortschreibung |
+| `MASTER_STATUS_2026-09-17.md` … `2026-09-27.md` (11 Dateien) | Fortschreibungen ohne neue Entscheidung; 09-23 WORLD_700-Technikkarten (PNG/SVG/JSON) binär bzw. GIS, nicht in `Docs/` übertragen (Abschnitt C); 09-27 Phase-A-Paket in `World/24` §11 | Fortschreibung; keine eigene Anforderung |
+| `MASTER_STATUS_2026-10-13.md` | `Planning/CANON.md`, `Entscheidungsstatus` (Produktion, Phasen, Tesla-Geheimhaltung, 570 km² abgelehnt, Gesamtstadt) | vollständig |
+| `MODDING/MODDING_ARCHITECTURE_V1_BLOCK_05_CONFIRMED_2026-09-11.md` | `Gameplay-Systeme` ~346–410; `Planning/DECISIONS.md` | vollständig (GameRoot/mods, Installation ≠ Aktivierung, Profil/Speicher, Zusatzbibliotheken optional) |
+| `MODDING/MODDING_ARCHITECTURE_V1_RECONSTRUCTED_2026-09-09.md` | C-37 (rekonstruiert, kenntlich gemacht) | historisch; Regeln gelten als rekonstruiert |
+| `MODDING/MODDING_BLOCK_STATUS_2026-09-11.md` | `Planning/CANON.md` (Block 5 bestätigt, Block 10 abgeschlossen) | vollständig |
+| `PLANNING_BLOCK_STATUS_2026-09-16.md` | `Planning/CANON.md`, `Planning/TASKS.md` (Gates: WORLD_1500 offen, Realm-Bibles offen, Host offen) | vollständig |
+| `PLANNING_STATUS_2026-09-05.md` | Block 9 und 10 (siehe CA5), Zeitreise-Anker, Realme | vollständig |
+| `PLANNING_STATUS_2026-09-06.md`, `2026-09-07.md` | Fortschreibung des Stands 06.09. (WORLD_700 Legacy, Realme, Zeit) | Fortschreibung |
+| `REALMS/STATUS_2026-09-10.md` | `Spielwelt-und-Untergrund` §15 (Größen, Favoriten, Orte, Zeitverhältnis mit Verweis auf PE-E1022), `Entscheidungsstatus` | vollständig; K-21 Zeitverhältnis bleibt als Konflikt-Eintrag offen |
+| `SOURCE_OF_TRUTH_AND_SUPERSESSION.md` (aktuell) | `Planning/README.md` (Leseregel), `Planning/DECISIONS.md` (C-19, N-01) | vollständig |
+| `SOURCE_OF_TRUTH_AND_SUPERSESSION_2026-09-10/11/16` | Leseregeln 1–10 (Prioritätsreihenfolge, Bibliotheksverweise nicht eingebettet, fehlende Details nie erfinden) → `Planning/README.md` | vollständig |
+| `SOURCE_OF_TRUTH_AND_SUPERSESSION_2026-09-17` … `2026-09-27` (11 Dateien) | Tagesfassungen derselben Regeln; keine neuen Regeln | Fortschreibung |
+| `VOICE_PRODUCTION_AND_REFERENCE_WORKFLOW_2026-09-10.md` | `Spielvision` Stimmen (Einwilligung, Rechte, Löschung); `Produktions-Referenzen-und-Prompts.md` | vollständig |
+| `WORLD_1500/STATUS_2026-09-10.md` | `World/02`, `DECISIONS.md` N-01 (überholt), `Planning/CANON.md` (Generierung gesperrt bis Anforderungen und räumliche Zuordnung) | vollständig |
+| `WORLD_700/STATUS_2026-09-10.md` | `World/02`, `World/03`, `World/19`, `World/24` (Makrogeografie geschlossen, additiv) | vollständig |
+
+**Offene Konflikte (aus 01_CURRENT, nicht aufgelöst):**
+1. **Zeitverhältnis der Hölle (K-21):** `Spielwelt-und-Untergrund` §15 führt 40 Jahre Hölle ≈ 4 Monate Erde als bestätigt (22.10.2026, `PE-E1022`). `01_CURRENT` CA5 §5 und REALMS/STATUS 10.09. nennen es offen. Der Konflikt bleibt im Register offen; die Entscheidung liegt beim Entwickler.
+2. **Hunter-Bunker und oberirdisches HQ (D-014, K-28):** Verhältnis offen; Bunker als Feldbasis offen. Docs führt das so.
+3. **Weltgröße und Städte (N-01, N-02):** Historische Zahlen (1.500–1.800 km², 2.000–2.200 km², 50–100 km² Untergrundstadt, 570 km²) sind nicht bindend. Das ist entschieden, kein offener Konflikt.
+
+**Gesperrt:** keine Quelle in 01_CURRENT betroffen. `99_RECONSTRUCTION_SOURCES` bleibt gesperrt.

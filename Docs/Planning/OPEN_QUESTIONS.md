@@ -137,3 +137,76 @@ Quelle und Einzelpunkte: `Docs/Planning/Nachweis/tagesdeltas.md`. Keine Antwort 
 - **Q-DELTA-1: beantwortet (08.11.2026).** Freitext-Regel gilt als Planungsregel: `PLANUNGSFRAGEN.md`, `DECISIONS.md` P-01.
 - **Q-DELTA-2:** Gilt die 2.200-km²-Messung (2.090 km² außerhalb Metropolis, Ostinsel 80–100 km²) nur für den Kandidaten? (Delta 19.10; K-20, N-01.)
 - **Q-DELTA-3:** Vorschaubilder vom 19.10. zeigen teils „Hunter HQ“. Sie dürfen nicht öffentlich werden (W-KA-017). Bitte bestätigen, dass diese Bilder nur intern bleiben.
+
+## Asset-, Rechte- und Veröffentlichungsfragen (Delta 18./19.10., übertragen 09.11.2026)
+
+Keine Antwort ist festgelegt. Quelle: `Docs/Development/Produktions-Referenzen-und-Prompts.md` §6 und `Docs/Game/World/17` §6.
+
+- **Q-ASSET-1:** Welche Lizenzbedingungen gelten für KI-erzeugte und fremde 3D-Assets und ihre Abhängigkeiten? Erst nach dieser Prüfung wird über Veröffentlichung entschieden.
+- **Q-ASSET-2:** Welche Kandidaten-Werkzeuge bestehen einen Vergleich an identischen Testassets (Rigging, Kleidungstrennung, PBR, LOD)? Keine Rangfolge vor diesem Vergleich.
+- **Q-PUB-1:** Welcher Veröffentlichungsumfang wird gewählt? Die Planungs-Masterdaten brauchen vor jeder Veröffentlichung eine Prüfung je Datei (Rechte, Datenschutz, Herkunft, Lizenz) und eine **getrennte, bereinigte Kopie**; das Original bleibt unverändert.
+- **Q-PUB-2:** Welche Prüfung gilt für `Docs/Proposals/` vor einem Commit des Nutzers (ungetrackte Dateien)?
+
+## Aus den Entscheidungsquellen 23./24.08.2026 (übertragen 09.11.2026)
+
+- **Q-BUILD-1:** Welche öffentlichen Builds vor Version 1.0 sind geplant (Umfang, Zugang, Rechte)? Der Changelog vom 24.08. nennt „pre-1.0 public builds“, enthält aber keine Details. Entwicklerentscheidung offen.
+- **Q-VOICE-1:** Die temporären synthetischen Stimmen sind als Platzhalter und nicht als Endfassung zu markieren. Welche Stimmen davon in Vorabversionen erscheinen dürfen, ist offen.
+
+## Offene Punkte aus dem Bibliotheks-Register OPEN_DECISIONS (31.08.2026, übertragen 09.11.2026)
+
+Quelle: `02_EMBEDDED_BASE_ARCHIVES/02_PROMPT_LIBRARY_CURRENT/docs/reference/OPEN_DECISIONS.md`, 124 Punkte. Automatischer Abgleich: 83 Punkte haben Stichwort-Treffer in `Docs/` (nicht einzeln gegengelesen), 41 Punkte ohne Treffer werden hier als Q-OD-01 bis Q-OD-41 geführt. Keine Antwort ist festgelegt.
+
+- **Q-OD-01** (Product / world / story): Final game title, logos and trademarks.
+- **Q-OD-02** (Product / world / story): Exact final main-map shape/boundaries within the current ~200–300 km² direction. **Historisch:** die Weltgröße 200–300 km² ist durch N-01 offen; diese Frage gilt nur noch in der offenen Form.
+- **Q-OD-03** (Progression / body / survival): Full final progression/skill model beyond use/training-based organic growth and diminishing returns.
+- **Q-OD-04** (Progression / body / survival): Exact formulas/limits for body composition, muscle growth/loss, strength, cardio, fatigue, recovery, hydration, sleep, stress and nutrition.
+- **Q-OD-05** (Progression / body / survival): Exact biological/profile differences and how they are represented without creating simplistic gender multipliers.
+- **Q-OD-06** (Progression / body / survival): Exact smoking/alcohol dependence/withdrawal depth.
+- **Q-OD-07** (Wildlife / hunting / monster knowledge): Exact hunting economy, hide/meat/sample price curves and spoilage times.
+- **Q-OD-08** (Vehicles / racing): Exact fuel/EV economy and refuel/charge timings.
+- **Q-OD-09** (Vehicles / racing): Exact racing classes, homologation rules, track roster beyond the current minimum-five direction, championship structure and race-reward economy.
+- **Q-OD-10** (Economy / cash / shops): Exact Online currency packs/prices, if real-money acceleration ships.
+- **Q-OD-11** (Economy / cash / shops): Exact guardrails separating convenience from pay-to-win.
+- **Q-OD-12** (Mission ratings / achievements): Exact number and list of Base trophies/achievements.
+- **Q-OD-13** (Mission ratings / achievements): Exact Online/Grounded/Permadeath/DLC trophy packs.
+- **Q-OD-14** (Online / backend): Exact Hostility/Defensive Mode/Player Bounty implementation.
+- **Q-OD-15** (Creator economy / modding): Exact Engagement Fund percentage/formula and anti-fraud metrics.
+- **Q-OD-16** (Creator economy / modding): Exact KYC/tax/payout providers and regional creator eligibility.
+- **Q-OD-17** (Creator economy / modding): Exact native-mod trust/signing policy.
+- **Q-OD-18** (Creator economy / modding): Exact optional PC adult-content distribution method and store/legal treatment if it is ever released.
+- **Q-OD-19** (Adult / romance / interaction): Exact official base-game camera/presentation profiles by platform/region.
+- **Q-OD-20** (Rendering / performance / storage): Exact minimum/recommended/ultra PC CPU/GPU/RAM/VRAM targets.
+- **Q-OD-21** (Rendering / performance / storage): Exact native/internal resolutions and frame-rate targets for console modes.
+- **Q-OD-22** (Rendering / performance / storage): Exact Path Tracing availability/restrictions.
+- **Q-OD-23** (Rendering / performance / storage): Exact PS5 Pro enhancement profile.
+- **Q-OD-24** (Rendering / performance / storage): Exact Xbox Series S modes.
+- **Q-OD-25** (Rendering / performance / storage): Exact install-size budget around the current ~100 GB base-game direction, per-platform disc layout and compression choices.
+- **Q-OD-26** (Rendering / performance / storage): Exact optional language/audio pack policy, if any, while minimizing fragmentation.
+- **Q-OD-27** (Audio / voice): Final room/portal/acoustic propagation architecture.
+- **Q-OD-28** (Audio / voice): Final memory/cache/streaming budgets.
+- **Q-OD-29** (Audio / voice): Final recording hardware/vendors/workflow.
+- **Q-OD-30** (Audio / voice): Final voice casting: friends/family, professionals or hybrid per role.
+- **Q-OD-31** (Audio / voice): Final licensed voice-cloning/TTS provider/models/contracts.
+- **Q-OD-32** (Audio / voice): Final human-performance vs voice-clone vs speech-to-speech ratio.
+- **Q-OD-33** (Audio / voice): Final localized dubbing languages and localization model.
+- **Q-OD-34** (Prompt Explorer / DCC / production): Exact dependency graph/search libraries.
+- **Q-OD-35** (Prompt Explorer / DCC / production): Final authentication/remote-access model.
+- **Q-OD-36** (Prompt Explorer / DCC / production): Final DCC interoperability beyond Blender.
+- **Q-OD-37** (Prompt Explorer / DCC / production): Exact automated visual-review tooling.
+- **Q-OD-38** (Test orchestration / human approval): Final SPN Test Orchestrator implementation language/topology.
+- **Q-OD-39** (Test orchestration / human approval): Exact visual-diff/AI-review thresholds.
+- **Q-OD-40** (Test orchestration / human approval): Exact content classes requiring explicit manual approval vs policy-based auto-approval.
+- **Q-OD-41** (Scrum / production): Final estimates/story points/team capacity.
+- **Q-OD-42** (Prompt Explorer / DCC / production): Final visual-reference formats, storage and image-generation workflow. Nicht in `Docs/` als offen geführt; MASTER-MIGRATION-17, `OPEN_DECISIONS.md`.
+- **Q-OD-43** (Prompt Explorer / DCC / production): Exact review UI, and whether it can directly trigger Claude execution or rework.
+- **Q-OD-44** (Prompt Explorer / DCC / production): Final Blender automation mechanism (Python tooling, service, bridge, plugin or hybrid).
+- **Q-OD-45** (Prompt Explorer / DCC / production): Exact export and interchange formats per asset category.
+- **Q-OD-46** (Test orchestration / human approval): Exact Unreal test-framework mix per domain.
+- **Q-OD-47** (Test orchestration / human approval): Exact CI hardware pool and console-device automation.
+- **Q-OD-48** (Test orchestration / human approval): Exact runtime scenario counts and cadence.
+- **Q-OD-49** (Test orchestration / human approval): Exact review roles, UI and revision limits.
+- **Q-OD-50** (Scrum / production): Actual sprint duration, cadence and milestone dates.
+- **Q-OD-51** (Scrum / production): Final Epic, Feature and Story decomposition after design completion.
+- **Q-OD-52** (Scrum / production): Final total work-package count; current counts are planning estimates only.
+- **Q-OD-53** (Vehicles / racing): Vehicle-tow, winch and recovery UX and persistence (Richtung beschlossen, `Fahrzeuge-und-Verkehr/04` VEH-DEC-PH-011).
+- **Q-OD-54** (Economy / cash / shops): Buchmacher-Profile (Sharp, Semi-Sharp, Soft), Wettbörse mit Back/Lay, Liquidität und Provisionsmodell; Quelle `00_START_HERE/CURRENT_SUPERSESSION_2026-09-03.md`, nicht in `OPEN_DECISIONS.md` gelistet.

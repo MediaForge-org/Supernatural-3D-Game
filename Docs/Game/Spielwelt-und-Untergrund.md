@@ -225,6 +225,14 @@ Wichtig: Die 2.200 km² beziehen sich auf **trockenes Festland**, nicht auf die 
 - 📋 Große **Höhlen** und eine **stark ausgebaute Unterwasserwelt** (Tierschwärme, Pflanzen, Felsen, Wracks, Höhlen, Tiefenzonen, versunkene oder ruinierte Strukturen, wo es passt) gehören zur Planung. Die Unterwasserwelt ist ein bedeutender Spielbereich; deshalb ist mehr Küste oder mehr Seefläche eine offene Gestaltungsoption.
 - 📋 **PCG** (prozedurale Generierung) ist für Vegetation, Felsen, Straßenschmuck und kontrollierte Umgebungsvariation geeignet, **nicht** als Ersatz für handgebaute wichtige Orte. Hero-Gebäude sind einzigartig, Fall- und Story-Gebäude stark ausgearbeitet.
 
+### 9.2a Wildtier-Studium, Verarbeitung und Forensik (Backlog Track 37, 📋 Richtung)
+
+- 🧭 **Seltene Einzeltiere** (Projektzusammenfassung §31, MASTER-MIGRATION-18): sehr alte oder große Tiere, Albinismus, Melanismus, Narben, auffällige Aggressivität und lokale Geschichten. Ein eigener Archiv-Unterpunkt ist möglich, kein Arcade-„LEGENDARY“-Label. Sie bleiben verpassbar nur, solange sie nicht bewusst getötet wurden. Das vollständige Tierarchiv bleibt auch nach der Story möglich (§29).
+- Gewöhnliche Arten, die für das Archiv nötig sind, sind **nicht dauerhaft verpassbar**. Die Studie ist eine bewusste Handlung; die Forschung pro Art ist abgeschlossen, wenn sie vollständig ist.
+- Tierrufe, Spuren, Lebensräume, Territorien, Wanderungen und saisonales Verhalten, wo es begründet ist. Individuelle Unterschiede bei Alter, Geschlecht, Körperzustand, Gesundheit, Verletzung, Krankheit und Größe. Seltene, legendenhafte Einzeltiere ohne Arcade-Markierung.
+- Verarbeitung: Häuten, Ausweiden, Zerlegen, Probennahme oder ganzer Kadaver. Die Materialqualität folgt dem tatsächlichen Zustand, der Beschädigung und der Verarbeitung, **nicht** Sternen. Hochwertige Felle bringen mehr Geld. Kadaver lassen sich im Fahrzeug transportieren; Kühlung und Verderb wirken moderat.
+- Relevante Kadaver durchlaufen die Zustände frisch, Zersetzung, fortgeschrittener Zerfall, Skelett und Entfernung. Fliegen, Insekten, Geruch, Aasfresser und Wetter reagieren darauf. Die Forensik kann ungefähre Todeszeit, Wundmuster und mögliche tierische oder monsterhafte Ursache erschließen. Aasfresser und Raubtiere ziehen sich an; **ungewöhnliches Fehlen oder Verhalten von Aasfressern** kann selbst ein Ermittlungshinweis sein. Wildtierkrankheiten oder Parasiten können das Verhalten beeinflussen, die Materialsicherheit betreffen und manchmal mit übernatürlichen Fällen zusammenhängen. Die Anbindung an das Jägerarchiv und Tests sind Teil des Umfangs.
+
 ### 9.2 Tierwelt
 
 📋 Ziel: Auf der Hauptkarte etwa **220–280 Tier-, Vogel- und Fischarten** (auf späteren Karten oder DLC mehr).
@@ -311,6 +319,7 @@ Planungsstand vom 15. Oktober 2026 (📋 bestätigte Bereiche, nicht exakte Best
 
 - **Mindestens 90 % der normalen Gebäude** sollen in irgendeiner Form betretbar sein; reine Fassaden sind eine Minderheit. Orte sind abwechslungsreich: Modulare Elemente dürfen wiederverwendet werden, aber wichtige Orte und Fallorte dürfen nicht erkennbar kopiert wirken.
 - **Innenraum-Stufen:** Hero (einzigartig), voller Spielinhalt, prozedural, begrenzt.
+- 📋 **Fall- und Story-Gebäude** sind stark handgebaut und erzählerisch aufgeladen. Hero-Gebäude sind einzigartig; modulare Teile dürfen für Alltagsinnenräume verwendet werden, müssen aber so variiert sein, dass sie nicht wie Kopien wirken (PROJECT_DECISIONS, Welt).
 - **Kaufen und mieten:** mehrere Immobilien; der Wert reagiert auf Lage, Zustand, Aussicht, Verkehr, Kriminalität, Wirtschaft und Entwicklung.
 - **Grundstückskauf und Hausbau:** Der Spieler kann Land kaufen und ein Haus selbst entwerfen und bauen, einschließlich Garage, Werkstatt, Jägerräumen, Archiv, Serverraum, Fitnessraum, Pool, Garten, Nebengebäuden, Sicherheit, Notstrom und schnellem Internet. Die Hausgröße begrenzen vor allem Land, Geld, Gelände, Vorschriften und Technik, keine willkürliche Kleinstgrenze.
 - **Stadtwachstum über Jahre und Jahrzehnte:** Bau, Abriss, Sanierung, Geschäftswechsel und Verkehrsprojekte.
@@ -397,6 +406,8 @@ Alle Beispiele und technischen Taxonomien, die in Planungspaketen als Illustrati
 | **Hölle** | ca. 350–500 km² | ca. 420 km² | dicht, vertikal, labyrinthisch und innenraumreich statt weit und flach; Macht-Strukturen, Gefängnisse, Ruinen; **Zeitdehnung:** 40 Jahre Hölle ≈ 4 Monate Erde (📋 bestätigt am 22.10.2026, `PE-E1022`) |
 | **Fegefeuer** | ca. 500–750 km² | ca. 650 km² | Wildnis, Überleben, Monsterökologie; der stärkste Kandidat für Territorium, Jagd, Wanderung und Nahrungsketten |
 | **Himmel** (gemeinsame Welt) | ca. 250–400 km² | ca. 320 km² | **kein** Wolken-und-weiße-Gebäude-Klischee; vertrautes und fremdes, eingeschränktes Gelände mischen sich; zusätzlich variable **Gedächtnis- und Taschendomänen**, die den Erlebnisraum größer machen als die gemeinsame Fläche |
+
+🧭 **Reihenfolge der Reichsplanung** (aus der Vorstufe 04.09., `01_CURRENT`-Altbestand `REALM_DESIGN_PHASE_CURRENT.md`, MASTER-MIGRATION-17): Zuerst die Weltbibel mit Kosmologie, Maßstab, Geografielogik, Fortbewegung, Ökologie, Bewohnern, Strukturen, Gefahren, Zeitregeln, Ressourcen, Aktivitäten, Story, Streaming, Persistenz, Entdeckungen und Übergängen; danach die räumliche Zuordnung; erst zuletzt die Karte. Eine Reichskarte wird nicht als Ausgangspunkt gezeichnet. Die Größen der Reiche sind davon unabhängig und nicht festgelegt.
 
 **Kandidaten für wichtige Orte** (Arbeitsbezeichnungen, nicht endgültig):
 

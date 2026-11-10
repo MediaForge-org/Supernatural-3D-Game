@@ -1,0 +1,867 @@
+kennung;track;titel;klasse;zielstellen_in_docs;themenbereich
+001_establish-c-20-project-coding-and-module-conventions.md;01-foundation-architecture;Establish C++20 project coding and module conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+002_create-stable-gameplay-identifier-type-and-validation-rules.md;01-foundation-architecture;Create stable gameplay identifier type and validation rules;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+003_create-shared-gameplay-tag-naming-contract.md;01-foundation-architecture;Create shared gameplay tag naming contract;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+004_create-project-wide-error-result-type-conventions.md;01-foundation-architecture;Create project-wide error/result type conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+005_create-runtime-logging-category-conventions.md;01-foundation-architecture;Create runtime logging category conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+006_create-gameplay-event-delegate-conventions.md;01-foundation-architecture;Create gameplay event/delegate conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+007_create-deterministic-random-source-abstraction-for-testable-systems.md;01-foundation-architecture;Create deterministic random-source abstraction for testable systems;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+008_create-data-definition-registry-foundation.md;01-foundation-architecture;Create data-definition registry foundation;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+009_create-runtime-subsystem-ownership-guidelines-in-code.md;01-foundation-architecture;Create runtime subsystem ownership guidelines in code;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+010_create-editor-only-versus-runtime-module-separation.md;01-foundation-architecture;Create editor-only versus runtime module separation;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+011_create-developer-settings-config-foundation.md;01-foundation-architecture;Create developer settings/config foundation;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+012_create-feature-flag-foundation-for-unfinished-systems.md;01-foundation-architecture;Create feature flag foundation for unfinished systems;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+013_create-save-version-schema-version-constants.md;01-foundation-architecture;Create save-version schema version constants;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+014_create-content-version-identifiers-for-data-definitions.md;01-foundation-architecture;Create content version identifiers for data definitions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+015_create-project-build-configuration-sanity-checks.md;01-foundation-architecture;Create project build configuration sanity checks;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+016_create-startup-validation-pass-for-critical-registries.md;01-foundation-architecture;Create startup validation pass for critical registries;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+017_create-project-wide-stable-soft-reference-policy.md;01-foundation-architecture;Create project-wide stable soft-reference policy;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+018_create-async-task-cancellation-conventions.md;01-foundation-architecture;Create async task/cancellation conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+019_create-gameplay-timestamp-game-time-abstraction.md;01-foundation-architecture;Create gameplay timestamp/game-time abstraction;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+020_create-project-coordinate-unit-conventions.md;01-foundation-architecture;Create project coordinate/unit conventions;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+021_create-reusable-validation-report-framework.md;01-foundation-architecture;Create reusable validation-report framework;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+022_create-central-debug-command-registration-framework.md;01-foundation-architecture;Create central debug command registration framework;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+023_create-runtime-metrics-hooks-without-mandatory-telemetry-backend.md;01-foundation-architecture;Create runtime metrics hooks without mandatory telemetry backend;technische Aufgabe;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+024_create-no-tick-by-default-gameplay-component-guideline-enforcement.md;01-foundation-architecture;Create no-Tick-by-default gameplay component guideline enforcement;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen-und-Prompts.md §12 / Decisions;Technik (Architektur)
+TRACK_CONTEXT.md;01-foundation-architecture;Track Context — 01-foundation-architecture;Track-Kontext (Entwurfsrahmen);;
+001_create-world-region-and-county-data-model.md;02-world-open-world;Create world-region and county data model;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+002_create-location-identity-and-hierarchy-model.md;02-world-open-world;Create location identity and hierarchy model;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+003_create-town-and-district-hierarchy-model.md;02-world-open-world;Create town and district hierarchy model;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+004_create-relevant-street-archive-identity-model.md;02-world-open-world;Create relevant-street archive identity model;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+005_create-building-identity-model.md;02-world-open-world;Create building identity model;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+006_create-location-discovery-runtime-service.md;02-world-open-world;Create location discovery runtime service;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+007_create-location-information-level-progression-service.md;02-world-open-world;Create location information-level progression service;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+008_create-location-cross-reference-hooks-for-cases-and-archive.md;02-world-open-world;Create location cross-reference hooks for cases and archive;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+009_create-world-partition-integration-contract-for-persistent-locations.md;02-world-open-world;Create World Partition integration contract for persistent locations;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+010_create-streaming-source-policy-for-player-and-vehicles.md;02-world-open-world;Create streaming-source policy for player and vehicles;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+011_create-location-activation-deactivation-lifecycle-events.md;02-world-open-world;Create location activation/deactivation lifecycle events;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+012_create-authored-important-location-uniqueness-validation-tool.md;02-world-open-world;Create authored important-location uniqueness validation tool;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+013_create-duplicate-important-location-asset-usage-report.md;02-world-open-world;Create duplicate-important-location asset usage report;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+014_create-modular-building-variation-metadata-model.md;02-world-open-world;Create modular-building variation metadata model;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+015_create-enterable-building-classification-metadata.md;02-world-open-world;Create enterable-building classification metadata;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+016_create-hero-building-classification-pipeline.md;02-world-open-world;Create hero-building classification pipeline;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+017_create-case-building-classification-pipeline.md;02-world-open-world;Create case-building classification pipeline;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+018_create-normal-interior-modular-variation-pipeline.md;02-world-open-world;Create normal-interior modular variation pipeline;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+019_create-background-facade-minority-budget-validation.md;02-world-open-world;Create background-facade minority-budget validation;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+020_create-pcg-boundary-rules-for-authored-case-locations.md;02-world-open-world;Create PCG boundary rules for authored case locations;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+021_create-pcg-environment-seed-version-metadata.md;02-world-open-world;Create PCG environment seed/version metadata;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+022_create-road-network-gameplay-metadata-layer.md;02-world-open-world;Create road-network gameplay metadata layer;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+023_create-road-relevance-tagging-for-hunter-archive.md;02-world-open-world;Create road relevance tagging for Hunter Archive;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+024_create-world-travel-time-instrumentation-tool.md;02-world-open-world;Create world-travel-time instrumentation tool;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+025_create-route-duration-benchmark-harness.md;02-world-open-world;Create route-duration benchmark harness;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+026_create-town-density-benchmark-tool.md;02-world-open-world;Create town-density benchmark tool;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+027_create-interior-density-benchmark-tool.md;02-world-open-world;Create interior-density benchmark tool;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+028_create-open-world-content-density-heatmap-developer-tool.md;02-world-open-world;Create open-world content-density heatmap developer tool;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+029_create-map-edge-and-inaccessible-area-validation.md;02-world-open-world;Create map-edge and inaccessible-area validation;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+030_create-reusable-location-later-case-reactivation-contract.md;02-world-open-world;Create reusable-location later-case reactivation contract;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+031_create-separate-world-map-registration-for-hell-purgatory-like-planes.md;02-world-open-world;Create separate-world map registration for Hell/Purgatory-like planes;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+032_create-inter-world-travel-gateway-interface-without-final-lore-rules.md;02-world-open-world;Create inter-world travel gateway interface without final lore rules;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+033_create-dlc-map-registration-extension-points.md;02-world-open-world;Create DLC map-registration extension points;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+034_create-existing-map-extension-registration-points.md;02-world-open-world;Create existing-map extension registration points;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+035_create-large-world-save-load-streaming-regression-suite.md;02-world-open-world;Create large-world save/load streaming regression suite;technische Aufgabe;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+036_create-low-memory-streaming-stress-scenario.md;02-world-open-world;Create low-memory streaming stress scenario;Spielthema/Umsetzungsdetail;"Game/World/09, 15, 26; Game/Spielwelt-und-Untergrund.md §8, §12, §15";Welt
+TRACK_CONTEXT.md;02-world-open-world;Track Context — 02-world-open-world;Track-Kontext (Entwurfsrahmen);;
+001_create-core-casedefinition-data-model.md;03-cases-investigation;Create core CaseDefinition data model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+002_create-caseruntimestate-model.md;03-cases-investigation;Create CaseRuntimeState model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+003_create-case-stable-id-and-versioning-rules.md;03-cases-investigation;Create case stable-ID and versioning rules;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+004_create-case-acceptance-and-activation-flow.md;03-cases-investigation;Create case acceptance and activation flow;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+005_create-active-case-tracking-service.md;03-cases-investigation;Create active-case tracking service;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+006_create-case-outcome-resolution-model.md;03-cases-investigation;Create case outcome/resolution model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+007_create-multi-path-resolution-condition-graph.md;03-cases-investigation;Create multi-path resolution-condition graph;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+008_create-alternative-sufficient-information-path-support.md;03-cases-investigation;Create alternative sufficient-information path support;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+009_create-early-resolution-attempt-interface.md;03-cases-investigation;Create early-resolution attempt interface;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+010_create-wrong-hypothesis-consequence-hooks.md;03-cases-investigation;Create wrong-hypothesis consequence hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+011_create-non-mandatory-clue-model.md;03-cases-investigation;Create non-mandatory clue model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+012_create-clue-discovery-model.md;03-cases-investigation;Create clue discovery model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+013_create-evidence-source-provenance-model.md;03-cases-investigation;Create evidence source provenance model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+014_create-witness-statement-evidence-type.md;03-cases-investigation;Create witness statement evidence type;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+015_create-document-evidence-type.md;03-cases-investigation;Create document evidence type;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+016_create-audio-video-evidence-type.md;03-cases-investigation;Create audio/video evidence type;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+017_create-physical-scene-evidence-type.md;03-cases-investigation;Create physical scene evidence type;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+018_create-historical-record-evidence-type.md;03-cases-investigation;Create historical-record evidence type;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+019_create-player-created-hypothesis-model.md;03-cases-investigation;Create player-created hypothesis model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+020_create-player-marked-relevant-evidence-model.md;03-cases-investigation;Create player-marked relevant-evidence model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+021_create-player-marked-relevant-person-model.md;03-cases-investigation;Create player-marked relevant-person model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+022_create-player-marked-relevant-location-model.md;03-cases-investigation;Create player-marked relevant-location model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+023_create-personal-investigation-marker-system.md;03-cases-investigation;Create personal investigation marker system;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+024_create-case-timeline-model.md;03-cases-investigation;Create case timeline model;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+025_create-player-authored-case-notes.md;03-cases-investigation;Create player-authored case notes;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+026_create-detective-mode-no-guidance-enforcement-layer.md;03-cases-investigation;Create Detective Mode no-guidance enforcement layer;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+027_create-guided-mode-optional-marker-provider.md;03-cases-investigation;Create guided-mode optional marker provider;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+028_create-guided-mode-optional-search-zone-provider.md;03-cases-investigation;Create guided-mode optional search-zone provider;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+029_create-guided-mode-optional-hint-provider.md;03-cases-investigation;Create guided-mode optional hint provider;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+030_create-investigation-assistance-setting-independence.md;03-cases-investigation;Create investigation-assistance setting independence;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+031_create-case-journal-active-overview.md;03-cases-investigation;Create case journal active overview;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+032_create-post-case-actual-path-recorder.md;03-cases-investigation;Create post-case actual-path recorder;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+033_create-post-case-decision-recorder.md;03-cases-investigation;Create post-case decision recorder;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+034_create-post-case-preparation-loadout-recorder.md;03-cases-investigation;Create post-case preparation/loadout recorder;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+035_create-post-case-consequence-recorder.md;03-cases-investigation;Create post-case consequence recorder;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+036_create-optional-authored-reference-path-viewer.md;03-cases-investigation;Create optional authored-reference-path viewer;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+037_create-case-failure-unresolved-state-support.md;03-cases-investigation;Create case failure/unresolved state support;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+038_create-case-abandonment-and-reactivation-rules.md;03-cases-investigation;Create case abandonment and reactivation rules;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+039_create-case-world-state-integration-hooks.md;03-cases-investigation;Create case world-state integration hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+040_create-case-npc-memory-integration-hooks.md;03-cases-investigation;Create case NPC memory integration hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+041_create-case-hunter-archive-integration-hooks.md;03-cases-investigation;Create case Hunter Archive integration hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+042_create-case-location-reuse-hooks.md;03-cases-investigation;Create case location reuse hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+043_create-case-dynamic-time-consequence-hooks.md;03-cases-investigation;Create case dynamic-time consequence hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+044_create-case-monster-relocation-consequence-hook.md;03-cases-investigation;Create case monster-relocation consequence hook;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+045_create-case-victim-state-consequence-hooks.md;03-cases-investigation;Create case victim-state consequence hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+046_create-case-repetition-tag-metadata.md;03-cases-investigation;Create case repetition-tag metadata;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+047_create-case-repetition-analysis-editor-tool.md;03-cases-investigation;Create case repetition-analysis editor tool;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+048_create-case-path-coverage-test-harness.md;03-cases-investigation;Create case path-coverage test harness;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+049_create-no-hidden-mandatory-objective-validator.md;03-cases-investigation;Create no-hidden-mandatory-objective validator;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+050_create-detective-mode-regression-tests.md;03-cases-investigation;Create Detective Mode regression tests;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+051_create-case-save-load-mid-investigation-tests.md;03-cases-investigation;Create case save/load mid-investigation tests;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+052_create-case-save-migration-test-fixtures.md;03-cases-investigation;Create case save migration test fixtures;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+053_create-case-authoring-validation-report.md;03-cases-investigation;Create case authoring validation report;technische Aufgabe;Game/Ermittlung/02, 03, 04, 09, 10, 19;Ermittlung
+TRACK_CONTEXT.md;03-cases-investigation;Track Context — 03-cases-investigation;Track-Kontext (Entwurfsrahmen);;
+001_create-hunter-archive-entry-base-schema.md;04-hunter-archive-progress;Create Hunter Archive entry base schema;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+002_create-hunter-archive-entry-type-registry.md;04-hunter-archive-progress;Create Hunter Archive entry-type registry;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+003_create-archive-stable-id-rules.md;04-hunter-archive-progress;Create archive stable-ID rules;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+004_create-archive-cross-reference-graph-model.md;04-hunter-archive-progress;Create archive cross-reference graph model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+005_create-archive-provenance-source-model.md;04-hunter-archive-progress;Create archive provenance/source model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+006_create-archive-known-versus-unknown-state-model.md;04-hunter-archive-progress;Create archive known-versus-unknown state model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+007_create-category-hidden-unknown-placeholder-model.md;04-hunter-archive-progress;Create category-hidden Unknown placeholder model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+008_create-area-unknown-slot-presentation-contract.md;04-hunter-archive-progress;Create area unknown-slot presentation contract;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+009_create-variable-category-mix-area-metadata.md;04-hunter-archive-progress;Create variable-category-mix area metadata;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+010_create-archive-location-entry-subtype.md;04-hunter-archive-progress;Create archive location entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+011_create-archive-person-entry-subtype.md;04-hunter-archive-progress;Create archive person entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+012_create-archive-creature-entry-subtype.md;04-hunter-archive-progress;Create archive creature entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+013_create-archive-case-entry-subtype.md;04-hunter-archive-progress;Create archive case entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+014_create-archive-historical-case-entry-subtype.md;04-hunter-archive-progress;Create archive historical-case entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+015_create-archive-document-entry-subtype.md;04-hunter-archive-progress;Create archive document entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+016_create-archive-photo-entry-subtype.md;04-hunter-archive-progress;Create archive photo entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+017_create-archive-audio-video-entry-subtype.md;04-hunter-archive-progress;Create archive audio/video entry subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+018_create-archive-newspaper-police-record-subtype.md;04-hunter-archive-progress;Create archive newspaper/police-record subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+019_create-archive-ritual-symbol-subtype.md;04-hunter-archive-progress;Create archive ritual/symbol subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+020_create-archive-artifact-weapon-subtype.md;04-hunter-archive-progress;Create archive artifact/weapon subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+021_create-archive-event-anomaly-subtype.md;04-hunter-archive-progress;Create archive event/anomaly subtype;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+022_create-physical-collectible-definition-model.md;04-hunter-archive-progress;Create physical collectible definition model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+023_create-physical-collectible-acquisition-state.md;04-hunter-archive-progress;Create physical collectible acquisition state;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+024_create-physical-collectible-placement-metadata.md;04-hunter-archive-progress;Create physical collectible placement metadata;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+025_create-curated-placement-validation-tool.md;04-hunter-archive-progress;Create curated-placement validation tool;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+026_create-duplicate-placement-density-report.md;04-hunter-archive-progress;Create duplicate-placement density report;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+027_create-story-critical-collectible-flag-contract.md;04-hunter-archive-progress;Create story-critical collectible flag contract;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+028_create-collectible-to-knowledge-unlock-hooks.md;04-hunter-archive-progress;Create collectible-to-knowledge unlock hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+029_create-collectible-to-case-clue-hooks.md;04-hunter-archive-progress;Create collectible-to-case clue hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+030_create-collectible-to-location-hooks.md;04-hunter-archive-progress;Create collectible-to-location hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+031_create-archive-knowledge-level-progression.md;04-hunter-archive-progress;Create archive knowledge-level progression;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+032_create-location-research-progress-model.md;04-hunter-archive-progress;Create location research-progress model;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+033_create-archive-graph-query-service.md;04-hunter-archive-progress;Create archive graph query service;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+034_create-archive-search-and-filtering-service.md;04-hunter-archive-progress;Create archive search and filtering service;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+035_create-hierarchical-map-integration.md;04-hunter-archive-progress;Create hierarchical map integration;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+036_create-hunter-record-overall-progress-schema.md;04-hunter-archive-progress;Create Hunter Record overall-progress schema;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+037_create-case-status-progress-categories.md;04-hunter-archive-progress;Create case status progress categories;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+038_create-monster-progress-state-taxonomy-support.md;04-hunter-archive-progress;Create monster progress-state taxonomy support;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+039_create-place-discovery-progress-integration.md;04-hunter-archive-progress;Create place-discovery progress integration;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+040_create-optional-exact-completion-setting.md;04-hunter-archive-progress;Create optional exact-completion setting;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+041_create-default-qualitative-completion-display.md;04-hunter-archive-progress;Create default qualitative-completion display;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+042_create-archive-safehouse-physical-display-hooks.md;04-hunter-archive-progress;Create archive safehouse physical-display hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+043_create-archive-save-persistence-serialization.md;04-hunter-archive-progress;Create archive save/persistence serialization;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+044_create-archive-dlc-namespace-version-support.md;04-hunter-archive-progress;Create archive DLC namespace/version support;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+045_create-archive-mod-registration-hooks.md;04-hunter-archive-progress;Create archive mod registration hooks;Spielthema/Umsetzungsdetail;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+046_create-unknown-content-spoiler-regression-tests.md;04-hunter-archive-progress;Create unknown-content spoiler regression tests;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+047_create-archive-graph-integrity-validator.md;04-hunter-archive-progress;Create archive graph integrity validator;technische Aufgabe;Game/Ermittlung/04, Game/Kreaturen/14, Game/Spielvision.md §12.3, Game/Entscheidungsstatus.md;Archiv/Fortschritt
+TRACK_CONTEXT.md;04-hunter-archive-progress;Track Context — 04-hunter-archive-progress;Track-Kontext (Entwurfsrahmen);;
+001_create-npc-stable-identity-model.md;05-npc-ai-relations;Create NPC stable identity model;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+002_create-npc-persistent-core-state-model.md;05-npc-ai-relations;Create NPC persistent core state model;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+003_create-npc-event-memory-record-type.md;05-npc-ai-relations;Create NPC event-memory record type;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+004_create-npc-short-term-perception-memory.md;05-npc-ai-relations;Create NPC short-term perception memory;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+005_create-npc-knowledge-belief-record-type.md;05-npc-ai-relations;Create NPC knowledge/belief record type;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+006_create-npc-false-belief-support.md;05-npc-ai-relations;Create NPC false-belief support;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+007_create-hidden-relationship-dimension-model.md;05-npc-ai-relations;Create hidden relationship-dimension model;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+008_create-trust-fear-respect-suspicion-aggregation-service.md;05-npc-ai-relations;Create trust/fear/respect/suspicion aggregation service;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+009_create-no-visible-relationship-number-ui-rule.md;05-npc-ai-relations;Create no-visible-relationship-number UI rule;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+010_create-relationship-to-dialogue-context-interface.md;05-npc-ai-relations;Create relationship-to-dialogue context interface;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+011_create-relationship-to-cooperation-interface.md;05-npc-ai-relations;Create relationship-to-cooperation interface;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+012_create-relationship-to-access-favor-interface.md;05-npc-ai-relations;Create relationship-to-access/favor interface;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+013_create-remembered-event-dialogue-hook.md;05-npc-ai-relations;Create remembered-event dialogue hook;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+014_create-saved-me-memory-scenario-support.md;05-npc-ai-relations;Create saved-me memory scenario support;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+015_create-threatened-me-memory-scenario-support.md;05-npc-ai-relations;Create threatened-me memory scenario support;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+016_create-supernatural-witness-memory-scenario-support.md;05-npc-ai-relations;Create supernatural-witness memory scenario support;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+017_create-family-loss-memory-scenario-support.md;05-npc-ai-relations;Create family-loss memory scenario support;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+018_create-npc-memory-decay-policy-framework.md;05-npc-ai-relations;Create NPC memory decay policy framework;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+019_create-persistent-important-memory-flag.md;05-npc-ai-relations;Create persistent-important-memory flag;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+020_create-npc-state-save-load-integration.md;05-npc-ai-relations;Create NPC state save/load integration;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+021_create-important-npc-full-actor-lifecycle.md;05-npc-ai-relations;Create important-NPC full Actor lifecycle;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+022_create-lightweight-npc-simulation-representation.md;05-npc-ai-relations;Create lightweight NPC simulation representation;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+023_create-full-to-light-simulation-transition-contract.md;05-npc-ai-relations;Create full-to-light simulation transition contract;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+024_create-statetree-integration-base-for-important-npcs.md;05-npc-ai-relations;Create StateTree integration base for important NPCs;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+025_create-ai-perception-difficulty-parameter-interface.md;05-npc-ai-relations;Create AI perception difficulty parameter interface;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+026_create-reload-noise-perception-stimulus.md;05-npc-ai-relations;Create reload-noise perception stimulus;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+027_create-last-known-position-memory-interface.md;05-npc-ai-relations;Create last-known-position memory interface;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+028_create-ai-search-state-reusable-behavior.md;05-npc-ai-relations;Create AI search-state reusable behavior;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+029_create-ai-aggression-opening-exploitation-parameters.md;05-npc-ai-relations;Create AI aggression/opening-exploitation parameters;Spielthema/Umsetzungsdetail;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+030_create-ai-behavior-debug-inspector.md;05-npc-ai-relations;Create AI behavior debug inspector;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+031_create-npc-memory-debug-inspector.md;05-npc-ai-relations;Create NPC memory debug inspector;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+032_create-relationship-debug-inspector-hidden-from-shipping-ui.md;05-npc-ai-relations;Create relationship debug inspector hidden from shipping UI;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+033_create-ai-perception-regression-tests.md;05-npc-ai-relations;Create AI perception regression tests;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+034_create-npc-memory-persistence-tests.md;05-npc-ai-relations;Create NPC memory persistence tests;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+035_create-false-belief-investigation-test-scenario.md;05-npc-ai-relations;Create false-belief investigation test scenario;technische Aufgabe;Game/NPCs/03–09, Game/Kreaturen/10, Game/Gameplay-Systeme.md §7;NPC/KI
+TRACK_CONTEXT.md;05-npc-ai-relations;Track Context — 05-npc-ai-relations;Track-Kontext (Entwurfsrahmen);;
+001_create-human-anatomical-region-schema.md;06-survival-anatomy-medical;Create human anatomical region schema;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+002_create-soft-tissue-layer-model.md;06-survival-anatomy-medical;Create soft-tissue layer model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+003_create-major-bone-structure-model.md;06-survival-anatomy-medical;Create major bone structure model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+004_create-joint-injury-structure-model.md;06-survival-anatomy-medical;Create joint injury structure model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+005_create-gameplay-relevant-organ-model.md;06-survival-anatomy-medical;Create gameplay-relevant organ model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+006_create-major-artery-critical-vessel-zone-model.md;06-survival-anatomy-medical;Create major artery/critical vessel-zone model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+007_create-simplified-nerve-damage-model.md;06-survival-anatomy-medical;Create simplified nerve-damage model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+008_create-simplified-tendon-damage-model.md;06-survival-anatomy-medical;Create simplified tendon-damage model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+009_create-human-trauma-record-base-type.md;06-survival-anatomy-medical;Create human trauma record base type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+010_create-projectile-wound-type.md;06-survival-anatomy-medical;Create projectile wound type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+011_create-cut-laceration-wound-type.md;06-survival-anatomy-medical;Create cut/laceration wound type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+012_create-stab-puncture-wound-type.md;06-survival-anatomy-medical;Create stab/puncture wound type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+013_create-blunt-crush-trauma-type.md;06-survival-anatomy-medical;Create blunt/crush trauma type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+014_create-fracture-model.md;06-survival-anatomy-medical;Create fracture model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+015_create-open-fracture-model.md;06-survival-anatomy-medical;Create open-fracture model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+016_create-internal-trauma-model.md;06-survival-anatomy-medical;Create internal-trauma model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+017_create-burn-trauma-model.md;06-survival-anatomy-medical;Create burn trauma model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+018_create-cold-electrical-trauma-extension-points.md;06-survival-anatomy-medical;Create cold/electrical trauma extension points;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+019_create-bite-claw-tear-trauma-type.md;06-survival-anatomy-medical;Create bite/claw/tear trauma type;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+020_create-explosion-fall-vehicle-trauma-interfaces.md;06-survival-anatomy-medical;Create explosion/fall/vehicle trauma interfaces;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+021_create-supernatural-trauma-modifier-interface.md;06-survival-anatomy-medical;Create supernatural trauma modifier interface;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+022_create-blood-volume-systemic-state.md;06-survival-anatomy-medical;Create blood-volume systemic state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+023_create-per-wound-bleeding-rate-model.md;06-survival-anatomy-medical;Create per-wound bleeding-rate model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+024_create-major-arterial-bleeding-severity-model.md;06-survival-anatomy-medical;Create major-arterial bleeding severity model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+025_create-cumulative-blood-loss-effects.md;06-survival-anatomy-medical;Create cumulative blood-loss effects;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+026_create-pain-systemic-state.md;06-survival-anatomy-medical;Create pain systemic state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+027_create-shock-systemic-state.md;06-survival-anatomy-medical;Create shock systemic state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+028_create-consciousness-systemic-state.md;06-survival-anatomy-medical;Create consciousness systemic state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+029_create-breathing-impairment-state.md;06-survival-anatomy-medical;Create breathing impairment state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+030_create-adrenaline-response-state.md;06-survival-anatomy-medical;Create adrenaline response state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+031_create-mobility-capability-model.md;06-survival-anatomy-medical;Create mobility capability model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+032_create-limb-function-capability-model.md;06-survival-anatomy-medical;Create limb-function capability model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+033_create-infection-risk-state.md;06-survival-anatomy-medical;Create infection-risk state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+034_create-wound-contamination-metadata.md;06-survival-anatomy-medical;Create wound contamination metadata;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+035_create-delayed-symptom-support.md;06-survival-anatomy-medical;Create delayed-symptom support;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+036_create-uncertain-field-diagnosis-model.md;06-survival-anatomy-medical;Create uncertain field-diagnosis model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+037_create-professional-diagnosis-result-model.md;06-survival-anatomy-medical;Create professional-diagnosis result model;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+038_create-player-sensory-feedback-for-blood-loss.md;06-survival-anatomy-medical;Create player sensory feedback for blood loss;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+039_create-player-sensory-feedback-for-pain.md;06-survival-anatomy-medical;Create player sensory feedback for pain;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+040_create-player-sensory-feedback-for-shock.md;06-survival-anatomy-medical;Create player sensory feedback for shock;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+041_create-player-sensory-feedback-for-breathing-difficulty.md;06-survival-anatomy-medical;Create player sensory feedback for breathing difficulty;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+042_create-player-sensory-feedback-for-adrenaline-drop.md;06-survival-anatomy-medical;Create player sensory feedback for adrenaline drop;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+043_create-limp-state-from-leg-injury.md;06-survival-anatomy-medical;Create limp state from leg injury;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+044_create-sprint-restriction-from-leg-injury.md;06-survival-anatomy-medical;Create sprint restriction from leg injury;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+045_create-arm-weapon-handling-impairment.md;06-survival-anatomy-medical;Create arm weapon-handling impairment;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+046_create-reload-impairment-from-arm-hand-injury.md;06-survival-anatomy-medical;Create reload impairment from arm/hand injury;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+047_create-balance-impairment-from-lower-body-injury.md;06-survival-anatomy-medical;Create balance impairment from lower-body injury;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+048_create-open-fracture-visible-state-hook.md;06-survival-anatomy-medical;Create open-fracture visible-state hook;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+049_create-field-treatment-action-framework.md;06-survival-anatomy-medical;Create field-treatment action framework;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+050_create-bleeding-control-treatment.md;06-survival-anatomy-medical;Create bleeding-control treatment;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+051_create-wound-cleaning-disinfection-treatment.md;06-survival-anatomy-medical;Create wound cleaning/disinfection treatment;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+052_create-bandaging-treatment.md;06-survival-anatomy-medical;Create bandaging treatment;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+053_create-provisional-fracture-stabilization.md;06-survival-anatomy-medical;Create provisional fracture stabilization;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+054_create-skilled-medical-companion-treatment-capability.md;06-survival-anatomy-medical;Create skilled-medical-companion treatment capability;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+055_create-hospital-required-injury-classification.md;06-survival-anatomy-medical;Create hospital-required injury classification;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+056_create-delayed-action-pain-medication-effect.md;06-survival-anatomy-medical;Create delayed-action pain medication effect;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+057_create-medication-no-magical-healing-enforcement.md;06-survival-anatomy-medical;Create medication no-magical-healing enforcement;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+058_create-injury-recovery-stage-machine.md;06-survival-anatomy-medical;Create injury recovery stage machine;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+059_create-healing-time-progression.md;06-survival-anatomy-medical;Create healing-time progression;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+060_create-re-injury-vulnerability-modifier.md;06-survival-anatomy-medical;Create re-injury vulnerability modifier;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+061_create-fire-on-clothing-propagation-state.md;06-survival-anatomy-medical;Create fire-on-clothing propagation state;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+062_create-early-fire-smother-extinguish-interaction.md;06-survival-anatomy-medical;Create early fire smother/extinguish interaction;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+063_create-clothing-material-flammability-hooks.md;06-survival-anatomy-medical;Create clothing material flammability hooks;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+064_create-human-death-from-trauma-hooks-without-final-death-loop-resolution.md;06-survival-anatomy-medical;Create human death-from-trauma hooks without final death-loop resolution;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+065_create-human-anatomy-save-load-serialization.md;06-survival-anatomy-medical;Create human anatomy save/load serialization;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+066_create-anatomy-injury-debug-visualization.md;06-survival-anatomy-medical;Create anatomy/injury debug visualization;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+067_create-injury-state-automation-tests.md;06-survival-anatomy-medical;Create injury state automation tests;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+068_create-arterial-bleed-regression-scenario.md;06-survival-anatomy-medical;Create arterial bleed regression scenario;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+069_create-re-injury-regression-scenario.md;06-survival-anatomy-medical;Create re-injury regression scenario;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+070_create-delayed-internal-injury-regression-scenario.md;06-survival-anatomy-medical;Create delayed internal injury regression scenario;Spielthema/Umsetzungsdetail;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+071_create-hospital-classification-validation-tests.md;06-survival-anatomy-medical;Create hospital classification validation tests;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+072_create-no-plot-armor-human-parity-tests.md;06-survival-anatomy-medical;Create no-plot-armor human parity tests;technische Aufgabe;"Game/Kampfsystem/12, 13, 14; Game/Gameplay-Systeme.md §9";Verletzung/Medizin
+TRACK_CONTEXT.md;06-survival-anatomy-medical;Track Context — 06-survival-anatomy-medical;Track-Kontext (Entwurfsrahmen);;
+001_create-weapon-physical-property-schema.md;07-gunplay-ballistics-ammo;Create weapon physical-property schema;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+002_create-weapon-mass-and-inertia-handling.md;07-gunplay-ballistics-ammo;Create weapon mass and inertia handling;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+003_create-weapon-center-of-mass-handling.md;07-gunplay-ballistics-ammo;Create weapon center-of-mass handling;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+004_create-weapon-overall-length-handling.md;07-gunplay-ballistics-ammo;Create weapon overall-length handling;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+005_create-low-ready-stance-state.md;07-gunplay-ballistics-ammo;Create low-ready stance state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+006_create-point-shooting-stance-state.md;07-gunplay-ballistics-ammo;Create point-shooting stance state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+007_create-ads-stance-state.md;07-gunplay-ballistics-ammo;Create ADS stance state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+008_create-stance-transition-timing-model.md;07-gunplay-ballistics-ammo;Create stance transition timing model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+009_create-long-weapon-close-space-collision-response.md;07-gunplay-ballistics-ammo;Create long-weapon close-space collision response;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+010_create-long-weapon-wall-proximity-pose-adjustment.md;07-gunplay-ballistics-ammo;Create long-weapon wall proximity pose adjustment;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+011_create-weapon-hold-fatigue-model.md;07-gunplay-ballistics-ammo;Create weapon hold-fatigue model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+012_create-breathing-aim-sway-integration.md;07-gunplay-ballistics-ammo;Create breathing aim-sway integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+013_create-sprint-to-aim-recovery-behavior.md;07-gunplay-ballistics-ammo;Create sprint-to-aim recovery behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+014_create-pain-aim-sway-integration.md;07-gunplay-ballistics-ammo;Create pain aim-sway integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+015_create-blood-loss-aim-impairment.md;07-gunplay-ballistics-ammo;Create blood-loss aim impairment;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+016_create-arm-injury-weapon-handling.md;07-gunplay-ballistics-ammo;Create arm-injury weapon handling;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+017_create-weak-hand-pistol-usage.md;07-gunplay-ballistics-ammo;Create weak-hand pistol usage;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+018_create-weak-hand-reload-penalties.md;07-gunplay-ballistics-ammo;Create weak-hand reload penalties;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+019_create-recoil-impulse-model.md;07-gunplay-ballistics-ammo;Create recoil impulse model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+020_create-muzzle-rise-model.md;07-gunplay-ballistics-ammo;Create muzzle-rise model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+021_create-player-recoil-control-behavior.md;07-gunplay-ballistics-ammo;Create player recoil-control behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+022_create-recoil-recovery-behavior.md;07-gunplay-ballistics-ammo;Create recoil recovery behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+023_create-mechanically-correct-weapon-manipulation-event-model.md;07-gunplay-ballistics-ammo;Create mechanically correct weapon manipulation event model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+024_create-weapon-switching-transition-state.md;07-gunplay-ballistics-ammo;Create weapon switching/transition state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+025_create-sling-holster-transition-hooks.md;07-gunplay-ballistics-ammo;Create sling/holster transition hooks;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+026_create-dropped-weapon-world-state.md;07-gunplay-ballistics-ammo;Create dropped-weapon world state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+027_create-weapon-grab-disarm-interaction-hooks.md;07-gunplay-ballistics-ammo;Create weapon-grab/disarm interaction hooks;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+028_create-magazine-persistent-identity-model.md;07-gunplay-ballistics-ammo;Create magazine persistent identity model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+029_create-per-magazine-round-count-state.md;07-gunplay-ballistics-ammo;Create per-magazine round-count state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+030_create-separate-chamber-state.md;07-gunplay-ballistics-ammo;Create separate chamber state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+031_create-tactical-reload-flow.md;07-gunplay-ballistics-ammo;Create tactical reload flow;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+032_create-emergency-reload-flow-for-empty-magazine.md;07-gunplay-ballistics-ammo;Create emergency reload flow for empty magazine;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+033_create-dropped-empty-magazine-world-object.md;07-gunplay-ballistics-ammo;Create dropped empty-magazine world object;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+034_create-reload-interruption-state-machine.md;07-gunplay-ballistics-ammo;Create reload interruption state machine;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+035_create-save-load-during-interrupted-reload.md;07-gunplay-ballistics-ammo;Create save/load during interrupted reload;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+036_create-tube-fed-shotgun-magazine-state.md;07-gunplay-ballistics-ammo;Create tube-fed shotgun magazine state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+037_create-shell-by-shell-shotgun-reload.md;07-gunplay-ballistics-ammo;Create shell-by-shell shotgun reload;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+038_create-shotgun-reload-interruption-after-any-shell.md;07-gunplay-ballistics-ammo;Create shotgun reload interruption after any shell;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+039_create-revolver-chamber-cylinder-state-foundation.md;07-gunplay-ballistics-ammo;Create revolver chamber/cylinder state foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+040_create-manual-magazine-weapon-inspection-action.md;07-gunplay-ballistics-ammo;Create manual magazine/weapon inspection action;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+041_create-binary-ammo-hud-setting-integration.md;07-gunplay-ballistics-ammo;Create binary ammo-HUD setting integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+042_create-no-ammo-hud-grounded-default.md;07-gunplay-ballistics-ammo;Create no-ammo-HUD Grounded default;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+043_create-ammunition-definition-schema.md;07-gunplay-ballistics-ammo;Create ammunition definition schema;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+044_create-projectile-mass-and-muzzle-velocity-data.md;07-gunplay-ballistics-ammo;Create projectile mass and muzzle-velocity data;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+045_create-ballistic-coefficient-drag-data-model.md;07-gunplay-ballistics-ammo;Create ballistic coefficient/drag data model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+046_create-projectile-flight-time-integration.md;07-gunplay-ballistics-ammo;Create projectile flight-time integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+047_create-gravity-drop-integration.md;07-gunplay-ballistics-ammo;Create gravity/drop integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+048_create-aerodynamic-drag-integration.md;07-gunplay-ballistics-ammo;Create aerodynamic drag integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+049_create-velocity-and-energy-loss-integration.md;07-gunplay-ballistics-ammo;Create velocity and energy loss integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+050_create-no-hard-max-range-projectile-lifecycle.md;07-gunplay-ballistics-ammo;Create no-hard-max-range projectile lifecycle;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+051_create-moving-target-lead-physical-behavior.md;07-gunplay-ballistics-ammo;Create moving-target lead physical behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+052_create-wind-vector-trajectory-influence.md;07-gunplay-ballistics-ammo;Create wind-vector trajectory influence;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+053_create-altitude-air-density-ballistic-hook.md;07-gunplay-ballistics-ammo;Create altitude/air-density ballistic hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+054_create-temperature-ballistic-environment-hook.md;07-gunplay-ballistics-ammo;Create temperature ballistic environment hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+055_create-uphill-downhill-shot-angle-solution.md;07-gunplay-ballistics-ammo;Create uphill/downhill shot-angle solution;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+056_create-sight-height-over-bore-geometry.md;07-gunplay-ballistics-ammo;Create sight-height-over-bore geometry;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+057_create-optic-zeroing-system.md;07-gunplay-ballistics-ammo;Create optic zeroing system;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+058_create-weapon-cant-long-range-influence.md;07-gunplay-ballistics-ammo;Create weapon cant long-range influence;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+059_create-transonic-approximation-hook.md;07-gunplay-ballistics-ammo;Create transonic approximation hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+060_create-spin-drift-approximation-hook.md;07-gunplay-ballistics-ammo;Create spin-drift approximation hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+061_create-coriolis-explicitly-excluded-validation-documentation.md;07-gunplay-ballistics-ammo;Create Coriolis explicitly excluded validation/documentation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+062_create-material-ballistic-resistance-model.md;07-gunplay-ballistics-ammo;Create material ballistic resistance model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+063_create-thickness-dependent-penetration.md;07-gunplay-ballistics-ammo;Create thickness-dependent penetration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+064_create-impact-angle-penetration-effect.md;07-gunplay-ballistics-ammo;Create impact-angle penetration effect;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+065_create-multi-layer-material-penetration.md;07-gunplay-ballistics-ammo;Create multi-layer material penetration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+066_create-projectile-state-after-penetration.md;07-gunplay-ballistics-ammo;Create projectile state after penetration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+067_create-thin-door-wall-penetration-support.md;07-gunplay-ballistics-ammo;Create thin-door/wall penetration support;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+068_create-massive-cover-projectile-stop-behavior.md;07-gunplay-ballistics-ammo;Create massive-cover projectile stop behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+069_create-vehicle-body-ballistic-material-mapping.md;07-gunplay-ballistics-ammo;Create vehicle body ballistic material mapping;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+070_create-engine-block-heavy-cover-behavior.md;07-gunplay-ballistics-ammo;Create engine-block heavy-cover behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+071_create-glass-break-deflection-ballistic-behavior.md;07-gunplay-ballistics-ammo;Create glass break/deflection ballistic behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+072_create-ricochet-plausibility-model.md;07-gunplay-ballistics-ammo;Create ricochet plausibility model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+073_create-grounded-default-ricochet-gameplay-toggle.md;07-gunplay-ballistics-ammo;Create Grounded-default ricochet gameplay toggle;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+074_create-ricochet-rare-event-probability-constraints.md;07-gunplay-ballistics-ammo;Create ricochet rare-event probability constraints;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+075_create-cosmetic-only-ordinary-spall-fragment-response.md;07-gunplay-ballistics-ammo;Create cosmetic-only ordinary spall/fragment response;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+076_create-fmj-like-ammunition-behavior-profile.md;07-gunplay-ballistics-ammo;Create FMJ-like ammunition behavior profile;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+077_create-expanding-hollow-point-like-behavior-profile.md;07-gunplay-ballistics-ammo;Create expanding/hollow-point-like behavior profile;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+078_create-buckshot-multi-pellet-simulation.md;07-gunplay-ballistics-ammo;Create buckshot multi-pellet simulation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+079_create-birdshot-profile-foundation.md;07-gunplay-ballistics-ammo;Create birdshot profile foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+080_create-shotgun-slug-profile.md;07-gunplay-ballistics-ammo;Create shotgun slug profile;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+081_create-hunter-special-ammo-physical-plus-supernatural-effect-layering.md;07-gunplay-ballistics-ammo;Create hunter-special-ammo physical-plus-supernatural effect layering;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+082_create-silver-like-weakness-effect-extension-without-copied-lore.md;07-gunplay-ballistics-ammo;Create silver-like weakness-effect extension without copied lore;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+083_create-iron-like-weakness-effect-extension-without-copied-lore.md;07-gunplay-ballistics-ammo;Create iron-like weakness-effect extension without copied lore;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+084_create-salt-load-physical-supernatural-extension-point.md;07-gunplay-ballistics-ammo;Create salt-load physical/supernatural extension point;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+085_create-suppressor-signature-modifier.md;07-gunplay-ballistics-ammo;Create suppressor signature modifier;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+086_create-supersonic-crack-audio-perception-event.md;07-gunplay-ballistics-ammo;Create supersonic crack audio/perception event;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+087_create-subsonic-ammo-ballistic-tradeoffs.md;07-gunplay-ballistics-ammo;Create subsonic ammo ballistic tradeoffs;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+088_create-barrel-length-muzzle-velocity-modifier.md;07-gunplay-ballistics-ammo;Create barrel-length muzzle-velocity modifier;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+089_create-attachment-mass-balance-modifiers.md;07-gunplay-ballistics-ammo;Create attachment mass/balance modifiers;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+090_create-bipod-supported-stability-state.md;07-gunplay-ballistics-ammo;Create bipod supported-stability state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+091_create-optic-magnification-and-zero-data.md;07-gunplay-ballistics-ammo;Create optic magnification and zero data;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+092_create-rangefinder-device-interface.md;07-gunplay-ballistics-ammo;Create rangefinder device interface;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+093_create-grounded-rangefinder-required-long-range-workflow.md;07-gunplay-ballistics-ammo;Create Grounded rangefinder-required long-range workflow;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+094_create-long-range-target-practice-range-framework.md;07-gunplay-ballistics-ammo;Create long-range target practice range framework;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+095_create-configurable-shooting-target-setup.md;07-gunplay-ballistics-ammo;Create configurable shooting target setup;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+096_create-shooting-competition-event-framework.md;07-gunplay-ballistics-ammo;Create shooting competition event framework;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+097_create-high-quality-shot-scoring-metadata-for-kill-cam-eligibility.md;07-gunplay-ballistics-ammo;Create high-quality-shot scoring metadata for kill-cam eligibility;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+098_create-cinematic-projectile-follow-kill-cam.md;07-gunplay-ballistics-ammo;Create cinematic projectile-follow kill-cam;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+099_create-optional-anatomical-kill-cam-data-handoff.md;07-gunplay-ballistics-ammo;Create optional anatomical kill-cam data handoff;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+100_create-kill-cam-frequency-setting.md;07-gunplay-ballistics-ammo;Create kill-cam frequency setting;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+101_create-rare-malfunction-base-model.md;07-gunplay-ballistics-ammo;Create rare malfunction base model;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+102_create-malfunction-probability-from-cleanliness-wear-damage-moisture.md;07-gunplay-ballistics-ammo;Create malfunction probability from cleanliness/wear/damage/moisture;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+103_create-context-sensitive-malfunction-clear-input.md;07-gunplay-ballistics-ammo;Create context-sensitive malfunction clear input;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+104_create-malfunction-specific-realistic-clear-animation-hooks.md;07-gunplay-ballistics-ammo;Create malfunction-specific realistic clear animation hooks;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+105_create-weapon-cleanliness-state.md;07-gunplay-ballistics-ammo;Create weapon cleanliness state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+106_create-weapon-wear-state.md;07-gunplay-ballistics-ammo;Create weapon wear state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+107_create-weapon-damage-state.md;07-gunplay-ballistics-ammo;Create weapon damage state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+108_create-weapon-lubrication-state.md;07-gunplay-ballistics-ammo;Create weapon lubrication state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+109_create-weapon-moisture-contamination-state.md;07-gunplay-ballistics-ammo;Create weapon moisture/contamination state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+110_create-weapon-robustness-profile.md;07-gunplay-ballistics-ammo;Create weapon robustness profile;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+111_create-moderate-weapon-maintenance-action.md;07-gunplay-ballistics-ammo;Create moderate weapon maintenance action;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+112_create-weapon-inspection-condition-feedback.md;07-gunplay-ballistics-ammo;Create weapon inspection condition feedback;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+113_create-ballistic-debug-trajectory-visualizer.md;07-gunplay-ballistics-ammo;Create ballistic debug trajectory visualizer;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+114_create-penetration-debug-visualizer.md;07-gunplay-ballistics-ammo;Create penetration debug visualizer;Spielthema/Umsetzungsdetail;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+115_create-magazine-chamber-debug-inspector.md;07-gunplay-ballistics-ammo;Create magazine/chamber debug inspector;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+116_create-gunplay-deterministic-test-fixtures.md;07-gunplay-ballistics-ammo;Create gunplay deterministic test fixtures;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+117_create-projectile-energy-regression-tests.md;07-gunplay-ballistics-ammo;Create projectile energy regression tests;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+118_create-penetration-regression-material-suite.md;07-gunplay-ballistics-ammo;Create penetration regression material suite;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+119_create-reload-persistence-regression-suite.md;07-gunplay-ballistics-ammo;Create reload persistence regression suite;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+120_create-malfunction-regression-suite.md;07-gunplay-ballistics-ammo;Create malfunction regression suite;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+121_create-grounded-ammo-hud-ricochet-regression-tests.md;07-gunplay-ballistics-ammo;Create Grounded ammo-HUD/ricochet regression tests;technische Aufgabe;Game/Kampfsystem/05, 09, 10;Waffen/Ballistik
+TRACK_CONTEXT.md;07-gunplay-ballistics-ammo;Track Context — 07-gunplay-ballistics-ammo;Track-Kontext (Entwurfsrahmen);;
+001_create-melee-combat-state-foundation.md;08-melee-grappling;Create melee combat state foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+002_create-light-attack-framework.md;08-melee-grappling;Create light attack framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+003_create-heavy-attack-framework.md;08-melee-grappling;Create heavy attack framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+004_create-directional-strike-selection.md;08-melee-grappling;Create directional strike selection;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+005_create-head-target-strike-variants.md;08-melee-grappling;Create head-target strike variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+006_create-body-target-strike-variants.md;08-melee-grappling;Create body-target strike variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+007_create-jab-variants.md;08-melee-grappling;Create jab variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+008_create-cross-variants.md;08-melee-grappling;Create cross variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+009_create-hook-variants.md;08-melee-grappling;Create hook variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+010_create-uppercut-variants.md;08-melee-grappling;Create uppercut variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+011_create-overhand-variants.md;08-melee-grappling;Create overhand variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+012_create-short-range-elbow-variants.md;08-melee-grappling;Create short-range elbow variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+013_create-knee-strike-variants.md;08-melee-grappling;Create knee-strike variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+014_create-low-kick-variants.md;08-melee-grappling;Create low-kick variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+015_create-body-kick-variants.md;08-melee-grappling;Create body-kick variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+016_create-head-kick-variants.md;08-melee-grappling;Create head-kick variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+017_create-front-push-kick-variants.md;08-melee-grappling;Create front/push-kick variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+018_create-side-kick-variants.md;08-melee-grappling;Create side-kick variants;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+019_create-advanced-risky-spinning-strike-extension-points.md;08-melee-grappling;Create advanced risky spinning-strike extension points;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+020_create-strike-miss-behavior-without-hard-lock-on.md;08-melee-grappling;Create strike miss behavior without hard lock-on;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+021_create-optional-soft-lock-melee-assist.md;08-melee-grappling;Create optional soft-lock melee assist;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+022_create-strike-combo-transition-graph.md;08-melee-grappling;Create strike combo transition graph;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+023_create-combo-interruption-on-miss-block-counter.md;08-melee-grappling;Create combo interruption on miss/block/counter;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+024_create-feint-start-cancel-behavior.md;08-melee-grappling;Create feint start/cancel behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+025_create-strike-counter-window-framework.md;08-melee-grappling;Create strike counter-window framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+026_create-combat-range-classification.md;08-melee-grappling;Create combat-range classification;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+027_create-footwork-forward-back-side-states.md;08-melee-grappling;Create footwork forward/back/side states;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+028_create-pivot-angle-change-footwork.md;08-melee-grappling;Create pivot/angle-change footwork;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+029_create-distance-closing-behavior.md;08-melee-grappling;Create distance-closing behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+030_create-distance-opening-behavior.md;08-melee-grappling;Create distance-opening behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+031_create-high-guard-physical-defense.md;08-melee-grappling;Create high-guard physical defense;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+032_create-body-guard-physical-defense.md;08-melee-grappling;Create body-guard physical defense;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+033_create-block-impact-and-arm-injury-integration.md;08-melee-grappling;Create block impact and arm injury integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+034_create-physically-plausible-parry-framework.md;08-melee-grappling;Create physically plausible parry framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+035_create-sidestep-backstep-evasions.md;08-melee-grappling;Create sidestep/backstep evasions;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+036_create-non-roll-spam-dodge-policy-implementation.md;08-melee-grappling;Create non-roll-spam dodge policy implementation;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+037_create-standing-clinch-entry.md;08-melee-grappling;Create standing clinch entry;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+038_create-underhook-control-state.md;08-melee-grappling;Create underhook control state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+039_create-overhook-control-state.md;08-melee-grappling;Create overhook control state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+040_create-body-lock-control-state.md;08-melee-grappling;Create body-lock control state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+041_create-wrist-arm-control-state.md;08-melee-grappling;Create wrist/arm control state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+042_create-standing-back-control-state.md;08-melee-grappling;Create standing back-control state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+043_create-wall-clinch-interaction.md;08-melee-grappling;Create wall-clinch interaction;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+044_create-clinch-short-strike-behavior.md;08-melee-grappling;Create clinch short-strike behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+045_create-clinch-knee-behavior.md;08-melee-grappling;Create clinch knee behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+046_create-clinch-position-transitions.md;08-melee-grappling;Create clinch position transitions;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+047_create-clinch-break-escape-behavior.md;08-melee-grappling;Create clinch break/escape behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+048_create-single-leg-takedown-framework.md;08-melee-grappling;Create single-leg takedown framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+049_create-double-leg-takedown-framework.md;08-melee-grappling;Create double-leg takedown framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+050_create-body-lock-takedown-framework.md;08-melee-grappling;Create body-lock takedown framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+051_create-trip-reap-takedown-framework.md;08-melee-grappling;Create trip/reap takedown framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+052_create-hip-throw-extension-framework.md;08-melee-grappling;Create hip-throw extension framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+053_create-takedown-success-evaluation-from-timing-balance-skill-injury.md;08-melee-grappling;Create takedown success evaluation from timing/balance/skill/injury;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+054_create-takedown-defense-framework.md;08-melee-grappling;Create takedown defense framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+055_create-sprawl-defense-behavior.md;08-melee-grappling;Create sprawl defense behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+056_create-underhook-takedown-defense.md;08-melee-grappling;Create underhook takedown defense;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+057_create-ground-combat-state-foundation.md;08-melee-grappling;Create ground-combat state foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+058_create-mount-position.md;08-melee-grappling;Create mount position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+059_create-half-guard-position.md;08-melee-grappling;Create half-guard position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+060_create-guard-position-family.md;08-melee-grappling;Create guard position family;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+061_create-side-control-position.md;08-melee-grappling;Create side-control position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+062_create-back-control-ground-position.md;08-melee-grappling;Create back-control ground position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+063_create-turtle-position.md;08-melee-grappling;Create turtle position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+064_create-north-south-extension-position.md;08-melee-grappling;Create north-south extension position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+065_create-standing-over-grounded-position.md;08-melee-grappling;Create standing-over-grounded position;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+066_create-contested-transition-state.md;08-melee-grappling;Create contested transition state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+067_create-scramble-state-machine.md;08-melee-grappling;Create scramble state machine;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+068_create-failed-takedown-scramble.md;08-melee-grappling;Create failed-takedown scramble;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+069_create-partial-back-control-transition.md;08-melee-grappling;Create partial-back-control transition;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+070_create-leg-entanglement-transition-foundation.md;08-melee-grappling;Create leg-entanglement transition foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+071_create-ground-position-improvement-action.md;08-melee-grappling;Create ground position improvement action;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+072_create-sweep-transition-framework.md;08-melee-grappling;Create sweep transition framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+073_create-guard-pass-transition-framework.md;08-melee-grappling;Create guard-pass transition framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+074_create-mount-escape-framework.md;08-melee-grappling;Create mount escape framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+075_create-back-control-escape-framework.md;08-melee-grappling;Create back-control escape framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+076_create-get-up-stand-up-transition.md;08-melee-grappling;Create get-up/stand-up transition;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+077_create-ground-striking-framework.md;08-melee-grappling;Create ground striking framework;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+078_create-ground-defensive-blocking.md;08-melee-grappling;Create ground defensive blocking;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+079_create-ground-weapon-draw-eligibility-hook.md;08-melee-grappling;Create ground weapon-draw eligibility hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+080_create-submission-base-state.md;08-melee-grappling;Create submission base state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+081_create-choke-submission-family.md;08-melee-grappling;Create choke submission family;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+082_create-arm-lock-submission-family.md;08-melee-grappling;Create arm-lock submission family;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+083_create-shoulder-lock-submission-family.md;08-melee-grappling;Create shoulder-lock submission family;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+084_create-leg-lock-submission-family.md;08-melee-grappling;Create leg-lock submission family;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+085_create-submission-tap-surrender-outcome.md;08-melee-grappling;Create submission tap/surrender outcome;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+086_create-submission-unconsciousness-outcome.md;08-melee-grappling;Create submission unconsciousness outcome;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+087_create-submission-joint-tendon-injury-outcome.md;08-melee-grappling;Create submission joint/tendon injury outcome;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+088_create-prolonged-choke-lethal-trauma-hook.md;08-melee-grappling;Create prolonged choke lethal-trauma hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+089_create-fight-club-honor-code-enforcement.md;08-melee-grappling;Create fight-club honor-code enforcement;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+090_create-fight-club-submission-stop-on-tap-unconsciousness.md;08-melee-grappling;Create fight-club submission stop on tap/unconsciousness;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+091_create-fight-club-intentional-serious-injury-violation.md;08-melee-grappling;Create fight-club intentional-serious-injury violation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+092_create-fight-club-social-legal-consequence-hooks.md;08-melee-grappling;Create fight-club social/legal consequence hooks;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+093_create-fighter-style-profile.md;08-melee-grappling;Create fighter style profile;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+094_create-boxing-oriented-fighter-behavior.md;08-melee-grappling;Create boxing-oriented fighter behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+095_create-wrestling-oriented-fighter-behavior.md;08-melee-grappling;Create wrestling-oriented fighter behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+096_create-grappling-oriented-fighter-behavior.md;08-melee-grappling;Create grappling-oriented fighter behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+097_create-kick-oriented-fighter-behavior.md;08-melee-grappling;Create kick-oriented fighter behavior;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+098_create-aggressive-defensive-style-parameters.md;08-melee-grappling;Create aggressive/defensive style parameters;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+099_create-technical-power-style-parameters.md;08-melee-grappling;Create technical/power style parameters;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+100_create-multiple-opponent-melee-awareness.md;08-melee-grappling;Create multiple-opponent melee awareness;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+101_create-grappling-danger-from-additional-opponents.md;08-melee-grappling;Create grappling danger from additional opponents;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+102_create-improvised-object-throw-interaction.md;08-melee-grappling;Create improvised object throw interaction;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+103_create-bottle-throw-interaction-foundation.md;08-melee-grappling;Create bottle throw interaction foundation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+104_create-environmental-wall-furniture-collision-melee-hooks.md;08-melee-grappling;Create environmental wall/furniture collision melee hooks;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+105_create-long-gun-buttstroke-melee-interaction.md;08-melee-grappling;Create long-gun buttstroke/melee interaction;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+106_create-firearm-push-off-interaction.md;08-melee-grappling;Create firearm push-off interaction;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+107_create-firearm-grabbed-by-opponent-interaction.md;08-melee-grappling;Create firearm grabbed-by-opponent interaction;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+108_create-weapon-disarm-from-limb-trauma.md;08-melee-grappling;Create weapon disarm from limb trauma;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+109_create-melee-knife-draw-transition.md;08-melee-grappling;Create melee knife draw transition;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+110_create-character-knockdown-state.md;08-melee-grappling;Create character knockdown state;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+111_create-ground-survival-actions-after-knockdown.md;08-melee-grappling;Create ground survival actions after knockdown;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+112_create-melee-injury-to-power-modifier.md;08-melee-grappling;Create melee injury-to-power modifier;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+113_create-limb-injury-melee-limitation.md;08-melee-grappling;Create limb injury melee limitation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+114_create-blood-loss-melee-fatigue-integration.md;08-melee-grappling;Create blood-loss melee fatigue integration;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+115_create-melee-stamina-consumption.md;08-melee-grappling;Create melee stamina consumption;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+116_create-melee-fatigue-performance-degradation.md;08-melee-grappling;Create melee fatigue performance degradation;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+117_create-human-vs-supernatural-rule-extension-interface.md;08-melee-grappling;Create human-vs-supernatural rule extension interface;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+118_create-humanoid-supernatural-melee-compatibility-layer.md;08-melee-grappling;Create humanoid supernatural melee compatibility layer;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+119_create-monster-specific-melee-rule-hook.md;08-melee-grappling;Create monster-specific melee rule hook;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+120_create-incapacitated-target-finisher-eligibility.md;08-melee-grappling;Create incapacitated-target finisher eligibility;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+121_create-context-sensitive-melee-input-resolver.md;08-melee-grappling;Create context-sensitive melee input resolver;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+122_create-context-sensitive-grapple-input-resolver.md;08-melee-grappling;Create context-sensitive grapple input resolver;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+123_create-minimal-consistent-control-action-set-contract.md;08-melee-grappling;Create minimal consistent control action set contract;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+124_create-melee-debug-state-visualizer.md;08-melee-grappling;Create melee debug state visualizer;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+125_create-grappling-position-debug-visualizer.md;08-melee-grappling;Create grappling position debug visualizer;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+126_create-scramble-debug-recorder.md;08-melee-grappling;Create scramble debug recorder;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+127_create-deterministic-melee-test-fixtures.md;08-melee-grappling;Create deterministic melee test fixtures;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+128_create-fight-club-rules-regression-suite.md;08-melee-grappling;Create fight-club rules regression suite;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+129_create-submission-injury-regression-suite.md;08-melee-grappling;Create submission injury regression suite;technische Aufgabe;Game/Kampfsystem/04, 07;Nahkampf
+130_create-multiple-opponent-grappling-regression-scenario.md;08-melee-grappling;Create multiple-opponent grappling regression scenario;Spielthema/Umsetzungsdetail;Game/Kampfsystem/04, 07;Nahkampf
+TRACK_CONTEXT.md;08-melee-grappling;Track Context — 08-melee-grappling;Track-Kontext (Entwurfsrahmen);;
+001_create-vehicle-core-runtime-state-model.md;09-vehicles-controls;Create vehicle core runtime state model;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+002_create-vehicle-stable-identity-model.md;09-vehicles-controls;Create vehicle stable identity model;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+003_create-vehicle-trunk-inventory-integration.md;09-vehicles-controls;Create vehicle trunk inventory integration;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+004_create-vehicle-driver-input-abstraction.md;09-vehicles-controls;Create vehicle driver input abstraction;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+005_create-automatic-transmission-mode.md;09-vehicles-controls;Create automatic transmission mode;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+006_create-manual-transmission-state-model.md;09-vehicles-controls;Create manual transmission state model;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+007_create-engine-rpm-simulation-integration.md;09-vehicles-controls;Create engine RPM simulation integration;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+008_create-clutch-engagement-state.md;09-vehicles-controls;Create clutch engagement state;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+009_create-clutch-slip-behavior.md;09-vehicles-controls;Create clutch slip behavior;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+010_create-progressive-digital-clutch-release-curve.md;09-vehicles-controls;Create progressive digital clutch release curve;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+011_create-engine-stall-behavior.md;09-vehicles-controls;Create engine stall behavior;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+012_create-engine-restart-interaction.md;09-vehicles-controls;Create engine restart interaction;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+013_create-free-gear-selection-behavior.md;09-vehicles-controls;Create free gear selection behavior;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+014_create-5-to-2-downshift-physical-consequence-path.md;09-vehicles-controls;Create 5-to-2 downshift physical consequence path;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+015_create-engine-braking-behavior.md;09-vehicles-controls;Create engine braking behavior;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+016_create-over-rev-consequence-hook.md;09-vehicles-controls;Create over-rev consequence hook;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+017_create-transmission-wear-damage-extension-hook.md;09-vehicles-controls;Create transmission wear/damage extension hook;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+018_create-controller-rt-gas-binding.md;09-vehicles-controls;Create controller RT gas binding;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+019_create-controller-lt-brake-binding.md;09-vehicles-controls;Create controller LT brake binding;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+020_create-controller-a-upshift-binding.md;09-vehicles-controls;Create controller A upshift binding;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+021_create-controller-x-downshift-binding.md;09-vehicles-controls;Create controller X downshift binding;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+022_create-controller-b-handbrake-binding.md;09-vehicles-controls;Create controller B handbrake binding;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+023_create-reverse-through-continued-downshift-where-supported.md;09-vehicles-controls;Create reverse through continued downshift where supported;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+024_create-advanced-lb-clutch-modifier.md;09-vehicles-controls;Create advanced LB clutch modifier;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+025_create-lb-held-lt-analog-clutch-mode.md;09-vehicles-controls;Create LB-held LT analog clutch mode;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+026_create-controller-remapping-support.md;09-vehicles-controls;Create controller remapping support;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+027_create-manual-plus-auto-clutch-mode.md;09-vehicles-controls;Create manual plus auto-clutch mode;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+028_create-manual-plus-digital-clutch-mode.md;09-vehicles-controls;Create manual plus digital-clutch mode;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+029_create-wheel-steering-axis-support.md;09-vehicles-controls;Create wheel steering axis support;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+030_create-wheel-accelerator-brake-clutch-axis-support.md;09-vehicles-controls;Create wheel accelerator/brake/clutch axis support;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+031_create-h-pattern-shifter-extension-support.md;09-vehicles-controls;Create H-pattern shifter extension support;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+032_create-vehicle-input-context-switching-between-on-foot-and-driving.md;09-vehicles-controls;Create vehicle input-context switching between on-foot and driving;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+033_create-vehicle-hud-realism-setting-hooks.md;09-vehicles-controls;Create vehicle HUD realism setting hooks;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+034_create-vehicle-driving-assist-setting-hooks.md;09-vehicles-controls;Create vehicle driving-assist setting hooks;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+035_create-vehicle-stall-setting-hook.md;09-vehicles-controls;Create vehicle stall setting hook;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+036_create-vehicle-trunk-loadout-workflow.md;09-vehicles-controls;Create vehicle trunk loadout workflow;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+037_create-vehicle-state-save-load-integration.md;09-vehicles-controls;Create vehicle state save/load integration;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+038_create-vehicle-left-at-case-site-persistence.md;09-vehicles-controls;Create vehicle left-at-case-site persistence;Spielthema/Umsetzungsdetail;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+039_create-vehicle-travel-time-benchmark-instrumentation.md;09-vehicles-controls;Create vehicle travel-time benchmark instrumentation;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+040_create-vehicle-controller-automated-input-tests.md;09-vehicles-controls;Create vehicle controller automated input tests;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+041_create-clutch-stall-regression-tests.md;09-vehicles-controls;Create clutch/stall regression tests;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+042_create-gear-selection-regression-tests.md;09-vehicles-controls;Create gear-selection regression tests;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+043_create-trunk-inventory-persistence-tests.md;09-vehicles-controls;Create trunk inventory persistence tests;technische Aufgabe;Game/Fahrzeuge-und-Verkehr/04, 05, 06, 07, 09;Fahrzeuge
+TRACK_CONTEXT.md;09-vehicles-controls;Track Context — 09-vehicles-controls;Track-Kontext (Entwurfsrahmen);;
+001_create-difficulty-preset-data-schema.md;10-difficulty-hud-accessibility;Create difficulty preset data schema;technische Aufgabe;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+002_create-story-preset-foundation.md;10-difficulty-hud-accessibility;Create Story preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+003_create-easy-preset-foundation.md;10-difficulty-hud-accessibility;Create Easy preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+004_create-normal-preset-foundation.md;10-difficulty-hud-accessibility;Create Normal preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+005_create-hard-preset-foundation.md;10-difficulty-hud-accessibility;Create Hard preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+006_create-survivor-preset-foundation.md;10-difficulty-hud-accessibility;Create Survivor preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+007_create-grounded-preset-foundation.md;10-difficulty-hud-accessibility;Create Grounded preset foundation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+008_create-custom-difficulty-composition-system.md;10-difficulty-hud-accessibility;Create Custom difficulty composition system;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+009_create-independent-investigation-difficulty-setting.md;10-difficulty-hud-accessibility;Create independent investigation difficulty setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+010_create-independent-combat-difficulty-setting.md;10-difficulty-hud-accessibility;Create independent combat difficulty setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+011_create-independent-survival-injury-realism-setting.md;10-difficulty-hud-accessibility;Create independent survival/injury realism setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+012_create-independent-failure-consequence-setting-hook.md;10-difficulty-hud-accessibility;Create independent failure-consequence setting hook;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+013_create-independent-driving-realism-setting.md;10-difficulty-hud-accessibility;Create independent driving realism setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+014_create-independent-navigation-guidance-setting.md;10-difficulty-hud-accessibility;Create independent navigation guidance setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+015_create-binary-ammo-hud-setting.md;10-difficulty-hud-accessibility;Create binary ammo-HUD setting;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+016_create-grounded-default-no-ammo-hud.md;10-difficulty-hud-accessibility;Create Grounded default no-ammo-HUD;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+017_create-grounded-default-no-investigation-guidance.md;10-difficulty-hud-accessibility;Create Grounded default no-investigation-guidance;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+018_create-grounded-enemy-perception-aggression-maxima.md;10-difficulty-hud-accessibility;Create Grounded enemy perception/aggression maxima;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+019_create-grounded-injury-severity-parameter-set.md;10-difficulty-hud-accessibility;Create Grounded injury severity parameter set;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+020_create-grounded-resource-scarcity-hooks.md;10-difficulty-hud-accessibility;Create Grounded resource-scarcity hooks;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+021_create-grounded-assist-disable-policy.md;10-difficulty-hud-accessibility;Create Grounded assist-disable policy;technische Aufgabe;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+022_create-accessibility-override-layer-separate-from-difficulty.md;10-difficulty-hud-accessibility;Create Accessibility override layer separate from difficulty;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+023_create-subtitle-accessibility-settings-isolation.md;10-difficulty-hud-accessibility;Create subtitle/accessibility settings isolation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+024_create-input-accessibility-not-blocked-by-grounded.md;10-difficulty-hud-accessibility;Create input accessibility not blocked by Grounded;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+025_create-difficulty-settings-serialization.md;10-difficulty-hud-accessibility;Create difficulty settings serialization;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+026_create-preset-to-custom-transition-ux-contract.md;10-difficulty-hud-accessibility;Create preset-to-custom transition UX contract;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+027_create-difficulty-configuration-validation.md;10-difficulty-hud-accessibility;Create difficulty configuration validation;Spielthema/Umsetzungsdetail;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+028_create-grounded-hidden-assistance-regression-tests.md;10-difficulty-hud-accessibility;Create Grounded hidden-assistance regression tests;technische Aufgabe;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+029_create-difficulty-independence-regression-tests.md;10-difficulty-hud-accessibility;Create difficulty independence regression tests;technische Aufgabe;Game/Entscheidungsstatus.md §3, Game/Ermittlung/03, Game/Kampfsystem/02;Schwierigkeit/HUD
+TRACK_CONTEXT.md;10-difficulty-hud-accessibility;Track Context — 10-difficulty-hud-accessibility;Track-Kontext (Entwurfsrahmen);;
+001_create-persistent-entity-stable-id-registry.md;11-persistence-worldstate;Create persistent entity stable-ID registry;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+002_create-world-state-service-interface.md;11-persistence-worldstate;Create world-state service interface;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+003_create-persistent-location-state-record.md;11-persistence-worldstate;Create persistent location state record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+004_create-persistent-npc-state-record.md;11-persistence-worldstate;Create persistent NPC state record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+005_create-persistent-case-outcome-record.md;11-persistence-worldstate;Create persistent case outcome record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+006_create-persistent-relationship-state-record.md;11-persistence-worldstate;Create persistent relationship state record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+007_create-persistent-discovery-knowledge-state-record.md;11-persistence-worldstate;Create persistent discovery/knowledge state record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+008_create-persistent-monster-activity-state-extension.md;11-persistence-worldstate;Create persistent monster-activity state extension;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+009_create-persistent-vehicle-state-record.md;11-persistence-worldstate;Create persistent vehicle state record;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+010_create-persistent-safehouse-state-extension.md;11-persistence-worldstate;Create persistent safehouse state extension;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+011_create-persistent-world-event-state-extension.md;11-persistence-worldstate;Create persistent world-event state extension;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+012_create-game-time-persistent-state.md;11-persistence-worldstate;Create game-time persistent state;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+013_create-segmented-save-manifest.md;11-persistence-worldstate;Create segmented save manifest;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+014_create-save-segment-version-metadata.md;11-persistence-worldstate;Create save segment version metadata;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+015_create-incremental-dirty-segment-tracking.md;11-persistence-worldstate;Create incremental dirty-segment tracking;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+016_create-atomic-save-commit-strategy.md;11-persistence-worldstate;Create atomic save commit strategy;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+017_create-save-crash-recovery-journal.md;11-persistence-worldstate;Create save crash-recovery journal;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+018_create-backup-snapshot-strategy.md;11-persistence-worldstate;Create backup snapshot strategy;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+019_create-save-checksum-integrity-validation.md;11-persistence-worldstate;Create save checksum/integrity validation;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+020_create-save-compression-abstraction.md;11-persistence-worldstate;Create save compression abstraction;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+021_create-save-migration-framework.md;11-persistence-worldstate;Create save migration framework;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+022_create-backward-compatible-field-defaulting-rules.md;11-persistence-worldstate;Create backward-compatible field defaulting rules;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+023_create-world-partition-load-state-application.md;11-persistence-worldstate;Create world-partition load state application;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+024_create-unloaded-entity-abstract-state-updates.md;11-persistence-worldstate;Create unloaded-entity abstract state updates;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+025_create-save-size-instrumentation.md;11-persistence-worldstate;Create save-size instrumentation;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+026_create-20-50mb-optimization-target-reporting.md;11-persistence-worldstate;Create 20-50MB optimization target reporting;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+027_create-save-load-performance-benchmark.md;11-persistence-worldstate;Create save/load performance benchmark;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+028_create-corrupted-segment-recovery-test.md;11-persistence-worldstate;Create corrupted-segment recovery test;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+029_create-interrupted-save-crash-test.md;11-persistence-worldstate;Create interrupted-save crash test;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+030_create-old-version-migration-fixtures.md;11-persistence-worldstate;Create old-version migration fixtures;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+031_create-long-play-simulated-world-state-stress-test.md;11-persistence-worldstate;Create long-play simulated world-state stress test;technische Aufgabe;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+032_create-postgresql-boundary-document-for-online-backend-only.md;11-persistence-worldstate;Create PostgreSQL boundary document for online/backend only;Spielthema/Umsetzungsdetail;Game/Ermittlung/19, Game/NPCs/21, Game/Kreaturen/17, Decisions/0004;Persistenz
+TRACK_CONTEXT.md;11-persistence-worldstate;Track Context — 11-persistence-worldstate;Track-Kontext (Entwurfsrahmen);;
+001_create-mod-manifest-schema.md;12-modding-sdk;Create mod manifest schema;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+002_create-mod-stable-namespace-rules.md;12-modding-sdk;Create mod stable namespace rules;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+003_create-mod-version-compatibility-schema.md;12-modding-sdk;Create mod version compatibility schema;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+004_create-mod-dependency-declaration-model.md;12-modding-sdk;Create mod dependency declaration model;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+005_create-mod-load-order-model.md;12-modding-sdk;Create mod load-order model;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+006_create-additive-content-registry-api.md;12-modding-sdk;Create additive content registry API;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+007_create-controlled-override-layer-api.md;12-modding-sdk;Create controlled override-layer API;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+008_create-mod-conflict-reporting.md;12-modding-sdk;Create mod conflict reporting;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+009_create-data-mod-registration-layer.md;12-modding-sdk;Create data-mod registration layer;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+010_create-unreal-content-asset-mod-registration-layer.md;12-modding-sdk;Create Unreal content/asset mod registration layer;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+011_create-blueprint-safe-mod-api-surface.md;12-modding-sdk;Create Blueprint-safe mod API surface;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+012_create-c-20-native-mod-interface.md;12-modding-sdk;Create C++20 native mod interface;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+013_create-native-mod-trusted-code-warning-metadata.md;12-modding-sdk;Create native-mod trusted-code warning metadata;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+014_create-least-privilege-public-api-review-checklist.md;12-modding-sdk;Create least-privilege public API review checklist;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+015_create-creature-registration-api-foundation.md;12-modding-sdk;Create creature registration API foundation;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+016_create-case-registration-api-foundation.md;12-modding-sdk;Create case registration API foundation;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+017_create-item-weapon-registration-api-foundation.md;12-modding-sdk;Create item/weapon registration API foundation;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+018_create-hunter-archive-registration-api.md;12-modding-sdk;Create Hunter Archive registration API;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+019_create-world-event-registration-api-foundation.md;12-modding-sdk;Create world-event registration API foundation;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+020_create-mod-save-namespace-persistence-support.md;12-modding-sdk;Create mod save-namespace persistence support;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+021_create-missing-mod-save-handling-strategy.md;12-modding-sdk;Create missing-mod save handling strategy;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+022_create-disabled-mod-fallback-validation.md;12-modding-sdk;Create disabled-mod fallback validation;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+023_create-mod-dependency-resolver.md;12-modding-sdk;Create mod dependency resolver;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+024_create-mod-compatibility-checker.md;12-modding-sdk;Create mod compatibility checker;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+025_create-mod-packaging-validator.md;12-modding-sdk;Create mod packaging validator;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+026_create-mod-signature-metadata-support.md;12-modding-sdk;Create mod signature metadata support;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+027_create-official-browser-native-review-state-model.md;12-modding-sdk;Create official-browser native-review state model;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+028_create-malware-scan-integration-abstraction.md;12-modding-sdk;Create malware-scan integration abstraction;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+029_create-automated-native-compatibility-test-harness.md;12-modding-sdk;Create automated native compatibility test harness;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+030_create-mod-browser-install-uninstall-service-abstraction.md;12-modding-sdk;Create mod browser install/uninstall service abstraction;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+031_create-mod-update-workflow.md;12-modding-sdk;Create mod update workflow;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+032_create-mod-ratings-collections-extension-points.md;12-modding-sdk;Create mod ratings/collections extension points;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+033_create-mod-api-versioning-policy.md;12-modding-sdk;Create mod API versioning policy;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+034_create-example-data-mod.md;12-modding-sdk;Create example data mod;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+035_create-example-blueprint-content-mod.md;12-modding-sdk;Create example Blueprint/content mod;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+036_create-example-c-20-native-mod.md;12-modding-sdk;Create example C++20 native mod;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+037_create-mod-sdk-documentation-skeleton.md;12-modding-sdk;Create mod SDK documentation skeleton;Spielthema/Umsetzungsdetail;Game/Gameplay-Systeme.md §15;Modding
+038_create-mod-regression-test-suite.md;12-modding-sdk;Create mod regression test suite;technische Aufgabe;Game/Gameplay-Systeme.md §15;Modding
+TRACK_CONTEXT.md;12-modding-sdk;Track Context — 12-modding-sdk;Track-Kontext (Entwurfsrahmen);;
+001_create-knowledge-content-canonical-id-schema.md;13-guides-web-service;Create knowledge content canonical-ID schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+002_create-knowledge-content-version-schema.md;13-guides-web-service;Create knowledge content version schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+003_create-progressive-spoiler-level-model.md;13-guides-web-service;Create progressive spoiler-level model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+004_create-spoiler-free-hint-tier.md;13-guides-web-service;Create spoiler-free hint tier;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+005_create-small-hint-tier.md;13-guides-web-service;Create small-hint tier;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+006_create-strong-hint-tier.md;13-guides-web-service;Create strong-hint tier;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+007_create-investigation-path-tier.md;13-guides-web-service;Create investigation-path tier;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+008_create-full-solution-tier.md;13-guides-web-service;Create full-solution tier;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+009_create-mission-guide-content-schema.md;13-guides-web-service;Create mission guide content schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+010_create-side-case-multi-path-guide-schema.md;13-guides-web-service;Create side-case multi-path guide schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+011_create-collectible-guide-schema.md;13-guides-web-service;Create collectible guide schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+012_create-location-guide-schema.md;13-guides-web-service;Create location guide schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+013_create-monster-guide-schema.md;13-guides-web-service;Create monster guide schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+014_create-weapon-ritual-vehicle-guide-schema.md;13-guides-web-service;Create weapon/ritual/vehicle guide schema;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+015_create-version-patch-difference-guide-metadata.md;13-guides-web-service;Create version/patch-difference guide metadata;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+016_create-base-game-entitlement-model.md;13-guides-web-service;Create base-game entitlement model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+017_create-one-time-redeem-key-model.md;13-guides-web-service;Create one-time redeem-key model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+018_create-redeemed-key-account-binding.md;13-guides-web-service;Create redeemed-key account binding;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+019_create-dlc-guide-entitlement-model.md;13-guides-web-service;Create DLC guide entitlement model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+020_create-public-spoiler-free-dlc-page-model.md;13-guides-web-service;Create public spoiler-free DLC page model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+021_create-trailer-key-art-public-content-model.md;13-guides-web-service;Create trailer/key-art public content model;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+022_create-non-owner-separate-access-entitlement-extension.md;13-guides-web-service;Create non-owner separate-access entitlement extension;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+023_create-website-account-entitlement-api-contract.md;13-guides-web-service;Create website account entitlement API contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+024_create-companion-app-entitlement-api-contract.md;13-guides-web-service;Create companion app entitlement API contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+025_create-ai-assistant-entitlement-api-contract.md;13-guides-web-service;Create AI assistant entitlement API contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+026_create-ai-assistant-spoiler-level-request-contract.md;13-guides-web-service;Create AI assistant spoiler-level request contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+027_create-ai-assistant-game-state-context-contract.md;13-guides-web-service;Create AI assistant game-state context contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+028_create-official-game-state-api-boundary-for-companion.md;13-guides-web-service;Create official game-state API boundary for companion;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+029_create-no-ram-scraping-companion-rule-enforcement-documentation.md;13-guides-web-service;Create no-RAM-scraping companion rule enforcement/documentation;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+030_create-offline-single-player-independence-boundary.md;13-guides-web-service;Create offline single-player independence boundary;Spielthema/Umsetzungsdetail;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+031_create-knowledge-search-index-contract.md;13-guides-web-service;Create knowledge search/index contract;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+032_create-guide-ownership-dlc-gating-tests.md;13-guides-web-service;Create guide ownership/DLC gating tests;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+033_create-spoiler-leakage-tests.md;13-guides-web-service;Create spoiler leakage tests;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+034_create-redeem-key-replay-abuse-tests.md;13-guides-web-service;Create redeem-key replay/abuse tests;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+035_create-solution-book-export-content-mapping-foundation.md;13-guides-web-service;Create solution-book export content mapping foundation;technische Aufgabe;Game/Spielvision.md §16, Game/Ermittlung/08;Guide/Service
+TRACK_CONTEXT.md;13-guides-web-service;Track Context — 13-guides-web-service;Track-Kontext (Entwurfsrahmen);;
+001_create-blender-project-unit-scale-convention.md;14-assets-animation-gore;Create Blender project unit/scale convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+002_create-blender-naming-convention-for-game-assets.md;14-assets-animation-gore;Create Blender naming convention for game assets;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+003_create-blender-collection-export-convention.md;14-assets-animation-gore;Create Blender collection/export convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+004_create-unreal-import-naming-convention.md;14-assets-animation-gore;Create Unreal import naming convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+005_create-asset-source-control-organization.md;14-assets-animation-gore;Create asset source-control organization;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+006_create-high-poly-to-low-poly-workflow.md;14-assets-animation-gore;Create high-poly to low-poly workflow;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+007_create-uv-layout-quality-rules.md;14-assets-animation-gore;Create UV layout quality rules;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+008_create-pbr-texture-channel-convention.md;14-assets-animation-gore;Create PBR texture channel convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+009_create-material-instance-parameter-convention.md;14-assets-animation-gore;Create material instance parameter convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+010_create-collision-asset-convention.md;14-assets-animation-gore;Create collision asset convention;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+011_create-lod-nanite-decision-checklist.md;14-assets-animation-gore;Create LOD/Nanite decision checklist;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+012_create-asset-performance-budget-metadata.md;14-assets-animation-gore;Create asset performance budget metadata;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+013_create-asset-validation-automation.md;14-assets-animation-gore;Create asset validation automation;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+014_create-weapon-asset-mechanical-part-hierarchy.md;14-assets-animation-gore;Create weapon asset mechanical-part hierarchy;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+015_create-firearm-magazine-chamber-movable-part-requirements.md;14-assets-animation-gore;Create firearm magazine/chamber movable-part requirements;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+016_create-pump-action-shotgun-mechanical-rig-requirements.md;14-assets-animation-gore;Create pump-action shotgun mechanical rig requirements;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+017_create-pistol-slide-magazine-chamber-animation-requirements.md;14-assets-animation-gore;Create pistol slide/magazine/chamber animation requirements;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+018_create-revolver-cylinder-chamber-rig-foundation.md;14-assets-animation-gore;Create revolver cylinder/chamber rig foundation;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+019_create-optic-suppressor-barrel-attachment-socket-conventions.md;14-assets-animation-gore;Create optic/suppressor/barrel attachment socket conventions;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+020_create-weapon-dirt-wear-material-state-hooks.md;14-assets-animation-gore;Create weapon dirt/wear material-state hooks;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+021_create-weapon-impact-damage-visual-state-hooks.md;14-assets-animation-gore;Create weapon impact/damage visual-state hooks;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+022_create-human-body-hit-region-rig-mapping.md;14-assets-animation-gore;Create human body hit-region rig mapping;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+023_create-human-injury-overlay-material-system.md;14-assets-animation-gore;Create human injury overlay material system;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+024_create-clothing-damage-mask-system.md;14-assets-animation-gore;Create clothing damage mask system;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+025_create-blood-decal-attachment-rules.md;14-assets-animation-gore;Create blood decal attachment rules;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+026_create-visible-open-fracture-art-hook.md;14-assets-animation-gore;Create visible open-fracture art hook;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+027_create-cause-dependent-wound-visual-mapping.md;14-assets-animation-gore;Create cause-dependent wound visual mapping;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+028_create-firearm-wound-visual-family.md;14-assets-animation-gore;Create firearm wound visual family;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+029_create-knife-cut-wound-visual-family.md;14-assets-animation-gore;Create knife/cut wound visual family;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+030_create-blunt-crush-wound-visual-family.md;14-assets-animation-gore;Create blunt/crush wound visual family;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+031_create-burn-visual-progression-family.md;14-assets-animation-gore;Create burn visual progression family;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+032_create-supernatural-wound-modifier-visual-hooks.md;14-assets-animation-gore;Create supernatural wound modifier visual hooks;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+033_create-gore-severity-setting-integration.md;14-assets-animation-gore;Create gore severity setting integration;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+034_create-limb-major-tissue-destruction-extension-hooks.md;14-assets-animation-gore;Create limb/major tissue destruction extension hooks;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+035_create-layered-injury-locomotion-animation-architecture.md;14-assets-animation-gore;Create layered injury locomotion animation architecture;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+036_create-left-leg-limp-animation-layer.md;14-assets-animation-gore;Create left-leg limp animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+037_create-right-leg-limp-animation-layer.md;14-assets-animation-gore;Create right-leg limp animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+038_create-left-arm-injury-animation-layer.md;14-assets-animation-gore;Create left-arm injury animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+039_create-right-arm-injury-animation-layer.md;14-assets-animation-gore;Create right-arm injury animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+040_create-torso-rib-pain-animation-layer.md;14-assets-animation-gore;Create torso/rib pain animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+041_create-blood-loss-tremor-animation-layer.md;14-assets-animation-gore;Create blood-loss tremor animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+042_create-shock-breathing-animation-layer.md;14-assets-animation-gore;Create shock/breathing animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+043_create-weapon-handling-injury-animation-layer.md;14-assets-animation-gore;Create weapon handling injury animation layer;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+044_create-weak-hand-firearm-animation-set-requirements.md;14-assets-animation-gore;Create weak-hand firearm animation set requirements;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+045_create-ik-rules-for-weapon-wall-proximity.md;14-assets-animation-gore;Create IK rules for weapon-wall proximity;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+046_create-melee-strike-animation-authoring-conventions.md;14-assets-animation-gore;Create melee strike animation authoring conventions;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+047_create-clinch-grapple-paired-animation-conventions.md;14-assets-animation-gore;Create clinch/grapple paired-animation conventions;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+048_create-ground-position-animation-state-mapping.md;14-assets-animation-gore;Create ground-position animation-state mapping;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+049_create-scramble-animation-blending-requirements.md;14-assets-animation-gore;Create scramble animation blending requirements;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+050_create-submission-animation-safety-transition-rules.md;14-assets-animation-gore;Create submission animation safety/transition rules;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+051_create-fight-club-animation-context-rules.md;14-assets-animation-gore;Create fight-club animation context rules;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+052_create-modular-building-kit-variation-rules.md;14-assets-animation-gore;Create modular building kit variation rules;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+053_create-hero-building-uniqueness-art-checklist.md;14-assets-animation-gore;Create hero-building uniqueness art checklist;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+054_create-modular-interior-variation-art-checklist.md;14-assets-animation-gore;Create modular interior variation art checklist;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+055_create-pcg-compatible-environmental-asset-metadata.md;14-assets-animation-gore;Create PCG-compatible environmental asset metadata;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+056_create-blender-to-unreal-export-validation-test.md;14-assets-animation-gore;Create Blender-to-Unreal export validation test;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+057_create-animation-combination-explosion-mitigation-plan.md;14-assets-animation-gore;Create animation combination explosion mitigation plan;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+058_create-pre-release-injury-animation-completeness-validator.md;14-assets-animation-gore;Create pre-release injury animation completeness validator;technische Aufgabe;Development/Produktions-Referenzen §11, Game/Kampfsystem/13;Assets/Animation
+TRACK_CONTEXT.md;14-assets-animation-gore;Track Context — 14-assets-animation-gore;Track-Kontext (Entwurfsrahmen);;
+001_create-project-automation-test-directory-conventions.md;15-testing-quality;Create project automation-test directory conventions;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+002_create-unit-test-naming-convention.md;15-testing-quality;Create unit-test naming convention;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+003_create-integration-test-naming-convention.md;15-testing-quality;Create integration-test naming convention;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+004_create-unreal-functional-test-naming-convention.md;15-testing-quality;Create Unreal functional-test naming convention;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+005_create-regression-test-tagging-convention.md;15-testing-quality;Create regression-test tagging convention;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+006_create-deterministic-test-seed-policy.md;15-testing-quality;Create deterministic test seed policy;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+007_create-test-fixture-data-registry.md;15-testing-quality;Create test fixture data registry;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+008_create-save-fixture-version-repository.md;15-testing-quality;Create save fixture version repository;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+009_create-long-session-simulation-harness.md;15-testing-quality;Create long-session simulation harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+010_create-world-partition-streaming-test-harness.md;15-testing-quality;Create World Partition streaming test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+011_create-case-path-combinatorial-test-harness.md;15-testing-quality;Create case path combinatorial test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+012_create-hunter-archive-graph-validation-tests.md;15-testing-quality;Create Hunter Archive graph validation tests;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+013_create-npc-memory-long-term-persistence-tests.md;15-testing-quality;Create NPC memory long-term persistence tests;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+014_create-ai-perception-difficulty-tests.md;15-testing-quality;Create AI perception difficulty tests;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+015_create-anatomy-deterministic-trauma-fixtures.md;15-testing-quality;Create anatomy deterministic trauma fixtures;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+016_create-ballistic-deterministic-shot-fixtures.md;15-testing-quality;Create ballistic deterministic shot fixtures;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+017_create-melee-deterministic-interaction-fixtures.md;15-testing-quality;Create melee deterministic interaction fixtures;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+018_create-vehicle-input-replay-test-harness.md;15-testing-quality;Create vehicle input replay test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+019_create-mod-load-order-test-harness.md;15-testing-quality;Create mod load-order test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+020_create-mod-missing-dependency-test-harness.md;15-testing-quality;Create mod missing-dependency test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+021_create-knowledge-entitlement-test-harness.md;15-testing-quality;Create knowledge entitlement test harness;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+022_create-performance-budget-assertion-framework.md;15-testing-quality;Create performance budget assertion framework;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+023_create-memory-budget-regression-framework.md;15-testing-quality;Create memory budget regression framework;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+024_create-save-size-regression-threshold-reporting.md;15-testing-quality;Create save-size regression threshold reporting;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+025_create-crash-recovery-automated-scenario.md;15-testing-quality;Create crash-recovery automated scenario;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+026_create-input-remapping-regression-suite.md;15-testing-quality;Create input-remapping regression suite;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+027_create-controller-only-navigation-smoke-suite.md;15-testing-quality;Create controller-only navigation smoke suite;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+028_create-no-hidden-guidance-detective-regression-suite.md;15-testing-quality;Create no-hidden-guidance Detective regression suite;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+029_create-grounded-no-assist-regression-suite.md;15-testing-quality;Create Grounded no-assist regression suite;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+030_create-nightly-test-aggregation-report.md;15-testing-quality;Create nightly test aggregation report;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+031_create-failing-test-artifact-bundle.md;15-testing-quality;Create failing-test artifact bundle;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+032_create-bug-to-regression-test-workflow-documentation.md;15-testing-quality;Create bug-to-regression-test workflow documentation;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+033_create-pre-merge-smoke-test-profile.md;15-testing-quality;Create pre-merge smoke test profile;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+034_create-release-candidate-full-test-profile.md;15-testing-quality;Create release-candidate full test profile;technische Aufgabe;Development/Produktions-Referenzen §12, Game/Gameplay-Systeme.md (Tests);Test
+TRACK_CONTEXT.md;15-testing-quality;Track Context — 15-testing-quality;Track-Kontext (Entwurfsrahmen);;
+001_create-original-ip-content-review-checklist.md;16-ip-legal-product;Create original-IP content review checklist;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+002_create-prohibited-copied-prop-name-lore-checklist.md;16-ip-legal-product;Create prohibited copied-prop/name/lore checklist;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+003_create-weapon-artefact-originality-review-template.md;16-ip-legal-product;Create weapon/artefact originality review template;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+004_create-monster-lore-originality-review-template.md;16-ip-legal-product;Create monster/lore originality review template;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+005_create-visual-symbol-originality-review-template.md;16-ip-legal-product;Create visual-symbol originality review template;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+006_create-game-name-trademark-clearance-workflow-placeholder.md;16-ip-legal-product;Create game-name trademark clearance workflow placeholder;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+007_create-dlc-name-trademark-clearance-workflow-placeholder.md;16-ip-legal-product;Create DLC-name trademark clearance workflow placeholder;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+008_create-pre-release-ip-lawyer-review-gate.md;16-ip-legal-product;Create pre-release IP lawyer review gate;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+009_create-third-party-asset-license-inventory-schema.md;16-ip-legal-product;Create third-party asset/license inventory schema;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+010_create-audio-music-license-tracking-schema.md;16-ip-legal-product;Create audio/music license tracking schema;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+011_create-external-reference-provenance-log.md;16-ip-legal-product;Create external reference provenance log;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+012_create-legal-version-of-marketing-comparison-review-gate.md;16-ip-legal-product;Create legal version of marketing comparison review gate;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+013_create-customer-friendly-drm-requirements-document.md;16-ip-legal-product;Create customer-friendly DRM requirements document;Spielthema/Umsetzungsdetail;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+014_create-offline-single-player-requirement-validation.md;16-ip-legal-product;Create offline single-player requirement validation;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+015_create-no-arbitrary-activation-limit-product-rule.md;16-ip-legal-product;Create no-arbitrary-activation-limit product rule;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+016_create-service-value-feature-checklist-for-legal-owners.md;16-ip-legal-product;Create service-value feature checklist for legal owners;technische Aufgabe;Game/Spielvision.md (IP), Planning/CANON.md;IP/Recht
+TRACK_CONTEXT.md;16-ip-legal-product;Track Context — 16-ip-legal-product;Track-Kontext (Entwurfsrahmen);;
+001_create-platform-service-abstraction-interface.md;17-platform-foundations;Create platform service abstraction interface;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+002_create-platform-identity-abstraction.md;17-platform-foundations;Create platform identity abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+003_create-platform-entitlement-abstraction.md;17-platform-foundations;Create platform entitlement abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+004_create-platform-cloud-save-abstraction.md;17-platform-foundations;Create platform cloud-save abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+005_create-platform-achievement-internal-id-abstraction.md;17-platform-foundations;Create platform achievement internal-ID abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+006_create-platform-achievement-progress-event-abstraction.md;17-platform-foundations;Create platform achievement progress-event abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+007_create-hidden-achievement-metadata-support.md;17-platform-foundations;Create hidden-achievement metadata support;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+008_create-dlc-achievement-namespace-support.md;17-platform-foundations;Create DLC achievement namespace support;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+009_create-controller-glyph-platform-abstraction.md;17-platform-foundations;Create controller glyph platform abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+010_create-platform-suspend-resume-lifecycle-hooks.md;17-platform-foundations;Create platform suspend/resume lifecycle hooks;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+011_create-platform-offline-entitlement-cache-interface.md;17-platform-foundations;Create platform offline-entitlement cache interface;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+012_create-store-build-channel-abstraction.md;17-platform-foundations;Create store build-channel abstraction;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+013_create-platform-specific-packaging-extension-points.md;17-platform-foundations;Create platform-specific packaging extension points;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §8;Plattform
+014_create-platform-certification-requirement-registry-placeholder.md;17-platform-foundations;Create platform certification requirement registry placeholder;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+015_create-steam-adapter-placeholder-without-final-api-assumptions.md;17-platform-foundations;Create Steam adapter placeholder without final API assumptions;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+016_create-playstation-adapter-boundary-placeholder-without-sdk-assumptions.md;17-platform-foundations;Create PlayStation adapter boundary placeholder without SDK assumptions;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+017_create-xbox-adapter-boundary-placeholder-without-sdk-assumptions.md;17-platform-foundations;Create Xbox adapter boundary placeholder without SDK assumptions;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+018_create-platform-neutral-achievement-test-harness.md;17-platform-foundations;Create platform-neutral achievement test harness;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+019_create-platform-neutral-cloud-save-conflict-test-harness.md;17-platform-foundations;Create platform-neutral cloud-save conflict test harness;technische Aufgabe;Development/Produktions-Referenzen §8;Plattform
+TRACK_CONTEXT.md;17-platform-foundations;Track Context — 17-platform-foundations;Track-Kontext (Entwurfsrahmen);;
+001_create-developer-tool-menu-shell.md;18-developer-tools;Create developer tool menu shell;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+002_create-runtime-debug-overlay-permission-gate.md;18-developer-tools;Create runtime debug overlay permission gate;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+003_create-stable-id-inspector-tool.md;18-developer-tools;Create stable-ID inspector tool;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+004_create-data-registry-browser.md;18-developer-tools;Create data-registry browser;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+005_create-case-debugger-overview.md;18-developer-tools;Create case debugger overview;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+006_create-case-path-graph-visualizer.md;18-developer-tools;Create case path graph visualizer;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+007_create-case-outcome-force-test-controls.md;18-developer-tools;Create case outcome force/test controls;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+008_create-hunter-archive-graph-inspector.md;18-developer-tools;Create Hunter Archive graph inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+009_create-location-discovery-state-inspector.md;18-developer-tools;Create location discovery/state inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+010_create-npc-memory-inspector.md;18-developer-tools;Create NPC memory inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+011_create-ai-perception-state-inspector.md;18-developer-tools;Create AI perception/state inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+012_create-world-state-inspector.md;18-developer-tools;Create world-state inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+013_create-save-segment-inspector.md;18-developer-tools;Create save segment inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+014_create-injury-anatomy-inspector.md;18-developer-tools;Create injury/anatomy inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+015_create-bleeding-shock-timeline-debug-view.md;18-developer-tools;Create bleeding/shock timeline debug view;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+016_create-ballistic-trajectory-debug-view.md;18-developer-tools;Create ballistic trajectory debug view;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+017_create-material-penetration-debug-view.md;18-developer-tools;Create material penetration debug view;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+018_create-weapon-magazine-chamber-inspector.md;18-developer-tools;Create weapon magazine/chamber inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+019_create-melee-grapple-state-inspector.md;18-developer-tools;Create melee/grapple state inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+020_create-vehicle-drivetrain-debug-view.md;18-developer-tools;Create vehicle drivetrain debug view;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+021_create-mod-registry-inspector.md;18-developer-tools;Create mod registry inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+022_create-difficulty-effective-parameter-inspector.md;18-developer-tools;Create difficulty effective-parameter inspector;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+023_create-performance-streaming-heatmap.md;18-developer-tools;Create performance streaming heatmap;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+024_create-developer-teleport-location-browser.md;18-developer-tools;Create developer teleport/location browser;Spielthema/Umsetzungsdetail;Development/Produktions-Referenzen §12;Werkzeug
+025_create-controlled-spawn-encounter-tool.md;18-developer-tools;Create controlled spawn/encounter tool;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+026_create-debug-state-capture-export-bundle.md;18-developer-tools;Create debug-state capture/export bundle;technische Aufgabe;Development/Produktions-Referenzen §12;Werkzeug
+TRACK_CONTEXT.md;18-developer-tools;Track Context — 18-developer-tools;Track-Kontext (Entwurfsrahmen);;

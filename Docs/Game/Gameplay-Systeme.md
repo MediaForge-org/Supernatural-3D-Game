@@ -89,6 +89,8 @@ Eine **kleine, universelle Interaktion** mit einer einzigen Aktion `Use`, einem 
 **Darstellung**
 
 - 📋 **Gore** ist gewollt und ursachenabhängig (Pistole ≠ Schrotflinte aus der Nähe ≠ Messer ≠ Axt ≠ Kralle). Bei **erwachsenen Menschen** liegt die Zielschwere mindestens auf dem Niveau eines bekannten Western-Spiels, aber enger an Verletzungs- und Medizinzustand, Kleidungsschaden und tatsächliche Schadensbedingungen gebunden; plausible Ergebnisse umfassen Ein- und Austrittswunden, Schnitte, Verbrennungen, Brüche, schweren Gewebeschaden, Verlust von Fingern, Händen und Gliedmaßen, Enthauptung unter sehr extremen und physikalisch passenden Bedingungen und Explosionstrauma. Ein späterer Planungsblock nennt für erwachsene Menschen und Monster teils eine Schwere „deutlich darüber“. Die endgültige Schwelle ist ❓ von Plattform-, Alters- und Rechtsprüfung abhängig.
+- 📋 **Minderjährige NPCs (Richtung, Backlog Track 44, 📋 aktuelle offizielle Darstellungsrichtung):** Kinder dürfen existieren und sind nicht um eine magische Unverwundbarkeit herum konstruiert. Es gibt keine Belohnungen oder Herausforderungen, die auf deren Verletzung abzielen. Extreme Zerstückelung, Enthauptung und Gibbing sind in der aktuellen offiziellen Darstellung für Minderjährige **nicht** vorgesehen. Die endgültigen Grenzen brauchen eine spätere Prüfung durch Plattform, Altersfreigabe und Recht; diese Prüfung steht aus.
+- 📋 **Darstellungsprofile (Backlog Track 44):** Gewalt-Einstellungen für Spieler sind Voll, Reduziert und Minimal. Der Verletzungszustand ist die kanonische Wahrheit; die Darstellung folgt ihm. Verletzungen entstehen aus Einschlag, Gewebe, Knochen und Schutz über Blutung und Schmerz bis zur Darstellung. Kleidungsschäden entsprechen der Verletzung. Monsterspezifische Anatomie, Blut, Regeneration und Todesprofile sind getrennt festzulegen. Regionale und plattformspezifische Profile sind offen.
 - 📋 **Minderjährige** können in der Welt existieren und haben keinen magischen Unverwundbarkeits-Schutz, aber die offizielle Darstellung schließt extreme Verstümmelung, Zerlegung oder Enthauptung aus, und es gibt weder Belohnungen noch Herausforderungen, die auf ihre Verletzung zielen. Endgültige Grenzen brauchen Plattform-, Bewertungs- und Rechtsprüfung.
 - 📋 Nutzer-Einstellungen für Gore: voll / reduziert / minimal. Einstellbare **Kill-Cams** für seltene, hochwertige Tötungen (filmische Projektilverfolgung, optional eine anatomische Röntgen-ähnliche Ansicht mit eigener visueller Sprache, die an die tatsächliche Verletzungssimulation gebunden ist; Häufigkeit konfigurierbar, standardmäßig selten).
 - Siehe [Spielvision](Spielvision.md#14-schwierigkeit-scheitern-und-tod) für Tod und Scheitern (❓ offen).
@@ -193,6 +195,7 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 - **Gehör:** Richtung, Entfernung und Unsicherheit aus tatsächlicher Schallausbreitung. Berücksichtigt werden Lautstärke, Dauer und Frequenz, Entfernung, Raumakustik, Wände, Türen, Materialien, Hintergrundlärm, Wetter, Böden und Hörvermögen. Unterschiedliche Geräuschkategorien werden unterschiedlich gedeutet (Schritte, Nachladen, Magazinabwurf, Tür, Glasbruch, Stimme, Schuss, Motor, geworfener Gegenstand). Schrittgeräusche hängen von Tempo, Haltung, Untergrund, Schuhwerk und Verletzung ab. Wer den Stick nur wenig auslenkt, bewegt sich kontinuierlich langsamer und leiser (kein separater Pflicht-Schleichknopf). Für Innenräume wird ein Raum-/Portalmodell bevorzugt. Hall kann die Ortung erschweren.
 - **Sicht:** Richtung, Reichweite, tatsächliches Licht, Bewegung, Deckung, Silhouette, Haltung und Sichtbarkeit/Wetter. Dunkelheit verringert die Sicht, ohne Unsichtbarkeit zu gewähren. Ein im Dunkeln gehörter Spieler kann ohne visuelle Identifikation grob geortet werden. Taschenlampen sind Werkzeuge und Risiken; kreaturspezifische KI kann Licht und Strom manipulieren.
 - **Intelligente Gegner** kombinieren Spuren (Geräusch, Blut, Türen, Fenster, letzte Position) zu Hypothesen, prüfen Verstecke auch ohne Gewissheit (Verstecke sind nie garantiert sicher) und erkennen wiederholte Ablenkungstricks. Menschliche Gegner teilen Informationen nur über plausible Kommunikation (Stimme, Funk, Sichtzeichen), **kein Schwarmbewusstsein**. Kreaturen kommunizieren artspezifisch. Blutspuren können von Menschen visuell verfolgt werden; Geruchsverfolgung ist kreaturspezifisch.
+- 📋 **Gezieltes Prüfen:** Hat ein Gegner ein bestimmtes Versteckverhalten des Spielers gesehen oder starke Belege, prüft er diese Art von Versteck später gezielter. Ohne Beleg verdächtigt er nur oder sucht gelegentlich (`PROJECT_DECISIONS` §22, MASTER-MIGRATION-17).
 - **Taktikvorrat** intelligenter Monster: beobachten, auflauern, flankieren, Strom abschalten, Licht manipulieren, falsche Geräusche und Stimmen erzeugen, absichtlich schweigen, Ausgänge blockieren, Jäger isolieren, verletzte Ziele verfolgen, Begleiter angreifen, zurückziehen und neu positionieren, Nachladen und Verletzungen ausnutzen. Die Taktikwahl ist kontextabhängig und adaptiv, nicht zufällig rotierend. Absichtliches Schweigen darf nicht so häufig sein, dass es vorhersehbar wird. Falsche oder psychologische übernatürliche Geräusche unterscheiden zwischen körperlichen Weltgeräuschen und Wahrnehmung nur des Ziels.
 - **Zusammenspiel:** Kampf kann zu Suche und Tarnung zurückkehren, wenn die Sichtlinie bricht und die genaue Position verloren geht. Verletzung erschwert Tarnung (Hinken, schweres Atmen, Schmerzlaute, Blutspuren).
 - **Anzeigen:** Tarn-HUD ist optional (im härtesten Modus standardmäßig aus).
@@ -244,6 +247,8 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 - 📋 **Alterung:** nur durch tatsächlich vergangene Story- oder Weltzeit oder Zeitsprünge.
 
 ---
+
+- 📋 **Gemeinsame Sekundärphysik** für Figurenbewegung, Rückstoß, Fahrzeuge, Kleidung, Haare und Interaktionen. Dämpfung und Masse sind realistisch; übertriebenes Wabbeln ist nicht gewollt (`PROJECT_DECISIONS` §51, MASTER-MIGRATION-17).
 
 ## 10. Recht, Polizei und Beweise
 
@@ -323,6 +328,7 @@ Die **engine-unabhängige Datengrundlage für das Aussehen** im Core: Datenmodel
 - **Konsolen:** PS5 mit zwei Hauptmodi: Grafik (30 FPS, höchste machbare Qualität) und Leistung (60 FPS, 4K-Ausgabe mit reduzierter interner Auflösung); **kein 40-FPS-Modus geplant**. PS5 Pro versucht hohe Qualität bei 60 FPS, soweit die Profilierung es erlaubt. Xbox Series X folgt derselben 30/60-Philosophie, Series S erhält angepasste Rendering-, VRAM- und Streaming-Einstellungen unter Beibehaltung der Spielsysteme. Natives 4K plus 60 FPS plus maximales Raytracing auf der Basis-PS5 wird **nicht versprochen**, wenn die Profilierung es nicht trägt. Mehr Anzeigeoptionen als üblich (HDR/Kalibrierung, Bewegungsunschärfe, Filmkorn, chromatische Aberration, Kameraeffekte, Sichtfeld, Gore-Dauer), aber nicht jede PC-Konsolenvariable.
 - **Optimierung ist Architekturanforderung von Anfang an**, nicht nur Politur: CPU, GPU, VRAM, RAM, Streaming, KI, Physik, Animation, Audio und Simulation werden gemeinsam budgetiert.
 - ❓ Mindest-/Empfohlen-/Ultra-Hardware, native Auflösungen, Bildraten, Raytracing-Funktionssatz, Path-Tracing-Verfügbarkeit, 8K-Verhalten, PS5-Pro- und Series-S-Profile, Hochskalierungs- und Frame-Generation-Matrix.
+- 📋 **Path Tracing** ist ein optionaler High-End-, Foto- oder Kinopfad und nicht die normale Spielbasis. Für preiswertere Hardware kann 4K über TSR, DLSS, FSR oder XeSS erreicht werden. Zielgarantien (etwa native 4K mit maximalem Raytracing auf der Basis-PS5) gibt es nur, wenn die reale Profilierung sie trägt; Qualität darf dafür nicht zerstört werden (`PROJECT_DECISIONS` §25, MASTER-MIGRATION-17).
 
 ### 14.2 Audio
 
@@ -340,10 +346,13 @@ Die **engine-unabhängige Datengrundlage für das Aussehen** im Core: Datenmodel
 
 ## 15. Modding
 
+📋 **Ausdrücklich unterstützt:** Modding ist gewollt und soll **kein Reverse Engineering** verlangen (`PROJECT_DECISIONS.md`, Abschnitt „Modding“; Nachweis in `Planning/Nachweis/entscheidungsabgleich-project-decisions.md`, MASTER-MIGRATION-17).
+
 📋 **Architektur v1 (Block 5, bestätigt am 11. September 2026):**
 
 - **Anbieterunabhängig:** Der Mod-Kern darf nicht von einem Steam Workshop oder einem einzelnen Anbieter abhängen. Online-Hosting ist optional und nur eine Quelle für Entdeckung, Download und Updates, nicht die technische Wahrheit für installierte Mods; die lokale Modmenge bleibt ohne Online-Anbieter nutzbar.- **Standard-Ort:** `<GameRoot>/mods/`. Ein Mod-Manager durchsucht und registriert portable **`.spnmod`**-Pakete und/oder entpackte Verzeichnisse. Zusätzliche Bibliotheken auf anderen Laufwerken sind eine optionale Zusatzfunktion, die Standardinstallation hängt von keinem Launcher ab.
 - **Aktivierung:** Installiert ≠ aktiviert. Aktivierung pro Profil und **pro Spielstand**; Deaktivieren löscht weder Paket noch Zustand.
+- 🧭 **API-Familien (Projektzusammenfassung §15):** Registry, Asset-Registry, Gameplay-Tag-Erweiterungen sowie Schnittstellen für Interaktion, Animation, Position, Übergang, Kamera, Audio und Präsentation. Ein Mod-Manifest nennt ID, Version, benötigte Spielversion, Abhängigkeiten, Autor, Lizenz und Plattform-/Netzwerkkompatibilität. Eingeschränkte Skriptmods; native Mods nur in Einzelspieler, Koop oder bewusst modifizierten Umgebungen (MASTER-MIGRATION-18). 💡 Pflicht laut Entwurf `SPN_Prompt_Pack/04_Modding_Ecosystem`: Beispielmods, Dokumentation, öffentlich lesbare Header, Packaging-Werkzeuge und klare Fehlermeldungen.
 - **Additiv:** Mods erweitern standardmäßig über APIs, Register und Hooks; Überschreiben nur mit ausdrücklichen Ebenen- und Ladereihenfolge-Regeln. Vorläufige Ebenen: Daten/Inhalt, Unreal/Blueprint, native C++-Mods (vertrauter nativer Code; öffentliche Schnittstellen mit geringstem Privileg). Lua nur, wenn es eine echte Lücke schließt.
 - **Manifest:** ID, Version, benötigte Spielversion, Abhängigkeiten, Autor, Lizenz, Plattform-/Netzwerkkompatibilität; Herkunftsklassen (Basisspiel, offizielles DLC, Entwickler-Mod, Community-Mod); Entwickler-Mods erhalten keine Sonderrechte. Sicherheitskern nicht moddbar (Altersberechtigung, Zustimmung, Blockregeln, Serverautorität, Kontoberechtigungen, Spamschutz, Onlinesicherheit). Die Feldliste ist 💡 Vorschlag; der Master-Nachweis fehlt (W-08).
 - **Modi:** Einzelspieler und Koop-Kampagne erlauben Mods; der offizielle Online-Modus **nicht**. Ein offizieller Mod-Browser mit komfortabler Installation und Abhängigkeitsauflösung ist gewünscht, mit automatischem Scan, Kompatibilitätstest und, wo möglich, Prüfung und Signatur für native Mods. Eine Sicherheitsprüfung kann beliebigen nativen Code nicht mathematisch garantieren.
@@ -417,3 +426,14 @@ Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Maste
 
 ### Phasenvertrag (Ergänzung zu §6.2)
 - Phase 0 ist ein Platzhalter-Ziel innerhalb von 2–4 Wochen nach Entwicklungsstart (Master: `CLAUDE.md` §4; `01_CURRENT_CANONICAL_STATE/ADDENDA_2026/2026-10-15/01_CANON_ADDENDUM.md:19`).
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Kosmetik ohne Spielkraft (Entscheidung 1):** Der Charakter-Editor ist ausdrücklich umfangreich: Gesichtsmodellierung, Körperproportionen, Größe, Muskel- und Fettverteilung, Haare, Augen, Hautdetails, Narben, Tattoos, Piercings, Stimme, Körperbehaarung und Details. Anatomische Kosmetik darf **keine** Spielkraft liefern. Körperliche Leistung folgt aus dem Körperzustand, Training und Verletzung, nicht aus Aussehen oder Geschlecht. Wo das Körper- und Nacktheitssystem anatomische Anpassung nutzt, gilt sie nur im Adult-Paket (siehe [Adult](Adult-System.md)).
+
+
+## Ergänzung aus PROJECT_DECISIONS (Rendering und Stealth, 🧭 Richtung)
+
+- **Konsolen-Anzeigeoptionen:** mehr Optionen als bei typischen Konsolenreleases, soweit sicher und zertifizierbar: HDR und Kalibrierung, Bewegungsunschärfe, Filmkorn, chromatische Aberration, Kameraeffekte, Sichtfeld wo Plattform und Spiel es erlauben, Persistenz von Gore. **Keine** rohen PC-Konsolenvariablen auf Konsole; Optionen bleiben innerhalb validierter Leistungsprofile.
+- **Türen als Geräuschquelle:** Türen erzeugen je nach Bedienung und Zustand unterschiedliche Geräusche. Alte, knarrende Türen bleiben auch bei vorsichtigem Öffnen hörbar.
+- **Verdeckte Bewegung:** langsame und leise Bewegung über kleine Analogausschläge des Sticks, nicht über eine zusätzliche Pflicht-Taste für „Ultra-Sneak“.

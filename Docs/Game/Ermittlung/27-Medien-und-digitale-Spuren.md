@@ -285,3 +285,8 @@ Die interaktive Begleit-Karte zeigt nur, was der Spieler in seinem Spielstand ha
 - **Handyortung** und Spuren des Spielers (Q-E77).
 - **App-Liste** und Offline-Verfügbarkeit (`M-OD`).
 - **Datenmenge**: Beiträge und Aufnahmen dürfen den Weltzustand nicht sprengen ([Modul 19 §4](19-Weltzustand-und-Persistenz.md#4-entwurf-was-nicht-hineingehört)).
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **NPC-Aufnahmen (Entscheidung 46):** NPCs können außergewöhnliches Verhalten fotografieren, filmen, live streamen oder posten. Das beeinflusst Polizeibeweise, soziale Medien und die Geheimhaltung des Übernatürlichen.
+- 📋 **Keine universelle Telefonzugriff der Behörden (Entscheidung 46):** Digitale Beweise sind in ernsthaften Ermittlungen unter plausiblen rechtlichen und technischen Bedingungen verfügbar. Behörden haben keinen magischen Zugriff auf jedes Telefon.

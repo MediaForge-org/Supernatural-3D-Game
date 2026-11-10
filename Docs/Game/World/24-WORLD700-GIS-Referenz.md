@@ -332,3 +332,9 @@ Die Renderregionen sind Produktionsausschnitte, **keine** neuen Verwaltungs- ode
 5. Für die Stufen 2 bis 4 gilt maßstabsabhängige Sichtbarkeit in künftigen Zoom-Kacheln.
 
 Der Manifest-Kopf nennt die Fläche als „720–750 km² (Designziel)“. Diese Angabe bezieht sich auf die WORLD_700-Linie und ist keine Festlegung der Hauptwelt.
+
+## 12. Ergänzungen aus den Methodenpaketen (MASTER-MIGRATION-19)
+
+- 🧭 **Web-Kartenprojektion:** Die lokale Hülle wird in ein reserviertes, synthetisches Web-Mercator-Rechteck abgebildet. Die Abbildung bleibt ausdrücklich fiktiv und von realen Geodaten-Ebenen getrennt (Quelle: `Iteration 8`, `WEB_MAP_PROJECTION_STRATEGY.md`, Textpaket in `_SOURCE_ARCHIVE`).
+- 🧭 **Renderquelle für tiefe Stufen:** Für sehr hohe Auflösungen (Zielmaßstab etwa 0,25 m pro Pixel) genügen die 16K- bis 24K-Regionalbilder nicht. Die tiefsten Kacheln müssen direkt aus DEM und kanonischen Vektordaten gerendert werden (Quelle: `Phase A`, `phase_a_methodology.md`).
+- Beide Punkte betreffen die Produktionskette und ändern keine gesperrte Makrogeografie.

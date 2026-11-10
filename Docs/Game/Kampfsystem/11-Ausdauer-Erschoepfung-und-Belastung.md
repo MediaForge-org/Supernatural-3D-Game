@@ -129,3 +129,7 @@ Gefahr endet  -> Adrenalin fällt  -> Schmerz tritt stärker hervor -> Zittern, 
 | `CQ-42` | Ausdaueranzeige und Ressourcenmodell: sichtbarer Balken, verdeckte Zustände, abgeleitete Rückmeldung | `COMBAT-DEC-AU-013` | ja |
 | `CQ-43` | Formeln, Schwellen und Erholung von Ausdauer, Kraft, Kardio, Müdigkeit | `COMBAT-DEC-AU-012` | ja |
 | `CQ-44` | Traglast und Ausrüstungsgewicht: Einfluss auf Bewegung, Geräusch, Ausdauer | `COMBAT-DEC-AU-014` | ja |
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Rauchen als längere Handlung (Entscheidung 50):** Anzünden, Halten, Rauchen über Zeit, optional Gehen, Sitzen oder Reden, Kürzen, Ausdrücken oder Wegwerfen. Rauchen ist **kein** Auffüller für Combat Focus. Es kann langfristig mit Ausdauer, Erholung und Abhängigkeit verknüpft werden, wenn die Lebensstil-Simulation das trägt.

@@ -45,6 +45,7 @@ Quellen: Chat 30 (01.–02.09.), `G7-LCS`, `G7-PA`, `G7-CLOSE`, `G7-V3`.
 | R05A-Pilot | 02.09. | Metropolis-Region als 24K-Test, visueller Stilpass B.2 | 30#209E |
 | Iteration 8.x | 02.09. | Südwest-Revision (Damm, historisches Zentrum, Steinbruch), Hydrologie, Gebirgs-DEM, Straßen-/Bahn-/Hillclimb-/Gondelabschluss | 30#124E; G7-CLOSE |
 | Abschluss | 03.09. | Entwickler: 700 km² ‚abgeschlossen bis auf Ergänzungen‘ | 23#1019E |
+| Archivierung | 03.09. | R05A-Pilote B1–B3 (24K) archiviert; der Entwickler beendet vorerst weitere visuelle Detailiteration (Vorstufe, MASTER-MIGRATION-17) | `02_EMBEDDED/00_START_HERE/CURRENT_SUPERSESSION_2026-09-03.md` |
 
 **Gesicherte Zahlen der Phase A.2** (vom Entwickler als autoritativ bestätigt, 30#194E): 11 Regionen, 0 m² Unbedecktes, 0 m² außerhalb, Weltumhüllung 733,83542784 km², R04 = 20K / 0,493179 m/px, R05A = 24K / 0,447597 m/px, R05B = 24K / 0,448000 m/px, R09 = 24K / 0,499577 m/px, Produktionsredundanz ≈ 13,1679 %.
 
