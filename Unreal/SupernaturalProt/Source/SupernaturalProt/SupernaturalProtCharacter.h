@@ -15,6 +15,8 @@ class UInputMappingContext;
 class USpnInteractionComponent;
 class USpnMovementDiagnostics;
 class USpnCharacterMovementComponent;
+class USpnCharacterVisualComponent;
+class USpnWardrobeComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -44,6 +46,14 @@ class ASupernaturalProtCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	USpnMovementDiagnostics* MovementDiagnostics;
 
+	/** Exchangeable body presentation (0013 S2/S3); without an active preset it leaves the blueprint's mesh untouched */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpnCharacterVisualComponent* Visual;
+
+	/** Modular wearables / hidden body zones / optional detail geometry on the shown body (0018); nothing worn by default */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
+	USpnWardrobeComponent* Wardrobe;
+
 	/** Runtime fallback used while InteractAction is not set: an Enhanced Input action and context mapping DefaultInteractKey */
 	UPROPERTY(Transient)
 	UInputAction* RuntimeInteractAction;
@@ -70,6 +80,16 @@ class ASupernaturalProtCharacter : public ACharacter
 
 	UPROPERTY(Transient)
 	UInputMappingContext* RuntimeGaitMappingContext;
+
+	/** Gamepad-only runtime actions (developer decision 2026-11-14): Force = hold Square, L3 = sprint toggle (tap) / gait change (hold) */
+	UPROPERTY(Transient)
+	UInputAction* RuntimeForcePadAction;
+
+	UPROPERTY(Transient)
+	UInputAction* RuntimeSprintPadAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimePadMappingContext;
 
 	/** The boom's arm length as authored (read on the first tick) and the current cap that CameraArmRecoverySpeed grows back */
 	float ConfiguredArmLength = 0.f;
@@ -108,23 +128,38 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultInteractGamepadKey = EKeys::Gamepad_FaceButton_Left;
 
-	/** Keys for the Force verb (break a locked door open): F, and DualSense Triangle (Gamepad_FaceButton_Top). Mapped at runtime. */
+	/** Keyboard key for the Force verb (break a locked door open), held. Mapped at runtime. */
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultForceKey = EKeys::F;
 
+	/**
+	 * Gamepad key for Force, HELD for ForcePadHoldSeconds (developer decision 2026-11-14: Triangle stays free for a later heavy attack). The
+	 * DualSense Square is also Interact: a tap uses, a hold at a breakable locked door starts breaking it. Mapped at runtime.
+	 */
 	UPROPERTY(EditAnywhere, Category="Input")
-	FKey DefaultForceGamepadKey = EKeys::Gamepad_FaceButton_Top;
+	FKey DefaultForceGamepadKey = EKeys::Gamepad_FaceButton_Left;
+
+	/** How long the gamepad Force key must be held before breaking starts, seconds (placeholder). */
+	UPROPERTY(EditAnywhere, Category="Input", meta = (ClampMin = "0.1", ClampMax = "2"))
+	float ForcePadHoldSeconds = 0.4f;
 
 	/** Key held to sprint (placeholder binding, mapped at runtime) */
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultSprintKey = EKeys::LeftShift;
 
 	/**
-	 * Gamepad key held to sprint (placeholder binding, mapped at runtime; L3 is the left thumbstick press for Xbox-compatible pads and
-	 * the DualSense). The combat documentation has no sprint binding for pads yet (Kampfsystem 06); set this to "Invalid" to map none.
+	 * Gamepad key for sprint AND gait (developer decision 2026-11-14: L3 = sprint / gait change). A tap toggles the sprint (it ends at the next
+	 * tap or when the stick is released for SprintToggleReleaseSeconds); holding it for GaitHoldSeconds changes the base gait instead.
+	 * "Invalid" maps nothing. Placeholder timing.
 	 */
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultSprintGamepadKey = EKeys::Gamepad_LeftThumbstick;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta = (ClampMin = "0.1", ClampMax = "2"))
+	float GaitHoldSeconds = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category="Input", meta = (ClampMin = "0", ClampMax = "2"))
+	float SprintToggleReleaseSeconds = 0.3f;
 
 	/** While the camera is closer than this to its pivot (squeezed by a wall behind the character), the character mesh is hidden
 	 *  in the owner's view so the camera does not look into the body. 0 disables it. Placeholder value, cm. */
@@ -235,9 +270,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoInteract();
 
-	/** Force verb (F / DualSense Triangle): break a locked, breakable door open. Separate from Interact on purpose. */
+	/** Force verb (F held / DualSense Square held): break a locked, breakable door open. Separate from Interact on purpose. */
 	virtual void DoForce();
+	virtual void DoForceEnd();
 	UInputAction* ResolveForceAction();
+	/** Gamepad Force (Square held past ForcePadHoldSeconds): only starts when the target in focus offers Force, so holding Square elsewhere does nothing. */
+	void DoForcePad();
+
+	/** L3 pressed / released (gamepad sprint toggle and gait change) */
+	void DoSprintPadPressed();
+	void DoSprintPadReleased();
+	void ResolvePadActions();
 
 	/** Requests the Sprint gait; it applies while the input points forward (predicted through the movement component) */
 	UFUNCTION(BlueprintCallable, Category="Input")
@@ -250,6 +293,38 @@ public:
 	/** Cycles the base gait Walk -> Jog -> Run */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleGait();
+
+	/**
+	 * A short automatic step to Target (world, only X/Y are used), e.g. out of the swing of a door this character just opened.
+	 * The step is ordinary movement input at walking pace: collision, step height and animation apply, nothing is teleported, walls and
+	 * pawns stop it. The character keeps facing its current direction (it steps back) and ignores move input meanwhile. The step ends at
+	 * the target, after MaxSeconds, or when it makes no progress. Returns false when a step is already running.
+	 */
+	bool StartStepAside(const FVector& Target, float MaxSeconds = 1.2f);
+	FORCEINLINE bool IsSteppingAside() const { return bSteppingAside; }
+	/** Where the last automatic step went (tests, diagnostics). */
+	FORCEINLINE const FVector& GetStepAsideTarget() const { return StepTarget; }
+	/** Number of automatic steps started (tests, diagnostics). */
+	FORCEINLINE int32 GetStepAsideCount() const { return StepAsideCount; }
+
+private:
+	void TickStepAside(float DeltaSeconds);
+	bool bSteppingAside = false;
+	bool bStepRestoreOrient = true;
+	FVector StepTarget = FVector::ZeroVector;
+	float StepSeconds = 0.f;
+	float StepMaxSeconds = 0.f;
+	float StepStallSeconds = 0.f;   // time in the current progress window (0.3 s)
+	float StepLastDistance = 0.f;   // distance to the target at the start of that window
+	int32 StepAsideCount = 0;
+
+	// L3: pressed time, whether the hold already changed the gait, the sprint toggle and how long the stick has been idle
+	bool bPadSprintDown = false;
+	bool bPadHoldUsed = false;
+	bool bPadSprintToggled = false;
+	double PadSprintDownTime = 0.0;
+	float PadSprintIdleSeconds = 0.f;
+	void TickPadSprint(float DeltaSeconds);
 
 public:
 
@@ -269,6 +344,19 @@ public:
 	/** Returns the runtime sprint action; null before input setup **/
 	FORCEINLINE UInputAction* GetBoundSprintAction() const { return RuntimeSprintAction; }
 
+	/** Gamepad sprint toggle (L3 tap) is on. Tests and the HUD. */
+	FORCEINLINE bool IsPadSprintToggled() const { return bPadSprintToggled; }
+	FORCEINLINE float GetForcePadHoldSeconds() const { return ForcePadHoldSeconds; }
+	FORCEINLINE float GetGaitHoldSeconds() const { return GaitHoldSeconds; }
+
+
+	/** The body presentation component (0013) **/
+	FORCEINLINE USpnCharacterVisualComponent* GetVisual() const { return Visual; }
+	FORCEINLINE USpnWardrobeComponent* GetWardrobe() const { return Wardrobe; }
+
+	/** Rest position of the camera boom relative to the capsule (the stair smoothing offsets from it). Set by the body presentation. **/
+	FVector GetCameraBase() const;
+	void SetCameraBase(const FVector& RelativeLocation);
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

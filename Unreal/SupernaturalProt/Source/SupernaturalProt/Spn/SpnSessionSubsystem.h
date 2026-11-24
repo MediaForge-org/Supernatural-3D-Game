@@ -86,7 +86,9 @@ private:
 	bool ApplyPose(UWorld* World, const FSpnPlayerPose& Pose);
 	void TryApplyPendingPose();
 	bool EnsureCatalog();
-	void EnsureMap();
+	/** Installs the map definition for GameplayWorld (or, without one, for the level a new game opens): the generated SpnWorld region for
+	    Lvl_SpnWorld, otherwise the temporary test definition (an installed synthetic demo region is kept). */
+	void EnsureMap(UWorld* GameplayWorld = nullptr);
 	void ResetForNewGame();
 	void SpawnScenario(UWorld* World);
 

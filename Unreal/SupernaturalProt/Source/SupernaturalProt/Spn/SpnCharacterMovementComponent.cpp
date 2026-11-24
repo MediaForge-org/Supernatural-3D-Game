@@ -97,13 +97,19 @@ float USpnCharacterMovementComponent::GetSecondsSinceLanding() const
 
 ESpnMovementState USpnCharacterMovementComponent::GetMovementState() const
 {
-	// Anything that is not falling counts as ground contact (walking, nav walking; swimming and flying do not exist yet).
-	return SpnMovement::ClassifyMotion(Settings, Velocity.Size2D(), Velocity.Z, !IsFalling(), GetSecondsSinceLanding());
+	// Anything that is not falling counts as ground contact (walking, nav walking; swimming and flying do not exist yet). A ledge assist move is
+	// off the ground (it reports Jumping while it rises).
+	return SpnMovement::ClassifyMotion(Settings, Velocity.Size2D(), Velocity.Z, !IsFalling() && !bLedgeActive, GetSecondsSinceLanding());
 }
 
 void USpnCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode)
 {
 	Super::OnMovementModeChanged(PreviousMovementMode, PreviousCustomMode);
+	if (bLedgeActive && !(MovementMode == MOVE_Custom && CustomMovementMode == CustomModeLedgeAssist))
+	{
+		// something else changed the mode while the move ran (teleport, load, a script): release the move cleanly
+		FinishLedgeAssist(false, TEXT("movement mode changed from outside"));
+	}
 	if (PreviousMovementMode == MOVE_Falling && IsMovingOnGround() && GetWorld() != nullptr)
 	{
 		LastLandedTime = GetWorld()->GetTimeSeconds();

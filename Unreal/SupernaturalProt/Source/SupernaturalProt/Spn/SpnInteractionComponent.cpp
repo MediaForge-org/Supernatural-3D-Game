@@ -17,6 +17,7 @@
 #include "Spn/UI/SpnUiText.h"
 #include "SpnInteractionPick.h"
 #include "Spn/UI/SpnUiNotify.h"
+#include "Spn/World/SpnDecorDoorSubsystem.h"
 #include "SupernaturalProt.h"
 
 USpnInteractionComponent::USpnInteractionComponent()
@@ -27,6 +28,11 @@ USpnInteractionComponent::USpnInteractionComponent()
 void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bForceHeld)
+	{
+		TickForce(DeltaTime);
+	}
 
 	const APawn* Pawn = Cast<APawn>(GetOwner());
 	if (!bShowPrompt || Pawn == nullptr || !Pawn->IsLocallyControlled())
@@ -47,6 +53,10 @@ void USpnInteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	if (!CurrentPrompt.IsEmpty() && !Force.IsEmpty())
 	{
 		CurrentPrompt += FString::Printf(TEXT("     %s – %s"), *ForceKeys, *Force);
+	}
+	if (bForceHeld)
+	{
+		CurrentPrompt = FString::Printf(TEXT("%s %d%%"), *FSpnUiText::Get(TEXT("ui.door.breaking")).ToString(), FMath::Clamp(FMath::RoundToInt(ForceProgress * 100.f), 0, 100));
 	}
 	if (SpnUi::SetPrompt(this, CurrentPrompt))
 	{
@@ -193,6 +203,114 @@ bool USpnInteractionComponent::TryForce()
 	return TryVerb(/*bForce*/ true);
 }
 
+bool USpnInteractionComponent::BeginForce()
+{
+	AActor* Owner = GetOwner();
+	if (Owner == nullptr || !Owner->HasAuthority())
+	{
+		return false;
+	}
+	AbortForce();
+	AActor* Target = FindTarget();
+	ISpnInteractable* Interactable = Cast<ISpnInteractable>(Target);
+	if (Interactable == nullptr)
+	{
+		AnswerDecorDoor(/*bForce*/ true);
+		return false;
+	}
+	const float Duration = Interactable->SpnForceDuration();
+	// Only a Force that is offered right now takes time; a refused one (not breakable, not locked ...) answers at once with its message.
+	if (Duration <= 0.f || Interactable->SpnForcePromptText(Owner).IsEmpty())
+	{
+		return TryVerb(/*bForce*/ true);
+	}
+	ForceTarget = Target;
+	ForceDuration = Duration;
+	ForceElapsed = 0.f;
+	ForceProgress = 0.f;
+	bForceHeld = true;
+	UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: %s starts forcing %s (%.1f s)"), *GetNameSafe(Owner), *GetNameSafe(Target), Duration);
+	return true;
+}
+
+void USpnInteractionComponent::EndForce()
+{
+	if (bForceHeld)
+	{
+		UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: forcing %s cancelled at %.0f%%"), *GetNameSafe(ForceTarget.Get()), ForceProgress * 100.f);
+	}
+	AbortForce();
+}
+
+void USpnInteractionComponent::AbortForce()
+{
+	if (ISpnInteractable* Interactable = Cast<ISpnInteractable>(ForceTarget.Get()))
+	{
+		Interactable->SpnForceStrain(0.f);
+	}
+	bForceHeld = false;
+	ForceTarget.Reset();
+	ForceElapsed = 0.f;
+	ForceProgress = 0.f;
+}
+
+void USpnInteractionComponent::TickForce(float DeltaTime)
+{
+	AActor* Owner = GetOwner();
+	AActor* Target = FindTarget();
+	ISpnInteractable* Interactable = Cast<ISpnInteractable>(Target);
+	// The effort stops when the player looks away, steps out of reach, or the action is no longer possible (someone else opened the door ...).
+	if (Interactable == nullptr || Target != ForceTarget.Get() || Interactable->SpnForcePromptText(Owner).IsEmpty())
+	{
+		UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: forcing %s interrupted at %.0f%%"), *GetNameSafe(ForceTarget.Get()), ForceProgress * 100.f);
+		AbortForce();
+		return;
+	}
+	ForceElapsed += DeltaTime;
+	ForceProgress = FMath::Clamp(ForceElapsed / FMath::Max(ForceDuration, KINDA_SMALL_NUMBER), 0.f, 1.f);
+	Interactable->SpnForceStrain(ForceProgress);
+	if (ForceElapsed >= ForceDuration)
+	{
+		AbortForce(); // ends the effort first (strain off), then commits
+		TryVerb(/*bForce*/ true);
+	}
+}
+
+bool USpnInteractionComponent::HasForceTarget() const
+{
+	const AActor* Target = FindTarget();
+	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(Target);
+	return Interactable != nullptr && !Interactable->SpnForcePromptText(GetOwner()).IsEmpty();
+}
+
+void USpnInteractionComponent::AnswerDecorDoor(bool bForce)
+{
+	const UWorld* World = GetWorld();
+	const USpnDecorDoorSubsystem* Doors = World != nullptr ? World->GetSubsystem<USpnDecorDoorSubsystem>() : nullptr;
+	if (Doors == nullptr || Doors->GetDoorCount() == 0 || GetOwner() == nullptr)
+	{
+		return;
+	}
+	FVector Eye;
+	FRotator View;
+	GetOwner()->GetActorEyesViewPoint(Eye, View);
+	const USpnDecorDoorSubsystem::FDoor* Door = Doors->FindDoorInView(Eye, View.Vector(), InteractRange);
+	if (Door == nullptr)
+	{
+		return;
+	}
+	// one short note per attempt, not repeated while the key is hammered
+	const double Now = World->GetTimeSeconds();
+	const bool bRepeat = Door->Id == LastDecorDoorId && Now - LastDecorDoorTime < 1.5;
+	LastDecorDoorId = Door->Id;
+	LastDecorDoorTime = Now;
+	UE_LOG(LogSupernaturalProt, Log, TEXT("Interaction: %s tried the facade door %s (%s): it does not open"), *GetNameSafe(GetOwner()), *Door->Id, bForce ? TEXT("force") : TEXT("use"));
+	if (!bRepeat)
+	{
+		SpnUi::Notify(this, FSpnUiText::Get(bForce ? TEXT("ui.door.decor.force") : TEXT("ui.door.decor.use")));
+	}
+}
+
 bool USpnInteractionComponent::TryVerb(bool bForce)
 {
 	AActor* Owner = GetOwner();
@@ -208,6 +326,7 @@ bool USpnInteractionComponent::TryVerb(bool bForce)
 	if (Interactable == nullptr)
 	{
 		UE_LOG(LogSupernaturalProt, Verbose, TEXT("Interaction: nothing to use in range"));
+		AnswerDecorDoor(bForce);
 		return false;
 	}
 

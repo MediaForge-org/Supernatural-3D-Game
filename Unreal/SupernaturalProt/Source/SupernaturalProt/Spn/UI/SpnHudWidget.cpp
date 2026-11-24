@@ -124,6 +124,16 @@ void USpnHudWidget::BuildTree()
 	UVerticalBoxSlot* CaptionSlot = MinimapColumn->AddChildToVerticalBox(MinimapCaption);
 	CaptionSlot->SetPadding(FMargin(0.f, 6.f, 0.f, 0.f));
 	CaptionSlot->SetHorizontalAlignment(HAlign_Center);
+	// objective line of the route guide prototype (USpnRouteGuideSubsystem), below the minimap caption
+	ObjectiveText = Text(14, false, FLinearColor(1.f, 0.86f, 0.55f, 1.f));
+	ObjectiveText->SetAutoWrapText(true);
+	ObjectiveText->SetJustification(ETextJustify::Center);
+	ObjectiveText->SetWrapTextAt(230.f);
+	ObjectiveText->SetText(PendingObjective);
+	ObjectiveText->SetVisibility(PendingObjective.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+	UVerticalBoxSlot* ObjectiveSlot = MinimapColumn->AddChildToVerticalBox(ObjectiveText);
+	ObjectiveSlot->SetPadding(FMargin(0.f, 8.f, 0.f, 0.f));
+	ObjectiveSlot->SetHorizontalAlignment(HAlign_Center);
 	UOverlaySlot* MiniSlot = Root->AddChildToOverlay(MinimapColumn);
 	MiniSlot->SetHorizontalAlignment(HAlign_Right);
 	MiniSlot->SetVerticalAlignment(VAlign_Top);
@@ -177,6 +187,21 @@ void USpnHudWidget::PushNotification(const FText& Text, SpnUi::ENote Kind)
 		Notes.RemoveAt(0);
 	}
 	RefreshNotes();
+}
+
+void USpnHudWidget::SetObjective(const FText& InText)
+{
+	PendingObjective = InText;
+	if (ObjectiveText != nullptr)
+	{
+		ObjectiveText->SetText(InText);
+		ObjectiveText->SetVisibility(InText.IsEmpty() ? ESlateVisibility::Collapsed : ESlateVisibility::HitTestInvisible);
+	}
+}
+
+FString USpnHudWidget::GetObjectiveString() const
+{
+	return PendingObjective.ToString();
 }
 
 void USpnHudWidget::SetPrompt(const FString& Text)

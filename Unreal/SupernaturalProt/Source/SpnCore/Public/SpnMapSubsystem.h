@@ -287,6 +287,17 @@ public:
 	 */
 	ESpnMapResult InstallSyntheticRegion(const FSpnWorldFrame& InFrame = FSpnWorldFrame());
 	bool IsSyntheticRegion() const { return bSyntheticRegion; }
+	/**
+	 * Installs a GENERATED placeholder region from a map data file written by the world generator (Tools/spn_world/map_data.py, format in
+	 * its docstring; coordinates in Unreal cm, converted with InFrame): definition, roads, buildings, water, creek, POIs and a NavigationSession.
+	 * Placeholder data of the test world SpnWorld, not geography. Replaces state with an empty one. The map save section is unchanged (it
+	 * stores state only); ids of the earlier test definition are listed hidden in the file so older SpnWorld saves still load.
+	 */
+	ESpnMapResult InstallGeneratedRegion(const FString& FilePath, const FSpnWorldFrame& InFrame = FSpnWorldFrame(), FString* OutDetail = nullptr);
+	bool IsGeneratedRegion() const { return bGeneratedRegion; }
+	const FString& GetGeneratedPath() const { return GeneratedPath; }
+	/** Content/SpnWorld/Data/SpnWorldMap.json */
+	static FString GetSpnWorldMapPath();
 	/** True when road geometry and a NavigationSession exist (routes instead of straight lines). */
 	bool HasRoadNetwork() const;
 	/** Named test position of the synthetic region: westStreet, eastStreet, westOpenField, shopInside, houseInside, noEntranceInside, warehouseInside, islandTarget, hamletTarget. */
@@ -389,6 +400,8 @@ private:
 	FSpnWorldFrame Frame;
 	bool bTestDefinition = false;
 	bool bSyntheticRegion = false;
+	bool bGeneratedRegion = false;
+	FString GeneratedPath;
 	double ClockSkew = 0.0;
 	double NowSeconds() const;
 	ESpnTravelMode TravelMode = ESpnTravelMode::Driving;

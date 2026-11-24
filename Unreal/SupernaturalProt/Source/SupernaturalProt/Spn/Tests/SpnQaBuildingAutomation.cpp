@@ -38,7 +38,7 @@ namespace
 	using FCheckFn = TFunction<TPair<bool, FString>(FRun&)>;
 	using FDoFn = TFunction<void(FRun&)>;
 
-	enum class EOp : uint8 { Section, Wait, Walk, Face, Press, Shot, Check, Do };
+	enum class EOp : uint8 { Section, Wait, Walk, Face, Press, Hold, Shot, Check, Do };
 
 	struct FOp
 	{
@@ -117,6 +117,8 @@ namespace
 		void Walk(float X, float Y, float Tolerance = 30.f) { FOp Op = MakeOp(EOp::Walk); Op.P = FVector2D(X, Y); Op.A = Tolerance; Ops.Add(Op); }
 		void Face(FVector Target) { FOp Op = MakeOp(EOp::Face); Op.Target = Target; Ops.Add(Op); }
 		void Press(const FKey& Key, FVector Target) { FOp Op = MakeOp(EOp::Press); Op.Key = Key; Op.Target = Target; Ops.Add(Op); }
+		// Hold: the key stays down for Seconds (breaking a door takes time, NightBuild05)
+		void Hold(const FKey& Key, FVector Target, float Seconds) { FOp Op = MakeOp(EOp::Hold); Op.Key = Key; Op.Target = Target; Op.A = Seconds; Ops.Add(Op); }
 		void Shot(const TCHAR* Name) { FOp Op = MakeOp(EOp::Shot); Op.Id = Name; Ops.Add(Op); }
 		void Check(const TCHAR* Id, FCheckFn Fn) { FOp Op = MakeOp(EOp::Check); Op.Id = Id; Op.Check = MoveTemp(Fn); Ops.Add(Op); }
 		void Do(FDoFn Fn) { FOp Op = MakeOp(EOp::Do); Op.Do = MoveTemp(Fn); Ops.Add(Op); }
@@ -257,7 +259,7 @@ namespace
 		B.Press(EKeys::E, FVector(250.f, 450.f, FloorZ + 100.f));
 		B.Wait(0.4f);
 		B.Check(TEXT("storage_door_use_is_refused"), [](FRun& R) { const ASpnTestDoor* D = R.Door(TEXT("storage_door")); return Result(!D->IsOpen() && D->IsLocked(), DoorText(*D)); });
-		B.Press(EKeys::F, FVector(250.f, 450.f, FloorZ + 100.f));
+		B.Hold(EKeys::F, FVector(250.f, 450.f, FloorZ + 100.f), 2.2f);
 		B.Wait(1.4f);
 		B.Check(TEXT("storage_door_breaks_with_f"), [](FRun& R) { const ASpnTestDoor* D = R.Door(TEXT("storage_door")); return Result(D->IsBroken() && D->IsOpen() && !D->IsLocked() && Settled(*D), DoorText(*D)); });
 		B.Shot(TEXT("08_storage_door_broken"));
@@ -280,7 +282,7 @@ namespace
 		B.Face(FVector(445.f, 900.f, FloorZ + 100.f));
 		B.Wait(0.5f);
 		B.Check(TEXT("back_door_offers_force"), [](FRun& R) { return Result(R.Interaction->GetCurrentPrompt().Contains(FSpnUiText::Get(TEXT("ui.door.force")).ToString()), FString::Printf(TEXT("prompt '%s'"), *R.Interaction->GetCurrentPrompt())); });
-		B.Press(EKeys::F, FVector(445.f, 900.f, FloorZ + 100.f));
+		B.Hold(EKeys::F, FVector(445.f, 900.f, FloorZ + 100.f), 2.2f);
 		B.Wait(1.6f);
 		B.Check(TEXT("back_door_breaks_with_f"), [](FRun& R) { const ASpnTestDoor* D = R.Door(TEXT("back_door")); return Result(D->IsBroken() && D->IsOpen() && Settled(*D), DoorText(*D)); });
 		B.Shot(TEXT("09_back_door_broken"));
@@ -391,6 +393,13 @@ bool FSpnQaBuildingTest::RunTest(const FString& Parameters)
 				if (R.Frames == 0 && Character.GetVelocity().Size2D() > 15.f && InStep < 3.0) { break; }
 				SpnQa::Key(*PC, Op.Key, R.Frames == 0);
 				if (++R.Frames > 1) { Next(); }
+				break;
+			case EOp::Hold:
+				FaceTarget(Character, Op.Target);
+				if (R.Frames == 0 && Character.GetVelocity().Size2D() > 15.f && InStep < 3.0) { break; }
+				if (R.Frames == 0) { SpnQa::Key(*PC, Op.Key, true); }
+				++R.Frames;
+				if (InStep >= Op.A) { SpnQa::Key(*PC, Op.Key, false); Next(); }
 				break;
 			case EOp::Shot:
 				CleanShot(Op.Id);

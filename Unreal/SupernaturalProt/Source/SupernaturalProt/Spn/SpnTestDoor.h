@@ -10,6 +10,7 @@ class UMaterialInterface;
 class UStaticMeshComponent;
 class UTextRenderComponent;
 class USpnWorldStateSubsystem;
+class APawn;
 
 /**
  * PLACEHOLDER test door (Docs/Proposals/0004): proves Use, WorldFacts persistence and
@@ -47,6 +48,17 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
 	bool bBreakable = false;
 
+	/** How long F must be held to break a locked, breakable door (seconds, placeholder). 0 = at once. */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door", meta = (ClampMin = "0"))
+	float BreakSeconds = 1.6f;
+
+	/** Audible radius in cm of a door being broken / used (placeholder values). */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Noise", meta = (ClampMin = "0"))
+	float DoorBreakNoiseRangeCm = 2000.f;
+
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Noise", meta = (ClampMin = "0"))
+	float DoorUseNoiseRangeCm = 600.f;
+
 	/** Key id ([a-z][a-z0-9_.]*) that unlocks the door with Use while fact placeholder.key.<id>.held is true. Empty = no key opens it. */
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door")
 	FString RequiredKeyId;
@@ -58,6 +70,14 @@ public:
 	/** Swing speed in degrees per second (placeholder motion). */
 	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Motion", meta = (ClampMin = "1"))
 	float SwingSpeed = 180.f;
+
+	/** The character that opened the door and stands in its swing steps back to this many cm beyond the leaf's reach (PLACEHOLDER). */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Motion", meta = (ClampMin = "0"))
+	float StepAsideMargin = 12.f;
+
+	/** Longest automatic step out of the swing in cm; a longer one is not taken and the door stays blocked (PLACEHOLDER). */
+	UPROPERTY(EditAnywhere, Category = "Spn|Test Door|Placeholder Motion", meta = (ClampMin = "0"))
+	float StepAsideMaxLength = 90.f;
 
 	/**
 	 * Optional look (M2A3 V3 level): leaf material, handle and hinge details and the leaf size. The defaults reproduce the original placeholder door
@@ -91,6 +111,8 @@ public:
 
 	virtual FSpnInteractStatus SpnForce(AActor* User) override;
 	virtual FString SpnForcePromptText(const AActor* User) const override;
+	virtual float SpnForceDuration() const override;
+	virtual void SpnForceStrain(float Progress01) override;
 
 	/** Broken open for good (fact `.broken`). A broken door has no working lock but still swings. */
 	bool IsBroken() const;
@@ -114,6 +136,31 @@ public:
 	 */
 	bool IsClosingObstructed() const;
 
+	/**
+	 * True if a pawn is inside the leaf volume anywhere between the two hinge angles (sampled every 4 degrees). The swing waits while this is
+	 * true. IgnoredPawn (optional) is left out of the test: it tells whether the opener is the only pawn in the way. Any-hit queries only,
+	 * no result arrays: this runs every frame of a swing.
+	 */
+	bool IsSweepBlockedByPawn(float FromAngle, float ToAngle, const APawn* IgnoredPawn = nullptr) const;
+
+	/** Distance in cm from the hinge axis to the farthest point of the leaf (constant; the whole swing stays within it). */
+	float GetLeafReach() const;
+
+	/** World position of the hinge axis at the leaf's height. */
+	FVector GetHingeLocation() const;
+
+	/** The pawn that opened the door with its last Use (null when nobody did, e.g. a script). */
+	APawn* GetOpener() const { return Opener.Get(); }
+
+	/** How the last request to let the opener step out of the swing ended: none, stepping, no room. For tests and diagnostics. */
+	enum class EStepAside : uint8 { None, Requested, NoRoom };
+	EStepAside GetStepAsideResult() const { return StepAsideResult; }
+	/** Where the last requested step went (world). */
+	FVector GetLastStepAsideTarget() const { return LastStepAsideTarget; }
+
+	/** True while the opening or closing leaf is held back by a pawn. */
+	bool IsWaitingForPawn() const { return bWaitingForPawn; }
+
 	/** Hinge yaw shown right now, and the yaw it is swinging to. */
 	float GetCurrentAngle() const { return CurrentAngle; }
 	float GetTargetAngle() const { return TargetAngle; }
@@ -131,6 +178,7 @@ private:
 	FSpnInteractDefaults AuthoredDefaults() const;
 	FSpnInteractStatus RunVerb(ESpnInteractionVerb Verb, AActor* User);
 	void ReportOutcome(const FSpnInteractStatus& Status) const;
+	void EmitDoorNoise(ESpnInteractionVerb Verb, const FSpnInteractStatus& Status, const AActor* User) const;
 
 	/** Points the hinge at the world state: swinging there, or jumping there (after a load). */
 	void RefreshFromWorldState(bool bAnimate);
@@ -161,7 +209,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<UTextRenderComponent> Label;
 
+	/** The opener stands in the opening swing: asks it to take a short step out of the swing if there is room (once per swing). */
+	void LetOpenerStepAside(APawn& Pawn);
+
 	float CurrentAngle = 0.f;
 	float TargetAngle = 0.f;
+	float StrainJitter = 0.f;
+	bool bWaitingForPawn = false;
+	bool bStepAsideAsked = false;
+	EStepAside StepAsideResult = EStepAside::None;
+	FVector LastStepAsideTarget = FVector::ZeroVector;
+	TWeakObjectPtr<APawn> Opener;
 	FDelegateHandle WorldStateReplacedHandle;
 };

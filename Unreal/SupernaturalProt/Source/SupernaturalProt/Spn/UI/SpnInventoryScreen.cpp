@@ -1447,7 +1447,7 @@ bool USpnInventoryScreen::HandleKey(const FKey& Key, bool bShift, bool bRepeat)
 	}
 
 	bool bHandled = true;
-	if (Key == EKeys::I || Key == EKeys::Gamepad_Special_Right || Key == EKeys::Gamepad_Special_Left)
+	if (Key == EKeys::I || Key == EKeys::Gamepad_Special_Right)   // Options closes; the touchpad belongs to the map (2026-11-14)
 	{
 		OnCloseRequested.ExecuteIfBound();
 	}

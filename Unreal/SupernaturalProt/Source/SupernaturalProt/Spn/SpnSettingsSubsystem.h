@@ -42,6 +42,9 @@ struct FSpnPlayerSettings
 	UPROPERTY() bool bCameraSmoothing = true;
 	/** "auto", "en" or "de" (FSpnUiText). */
 	UPROPERTY() FString Language = TEXT("auto");
+	/** SpnWorld render resolution with TSR: false = standard (90 %, PROVISIONAL, decision 2026-11-13), true = quality mode (100 %).
+	 *  Applied by the level's ASpnWorldLighting; levels without it (the QA test maps) ignore it. */
+	UPROPERTY() bool bWorldQualityMode = false;
 };
 
 UCLASS()

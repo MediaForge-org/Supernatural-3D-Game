@@ -3,7 +3,26 @@
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SpnMovement.h"
+#include "SpnLedgeAssist.h"
 #include "SpnCharacterMovementComponent.generated.h"
+
+/** What the last jump press decided about the ledge assist (diagnostics and QA; nothing reads it for gameplay). */
+struct FSpnLedgeRecord
+{
+	ESpnLedgeMove Move = ESpnLedgeMove::None;
+	FString Reason;
+	bool bFaceInReach = false;   ///< an obstacle face was found within the probe distance
+	float Height = 0.f;
+	float Depth = 0.f;
+	float FaceDistance = 0.f;
+	float ApproachSpeed = 0.f;
+	float PlannedSeconds = 0.f;
+	float ActualSeconds = 0.f;
+	float ExitSpeed = 0.f;
+	bool bRunning = false;
+	bool bCompleted = false;     ///< ended as planned (false: blocked on the way and released into a fall, or still running)
+	FString EndReason;
+};
 
 /**
  * On-foot movement with four gaits and a configurable jump height (M2-A, Docs/Proposals/0011).
@@ -28,6 +47,35 @@ public:
 	/** Tunable movement numbers; applied at InitializeComponent and by ApplySettings(). */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spn|Movement")
 	FSpnMovementSettings Settings;
+
+	/**
+	 * Ledge assist (developer decision 2026-11-14): the jump press right in front of an obstacle of 25-180 cm starts a StepOn / Vault / Mantle /
+	 * ClimbUp instead of a jump, when the edge can be gripped and the way is free. Never automatic: only the jump input starts it.
+	 * PLACEHOLDER values, provisional bands. No animation yet: the capsule follows the core path (spn/core/LedgeAssist.h).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spn|Movement")
+	FSpnLedgeAssistSettings LedgeAssist;
+
+	/** Custom movement mode number used while a ledge assist move runs (MOVE_Custom). */
+	static constexpr uint8 CustomModeLedgeAssist = 1;
+
+	/** True while a ledge assist move owns the movement. */
+	UFUNCTION(BlueprintPure, Category = "Spn|Movement")
+	bool IsLedgeAssisting() const { return bLedgeActive; }
+
+	/** The running ledge assist move, None when none runs (for animation later). */
+	UFUNCTION(BlueprintPure, Category = "Spn|Movement")
+	ESpnLedgeMove GetActiveLedgeMove() const { return bLedgeActive ? ActiveLedge.Move : ESpnLedgeMove::None; }
+
+	/** Decision and outcome of the last jump press on the ground (diagnostics / QA). */
+	const FSpnLedgeRecord& GetLastLedgeRecord() const { return LastLedge; }
+	int32 GetLedgeMoveCount() const { return LedgeMoveCount; }
+
+	/** Measures the obstacle in front and plans, without starting anything (diagnostics / QA). OutProbe receives the measurement. */
+	FSpnLedgePlan EvaluateLedgeAssist(FSpnLedgeProbe* OutProbe = nullptr) const;
+
+	virtual bool DoJump(bool bReplayingMoves, float DeltaTime) override;
+	virtual void PhysCustom(float deltaTime, int32 Iterations) override;
 
 	//~ Requests (call on the owning client; the server gets them through the move flags, or call on the authority for AI)
 
@@ -157,6 +205,22 @@ protected:
 
 	/** Input direction in the character's frame (X forward, Y right, unit length or zero), from the current Acceleration. */
 	FVector2D GetLocalInput() const;
+
+	//~ Ledge assist state (not replicated; co-op prediction of the move is not done yet, see Docs/Development/Ledge-Assist-2026-11-14.md)
+	bool bLedgeActive = false;
+	FSpnLedgePlan ActiveLedge;
+	FVector LedgeStart = FVector::ZeroVector;
+	FVector LedgeDir = FVector::ForwardVector;
+	float LedgeElapsed = 0.f;
+	TArray<TWeakObjectPtr<UPrimitiveComponent>> LedgeIgnored;
+	FSpnLedgeRecord LastLedge;
+	int32 LedgeMoveCount = 0;
+
+	/** Measurement + plan + collision validation of the planned path. OutDir: travel direction; OutLedge: the obstacle's components. */
+	FSpnLedgePlan PlanLedge(FSpnLedgeProbe& OutProbe, FVector& OutDir, TArray<UPrimitiveComponent*>& OutLedge) const;
+	void StartLedgeAssist(const FSpnLedgePlan& Plan, const FVector& Dir, const TArray<UPrimitiveComponent*>& Ledge);
+	void FinishLedgeAssist(bool bCompleted, const TCHAR* Why);
+	void StopIgnoringLedge();
 };
 
 /** One recorded move with the gait request it was made with, for replay after a server correction. */

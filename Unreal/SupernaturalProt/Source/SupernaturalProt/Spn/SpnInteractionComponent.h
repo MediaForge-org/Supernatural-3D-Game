@@ -69,6 +69,28 @@ public:
 	/** The interactable the player means when looking from Start along Direction: in reach, in view, line of sight clear (no wall), then the most central and closest (spn::core::PickInteractionCandidate). */
 	AActor* FindTargetAlong(const FVector& Start, const FVector& Direction) const;
 
+	/** Force key pressed: starts the timed action on the target (hold for SpnForceDuration seconds), or forces at once when the target needs no time. Authority only. */
+	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
+	bool BeginForce();
+
+	/** Force key released: cancels a running timed action. */
+	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
+	void EndForce();
+
+	UFUNCTION(BlueprintPure, Category = "Spn|Interaction")
+	bool IsForcing() const { return bForceHeld; }
+
+	/** The target in front offers the Force verb right now (a locked, breakable door). The gamepad hold (Square) only forces then. */
+	bool HasForceTarget() const;
+
+	/** Id of the building-facade door the last unanswered Interact / Force pointed at, and when (world seconds); empty if none yet. QA. */
+	const FString& GetLastDecorDoorId() const { return LastDecorDoorId; }
+	double GetLastDecorDoorTime() const { return LastDecorDoorTime; }
+
+	/** 0..1 progress of the running timed action. */
+	UFUNCTION(BlueprintPure, Category = "Spn|Interaction")
+	float GetForceProgress() const { return ForceProgress; }
+
 	/** Uses the target in front of the owner. Authority only. Returns true if a target was used. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Interaction")
 	bool TryInteract();
@@ -79,6 +101,18 @@ public:
 
 private:
 	bool TryVerb(bool bForce);
+	/** Nothing usable in front: if the player tried a door that is only part of a building facade, say so (no permanent marker on those doors). */
+	void AnswerDecorDoor(bool bForce);
+	FString LastDecorDoorId;
+	double LastDecorDoorTime = -1.0;
+	void TickForce(float DeltaTime);
+	void AbortForce();
+
+	TWeakObjectPtr<AActor> ForceTarget;
+	float ForceElapsed = 0.f;
+	float ForceDuration = 0.f;
+	float ForceProgress = 0.f;
+	bool bForceHeld = false;
 	void ShowPromptWidget(const FString& Text);
 	void HidePromptWidget();
 

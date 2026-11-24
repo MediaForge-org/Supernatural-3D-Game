@@ -2,6 +2,7 @@
 #include "SpnCoreModule.h"
 #include "SpnInventoryInternal.h"
 #include "SpnMapInternal.h"
+#include "SpnNpcMemoryInternal.h"
 #include "SpnWorldStateInternal.h"
 
 #include "Engine/GameInstance.h"
@@ -67,6 +68,8 @@ namespace
 			return ESpnSaveResult::UnsupportedVersion;
 		case SaveErrorCode::CatalogMismatch:
 			return ESpnSaveResult::CatalogMismatch;
+		case SaveErrorCode::DefinitionMismatch:
+			return ESpnSaveResult::OtherWorld;
 		case SaveErrorCode::SectionRejected:
 		case SaveErrorCode::ConsistencyMismatch:
 		case SaveErrorCode::MissingContext:
@@ -125,13 +128,37 @@ namespace
 		return true;
 	}
 
+	/**
+	 * ParseGameSave, but a world.npcs section that its own parser rejects does NOT cost the whole save: the NPC memory is a separate, optional
+	 * domain, so the rest loads and the memory starts empty (reported in bNpcDiscarded + Detail, logged). Any other rejection is unchanged.
+	 */
+	spn::core::Result<spn::core::LoadedGame, spn::core::SaveError> ParseWithNpcFallback(const spn::core::SaveSlot& Slot, const spn::core::GameLoadContext& Context, bool& bNpcDiscarded, FString& NpcDetail)
+	{
+		bNpcDiscarded = false;
+		auto Game = spn::core::ParseGameSave(Slot, Context);
+		if (!Game && Game.Error().code == spn::core::SaveErrorCode::SectionRejected
+			&& Game.Error().detail.rfind(std::string(spn::core::kSectionNpcMemory), 0) == 0)
+		{
+			spn::core::SaveSlot Copy = Slot;
+			Copy.Remove(spn::core::kSectionNpcMemory);
+			auto Retry = spn::core::ParseGameSave(Copy, Context);
+			if (Retry)
+			{
+				bNpcDiscarded = true;
+				NpcDetail = FString(UTF8_TO_TCHAR(Game.Error().detail.c_str()));
+				return Retry;
+			}
+		}
+		return Game;
+	}
+
 	FString NewerKnownSection(const spn::core::SaveSlot& Slot)
 	{
 		for (const auto& Entry : Slot.Sections())
 		{
 			const std::string_view Id = Entry.first;
 			const bool bKnown = Id == spn::core::kSectionFacts || Id == spn::core::kSectionObjects || Id == spn::core::kSectionMap || Id == spn::core::kSectionInventory
-				|| Id == spn::core::kSectionMeta || Id == spn::core::kSectionCatalog || Id == SectionPose;
+				|| Id == spn::core::kSectionMeta || Id == spn::core::kSectionCatalog || Id == SectionPose || Id == spn::core::kSectionNpcMemory;
 			if (bKnown && Entry.second.version > 1)
 			{
 				return ToFString(Entry.first);
@@ -229,6 +256,7 @@ const TCHAR* LexToString(ESpnSaveResult Result)
 	case ESpnSaveResult::InternalError: return TEXT("InternalError");
 	case ESpnSaveResult::Busy: return TEXT("Busy");
 	case ESpnSaveResult::CatalogMismatch: return TEXT("CatalogMismatch");
+	case ESpnSaveResult::OtherWorld: return TEXT("OtherWorld");
 	}
 	return TEXT("Unknown");
 }
@@ -237,6 +265,7 @@ void USpnSaveSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Collection.InitializeDependency<USpnWorldStateSubsystem>();
 	Collection.InitializeDependency<USpnInventorySubsystem>();
+	Collection.InitializeDependency<USpnNpcMemorySubsystem>();
 	Super::Initialize(Collection);
 	SaveDirectory = DefaultSaveDirectory();
 	UE_LOG(LogSpnCore, Log, TEXT("Save [%s]: subsystem initialized, save root '%s'"), *GetNameSafe(GetGameInstance()), *SaveDirectory);
@@ -427,12 +456,14 @@ USpnSaveSubsystem::FSpnSlotInfo USpnSaveSubsystem::InspectSlot(const FString& Sl
 			{
 				Context.mapDefinition = Map->State->Definition;
 			}
-			auto Game = spn::core::ParseGameSave(*Candidate.Slot, Context);
+			bool bNpcDiscarded = false;
+			FString NpcDiscardDetail;
+			auto Game = ParseWithNpcFallback(*Candidate.Slot, Context, bNpcDiscarded, NpcDiscardDetail);
 			if (!Game)
 			{
 				LastProblem = Describe(Game.Error());
 				LastResult = ToResult(Game.Error().code);
-				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || IsNewerThanThisBuild(Game.Error().code))
+				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || Game.Error().code == spn::core::SaveErrorCode::DefinitionMismatch || IsNewerThanThisBuild(Game.Error().code))
 				{
 					Info.Result = LastResult;
 					Info.Detail = LastProblem;
@@ -562,8 +593,18 @@ FSpnSaveStatus USpnSaveSubsystem::DoSave(const FString& SlotId)
 		}
 
 		// Capture: synchronous, read-only on the live state. The previous slot supplies unknown optional sections to carry over.
+		USpnNpcMemorySubsystem* NpcMemory = GetGameInstance()->GetSubsystem<USpnNpcMemorySubsystem>();
+		if (NpcMemory != nullptr)
+		{
+			NpcMemory->SyncClockForSave();
+		}
 		spn::core::GameSaveSources Sources;
 		Sources.facts = &WorldState->State->Facts;
+		// world.npcs: written once there is anything to remember, or when the slot already has it (never silently dropped)
+		if (NpcMemory != nullptr && NpcMemory->State.IsValid() && (NpcMemory->State->Store.NpcCount() > 0 || (Existing.Slot && Existing.Slot->Find(spn::core::kSectionNpcMemory) != nullptr)))
+		{
+			Sources.npcMemory = &NpcMemory->State->Store;
+		}
 		if (bInventoryActive)
 		{
 			Sources.inventory = &*Inventory->State->Inventory;
@@ -731,10 +772,12 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			{
 				Context.mapDefinition = Map->State->Definition;
 			}
-			auto Game = spn::core::ParseGameSave(*Candidate.Slot, Context);
+			bool bNpcDiscarded = false;
+			FString NpcDiscardDetail;
+			auto Game = ParseWithNpcFallback(*Candidate.Slot, Context, bNpcDiscarded, NpcDiscardDetail);
 			if (!Game)
 			{
-				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || IsNewerThanThisBuild(Game.Error().code))
+				if (Game.Error().code == spn::core::SaveErrorCode::CatalogMismatch || Game.Error().code == spn::core::SaveErrorCode::DefinitionMismatch || IsNewerThanThisBuild(Game.Error().code))
 				{
 					// not damage: falling back to an older generation would hide the problem (and a reset would lose the inventory)
 					UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: NOT loaded: slot '%s' %s; state unchanged"), *Owner, *SlotId, *Describe(Game.Error()));
@@ -817,6 +860,29 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 				}
 				Map->ResetStateInternal();
 			}
+			USpnNpcMemorySubsystem* NpcMemory = GetGameInstance()->GetSubsystem<USpnNpcMemorySubsystem>();
+			if (NpcMemory != nullptr && NpcMemory->State.IsValid())
+			{
+				if (Game.Value().npcMemory)
+				{
+					NpcMemory->State->Store = std::move(*Game.Value().npcMemory);
+					Status.bNpcMemoryRestored = true;
+				}
+				else
+				{
+					// a slot without (readable) world.npcs describes a world nobody remembers anything in: empty store, reported, never silent
+					Status.bNpcMemoryResetToEmpty = NpcMemory->State->Store.NpcCount() > 0;
+					Status.bNpcMemoryDiscarded = bNpcDiscarded;
+					Status.NpcMemoryDetail = NpcDiscardDetail;
+					NpcMemory->State->Store = spn::core::NpcMemoryStore();
+					if (bNpcDiscarded)
+					{
+						UE_LOG(LogSpnCore, Warning, TEXT("Save [%s]: slot '%s': the NPC memory was damaged (%s) and was discarded; everything else was loaded"), *Owner, *SlotId, *NpcDiscardDetail);
+					}
+				}
+				NpcMemory->AdoptLoadedClock();
+				Status.NpcCount = static_cast<int32>(NpcMemory->State->Store.NpcCount());
+			}
 			Status.FactsRevision = WorldState->GetRevision();
 			UE_LOG(LogSpnCore, Log, TEXT("Save [%s]: loaded slot '%s' from the %s (facts revision %llu -> %llu%s)%s"), *Owner, *SlotId,
 				bPrevious ? TEXT("PREVIOUS generation") : TEXT("main file"), static_cast<unsigned long long>(PreviousRevision),
@@ -828,6 +894,10 @@ FSpnSaveStatus USpnSaveSubsystem::DoLoad(const FString& SlotId, const FSpnLoadOp
 			if (bInventoryActive)
 			{
 				Inventory->BroadcastReplaced();
+			}
+			if (NpcMemory != nullptr)
+			{
+				NpcMemory->BroadcastReplaced();
 			}
 			if (bMapActive)
 			{

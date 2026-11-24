@@ -23,6 +23,9 @@ class SUPERNATURALPROT_API USpnHudWidget : public UUserWidget
 public:
 	void PushNotification(const FText& Text, SpnUi::ENote Kind);
 	void SetPrompt(const FString& Text);
+	/** Objective line under the minimap (route guide prototype); empty hides it. */
+	void SetObjective(const FText& Text);
+	FString GetObjectiveString() const;
 	/** Hints name controller buttons when the last input came from a gamepad. */
 	void SetUsingGamepad(bool bValue);
 	/** Hides the HUD while a full-screen screen (map, pause) is up. */
@@ -81,4 +84,6 @@ private:
 	UPROPERTY(Transient) TObjectPtr<UVerticalBox> NoteBox;
 	UPROPERTY(Transient) TArray<TObjectPtr<UTextBlock>> NoteLines;
 	UPROPERTY(Transient) TObjectPtr<UTextBlock> HintText;
+	UPROPERTY(Transient) TObjectPtr<UTextBlock> ObjectiveText;
+	FText PendingObjective;
 };

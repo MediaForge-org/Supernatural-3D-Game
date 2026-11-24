@@ -498,8 +498,9 @@ bool FSpnQaJumpTest::RunTest(const FString& Parameters)
 				else if (Case.Gap < 50.f)
 				{
 					// The reported problem: the jump right before a ledge about as high as the apex goes almost straight up (M2A2 report section 5).
-					// KNOWN ISSUE, still open after M2A4.1 (measured: the speed collapses to 4-10 %, the capsule mounts the ledge 0.45 s after take-off):
-					// the fix is a ledge assist / mantle, planned for the vault milestone, not a tolerance.
+					// Open until 2026-11-14 (measured then: the speed collapsed to 4-10 %, the capsule mounted the ledge 0.45 s after take-off). Since
+					// 2026-11-14 the ledge assist (USpnCharacterMovementComponent, developer decision) turns this press into a StepOn / Mantle; the
+					// criteria below are unchanged.
 					if (Run->Crossed < 0.0 || Run->Crossed > 1.0) { Status = SpnQa::EStatus::Fail; Why = TEXT("near-vertical climb: crossing the ledge takes longer than 1 s (known issue, M2A2 report section 5, open: needs a ledge assist / mantle)"); }
 					else if (Retained < 50.f) { Status = SpnQa::EStatus::Fail; Why = TEXT("horizontal speed collapses below 50% at the ledge face (known issue, M2A2 report section 5, open: needs a ledge assist / mantle)"); }
 				}

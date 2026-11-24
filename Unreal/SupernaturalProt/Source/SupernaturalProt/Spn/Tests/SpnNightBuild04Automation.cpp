@@ -11,6 +11,7 @@
 #include "Spn/SpnBuildingObjects.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/SpnTestDoor.h"
+#include "Spn/UI/SpnUiText.h"
 #include "SpnInteractionPick.h"
 #include "SpnWorldStateSubsystem.h"
 #include "SupernaturalProtCharacter.h"
@@ -25,6 +26,16 @@ namespace
 {
 	constexpr EAutomationTestFlags Flags =
 		EAutomationTestFlags::EditorContext | EAutomationTestFlags::ClientContext | EAutomationTestFlags::EngineFilter;
+
+	/** The prompt checks below look for German words: pin the UI language for the test and restore the user's choice afterwards
+	 *  (otherwise the result depends on the engine culture / saved setting: a -game run on a de-DE Windows falls back to the 'en' culture
+	 *  and showed "Door (locked)"). Create it after the test world, whose settings subsystems re-apply the saved language on start. */
+	struct FGermanUi
+	{
+		FString Previous = FSpnUiText::GetLanguageOverride();
+		FGermanUi() { FSpnUiText::SetLanguageOverride(TEXT("de")); }
+		~FGermanUi() { FSpnUiText::SetLanguageOverride(Previous); }
+	};
 
 	struct FNb04World
 	{
@@ -133,12 +144,13 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnNb04LockedKeyTest, "SpnGame.NightBuild04.Do
 bool FSpnNb04LockedKeyTest::RunTest(const FString& Parameters)
 {
 	FNb04World Game;
+	FGermanUi German;   // after the world: its subsystems apply the saved language when they start
 	ASpnTestDoor* Door = Game.Door(TEXT("cellar"), FVector::ZeroVector, /*bLocked*/ true, /*bBreak*/ false, TEXT("key.cellar"));
 	ASpnTestKey* Key = Game.Key(TEXT("key.cellar"), FVector(0.f, -300.f, 50.f));
 
 	TestTrue(TEXT("locked at start"), Door->IsLocked());
 	TestFalse(TEXT("no key yet"), Door->HasRequiredKey());
-	TestTrue(TEXT("prompt says locked"), Door->SpnPromptText(nullptr).Contains(TEXT("verschlossen")));
+	TestTrue(*FString::Printf(TEXT("prompt says locked (got '%s')"), *Door->SpnPromptText(nullptr)), Door->SpnPromptText(nullptr).Contains(TEXT("verschlossen")));
 	TestTrue(TEXT("no force prompt on an unbreakable door"), Door->SpnForcePromptText(nullptr).IsEmpty());
 
 	const FSpnInteractStatus Refused = Door->SpnUse(nullptr);
@@ -193,9 +205,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnNb04BlockedTest, "SpnGame.NightBuild04.Door
 bool FSpnNb04BlockedTest::RunTest(const FString& Parameters)
 {
 	FNb04World Game;
+	FGermanUi German;   // after the world: its subsystems apply the saved language when they start
 	ASpnTestDoor* Door = Game.Door(TEXT("jammed"), FVector::ZeroVector, /*bLocked*/ true, /*bBreak*/ true, TEXT(""), /*bBlocked*/ true);
 	TestTrue(TEXT("blocked"), Door->IsBlocked());
-	TestTrue(TEXT("prompt says blocked"), Door->SpnPromptText(nullptr).Contains(TEXT("blockiert")));
+	TestTrue(*FString::Printf(TEXT("prompt says blocked (got '%s')"), *Door->SpnPromptText(nullptr)), Door->SpnPromptText(nullptr).Contains(TEXT("blockiert")));
 	TestTrue(TEXT("no force prompt"), Door->SpnForcePromptText(nullptr).IsEmpty());
 	TestEqual(TEXT("Use refused"), Door->SpnUse(nullptr).Result, ESpnInteractResult::Refused);
 	TestEqual(TEXT("Force refused"), Door->SpnForce(nullptr).Result, ESpnInteractResult::Refused);
@@ -381,18 +394,23 @@ bool FSpnNb04InputKeysTest::RunTest(const FString& Parameters)
 	TestEqual(TEXT("Interact keyboard key is E"), Keys.Interact, EKeys::E);
 	TestEqual(TEXT("Interact on the DualSense is Square"), Keys.InteractPad, EKeys::Gamepad_FaceButton_Left);
 	TestEqual(TEXT("Force keyboard key is F"), Keys.Force, EKeys::F);
-	TestEqual(TEXT("Force on the DualSense is Triangle"), Keys.ForcePad, EKeys::Gamepad_FaceButton_Top);
+	// Developer decision 2026-11-14 (supersedes "Force = Triangle" of NightBuild04): Triangle stays free for a later heavy attack; on the pad
+	// Force is Square HELD (a tap is Interact), so the two verbs differ by the hold, not by the key.
+	TestEqual(TEXT("Force on the DualSense is Square, held"), Keys.ForcePad, EKeys::Gamepad_FaceButton_Left);
+	TestTrue(TEXT("the pad Force needs a hold"), GetDefault<ASupernaturalProtCharacter>()->GetForcePadHoldSeconds() >= 0.2f);
+	TestFalse(TEXT("Triangle is not used by Interact, Force or Sprint"), Keys.InteractPad == EKeys::Gamepad_FaceButton_Top || Keys.ForcePad == EKeys::Gamepad_FaceButton_Top || Keys.SprintPad == EKeys::Gamepad_FaceButton_Top);
+	TestEqual(TEXT("Sprint / gait on the DualSense is L3"), Keys.SprintPad, EKeys::Gamepad_LeftThumbstick);
 
-	// Interact and Force never share a key with each other, the sprint, or the jump button (Cross = Gamepad_FaceButton_Bottom).
+	// Interact and Force never share a key with each other (keyboard), the sprint, or the jump button (Cross = Gamepad_FaceButton_Bottom).
 	const TArray<FKey> Interact = {Keys.Interact, Keys.InteractPad};
-	const TArray<FKey> Force = {Keys.Force, Keys.ForcePad};
+	const TArray<FKey> Force = {Keys.Force};
 	const TArray<FKey> Others = {Keys.Sprint, Keys.SprintPad, EKeys::SpaceBar, EKeys::Gamepad_FaceButton_Bottom, EKeys::LeftMouseButton};
 	for (const FKey& Key : Interact)
 	{
 		TestFalse(*FString::Printf(TEXT("Interact key %s is not a Force key"), *Key.ToString()), Force.Contains(Key));
 		TestFalse(*FString::Printf(TEXT("Interact key %s is not used elsewhere"), *Key.ToString()), Others.Contains(Key));
 	}
-	for (const FKey& Key : Force)
+	for (const FKey& Key : {Keys.Force, Keys.ForcePad})
 	{
 		TestFalse(*FString::Printf(TEXT("Force key %s is not used elsewhere"), *Key.ToString()), Others.Contains(Key));
 	}

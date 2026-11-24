@@ -1,6 +1,12 @@
 #include "SpnMapSubsystem.h"
 #include "SpnMapInternal.h"
 #include "SpnCoreModule.h"
+#include "SpnWorldFrame.h"
+#include "Dom/JsonObject.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 
 #include <cmath>
 #include <string>
@@ -236,6 +242,7 @@ ESpnMapResult USpnMapSubsystem::InstallTestDefinition(const FSpnWorldFrame& InFr
 	State->LastPlayer.reset();
 	State->LastUpdate = NavigationUpdate{};
 	bSyntheticRegion = false;
+	bGeneratedRegion = false;
 	bTestDefinition = true;
 	ResetStateInternal();
 	BroadcastReplaced();
@@ -265,9 +272,217 @@ ESpnMapResult USpnMapSubsystem::InstallSyntheticRegion(const FSpnWorldFrame& InF
 	State->Nav = std::make_unique<NavigationSession>(State->Geometry, Config);
 	bTestDefinition = true; // still temporary test data
 	bSyntheticRegion = true;
+	bGeneratedRegion = false;
 	ResetStateInternal();
 	BroadcastReplaced();
 	UE_LOG(LogSpnCore, Log, TEXT("Map: installed the SYNTHETIC test region (road routing active; not geography, not WorldForge data)"));
+	return ESpnMapResult::Ok;
+}
+
+FString USpnMapSubsystem::GetSpnWorldMapPath()
+{
+	return FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir() / TEXT("SpnWorld/Data/SpnWorldMap.json"));
+}
+
+ESpnMapResult USpnMapSubsystem::InstallGeneratedRegion(const FString& FilePath, const FSpnWorldFrame& InFrame, FString* OutDetail)
+{
+	auto Fail = [&](ESpnMapResult Result, const FString& Why)
+	{
+		UE_LOG(LogSpnCore, Error, TEXT("Map: generated region '%s' NOT installed: %s"), *FilePath, *Why);
+		if (OutDetail != nullptr) { *OutDetail = Why; }
+		return Result;
+	};
+	if (!State.IsValid())
+	{
+		return ESpnMapResult::InternalError;
+	}
+	FString Text;
+	if (!FFileHelper::LoadFileToString(Text, *FilePath))
+	{
+		return Fail(ESpnMapResult::NoDefinition, TEXT("file not readable"));
+	}
+	TSharedPtr<FJsonObject> Root;
+	if (!FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(Text), Root) || !Root.IsValid())
+	{
+		return Fail(ESpnMapResult::Rejected, TEXT("not valid JSON"));
+	}
+	if (Root->GetIntegerField(TEXT("version")) != 1)
+	{
+		return Fail(ESpnMapResult::Rejected, TEXT("unsupported version"));
+	}
+	bool bPointsOk = true;
+	auto ToMap = [&](double XCm, double YCm)
+	{
+		FVector World;
+		if (!SpnWorldFrame::ToWorld(InFrame, FVector(XCm, YCm, 0.0), World))
+		{
+			bPointsOk = false;
+		}
+		return Vec2{World.X, World.Y};
+	};
+	auto Point = [&](const TSharedPtr<FJsonValue>& V)
+	{
+		const TArray<TSharedPtr<FJsonValue>>& A = V->AsArray();
+		return A.Num() >= 2 ? ToMap(A[0]->AsNumber(), A[1]->AsNumber()) : (bPointsOk = false, Vec2{});
+	};
+	auto Points = [&](const TSharedPtr<FJsonObject>& O, const TCHAR* Field)
+	{
+		std::vector<Vec2> Out;
+		const TArray<TSharedPtr<FJsonValue>>* A = nullptr;
+		if (O->TryGetArrayField(Field, A))
+		{
+			for (const TSharedPtr<FJsonValue>& V : *A) { Out.push_back(Point(V)); }
+		}
+		return Out;
+	};
+	auto Id = [&](const FString& Text) -> std::optional<ContentId> { return ContentId::Parse(ToUtf8(Text)); };
+	auto Rect = [&](Vec2 A, Vec2 B) { return MapRect{{FMath::Min(A.x, B.x), FMath::Min(A.y, B.y)}, {FMath::Max(A.x, B.x), FMath::Max(A.y, B.y)}}; };
+
+	const TArray<TSharedPtr<FJsonValue>>& BoundsCm = Root->GetArrayField(TEXT("bounds_cm"));
+	if (BoundsCm.Num() != 4)
+	{
+		return Fail(ESpnMapResult::Rejected, TEXT("bounds_cm needs four numbers"));
+	}
+	MapLayerDef Layer;
+	Layer.id = MapLayerId(1);
+	Layer.key = Cid("spnworld:layer.surface");
+	Layer.kind = MapLayerKind::Surface;
+	Layer.bounds = Rect(ToMap(BoundsCm[0]->AsNumber(), BoundsCm[1]->AsNumber()), ToMap(BoundsCm[2]->AsNumber(), BoundsCm[3]->AsNumber()));
+
+	std::vector<MapRegionDef> Regions;
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("regions")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		const auto RegionId = Id(O->GetStringField(TEXT("id")));
+		if (!RegionId) { return Fail(ESpnMapResult::Rejected, TEXT("bad region id")); }
+		MapRegionDef Region;
+		Region.id = *RegionId;
+		Region.layer = Layer.id;
+		Region.bounds = Rect(Point(MakeShared<FJsonValueArray>(O->GetArrayField(TEXT("min")))),
+			Point(MakeShared<FJsonValueArray>(O->GetArrayField(TEXT("max")))));
+		Region.category = Cid("spnworld:region.generic");
+		Region.label = SanitizeLabel(O->GetStringField(TEXT("label")), "Region");
+		Regions.push_back(std::move(Region));
+	}
+	std::vector<PointOfInterestDef> Pois;
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("pois")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		const auto PoiId = Id(O->GetStringField(TEXT("id")));
+		const auto Category = Id(O->GetStringField(TEXT("category")));
+		if (!PoiId || !Category) { return Fail(ESpnMapResult::Rejected, TEXT("bad poi id or category")); }
+		PointOfInterestDef Poi;
+		Poi.id = *PoiId;
+		Poi.category = *Category;
+		const FString Visibility = O->GetStringField(TEXT("visibility"));
+		Poi.visibility = Visibility == TEXT("always") ? MapVisibility::Always : Visibility == TEXT("hidden") ? MapVisibility::Hidden : MapVisibility::WhenKnown;
+		// hidden legacy ids sit at the layer centre: they only keep older saves loadable
+		Poi.position = MapPosition{Layer.id, Poi.visibility == MapVisibility::Hidden
+			? Vec2{(Layer.bounds.min.x + Layer.bounds.max.x) * 0.5, (Layer.bounds.min.y + Layer.bounds.max.y) * 0.5}
+			: ToMap(O->GetNumberField(TEXT("x")), O->GetNumberField(TEXT("y")))};
+		Poi.label = SanitizeLabel(O->GetStringField(TEXT("label")), "Place");
+		Pois.push_back(std::move(Poi));
+	}
+	auto Definition = WorldMapDefinition::Create({Layer}, std::move(Regions), std::move(Pois), 64.0);
+	if (!Definition)
+	{
+		return Fail(ESpnMapResult::Rejected, FString(TEXT("definition: ")) + ToF(std::string(ToString(Definition.Error().code))) + TEXT(" ") + ToF(Definition.Error().detail));
+	}
+	auto SharedDefinition = std::make_shared<const WorldMapDefinition>(std::move(Definition.Value()));
+
+	MapGeometryData Data;
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("nodes")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		Data.nodes.push_back(RoadNodeDef{RoadNodeId(static_cast<uint64>(O->GetIntegerField(TEXT("id")))),
+			MapPosition{Layer.id, ToMap(O->GetNumberField(TEXT("x")), O->GetNumberField(TEXT("y")))}});
+	}
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("segments")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		RoadSegmentDef S;
+		S.id = RoadSegmentId(static_cast<uint64>(O->GetIntegerField(TEXT("id"))));
+		S.from = RoadNodeId(static_cast<uint64>(O->GetIntegerField(TEXT("from"))));
+		S.to = RoadNodeId(static_cast<uint64>(O->GetIntegerField(TEXT("to"))));
+		const FString Class = O->GetStringField(TEXT("class"));
+		S.roadClass = Class == TEXT("secondary") ? RoadClass::Secondary : Class == TEXT("field_track") ? RoadClass::FieldTrack
+			: Class == TEXT("forest_track") ? RoadClass::ForestTrack : Class == TEXT("service") ? RoadClass::Service : RoadClass::Residential;
+		S.shape = Points(O, TEXT("shape"));
+		S.name = SanitizeLabel(O->GetStringField(TEXT("name")), "Road");
+		Data.segments.push_back(std::move(S));
+	}
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("buildings")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		BuildingDef B;
+		B.id = BuildingId(static_cast<uint64>(O->GetIntegerField(TEXT("id"))));
+		B.layer = Layer.id;
+		const auto Category = Id(O->GetStringField(TEXT("category")));
+		B.category = Category ? *Category : Cid("spnworld:building.other");
+		B.footprint = Points(O, TEXT("footprint"));
+		const TArray<TSharedPtr<FJsonValue>>* Entrance = nullptr;
+		if (O->TryGetArrayField(TEXT("entrance"), Entrance))
+		{
+			B.entrances.push_back(Point(MakeShared<FJsonValueArray>(*Entrance)));
+		}
+		B.label = ToUtf8(O->GetStringField(TEXT("label")).Left(100));
+		Data.buildings.push_back(std::move(B));
+	}
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("areas")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		AreaDef A;
+		A.id = MapAreaId(static_cast<uint64>(O->GetIntegerField(TEXT("id"))));
+		A.layer = Layer.id;
+		const FString Kind = O->GetStringField(TEXT("kind"));
+		A.kind = Kind == TEXT("water") ? AreaKind::Water : Kind == TEXT("forest") ? AreaKind::Forest : AreaKind::Green;
+		A.outline = Points(O, TEXT("outline"));
+		A.label = SanitizeLabel(O->GetStringField(TEXT("label")), "Area");
+		Data.areas.push_back(std::move(A));
+	}
+	for (const TSharedPtr<FJsonValue>& V : Root->GetArrayField(TEXT("lines")))
+	{
+		const TSharedPtr<FJsonObject> O = V->AsObject();
+		LineFeatureDef L;
+		L.id = MapLineId(static_cast<uint64>(O->GetIntegerField(TEXT("id"))));
+		L.layer = Layer.id;
+		L.kind = O->GetStringField(TEXT("kind")) == TEXT("river") ? LineKind::River : LineKind::Stream;
+		L.points = Points(O, TEXT("points"));
+		L.label = SanitizeLabel(O->GetStringField(TEXT("label")), "Stream");
+		Data.lines.push_back(std::move(L));
+	}
+	if (!bPointsOk)
+	{
+		return Fail(ESpnMapResult::Rejected, TEXT("a coordinate is not representable in the world frame"));
+	}
+	auto Geometry = MapGeometry::Create(*SharedDefinition, std::move(Data));
+	if (!Geometry)
+	{
+		return Fail(ESpnMapResult::Rejected, FString::Printf(TEXT("geometry: %s (id %llu) %s"), *ToF(std::string(ToString(Geometry.Error().code))),
+			static_cast<unsigned long long>(Geometry.Error().id), *ToF(Geometry.Error().detail)));
+	}
+
+	Frame = InFrame;
+	State->Definition = SharedDefinition;
+	State->SurfaceLayer = Layer.id;
+	State->Map.emplace(State->Definition);
+	State->Geometry = std::make_shared<const MapGeometry>(std::move(Geometry).Value());
+	State->Region.reset();
+	State->Closed.clear();
+	State->LastPlayer.reset();
+	State->LastUpdate = NavigationUpdate{};
+	State->Mode = ToCoreMode(TravelMode);
+	NavigationConfig Config;
+	Config.options.mode = State->Mode;
+	State->Nav = std::make_unique<NavigationSession>(State->Geometry, Config);
+	bTestDefinition = true;   // still placeholder test data
+	bSyntheticRegion = false;
+	bGeneratedRegion = true;
+	GeneratedPath = FilePath;
+	ResetStateInternal();
+	BroadcastReplaced();
+	UE_LOG(LogSpnCore, Log, TEXT("Map: installed the GENERATED placeholder region '%s' (%d POIs, %d roads, %d buildings; not geography)"), *FPaths::GetCleanFilename(FilePath),
+		static_cast<int32>(State->Definition->Pois().size()), Root->GetArrayField(TEXT("segments")).Num(), Root->GetArrayField(TEXT("buildings")).Num());
 	return ESpnMapResult::Ok;
 }
 
@@ -632,6 +847,7 @@ void USpnMapSubsystem::Clear()
 		State->LastUpdate = NavigationUpdate{};
 	}
 	bSyntheticRegion = false;
+	bGeneratedRegion = false;
 	bTestDefinition = false;
 	ResetStateInternal();
 	BroadcastReplaced();

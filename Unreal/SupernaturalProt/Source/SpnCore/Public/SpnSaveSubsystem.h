@@ -60,6 +60,8 @@ enum class ESpnSaveResult : uint8
 	Busy,
 	/** The inventory was saved against item definitions that differ from the current catalog; refused unless the caller accepts it explicitly. */
 	CatalogMismatch,
+	/** Intact data made in ANOTHER game world: its map section names entries the current map does not have (Core DefinitionMismatch). Not damage. */
+	OtherWorld,
 };
 
 SPNCORE_API const TCHAR* LexToString(ESpnSaveResult Result);
@@ -131,6 +133,15 @@ struct FSpnSaveStatus
 	bool bMapRestored = false;
 	/** Load: the slot had no world.map (a save from before the map existed) and the markers were cleared. Reported, never silent. */
 	bool bMapResetToEmpty = false;
+	/** Load: world.npcs was in the slot and replaced the NPC memory (persistent memories; the volatile reaction states of the NPCs are NOT part of a save). */
+	bool bNpcMemoryRestored = false;
+	/** Load: the slot had no world.npcs (a save from before NightBuild05, or no NPC had registered yet) and the NPC memory was emptied. Reported, never silent. */
+	bool bNpcMemoryResetToEmpty = false;
+	/** Load: world.npcs was in the slot but damaged; it was discarded (memory empty) and everything else was loaded. NpcMemoryDetail says why. */
+	bool bNpcMemoryDiscarded = false;
+	FString NpcMemoryDetail;
+	/** Load: NPCs known to the memory afterwards. */
+	int32 NpcCount = 0;
 	/** Load: the slot has a player.pose section (false = legacy slot: the player stays where the level put them). */
 	bool bPoseInSlot = false;
 	/** Load: the validated pose, handed to OnPoseLoaded after the swap. Save: the pose that was written (unset if no provider or it declined). */

@@ -47,6 +47,12 @@ public:
 	/** Prompt of the Force verb, empty = not offered right now (so no second prompt is shown). */
 	virtual FString SpnForcePromptText(const AActor* User) const { return FString(); }
 
+	/** Seconds the Force key must be HELD before SpnForce is called (NightBuild05: a door takes time to break). 0 = at once. */
+	virtual float SpnForceDuration() const { return 0.f; }
+
+	/** Called every frame while Force is being held with 0..1 progress, and once with 0 when it stops (animation of the effort only; changes no state). */
+	virtual void SpnForceStrain(float Progress01) {}
+
 	/** Tie-break when two usable objects score alike in the player's view (higher wins), e.g. a lever over the door it opens. */
 	virtual int32 SpnInteractionPriority() const { return 0; }
 };

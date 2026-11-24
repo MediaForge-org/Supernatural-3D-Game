@@ -246,7 +246,8 @@ bool USpnInventoryUiSubsystem::ProcessKeyDown(const FKeyEvent& Event)
 	{
 		return false;
 	}
-	if (!Event.IsRepeat() && (Key == Settings->OpenKey || Key == Settings->OpenGamepadKey))
+	// the keyboard key toggles; the gamepad key opens only (D-pad up navigates inside the screen; Circle or Options close it)
+	if (!Event.IsRepeat() && Key == Settings->OpenKey)
 	{
 		CloseInventory();
 		return true;

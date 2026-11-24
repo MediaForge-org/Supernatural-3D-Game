@@ -17,4 +17,6 @@ namespace SpnUi
 {
 	/** Hands the interaction prompt to the HUD. False if there is no HUD (menu level, flow disabled): the caller then draws its own prompt. */
 	SUPERNATURALPROT_API bool SetPrompt(const UObject* WorldContext, const FString& Text);
+	/** Objective line under the minimap (technical prototype of the SpnWorld route guide); empty text hides it. False without a HUD. */
+	SUPERNATURALPROT_API bool SetObjective(const UObject* WorldContext, const FText& Text);
 }

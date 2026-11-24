@@ -466,7 +466,7 @@ bool USpnMapScreen::HandleKey(const FKey& Key, bool bRepeat, bool bShift)
 		SetUsingGamepad(bPad);
 	}
 	auto Keyboard = [&]() { View->bShowCrosshair = true; };
-	if (Key == EKeys::Escape || Key == EKeys::M || Key == EKeys::Gamepad_FaceButton_Top || Key == EKeys::Gamepad_FaceButton_Right)
+	if (Key == EKeys::Escape || Key == EKeys::M || Key == EKeys::Gamepad_Special_Left || Key == EKeys::Gamepad_FaceButton_Right)   // touchpad toggles, Circle closes
 	{
 		if (!bRepeat) { OnCloseRequested.ExecuteIfBound(); }
 		return true;

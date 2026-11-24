@@ -25,6 +25,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "UObject/UObjectGlobals.h"
+#include "GameFramework/PlayerStart.h"
+#include "Spn/World/SpnWorldWarmup.h"
 
 namespace
 {
@@ -159,10 +161,28 @@ bool USpnSessionSubsystem::EnsureCatalog()
 	return true;
 }
 
-void USpnSessionSubsystem::EnsureMap()
+void USpnSessionSubsystem::EnsureMap(UWorld* GameplayWorld)
 {
 	USpnMapSubsystem* Map = GetGameInstance()->GetSubsystem<USpnMapSubsystem>();
-	if (Map != nullptr && !Map->HasDefinition())
+	if (Map == nullptr)
+	{
+		return;
+	}
+	const FString Level = GameplayWorld != nullptr ? LevelPath(GameplayWorld) : GameplayMapName();
+	if (Level.Contains(TEXT("Lvl_SpnWorld")))
+	{
+		// SpnWorld: the map data the world generator wrote with the level (placeholder, not geography)
+		if (!Map->IsGeneratedRegion() && Map->InstallGeneratedRegion(USpnMapSubsystem::GetSpnWorldMapPath()) == ESpnMapResult::Ok)
+		{
+			return;
+		}
+		if (Map->IsGeneratedRegion())
+		{
+			return;
+		}
+		UE_LOG(LogSupernaturalProt, Warning, TEXT("Session: SpnWorld map data missing or invalid, the test definition is used"));
+	}
+	if (!Map->HasDefinition() || Map->IsGeneratedRegion())
 	{
 		Map->InstallTestDefinition();
 	}
@@ -182,7 +202,11 @@ void USpnSessionSubsystem::ResetForNewGame()
 	if (USpnMapSubsystem* Map = Instance->GetSubsystem<USpnMapSubsystem>())
 	{
 		// a fresh state on the same definition: no markers, nothing discovered
-		if (Map->IsSyntheticRegion())
+		if (Map->IsGeneratedRegion())
+		{
+			Map->InstallGeneratedRegion(Map->GetGeneratedPath(), Map->GetFrame());
+		}
+		else if (Map->IsSyntheticRegion())
 		{
 			Map->InstallSyntheticRegion(Map->GetFrame());
 		}
@@ -202,7 +226,7 @@ void USpnSessionSubsystem::SetupGameplayWorld(UWorld* World)
 		return;
 	}
 	const bool bCatalog = EnsureCatalog();
-	EnsureMap();
+	EnsureMap(World);
 	const ESpnSessionPending Action = Pending;
 	const FString Slot = PendingSlot;
 	const bool bAccept = bPendingAccept;
@@ -228,6 +252,30 @@ void USpnSessionSubsystem::SetupGameplayWorld(UWorld* World)
 	}
 	SpawnScenario(World);
 
+	if (Action == ESpnSessionPending::NewGame)
+	{
+		// first view of a new game: the player (or, before the game mode spawned it, the player start)
+		FVector View = FVector::ZeroVector;
+		bool bHasView = false;
+		if (const ASupernaturalProtCharacter* Character = FindPlayerCharacter(World))
+		{
+			View = Character->GetActorLocation();
+			bHasView = true;
+		}
+		else
+		{
+			for (TActorIterator<APlayerStart> It(World); It; ++It)
+			{
+				View = It->GetActorLocation();
+				bHasView = true;
+				break;
+			}
+		}
+		if (bHasView)
+		{
+			SpnWorldWarmup::WarmUpView(World, View, 3.f, 1.2f);
+		}
+	}
 	if (Action == ESpnSessionPending::Load)
 	{
 		USpnSaveSubsystem* Save = Instance->GetSubsystem<USpnSaveSubsystem>();
@@ -495,6 +543,8 @@ bool USpnSessionSubsystem::ApplyPose(UWorld* World, const FSpnPlayerPose& Pose)
 		Character->UnCrouch();
 	}
 	UE_LOG(LogSupernaturalProt, Display, TEXT("Session: pose applied: %s at (%.0f, %.0f, %.0f) cm yaw %.1f"), *Pose.Level, Location.X, Location.Y, Location.Z, Yaw);
+	// the view jumped: build the grass and stream the textures around the new place before it is shown (texture/vegetation pop-in fix)
+	SpnWorldWarmup::WarmUpView(World, Character->GetActorLocation(), 3.f, 1.2f);
 	SpnUi::Notify(World, FSpnUiText::Get(TEXT("ui.pose.restored")), SpnUi::ENote::Good);
 	return true;
 }

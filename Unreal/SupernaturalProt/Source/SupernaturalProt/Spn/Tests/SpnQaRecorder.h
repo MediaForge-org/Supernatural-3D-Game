@@ -91,9 +91,11 @@ namespace SpnQa
 	}
 
 	/** Shows the current section (and the last results) over the game view; the key keeps one line per slot. */
+	// -SpnQaNoOverlay: no section/result lines over the view (the showcase recording draws its own captions)
 	inline void Overlay(int32 Slot, const FString& Text, const FColor& Color, float Seconds = 6.f)
 	{
-		if (GEngine != nullptr)
+		static const bool bNoOverlay = FParse::Param(FCommandLine::Get(), TEXT("SpnQaNoOverlay"));
+		if (GEngine != nullptr && !bNoOverlay)
 		{
 			GEngine->AddOnScreenDebugMessage(Slot, Seconds, Color, Text, /*bNewerOnTop*/ false, FVector2D(2.2f, 2.2f));
 		}

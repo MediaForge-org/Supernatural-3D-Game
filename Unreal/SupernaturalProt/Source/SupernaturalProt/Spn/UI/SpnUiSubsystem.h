@@ -122,6 +122,10 @@ private:
 
 	// helpers
 	APlayerController* GetController() const;
+public:
+	/** True while the player's interaction target offers Force (then the gamepad Triangle forces instead of opening the map). */
+	bool IsForceTargetInFocus() const;
+private:
 	UGameInstance* GetInstance() const;
 	USpnSessionSubsystem* GetSession() const;
 	void HandleWorldReady(bool bMenu);

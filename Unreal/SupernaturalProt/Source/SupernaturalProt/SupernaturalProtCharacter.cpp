@@ -17,6 +17,11 @@
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/SpnSettingsSubsystem.h"
 #include "Spn/SpnMovementDiagnostics.h"
+#include "Spn/Character/SpnCharacterVisualComponent.h"
+#include "Spn/Character/SpnWardrobeComponent.h"
+#include "Spn/UI/SpnUiNotify.h"
+#include "Spn/UI/SpnUiText.h"
+#include "InputTriggers.h"
 #include "SupernaturalProt.h"
 
 namespace
@@ -70,6 +75,9 @@ ASupernaturalProtCharacter::ASupernaturalProtCharacter(const FObjectInitializer&
 
 	MovementDiagnostics = CreateDefaultSubobject<USpnMovementDiagnostics>(TEXT("MovementDiagnostics"));
 
+	Visual = CreateDefaultSubobject<USpnCharacterVisualComponent>(TEXT("Visual"));
+	Wardrobe = CreateDefaultSubobject<USpnWardrobeComponent>(TEXT("Wardrobe"));
+
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 }
@@ -93,6 +101,8 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 		// Interacting
 		EnhancedInputComponent->BindAction(ResolveInteractAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoInteract);
 		EnhancedInputComponent->BindAction(ResolveForceAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoForce);
+		EnhancedInputComponent->BindAction(ResolveForceAction(), ETriggerEvent::Completed, this, &ASupernaturalProtCharacter::DoForceEnd);
+		EnhancedInputComponent->BindAction(ResolveForceAction(), ETriggerEvent::Canceled, this, &ASupernaturalProtCharacter::DoForceEnd);
 		Interaction->ForceKey = DefaultForceKey;
 		Interaction->PromptKey = DefaultInteractKey; // the on-screen prompt names the key that is actually mapped
 
@@ -104,6 +114,21 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Base gait (Walk -> Jog -> Run)
 		EnhancedInputComponent->BindAction(ResolveGaitAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoCycleGait);
+
+		// Gamepad (developer decision 2026-11-14): Force = Square held, L3 = sprint toggle (tap) / gait change (hold)
+		ResolvePadActions();
+		if (RuntimeForcePadAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(RuntimeForcePadAction, ETriggerEvent::Triggered, this, &ASupernaturalProtCharacter::DoForcePad);
+			EnhancedInputComponent->BindAction(RuntimeForcePadAction, ETriggerEvent::Completed, this, &ASupernaturalProtCharacter::DoForceEnd);
+			EnhancedInputComponent->BindAction(RuntimeForcePadAction, ETriggerEvent::Canceled, this, &ASupernaturalProtCharacter::DoForceEnd);
+		}
+		if (RuntimeSprintPadAction != nullptr)
+		{
+			EnhancedInputComponent->BindAction(RuntimeSprintPadAction, ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoSprintPadPressed);
+			EnhancedInputComponent->BindAction(RuntimeSprintPadAction, ETriggerEvent::Completed, this, &ASupernaturalProtCharacter::DoSprintPadReleased);
+			EnhancedInputComponent->BindAction(RuntimeSprintPadAction, ETriggerEvent::Canceled, this, &ASupernaturalProtCharacter::DoSprintPadReleased);
+		}
 	}
 	else
 	{
@@ -115,12 +140,15 @@ void ASupernaturalProtCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	TickStepAside(DeltaSeconds);
+	TickPadSprint(DeltaSeconds);
 	UpdateStairCamera(DeltaSeconds);
 
 	if (HideMeshCameraDistance > 0.f && CameraBoom != nullptr && FollowCamera != nullptr && GetMesh() != nullptr)
 	{
 		const float CameraDistance = FVector::Dist(FollowCamera->GetComponentLocation(), CameraBoom->GetComponentLocation());
 		GetMesh()->SetOwnerNoSee(CameraDistance < HideMeshCameraDistance);
+		if (Visual != nullptr) { Visual->SetShownOwnerNoSee(CameraDistance < HideMeshCameraDistance); }
 	}
 
 	// Camera arm: an obstacle shortens it at once (the spring arm's own collision result, so nothing is ever clipped),
@@ -183,6 +211,14 @@ void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 		}
 	}
 
+	if (RuntimePadMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimePadMappingContext);
+		}
+	}
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -217,11 +253,7 @@ UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()
 		RuntimeSprintAction->ValueType = EInputActionValueType::Boolean;
 
 		RuntimeSprintMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnSprint_Runtime"), RF_Transient);
-		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintKey);
-		if (DefaultSprintGamepadKey.IsValid())
-		{
-			RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintGamepadKey);
-		}
+		RuntimeSprintMappingContext->MapKey(RuntimeSprintAction, DefaultSprintKey);   // keyboard: hold; the gamepad key has its own action (ResolvePadActions)
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -241,6 +273,7 @@ void ASupernaturalProtCharacter::DoSprintStart()
 
 void ASupernaturalProtCharacter::DoSprintEnd()
 {
+	bPadSprintToggled = false; // releasing Shift ends a sprint the pad switched on as well
 	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
 	{
 		Movement->SetSprintRequested(false);
@@ -252,6 +285,103 @@ void ASupernaturalProtCharacter::DoCycleGait()
 	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
 	{
 		Movement->CycleBaseGait();
+	}
+}
+
+void ASupernaturalProtCharacter::ResolvePadActions()
+{
+	if (RuntimePadMappingContext == nullptr)
+	{
+		RuntimePadMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnPad_Runtime"), RF_Transient);
+		if (DefaultForceGamepadKey.IsValid())
+		{
+			RuntimeForcePadAction = NewObject<UInputAction>(this, TEXT("IA_SpnForcePad_Runtime"), RF_Transient);
+			RuntimeForcePadAction->ValueType = EInputActionValueType::Boolean;
+			RuntimeForcePadAction->bConsumeInput = false;   // Square must still reach Interact (the tap); this context is evaluated first
+			FEnhancedActionKeyMapping& Mapping = RuntimePadMappingContext->MapKey(RuntimeForcePadAction, DefaultForceGamepadKey);
+			UInputTriggerHold* Hold = NewObject<UInputTriggerHold>(RuntimePadMappingContext);
+			Hold->HoldTimeThreshold = ForcePadHoldSeconds;
+			// not one-shot: a one-shot hold reports Completed right after it fires, which ended the break at once. Triggered repeats while held;
+			// DoForcePad starts only when nothing is being forced yet.
+			Hold->bIsOneShot = false;
+			Mapping.Triggers.Add(Hold);
+		}
+		if (DefaultSprintGamepadKey.IsValid())
+		{
+			RuntimeSprintPadAction = NewObject<UInputAction>(this, TEXT("IA_SpnSprintPad_Runtime"), RF_Transient);
+			RuntimeSprintPadAction->ValueType = EInputActionValueType::Boolean;
+			RuntimePadMappingContext->MapKey(RuntimeSprintPadAction, DefaultSprintGamepadKey);
+		}
+	}
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimePadMappingContext, RuntimeInteractContextPriority + 1);
+	}
+}
+
+void ASupernaturalProtCharacter::DoForcePad()
+{
+	// Square is Interact too: the hold only means "force" where forcing is offered (a locked, breakable door in focus)
+	if (Interaction != nullptr && !Interaction->IsForcing() && Interaction->HasForceTarget())
+	{
+		Interaction->BeginForce();
+	}
+}
+
+void ASupernaturalProtCharacter::DoSprintPadPressed()
+{
+	bPadSprintDown = true;
+	bPadHoldUsed = false;
+	PadSprintDownTime = GetWorld() != nullptr ? GetWorld()->GetTimeSeconds() : 0.0;
+}
+
+void ASupernaturalProtCharacter::DoSprintPadReleased()
+{
+	if (!bPadSprintDown)
+	{
+		return;
+	}
+	bPadSprintDown = false;
+	if (bPadHoldUsed)
+	{
+		return; // the hold changed the gait; the release does nothing else
+	}
+	// a tap: sprint on / off
+	bPadSprintToggled = !bPadSprintToggled;
+	PadSprintIdleSeconds = 0.f;
+	if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
+	{
+		Movement->SetSprintRequested(bPadSprintToggled);
+	}
+}
+
+void ASupernaturalProtCharacter::TickPadSprint(float DeltaSeconds)
+{
+	if (bPadSprintDown && !bPadHoldUsed && GetWorld() != nullptr && GetWorld()->GetTimeSeconds() - PadSprintDownTime >= GaitHoldSeconds)
+	{
+		bPadHoldUsed = true;
+		if (USpnCharacterMovementComponent* Movement = GetSpnMovement())
+		{
+			Movement->CycleBaseGait();
+			const TCHAR* Key = Movement->GetBaseGait() == ESpnGait::Walk ? TEXT("ui.gait.walk") : Movement->GetBaseGait() == ESpnGait::Run ? TEXT("ui.gait.run") : TEXT("ui.gait.jog");
+			SpnUi::Notify(this, FText::Format(FSpnUiText::Get(TEXT("ui.gait.changed")), FSpnUiText::Get(Key)));
+		}
+	}
+	if (!bPadSprintToggled)
+	{
+		return;
+	}
+	// the toggled sprint ends when the player lets go of the stick (or stops) for a moment
+	const UCharacterMovementComponent* Movement = GetCharacterMovement();
+	const bool bIdle = Movement == nullptr || Movement->GetCurrentAcceleration().IsNearlyZero();
+	PadSprintIdleSeconds = bIdle ? PadSprintIdleSeconds + DeltaSeconds : 0.f;
+	if (PadSprintIdleSeconds >= SprintToggleReleaseSeconds)
+	{
+		bPadSprintToggled = false;
+		if (USpnCharacterMovementComponent* SpnMovement = GetSpnMovement())
+		{
+			SpnMovement->SetSprintRequested(false);
+		}
 	}
 }
 
@@ -373,8 +503,63 @@ void ASupernaturalProtCharacter::UpdateStairCamera(float DeltaSeconds)
 	CameraBoom->SetRelativeLocation(StairBaseLocation - FVector(0.f, 0.f, StairLagZ));
 }
 
+bool ASupernaturalProtCharacter::StartStepAside(const FVector& Target, float MaxSeconds)
+{
+	if (bSteppingAside || GetCharacterMovement() == nullptr)
+	{
+		return false;
+	}
+	bSteppingAside = true;
+	StepTarget = Target;
+	StepSeconds = 0.f;
+	StepMaxSeconds = FMath::Max(MaxSeconds, 0.1f);
+	StepStallSeconds = 0.f;
+	StepLastDistance = FVector::Dist2D(GetActorLocation(), Target);
+	++StepAsideCount;
+	// step back while still facing the door: no turning towards the movement direction for the duration of the step
+	bStepRestoreOrient = GetCharacterMovement()->bOrientRotationToMovement;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	UE_LOG(LogSupernaturalProt, Log, TEXT("%s: steps aside %.0f cm to (%.0f, %.0f)"), *GetName(), StepLastDistance, Target.X, Target.Y);
+	return true;
+}
+
+void ASupernaturalProtCharacter::TickStepAside(float DeltaSeconds)
+{
+	if (!bSteppingAside)
+	{
+		return;
+	}
+	StepSeconds += DeltaSeconds;
+	const FVector To = FVector(StepTarget.X - GetActorLocation().X, StepTarget.Y - GetActorLocation().Y, 0.f);
+	const float Distance = To.Size();
+	// Blocked = less than 2 cm closer within a 0.3 s window (something solid is in the way: a wall, a pawn); the door then keeps waiting.
+	// A window, not a per-frame speed: the calm step starts from standstill and is slow, and the check must not depend on the frame rate.
+	bool bBlocked = false;
+	StepStallSeconds += DeltaSeconds;
+	if (StepStallSeconds >= 0.3f)
+	{
+		bBlocked = StepLastDistance - Distance < 2.f;
+		StepStallSeconds = 0.f;
+		StepLastDistance = Distance;
+	}
+	if (Distance <= 4.f || StepSeconds >= StepMaxSeconds || bBlocked)
+	{
+		bSteppingAside = false;
+		GetCharacterMovement()->bOrientRotationToMovement = bStepRestoreOrient;
+		UE_LOG(LogSupernaturalProt, Log, TEXT("%s: step aside ended %s (%.0f cm left after %.2f s)"), *GetName(),
+			Distance <= 4.f ? TEXT("at the target") : bBlocked ? TEXT("blocked") : TEXT("by time"), Distance, StepSeconds);
+		return;
+	}
+	// half input: a calm walking step whatever the base gait is (the movement component maps a small input to a slow pace)
+	AddMovementInput(To / Distance, 0.5f);
+}
+
 void ASupernaturalProtCharacter::DoMove(float Right, float Forward)
 {
+	if (bSteppingAside)
+	{
+		return;     // the automatic step owns the movement for its fraction of a second
+	}
 	if (GetController() != nullptr)
 	{
 		// find out which way is forward
@@ -421,6 +606,21 @@ void ASupernaturalProtCharacter::DoInteract()
 	Interaction->TryInteract();
 }
 
+FVector ASupernaturalProtCharacter::GetCameraBase() const
+{
+	return bStairBaseKnown ? StairBaseLocation : CameraBoom != nullptr ? CameraBoom->GetRelativeLocation() : FVector::ZeroVector;
+}
+
+void ASupernaturalProtCharacter::SetCameraBase(const FVector& RelativeLocation)
+{
+	StairBaseLocation = RelativeLocation;
+	bStairBaseKnown = true;
+	if (CameraBoom != nullptr)
+	{
+		CameraBoom->SetRelativeLocation(StairBaseLocation - FVector(0.f, 0.f, StairLagZ));
+	}
+}
+
 void ASupernaturalProtCharacter::ResetStairCamera()
 {
 	bStairInit = false;
@@ -439,11 +639,7 @@ UInputAction* ASupernaturalProtCharacter::ResolveForceAction()
 		RuntimeForceAction->ValueType = EInputActionValueType::Boolean;
 
 		RuntimeForceMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnForce_Runtime"), RF_Transient);
-		RuntimeForceMappingContext->MapKey(RuntimeForceAction, DefaultForceKey);
-		if (DefaultForceGamepadKey.IsValid())
-		{
-			RuntimeForceMappingContext->MapKey(RuntimeForceAction, DefaultForceGamepadKey);
-		}
+		RuntimeForceMappingContext->MapKey(RuntimeForceAction, DefaultForceKey);   // keyboard: F held; the gamepad hold has its own action (ResolvePadActions)
 	}
 
 	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -455,5 +651,11 @@ UInputAction* ASupernaturalProtCharacter::ResolveForceAction()
 
 void ASupernaturalProtCharacter::DoForce()
 {
-	Interaction->TryForce();
+	// hold to break (a door takes time); a target without duration answers at once
+	Interaction->BeginForce();
+}
+
+void ASupernaturalProtCharacter::DoForceEnd()
+{
+	Interaction->EndForce();
 }

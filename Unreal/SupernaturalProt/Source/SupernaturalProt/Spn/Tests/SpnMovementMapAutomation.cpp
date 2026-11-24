@@ -668,8 +668,11 @@ bool FSpnMovementObstaclesTest::RunTest(const FString& Parameters)
 		for (const bool bTryJump : {false, true})
 		{
 			const TSharedRef<FRunData> Data = MakeShared<FRunData>();
+			// This test measures the JUMP itself (step limit, apex, no exaggerated jump). Since 2026-11-14 a jump press right in front of an obstacle can
+			// start the ledge assist (developer decision: mantle 40-120 cm on explicit input), which is not a jump; it is switched off here so the jump
+			// physics stay checked exactly as before. The ledge assist has its own checks (SpnQA.LedgeAssist, Core LedgeAssistTests).
 			ADD_LATENT_AUTOMATION_COMMAND(FScenarioCommand(*this, FVector(ThinObstacleX - 300.f, Y, StandZ), 0.f, 4.f,
-				[](ASupernaturalProtCharacter& Character) { Character.GetSpnMovement()->SetBaseGait(ESpnGait::Jog); },
+				[](ASupernaturalProtCharacter& Character) { Character.GetSpnMovement()->SetBaseGait(ESpnGait::Jog); Character.GetSpnMovement()->LedgeAssist.bEnabled = false; },
 				[Data, bTryJump, FarFace](ASupernaturalProtCharacter& Character, float, double)
 				{
 					Character.DoMove(0.f, 1.f);
@@ -683,6 +686,7 @@ bool FSpnMovementObstaclesTest::RunTest(const FString& Parameters)
 				[this, Data, Height, bTryJump](ASupernaturalProtCharacter& Character, bool bTimedOut)
 				{
 					Character.StopJumping();
+					Character.GetSpnMovement()->LedgeAssist.bEnabled = true;
 					const FSpnMovementSettings& S = Character.GetSpnMovement()->Settings;
 					const ESpnObstacleClass Class = SpnMovement::ClassifyObstacle(S, Height);
 					const bool bCrossed = !bTimedOut;

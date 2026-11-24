@@ -45,6 +45,13 @@ namespace SpnWorld
 
 	FText ItemDisplayName(const FString& DefinitionId)
 	{
+		// the text table names items "item.<definition>.name" (and ".desc"); the plain "item.<definition>" key never existed, so every world pickup
+		// showed its raw id in the prompt and the HUD note (found 2026-11-13 in SpnWorldQA.Route). The old key stays as a second fallback.
+		const FString NameKey = FString::Printf(TEXT("item.%s.name"), *DefinitionId);
+		if (FSpnUiText::Has(NameKey))
+		{
+			return FSpnUiText::Get(NameKey);
+		}
 		return FSpnUiText::Get(FString::Printf(TEXT("item.%s"), *DefinitionId), {}, FText::FromString(DefinitionId));
 	}
 

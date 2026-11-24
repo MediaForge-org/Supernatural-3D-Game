@@ -21,9 +21,12 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Input")
 	FKey OpenKey = EKeys::I;
 
-	/** Gamepad key that toggles the inventory screen (DualSense: touchpad button / Options are free; Create/Share is used here). */
+	/**
+	 * Gamepad key that opens the inventory screen. Developer decision 2026-11-14: the touchpad (Gamepad_Special_Left) opens the map, Options the pause
+	 * menu, so the inventory moved to D-pad up (free in gameplay; inside the screen the D-pad navigates, Circle / Options close it). PROVISIONAL.
+	 */
 	UPROPERTY(Config, EditAnywhere, Category = "Input")
-	FKey OpenGamepadKey = EKeys::Gamepad_Special_Left;
+	FKey OpenGamepadKey = EKeys::Gamepad_DPad_Up;
 
 	/** Empty = follow the game's culture (German or English); "en" / "de" forces one. */
 	UPROPERTY(Config, EditAnywhere, Category = "Localization")

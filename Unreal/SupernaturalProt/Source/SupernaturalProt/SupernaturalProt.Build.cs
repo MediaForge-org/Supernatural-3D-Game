@@ -15,6 +15,7 @@ public class SupernaturalProt : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
+			"NavigationSystem",
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
@@ -29,6 +30,14 @@ public class SupernaturalProt : ModuleRules
 
 		// Frame statistics (GGameThreadTime, draw calls, GPU time) of the map performance report test.
 		PrivateDependencyModuleNames.AddRange(new string[] { "RenderCore", "RHI" });
+
+		// Visual build tools (Spn/World): camera run specifications are JSON files; the landscape import helper of the world generator
+		// (editor-only code paths, see SpnWorldBuildLibrary.cpp).
+		PrivateDependencyModuleNames.AddRange(new string[] { "Json", "Landscape" });
+
+		// Character presentation: a test body driven by runtime IK retargeting from the gameplay mesh (Spn/Character, Proposal 0014 C2).
+		// IKRig is an engine plugin that is enabled by default.
+		PrivateDependencyModuleNames.Add("IKRig");
 
 		PublicIncludePaths.AddRange(new string[] {
 			"SupernaturalProt",
@@ -51,6 +60,9 @@ public class SupernaturalProt : ModuleRules
 		if (Target.bBuildEditor)
 		{
 			PrivateDependencyModuleNames.Add("UnrealEd");
+			// 2026-11-15 Protagonist V1 phase 2: USpnMetaHumanPrepLibrary (editor-only code path) generates MetaHuman TEST meshes locally through
+			// the public API of the engine's MetaHumanCharacter plugin (already enabled in the .uproject). No runtime dependency.
+			PrivateDependencyModuleNames.AddRange(new string[] { "MetaHumanCharacter", "MetaHumanCharacterEditor", "MetaHumanCharacterPalette" });
 		}
 
 		// Uncomment if you are using Slate UI

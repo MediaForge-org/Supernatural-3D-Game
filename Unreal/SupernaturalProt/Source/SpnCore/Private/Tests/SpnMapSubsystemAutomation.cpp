@@ -8,6 +8,7 @@
 #include "SpnMapSubsystem.h"
 #include "SpnSaveSubsystem.h"
 #include "SpnWorldStateSubsystem.h"
+#include "SpnWorldFrame.h"
 #include "UObject/Package.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -311,6 +312,65 @@ bool FSpnMapSaveTest::RunTest(const FString&)
 	TestTrue(TEXT("old slot loads"), Old.IsOk());
 	TestTrue(TEXT("the reset is reported, never silent"), Old.bMapResetToEmpty);
 	TestEqual(TEXT("and the markers are gone"), Map.GetMarkers().Num(), 0);
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnMapOldSpnWorldSaveTest, "SpnCore.Map.OldSpnWorldSaveWithGeneratedMap", Flags)
+bool FSpnMapOldSpnWorldSaveTest::RunTest(const FString&)
+{
+	// 2026-11-14: no SpnWorld save from before the generated map data exists on this machine (every SpnWorld save was written after the change), so
+	// the old save is produced the way the build of 2026-11-13 produced it in Lvl_SpnWorld: the TEST definition installed, a waypoint on one of its
+	// POIs, discovery from walking. Then the current build's map (the generated SpnWorld data) loads it.
+	const FString Generated = USpnMapSubsystem::GetSpnWorldMapPath();
+	if (!FPaths::FileExists(Generated))
+	{
+		AddWarning(FString::Printf(TEXT("%s is missing (world not built): test skipped"), *Generated));
+		return true;
+	}
+	FEnv Env;
+	USpnMapSubsystem& Map = Env.Map();
+	USpnSaveSubsystem& Save = Env.Save();
+	Map.InstallTestDefinition();
+	int64 Id = 0;
+	TestEqual(TEXT("old build: waypoint on a test POI"), Map.SetWaypointToPoi(TEXT("spn_test:poi.storage_road"), Id), ESpnMapResult::Ok);
+	Map.ObservePlayer(FVector(-10550.0, -4700.0, 100.0));   // the test definition's start: discovers the Birkenweg POI
+	Map.ObservePlayer(FVector(-12400.0, 32200.0, 100.0));   // where the route's save point lies in SpnWorld (outside the test district)
+	FSpnMapMarkerView Before;
+	Map.GetWaypoint(Before);
+	TestTrue(TEXT("old build: saved"), Save.SaveSlot(TEXT("slot_old_spnworld")).IsOk());
+
+	FString Detail;
+	TestEqual(TEXT("current build: the generated SpnWorld map installs"), Map.InstallGeneratedRegion(Generated, FSpnWorldFrame(), &Detail), ESpnMapResult::Ok);
+	TestEqual(TEXT("inspect: the old slot is loadable"), Save.InspectSlot(TEXT("slot_old_spnworld")).Result, ESpnSaveResult::Ok);
+	const FSpnSaveStatus Loaded = Save.LoadSlot(TEXT("slot_old_spnworld"));
+	TestTrue(*FString::Printf(TEXT("the old SpnWorld slot loads (%s %s)"), LexToString(Loaded.Result), *Loaded.Detail), Loaded.IsOk());
+	TestTrue(TEXT("the map state was restored, not reset"), Loaded.bMapRestored && !Loaded.bMapResetToEmpty);
+	TestTrue(TEXT("still the generated map afterwards"), Map.IsGeneratedRegion());
+	FSpnMapMarkerView After;
+	TestTrue(TEXT("the old waypoint is back"), Map.GetWaypoint(After));
+	TestTrue(TEXT("same position"), After.Metres.Equals(Before.Metres, 1e-6));
+	bool bKnownHidden = false, bAnyLegacyVisible = false;
+	for (const FSpnMapPoiView& P : Map.GetPois())
+	{
+		if (P.Id == TEXT("spn_test:poi.birkenweg")) { bKnownHidden = P.Discovery != ESpnDiscovery::Undiscovered && !P.bVisible; }
+		if (P.Id.StartsWith(TEXT("spn_test:")) && P.bVisible) { bAnyLegacyVisible = true; }
+	}
+	TestTrue(TEXT("old discovery kept (the old POI stays hidden)"), bKnownHidden);
+	TestFalse(TEXT("no old test POI is shown on the SpnWorld map"), bAnyLegacyVisible);
+
+	// the reverse case (open risk of 2026-11-14): a CURRENT SpnWorld save judged against the test definition (another level's map) is refused
+	// as a whole and changes nothing
+	Map.ObservePlayer(FVector(-28174.0, 44052.0, 700.0));   // at the cabin: discovers generated SpnWorld POIs
+	TestTrue(TEXT("new SpnWorld slot saved"), Save.SaveSlot(TEXT("slot_new_spnworld")).IsOk());
+	Map.InstallTestDefinition();
+	int64 Probe = 0;
+	Map.SetWaypointAt(FVector2D(3.0, 4.0), TEXT("unchanged"), Probe);
+	const USpnSaveSubsystem::FSpnSlotInfo Info = Save.InspectSlot(TEXT("slot_new_spnworld"));
+	TestEqual(*FString::Printf(TEXT("inspect from another map: another game world, not damage (%s %s)"), LexToString(Info.Result), *Info.Detail), Info.Result, ESpnSaveResult::OtherWorld);
+	const FSpnSaveStatus Refused = Save.LoadSlot(TEXT("slot_new_spnworld"));
+	TestEqual(*FString::Printf(TEXT("load from another map refused as another game world (%s %s)"), LexToString(Refused.Result), *Refused.Detail), Refused.Result, ESpnSaveResult::OtherWorld);
+	FSpnMapMarkerView Kept;
+	TestTrue(TEXT("the current map state is untouched"), Map.GetWaypoint(Kept) && Kept.Label == TEXT("unchanged"));
 	return true;
 }
 

@@ -61,6 +61,7 @@ void USpnSettingsSubsystem::Load()
 		GConfig->GetFloat(Section, TEXT("MinimapZoom"), Loaded.MinimapZoom, GGameUserSettingsIni);
 		GConfig->GetBool(Section, TEXT("CameraSmoothing"), Loaded.bCameraSmoothing, GGameUserSettingsIni);
 		GConfig->GetString(Section, TEXT("Language"), Loaded.Language, GGameUserSettingsIni);
+		GConfig->GetBool(Section, TEXT("WorldQualityMode"), Loaded.bWorldQualityMode, GGameUserSettingsIni);
 	}
 	Settings = Clamped(Loaded);
 }
@@ -83,6 +84,7 @@ void USpnSettingsSubsystem::SaveToDisk() const
 	GConfig->SetFloat(Section, TEXT("MinimapZoom"), Settings.MinimapZoom, GGameUserSettingsIni);
 	GConfig->SetBool(Section, TEXT("CameraSmoothing"), Settings.bCameraSmoothing, GGameUserSettingsIni);
 	GConfig->SetString(Section, TEXT("Language"), *Settings.Language, GGameUserSettingsIni);
+	GConfig->SetBool(Section, TEXT("WorldQualityMode"), Settings.bWorldQualityMode, GGameUserSettingsIni);
 	GConfig->Flush(false, GGameUserSettingsIni);
 }
 

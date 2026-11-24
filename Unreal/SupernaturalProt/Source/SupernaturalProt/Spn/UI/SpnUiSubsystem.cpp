@@ -1,6 +1,7 @@
 #include "Spn/UI/SpnUiSubsystem.h"
 
 #include "Engine/Console.h"
+#include "Spn/World/SpnWorldLighting.h"
 #include "Engine/Engine.h"
 #include "Engine/GameInstance.h"
 #include "Engine/GameViewportClient.h"
@@ -22,6 +23,8 @@
 #include "SpnMapSubsystem.h"
 #include "SpnSaveSubsystem.h"
 #include "Spn/SpnSessionSubsystem.h"
+#include "Spn/SpnInteractable.h"
+#include "Spn/SpnInteractionComponent.h"
 #include "Spn/UI/SpnHudWidget.h"
 #include "Spn/UI/SpnInventoryUiSubsystem.h"
 #include "Spn/UI/SpnMapScreen.h"
@@ -93,6 +96,17 @@ namespace SpnUi
 			return false;
 		}
 		Ui->SetInteractionPrompt(Prompt);
+		return true;
+	}
+
+	bool SetObjective(const UObject* WorldContext, const FText& Objective)
+	{
+		USpnUiSubsystem* Ui = FindUi(WorldContext);
+		if (Ui == nullptr || Ui->GetHud() == nullptr)
+		{
+			return false;
+		}
+		Ui->GetHud()->SetObjective(Objective);
 		return true;
 	}
 }
@@ -169,6 +183,16 @@ APlayerController* USpnUiSubsystem::GetController() const
 {
 	const ULocalPlayer* Player = GetLocalPlayer();
 	return Player != nullptr ? Player->GetPlayerController(Player->GetWorld()) : nullptr;
+}
+
+bool USpnUiSubsystem::IsForceTargetInFocus() const
+{
+	const APlayerController* PC = GetController();
+	const APawn* Pawn = PC != nullptr ? PC->GetPawn() : nullptr;
+	const USpnInteractionComponent* Interaction = Pawn != nullptr ? Pawn->FindComponentByClass<USpnInteractionComponent>() : nullptr;
+	const AActor* Target = Interaction != nullptr ? Interaction->FindTarget() : nullptr;
+	const ISpnInteractable* Interactable = Cast<ISpnInteractable>(Target);
+	return Interactable != nullptr && !Interactable->SpnForcePromptText(Pawn).IsEmpty();
 }
 
 USpnMenuScreen* USpnUiSubsystem::GetMenuScreen(ESpnPage Page) const
@@ -366,7 +390,9 @@ bool USpnUiSubsystem::ProcessKeyDown(const FKeyEvent& Event)
 	{
 		return OpenPause();
 	}
-	if (Key == EKeys::M || Key == EKeys::Gamepad_FaceButton_Top)
+	// Developer decision 2026-11-14: the map is on the touchpad (DualSense touchpad click = Gamepad_Special_Left), Options pauses (above),
+	// Triangle stays free for a later heavy attack.
+	if (Key == EKeys::M || Key == EKeys::Gamepad_Special_Left)
 	{
 		return OpenMap();
 	}
@@ -679,6 +705,7 @@ FText USpnUiSubsystem::DescribeSaveResult(const FSpnSaveStatus& Status) const
 	case ESpnSaveResult::Busy: Key = TEXT("ui.save.err.busy"); break;
 	case ESpnSaveResult::InconsistentSnapshot: Key = TEXT("ui.save.err.inconsistent"); break;
 	case ESpnSaveResult::Rejected: Key = TEXT("ui.save.err.rejected"); break;
+	case ESpnSaveResult::OtherWorld: Key = TEXT("ui.save.err.otherworld"); break;   // 2026-11-14: intact, but made in another game world (not damage)
 	case ESpnSaveResult::Ok: return T(TEXT("ui.save.ok"));
 	default: break;
 	}
@@ -802,6 +829,12 @@ void USpnUiSubsystem::FillSlots()
 			Item.Subtitle = T(TEXT("ui.slots.catalog"));
 			Item.SubtitleColor = SpnUi::Warning;
 			break;
+		case ESpnSaveResult::OtherWorld:
+			// intact, made in another game world: a warning, not the red "damaged" line, and without the technical detail
+			Item.Subtitle = Info.PoseLevel.IsEmpty() ? T(TEXT("ui.slots.otherworld"))
+				: T(TEXT("ui.slots.otherworld.level"), {FText::FromString(FPackageName::GetShortName(Info.PoseLevel))});
+			Item.SubtitleColor = SpnUi::Warning;
+			break;
 		default:
 			Item.Subtitle = FText::FromString(FString::Printf(TEXT("%s %s"), *DescribeSaveResult(FSpnSaveStatus{Info.Result}).ToString(), *Info.Detail.Left(120)));
 			Item.SubtitleColor = SpnUi::Error;
@@ -856,6 +889,13 @@ void USpnUiSubsystem::FillSettings()
 	Row(TEXT("vsync"), TEXT("ui.settings.vsync"), OnOff(USpnSettingsSubsystem::IsVSync()), bDisplay);
 	const float Fps = USpnSettingsSubsystem::GetFrameRateLimit();
 	Row(TEXT("fps"), TEXT("ui.settings.fps"), Fps <= 0.f ? T(TEXT("ui.settings.unlimited")) : FText::AsNumber(FMath::RoundToInt(Fps)), bDisplay);
+	{
+		// SpnWorld render resolution (TSR): saved preference; only the world level applies it, so elsewhere the row says where it takes effect
+		const UWorld* World = GetController() != nullptr ? GetController()->GetWorld() : nullptr;
+		FSpnMenuItem& WorldQuality = Row(TEXT("worldquality"), TEXT("ui.settings.worldquality"),
+			T(S.bWorldQualityMode ? TEXT("ui.settings.worldquality.quality") : TEXT("ui.settings.worldquality.standard")));
+		WorldQuality.Subtitle =T(ASpnWorldLighting::Find(World) != nullptr ? TEXT("ui.settings.worldquality.note") : TEXT("ui.settings.worldquality.elsewhere"));
+	}
 
 	Header(TEXT("ui.settings.audio"));
 	Row(TEXT("volume"), TEXT("ui.settings.volume"), Percent(S.MasterVolume));
@@ -922,6 +962,7 @@ void USpnUiSubsystem::OnAdjust(ESpnPage Page, FName Id, int32 Delta)
 		const int32 Index = FMath::Clamp(NearestIndex(FpsOptions, USpnSettingsSubsystem::GetFrameRateLimit()) + Delta, 0, UE_ARRAY_COUNT(FpsOptions) - 1);
 		USpnSettingsSubsystem::SetFrameRateLimit(static_cast<float>(FpsOptions[Index]));
 	}
+	else if (Id == TEXT("worldquality")) { S.bWorldQualityMode = !S.bWorldQualityMode; }
 	else if (Id == TEXT("volume")) { S.MasterVolume = FMath::Clamp(FMath::RoundToFloat(S.MasterVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
 	else if (Id == TEXT("music")) { S.MusicVolume = FMath::Clamp(FMath::RoundToFloat(S.MusicVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
 	else if (Id == TEXT("effects")) { S.EffectsVolume = FMath::Clamp(FMath::RoundToFloat(S.EffectsVolume * 10.f + Delta) / 10.f, 0.f, 1.f); }
