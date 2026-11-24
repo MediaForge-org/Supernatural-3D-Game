@@ -34,3 +34,13 @@ Crossing the 1 m test wall works with the existing jump (`SPN_M1_Wall`, `SpnGame
 1. What jump apex counts as "realistic human" for this game (a number, or "to be tuned by feel")?
 2. Which obstacle heights get which move (step, vault, mantle)?
 3. Are assets for these moves planned (own, purchased, generated)?
+
+## 6. Update 2026-11-14: developer decision and first implementation
+
+Developer decision of 2026-11-14 (answers question 2, provisionally): a realistic, context-dependent ledge assist with an explicit
+jump / traversal input. The PROVISIONAL bands are up to 40 cm, 40–120 cm and 120–180 cm. The edge must really be grippable, the way
+must be free of collisions and the movement must fit. No unrealistic automatic jumps.
+
+Implemented as StepOn / Vault / Mantle / ClimbUp on the jump input (Cross / Space), only with an obstacle face right in front. A press
+further away stays an ordinary jump. The jump height is unchanged (45 cm apex). See `Docs/Development/Ledge-Assist-2026-11-14.md`.
+Question 1 (the jump apex) is unchanged. Question 3 (assets) is still open: the moves have no animation yet.
