@@ -14,6 +14,7 @@ std::string_view ToString(GameEventType type) noexcept {
     case GameEventType::DeviceStateChanged: return "device state changed";
     case GameEventType::LinkedMechanismActivated: return "linked mechanism activated";
     case GameEventType::PersistentStateRestored: return "persistent state restored";
+    case GameEventType::NoiseEmitted: return "noise emitted";
     }
     return "unknown event";
 }

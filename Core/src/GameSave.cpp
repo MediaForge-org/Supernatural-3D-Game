@@ -147,6 +147,10 @@ Result<LoadedGame, SaveError> ParseGameSave(const SaveSlot& slot, const GameLoad
     if (const SaveSection* s = readable(kSectionMap)) {
         if (!ctx.mapDefinition) return Err(SaveErrorCode::MissingContext, "world.map present but no map definition given");
         auto map = WorldMapState::Deserialize(s->payload, ctx.mapDefinition, ctx.mapConfig);
+        // An id the current map definition does not know, in an otherwise intact section (the checksums passed): the save was made in another game
+        // world (another level's map). Reported apart from damaged data so the UI can say so; the save file is not touched either way.
+        if (!map && map.Error().code == MapErrorCode::UnknownEntry)
+            return Err(SaveErrorCode::DefinitionMismatch, std::string(kSectionMap) + ": unknown entry line " + std::to_string(map.Error().line) + " " + map.Error().detail);
         if (!map)
             return Err(SaveErrorCode::SectionRejected, std::string(kSectionMap) + ": " + std::string(ToString(map.Error().code)) + " line " +
                                                            std::to_string(map.Error().line) + " " + map.Error().detail);

@@ -64,6 +64,7 @@ enum class SaveErrorCode : std::uint8_t {
     VerifyFailed,               ///< read-back after writing differs from what was written
     NoValidSave,
     CatalogMismatch,            ///< the inventory was saved against item definitions that differ from the current catalog (slot.catalog fingerprint)
+    DefinitionMismatch,         ///< intact data that names map entries the current map definition does not have: a save of another game world
 };
 [[nodiscard]] std::string_view ToString(SaveErrorCode code) noexcept;
 

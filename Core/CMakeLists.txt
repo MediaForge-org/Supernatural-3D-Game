@@ -4,6 +4,7 @@ add_library(spn_core STATIC
     src/AppearanceEdit.cpp
     src/AppearanceGenerator.cpp
     src/AppearanceRecipe.cpp
+    src/BodyCoverage.cpp
     src/CameraArm.cpp
     src/CatalogFingerprint.cpp
     src/ContentId.cpp
@@ -17,6 +18,7 @@ add_library(spn_core STATIC
     src/InteractionSystem.cpp
     src/InteractionReach.cpp
     src/JumpModel.cpp
+    src/LedgeAssist.cpp
     src/Locomotion.cpp
     src/Coordinates.cpp
     src/GeometryMath.cpp
@@ -34,6 +36,7 @@ add_library(spn_core STATIC
     src/Navigation.cpp
     src/Npc.cpp
     src/NpcMemory.cpp
+    src/NpcReaction.cpp
     src/ObjectPersistence.cpp
     src/Pickup.cpp
     src/TestDoor.cpp

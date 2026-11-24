@@ -163,6 +163,23 @@ TEST_CASE("game save: a corrupt domain payload with a valid checksum is rejected
     }
 }
 
+TEST_CASE("game save: an intact save of another game world is told apart from damaged data (DefinitionMismatch)") {
+    Game g;
+    REQUIRE(g.map.Discover(Cid("test:poi.shop"), DiscoveryState::Known).HasValue());
+    const auto slot = SaveSlot::Parse(CaptureGameSave(g.Sources()).Value().Serialize());
+    REQUIRE(slot.HasValue());
+    // the same layers, but none of the POIs: the map of another level
+    GameLoadContext other = g.Context();
+    other.mapDefinition = MakeBareDefinition();
+    const auto foreign = ParseGameSave(slot.Value(), other);
+    REQUIRE_FALSE(foreign.HasValue());
+    CHECK(foreign.Error().code == SaveErrorCode::DefinitionMismatch);
+    CHECK(foreign.Error().detail.starts_with(std::string(kSectionMap)));
+    CHECK(ToString(SaveErrorCode::DefinitionMismatch) == "DefinitionMismatch");
+    // damaged map data stays SectionRejected (covered for every domain above); against its own definition the slot loads
+    CHECK(ParseGameSave(slot.Value(), g.Context()).HasValue());
+}
+
 TEST_CASE("game save: sections from different gameplay moments are detected through slot.meta") {
     Game g;
     const auto first = CaptureGameSave(g.Sources()).Value();

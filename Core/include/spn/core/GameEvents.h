@@ -33,9 +33,10 @@ enum class GameEventType : std::uint8_t {
     DeviceStateChanged,
     LinkedMechanismActivated,
     PersistentStateRestored,
+    NoiseEmitted, ///< NightBuild05: a gameplay noise (position, range, strength) that NPC perception may hear
 };
 
-inline constexpr std::size_t kGameEventTypeCount = 7;
+inline constexpr std::size_t kGameEventTypeCount = 8;
 
 [[nodiscard]] std::string_view ToString(GameEventType type) noexcept;
 
@@ -67,6 +68,10 @@ struct GameEvent {
     std::int64_t to = 0;          ///< state value after
     std::string sourceId;         ///< LinkedMechanismActivated: the object whose change triggered the link
     std::uint64_t count = 0;      ///< PersistentStateRestored: number of objects restored
+    double noiseX = 0.0;          ///< NoiseEmitted: position in metres
+    double noiseY = 0.0;
+    double noiseRange = 0.0;      ///< NoiseEmitted: audible radius in metres (before attenuation)
+    double noiseStrength = 0.0;   ///< NoiseEmitted: 0..1
 };
 
 class GameEventBus {

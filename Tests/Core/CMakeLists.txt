@@ -24,6 +24,8 @@ add_executable(spn_core_tests
     InteractionReachTests.cpp
     InteractionSystemTests.cpp
     JumpModelTests.cpp
+    LedgeAssistTests.cpp
+    BodyCoverageTests.cpp
     GroundSteeringTests.cpp
     LocomotionTests.cpp
     MapGeometryTests.cpp
@@ -35,6 +37,7 @@ add_executable(spn_core_tests
     MovementTests.cpp
     NavigationTests.cpp
     NpcMemoryTests.cpp
+    NpcReactionTests.cpp
     NpcSaveTests.cpp
     NpcTests.cpp
     ObjectPersistenceTests.cpp
