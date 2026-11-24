@@ -8,7 +8,8 @@
   .\Tools\run_gameplay_qa.ps1 -Suite Quick         # fast regression, small window, no video
   .\Tools\run_gameplay_qa.ps1 -Suite Movement      # gaits, turns, jumps
   .\Tools\run_gameplay_qa.ps1 -Suite Doors         # doors, interaction reach, buildings and stairs
-  .Toolsun_gameplay_qa.ps1 -Suite Building      # NightBuild04: Lvl_SpnBuildingTest, locked/key/forced doors, switch, save + reload
+  .\Tools\run_gameplay_qa.ps1 -Suite Building      # NightBuild04: Lvl_SpnBuildingTest, locked/key/forced doors, switch, save + reload
+  .\Tools\run_gameplay_qa.ps1 -Suite Npc           # NightBuild05: Lvl_SpnNpcTest, NPC perception, reactions, memory, save during alarm + reload
   .\Tools\run_gameplay_qa.ps1 -Suite Performance
   .\Tools\run_gameplay_qa.ps1 -Suite Failed        # repeats the test groups that failed in the latest run
   .\Tools\run_gameplay_qa.ps1 -Suite Full -Regression   # additionally the older SpnGame.* regression tests (no video of those)
@@ -18,7 +19,7 @@
 #>
 [CmdletBinding()]
 param(
-    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Locomotion', 'MovementDemo', 'InventoryUi', 'Building', 'Failed')]
+    [ValidateSet('Full', 'Quick', 'Movement', 'Doors', 'Camera', 'Performance', 'Access', 'Traversal', 'Jump', 'Ledge', 'Character', 'Locomotion', 'MovementDemo', 'InventoryUi', 'Building', 'Npc', 'World', 'Failed')]
     [string]$Suite = 'Full',
     [switch]$NoBuild,
     [switch]$NoVideo,
@@ -39,7 +40,7 @@ $repo = Split-Path -Parent $PSScriptRoot
 $projDir = Join-Path $repo 'Unreal\SupernaturalProt'
 $uproject = Join-Path $projDir 'SupernaturalProt.uproject'
 $qaRoot = Join-Path $projDir 'Saved\GameplayQA'
-$mapPath = if ($Suite -eq 'Building' -and -not $PSBoundParameters.ContainsKey('Map')) { '/Game/SpnTest/Lvl_SpnBuildingTest' } else { $Map }
+$mapPath = if ($Suite -eq 'Building' -and -not $PSBoundParameters.ContainsKey('Map')) { '/Game/SpnTest/Lvl_SpnBuildingTest' } elseif ($Suite -eq 'Npc' -and -not $PSBoundParameters.ContainsKey('Map')) { '/Game/SpnTest/Lvl_SpnNpcTest' } elseif ($Suite -eq 'World' -and -not $PSBoundParameters.ContainsKey('Map')) { '/Game/SpnWorld/Lvl_SpnWorld' } else { $Map }
 $python = $null
 
 function Find-Engine {
@@ -95,32 +96,40 @@ if (-not $NoBuild) {
 $groups = @{
     Full        = 'SpnQA'
     Quick       = 'SpnQA.Spawn+SpnQA.Doors+SpnQA.DoorReach+SpnQA.SaveLoad'
-    Movement    = 'SpnQA.Movement+SpnQA.Turns+SpnQA.Jump+SpnQA.Locomotion'
+    Movement    = 'SpnQA.Movement+SpnQA.Turns+SpnQA.Jump+SpnQA.LedgeAssist+SpnQA.Locomotion'
     Doors       = 'SpnQA.Doors+SpnQA.DoorReach+SpnQA.Buildings'
     Camera      = 'SpnQA.Camera'
     Performance = 'SpnQA.Performance'
     Jump        = 'SpnQA.Jump'
+    Ledge       = 'SpnQA.LedgeAssist'   # 2026-11-14: ledge assist (step on / vault / mantle / climb up), explicit jump input
+    Character   = 'SpnQA.CharacterBody'   # 2026-11-14 Protagonist V1 feasibility: placeholder vs MetaHuman template test body (views, LOD, cost, feet, jump, ledge)
     MovementDemo = 'SpnQA.MovementDemo'   # recorded movement regression demo on V3, no repositioning (use -Map ...V3Interiors)
     InventoryUi = 'SpnQA.InventoryUi'     # M2B3.5: graphical inventory in a rendered session (keyboard, mouse, simulated gamepad, save/load, screenshots)
     Locomotion  = 'SpnQA.Locomotion'   # direction reversal, rotation stability, obstacle collision (M2A4.1)
     Traversal   = 'SpnQA.ContinuousTraversal'   # one uninterrupted walk through two buildings, no repositioning (use -Map ...V3Interiors)
     Access      = 'SpnQA.BuildingAccess'   # one recorded visit of a building: approach, open, enter, explore, leave, close (use -Map ...V3Interiors)
     Building    = 'SpnQA.HouseJourney'   # NightBuild04: Lvl_SpnBuildingTest - doors (locked/key/forced), light switch, interaction pick, save + reload (map is selected automatically)
+    Npc         = 'SpnQA.NpcReaction'   # NightBuild05: Lvl_SpnNpcTest - NPC perception, reactions, memory, save during an alarm + reload (map is selected automatically)
+    World       = 'SpnWorldQA'          # generated placeholder world Lvl_SpnWorld: terrain, collisions, cabin door and interior, lighting scenarios (map is selected automatically)
 }
 $expected = @{
-    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'Locomotion', 'Camera', 'SaveLoad', 'Performance', 'HouseJourney')
+    Full        = @('Spawn', 'Doors', 'DoorReach', 'Buildings', 'Movement', 'Turns', 'Jump', 'LedgeAssist', 'CharacterBody', 'Locomotion', 'Camera', 'SaveLoad', 'Performance', 'HouseJourney', 'NpcReaction')
     Quick       = @('Spawn', 'Doors', 'DoorReach', 'SaveLoad')
-    Movement    = @('Movement', 'Turns', 'Jump', 'Locomotion')
+    Movement    = @('Movement', 'Turns', 'Jump', 'LedgeAssist', 'Locomotion')
     Doors       = @('Doors', 'DoorReach', 'Buildings')
     Camera      = @('Camera')
     Performance = @('Performance')
     Jump        = @('Jump')
+    Ledge       = @('LedgeAssist')
+    Character   = @('CharacterBody')
     Locomotion  = @('Locomotion')
     MovementDemo = @('MovementDemo')
     InventoryUi = @('InventoryUi')
     Traversal   = @('ContinuousTraversal')
     Access      = @('BuildingAccess')
     Building    = @('HouseJourney')
+    Npc         = @('NpcReaction')
+    World       = @('SpnWorld', 'SpnWorldRoute', 'SpnWorldControls')
 }
 if ($Suite -eq 'Failed') {
     $last = Get-ChildItem $qaRoot -Directory | Where-Object { Test-Path (Join-Path $_.FullName 'results.json') } | Sort-Object Name -Descending | Select-Object -First 1
@@ -179,6 +188,8 @@ $gameArgs = @("`"$uproject`"", $mapPath, '-game', "-ExecCmds=`"$execCmds`"", '-T
     "-ReportExportPath=`"$(Join-Path $runDir 'automation')`"", "-abslog=`"$gameLog`"", '-unattended', '-nosplash', '-NoVerifyGC',
     "-ini:Engine:[SystemSettings]:t.MaxFPS=$Fps", '-ini:Engine:[SystemSettings]:r.VSync=0')
 $gameArgs += $ExtraGameArgs
+# World suite: "New game" of the main menu opens the world (as Tools/play_spnworld.ps1 does); SpnWorldQA.Route checks that path
+if ($Suite -eq 'World') { $gameArgs += '-SpnGameplayMap=/Game/SpnWorld/Lvl_SpnWorld' }
 # Quick: a small window without video. -nullrhi was tried and drops key events unreliably (doors/walking flaked), so every suite renders.
 if ($headless) { $gameArgs += @('-windowed', '-ResX=960', '-ResY=540', '-WinX=0', '-WinY=0', '-nosound') } else { $gameArgs += @('-windowed', "-ResX=$Width", "-ResY=$Height", '-WinX=0', '-WinY=0') }
 
@@ -208,11 +219,22 @@ if ($video) {
             $w = [int]([Math]::Floor(($rect.Right - $rect.Left) / 2) * 2); $h = [int]([Math]::Floor(($rect.Bottom - $rect.Top) / 2) * 2)
             Write-Host "Recording client area ${w}x${h} at ($($pt.X), $($pt.Y)) -> $videoFile"
             $encoders = @(
-                @('-c:v', 'h264_nvenc', '-preset', 'p4', '-rc', 'vbr', '-cq', '27', '-b:v', '0', '-maxrate', '8M', '-bufsize', '16M', '-pix_fmt', 'yuv420p'),
+                @('-c:v', 'h264_nvenc', '-preset', 'p4', '-rc', 'vbr', '-cq', '27', '-b:v', '0', '-maxrate', '18M', '-bufsize', '36M', '-pix_fmt', 'yuv420p'),
                 @('-c:v', 'libx264', '-preset', 'veryfast', '-crf', '23', '-pix_fmt', 'yuv420p'))
-            foreach ($enc in $encoders) {
-                $ffArgs = @('-y', '-hide_banner', '-loglevel', 'warning', '-f', 'gdigrab', '-framerate', "$Fps", '-offset_x', "$($pt.X)", '-offset_y', "$($pt.Y)",
-                    '-video_size', "${w}x${h}", '-draw_mouse', '0', '-i', 'desktop') + $enc + @('-movflags', '+faststart', $videoFile)
+            # NightBuild05: gdigrab copies every frame through the CPU and only reached about 24 fps at 2560x1392. ddagrab (desktop duplication on the GPU)
+            # keeps 60 fps; it is tried first. SPN_QA_CAPTURE=gdigrab forces the old capture.
+            $captures = @('ddagrab', 'gdigrab')
+            if ($env:SPN_QA_CAPTURE -eq 'gdigrab') { $captures = @('gdigrab') }
+            $combos = foreach ($cap in $captures) { foreach ($enc in $encoders) { [pscustomobject]@{ Cap = $cap; Enc = $enc } } }
+            foreach ($combo in $combos) {
+                $enc = $combo.Enc
+                if ($combo.Cap -eq 'ddagrab') {
+                    $src = "ddagrab=framerate=${Fps}:output_idx=0:offset_x=$($pt.X):offset_y=$($pt.Y):video_size=${w}x${h}:draw_mouse=0,hwdownload,format=bgra,format=yuv420p"
+                    $ffArgs = @('-y', '-hide_banner', '-loglevel', 'warning', '-f', 'lavfi', '-i', $src) + $enc + @('-movflags', '+faststart', $videoFile)
+                } else {
+                    $ffArgs = @('-y', '-hide_banner', '-loglevel', 'warning', '-f', 'gdigrab', '-framerate', "$Fps", '-offset_x', "$($pt.X)", '-offset_y', "$($pt.Y)",
+                        '-video_size', "${w}x${h}", '-draw_mouse', '0', '-i', 'desktop') + $enc + @('-movflags', '+faststart', $videoFile)
+                }
                 $psi = New-Object System.Diagnostics.ProcessStartInfo
                 $psi.FileName = $ffmpeg; $psi.Arguments = ($ffArgs | ForEach-Object { if ($_ -match '\s') { "`"$_`"" } else { $_ } }) -join ' '
                 $psi.RedirectStandardInput = $true; $psi.RedirectStandardError = $true; $psi.UseShellExecute = $false; $psi.CreateNoWindow = $true
@@ -221,7 +243,7 @@ if ($video) {
                 if (-not $ffProc.HasExited) {
                     $runInfo.video_start_epoch = [DateTimeOffset]::new($ffProc.StartTime.ToUniversalTime()).ToUnixTimeMilliseconds() / 1000.0 + 0.5
                     $runInfo.video = $videoFile
-                    $runInfo.video_note = "$($enc[1]) ${w}x${h} @ $Fps fps"
+                    $runInfo.video_note = "$($combo.Cap) + $($enc[1]) ${w}x${h} @ $Fps fps"
                     break
                 }
                 $runInfo.video_note = "encoder $($enc[1]) failed: " + $ffProc.StandardError.ReadToEnd()

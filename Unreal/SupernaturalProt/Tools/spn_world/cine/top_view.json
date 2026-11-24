@@ -1,0 +1,81 @@
+{
+  "cut_warmup_frames": 150,
+  "console": [
+    "ShowFlag.Fog 0",
+    "ShowFlag.Cloud 0",
+    "r.VolumetricCloud 0"
+  ],
+  "warmup_frames": 300,
+  "shots": [
+    {
+      "duration": 3,
+      "fov": 50,
+      "keys": [
+        {
+          "p": [
+            0,
+            -50,
+            250000
+          ],
+          "l": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "p": [
+            0,
+            -50,
+            250000
+          ],
+          "l": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "name": "top_full",
+      "stills": [
+        0.6
+      ],
+      "scenario": "day"
+    },
+    {
+      "duration": 3,
+      "fov": 50,
+      "keys": [
+        {
+          "p": [
+            0,
+            -50,
+            60000
+          ],
+          "l": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "p": [
+            0,
+            -50,
+            60000
+          ],
+          "l": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "name": "top_town",
+      "stills": [
+        0.6
+      ],
+      "scenario": "day"
+    }
+  ]
+}

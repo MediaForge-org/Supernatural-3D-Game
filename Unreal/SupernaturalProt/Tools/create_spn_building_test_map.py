@@ -1,4 +1,5 @@
 """Creates the PLACEHOLDER gameplay test level /Game/SpnTest/Lvl_SpnBuildingTest (NightBuild04): a small enterable building with doors.
+(With SPN_VARIANT=npc it creates /Game/SpnTest/Lvl_SpnNpcTest instead, the NightBuild05 level with residents; see the VARIANT notes below.)
 
 Not the final Hunter HQ and not a final building design: engine-cube walls with the project's placeholder materials, project test actors only.
 
@@ -28,7 +29,11 @@ import os
 
 import unreal
 
-MAP_PATH = "/Game/SpnTest/Lvl_SpnBuildingTest"
+# SPN_VARIANT=npc builds the NightBuild05 level Lvl_SpnNpcTest: the same building without a roof (overview cameras can look in), the storage
+# door unlocked and open so a resident can walk from the archive to the storage, two residents, a navigation volume and camera actors.
+VARIANT = os.environ.get("SPN_VARIANT", "")
+NPC_VARIANT = VARIANT == "npc"
+MAP_PATH = "/Game/SpnTest/Lvl_SpnNpcTest" if NPC_VARIANT else "/Game/SpnTest/Lvl_SpnBuildingTest"
 CUBE = "/Engine/BasicShapes/Cube.Cube"
 MAT = "/Game/SpnTest/Materials/"
 CLS = "/Script/SupernaturalProt."
@@ -160,7 +165,8 @@ def build_environment():
 
 def build_shell():
     box("SPN_Floor", -600, 600, 0, 900, 0.0, FLOOR_TOP, M_FLOOR)
-    box("SPN_Ceiling", -610, 610, -10, 910, WALL_TOP, WALL_TOP + 20.0, M_CEIL)
+    if not NPC_VARIANT:
+        box("SPN_Ceiling", -610, 610, -10, 910, WALL_TOP, WALL_TOP + 20.0, M_CEIL)
     # porch: two steps in front of the entrance (7.5 and 15 cm), wider than the door
     box("SPN_PorchStep1", -420, -180, -90, -10, 0.0, 7.5, M_STEP)
     box("SPN_PorchStep2", -420, -180, -40, -10, 0.0, FLOOR_TOP, M_STEP)
@@ -178,7 +184,10 @@ def build_doors():
     door("front_door", (-355, 0), 0.0, M_DOOR_WOOD)                                                     # unlocked
     door("archive_door", (0, 170), 90.0, M_DOOR_WOOD)                                                   # unlocked
     door("study_door", (-405, 450), 0.0, M_DOOR_RED, locked=True, key="key.study")                      # key only
-    door("storage_door", (195, 450), 0.0, M_DOOR_METAL, locked=True, breakable=True)                     # break it
+    if NPC_VARIANT:
+        door("storage_door", (195, 450), 0.0, M_DOOR_WOOD).set_editor_property("authored_open", True)          # residents walk through it
+    else:
+        door("storage_door", (195, 450), 0.0, M_DOOR_METAL, locked=True, breakable=True)                     # break it
     door("back_door", (395, 900), 0.0, M_DOOR_METAL, locked=True, breakable=True, open_angle=-90.0)     # second access, opens inwards
     door("inner_door", (-100, 620), 90.0, M_DOOR_WOOD)                                                  # storage <-> study, unlocked
 
@@ -225,6 +234,43 @@ def build_lights():
     return lights
 
 
+def npc(npc_id, name, location, yaw, routine, wait=3.0, tier="B"):
+    actor = spawn(unreal.load_class(None, CLS + "SpnNpc"), unreal.Vector(location[0], location[1], FLOOR_TOP + 90.0), yaw=yaw, label="SPN_Npc_" + name)
+    actor.set_editor_property("npc_id", npc_id)
+    actor.set_editor_property("display_name", name)
+    actor.set_editor_property("routine_points", [unreal.Vector(p[0], p[1], FLOOR_TOP + 90.0) for p in routine])
+    actor.set_editor_property("routine_wait_seconds", wait)
+    return actor
+
+
+def camera(label, location, look_at, fov=70.0):
+    actor = spawn(unreal.CameraActor, unreal.Vector(*location), label=label)
+    delta = unreal.Vector(look_at[0] - location[0], look_at[1] - location[1], look_at[2] - location[2])
+    actor.set_actor_rotation(delta.rotator(), False)
+    actor.get_component_by_class(unreal.CameraComponent).set_editor_property("field_of_view", fov)
+    actor.set_editor_property("tags", [unreal.Name(label)])   # found by tag at run time (labels exist only in the editor)
+    return actor
+
+
+def build_npc_extras():
+    # navigation: one volume over the building and the yard (the mesh is generated when the level starts, see DefaultEngine.ini)
+    volume = spawn(unreal.NavMeshBoundsVolume, unreal.Vector(0.0, 450.0, 150.0), label="SPN_NavVolume")
+    volume.set_actor_scale3d(unreal.Vector(16.0, 16.0, 4.0))
+    # the caretaker works in the archive; the neighbour stays in the foyer, further away than a noise from the back door carries through the walls
+    npc(1001, "Caretaker", (150, 300), 0.0, [(150, 300), (480, 260), (420, 120)], wait=3.0)
+    npc(1002, "Neighbour", (-450, 230), 0.0, [(-450, 230), (-380, 330)], wait=5.0)
+    # overview cameras for the recorded run (a roofless dolls-house view, and a close view of the back door)
+    camera("SPN_Cam_Overview", (0.0, -700.0, 1250.0), (0.0, 470.0, 20.0), fov=62.0)
+    camera("SPN_Cam_BackDoor", (900.0, 1500.0, 330.0), (450.0, 900.0, 120.0), fov=60.0)
+    camera("SPN_Cam_Storage", (150.0, 520.0, 520.0), (430.0, 880.0, 90.0), fov=68.0)
+    # the player starts in the yard behind the building
+    start = [a for a in _actors.get_all_level_actors() if isinstance(a, unreal.PlayerStart)]
+    for a in start:
+        a.set_actor_location(unreal.Vector(900.0, 1700.0, 100.0), False, False)
+        a.set_actor_rotation(unreal.Rotator(roll=0.0, pitch=0.0, yaw=-125.0), False)
+
+
+
 def main():
     force = os.environ.get("SPN_FORCE") == "1"
     levels = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
@@ -238,7 +284,7 @@ def main():
     elif not levels.new_level(MAP_PATH, False):
         fail("could not create " + MAP_PATH)
 
-    for cls in ("SpnTestDoor", "SpnTestKey", "SpnLightSwitch", "SpnTestPickup"):
+    for cls in ("SpnTestDoor", "SpnTestKey", "SpnLightSwitch", "SpnTestPickup") + (("SpnNpc",) if NPC_VARIANT else ()):
         if unreal.load_class(None, CLS + cls) is None:
             fail(cls + " not found; build SupernaturalProtEditor first")
 
@@ -248,6 +294,8 @@ def main():
     lights = build_lights()
     build_furniture_and_objects(lights)
     spawn(unreal.PlayerStart, unreal.Vector(-300, -600, 100), yaw=90.0, label="SPN_PlayerStart")   # in front of the entrance, facing the building
+    if NPC_VARIANT:
+        build_npc_extras()
 
     if not levels.save_current_level():
         fail("could not save " + MAP_PATH)

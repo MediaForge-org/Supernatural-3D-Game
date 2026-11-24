@@ -78,6 +78,19 @@
       "gap": "Obstacles and StairsAndRamps fail today (walking over 30 cm ledges, 30 cm stairs); a capsule/step decision by the developer is open."
     },
     {
+      "id": "movement.ledge_assist",
+      "title": "Ledge assist: step on, vault, mantle, climb up (explicit jump input, bands 40 / 120 / 180 cm)",
+      "core_headers": [
+        "LedgeAssist.h"
+      ],
+      "tests": [
+        "SpnQA.LedgeAssist",
+        "SpnQA.Jump",
+        "core:Tests/Core/LedgeAssistTests.cpp"
+      ],
+      "gap": "No animation (the capsule follows the core path; the mesh plays the jump pose). Network prediction of a running move is not done (single player only). Tested on runtime boxes on the movement test map, not on the generated world's walls and fences."
+    },
+    {
       "id": "movement.network",
       "title": "Sprint/gait prediction and replay for network play",
       "tests": [
@@ -163,6 +176,15 @@
       "tests": [
         "SpnGame.TestDoor.UseAndSwing",
         "SpnGame.TestDoor.LoadShowsSavedState",
+        "SpnGame.Doors.OpenerStepsOutOfTheSwing",
+        "SpnGame.Doors.NoRoomToStepBackKeepsTheDoorBlocked",
+        "SpnGame.Doors.OnlyTheOpenerIsAskedToStepAside",
+        "SpnGame.Doors.WalkedStepInTheOpen",
+        "SpnGame.Doors.WalkedStepInANarrowCorridor",
+        "SpnGame.Doors.WalkedDeadEndKeepsTheDoorBlocked",
+        "SpnGame.Doors.WalkedPawnBehindBlocksTheStep",
+        "SpnGame.Doors.WalkedLedgeBehindStopsTheStep",
+        "SpnGame.Doors.WalkedStepForDifferentCharacterSizes",
         "SpnGame.TestMap.PlayDoors",
         "SpnQA.Doors",
         "SpnQA.Buildings",
@@ -171,7 +193,7 @@
         "core:Tests/Core/DevicesTests.cpp",
         "core:Tests/Core/InteractionSystemTests.cpp"
       ],
-      "gap": "Locked doors have no key model; door sound/animation are placeholders. Closing onto a player: the Core decides through a block rule, but the Unreal overlap query (ASpnTestDoor) is written without a build and NOT verified; doors vs NPCs are not tested."
+      "gap": "Locked doors have no key model; door sound/animation are placeholders. Closing onto a player: the Core decides through a block rule, but the Unreal overlap query (ASpnTestDoor) is written without a build and NOT verified; doors vs NPCs are not tested. Step-aside (2026-11-13): the character that opened a door and stands in its swing takes one short walked step out of it if a capsule sweep finds room, else the door stays blocked; the step direction is the shortest of several candidates (radial, straight back, 15 degree steps; never towards the leaf) that passes the capsule sweep and ends on walkable floor. SpnGame.Doors.Walked* tick a headless world so the character really walks (open space, 140 cm corridor, dead end, pawn behind, ledge, capsule radius 25/35/50/60); StepAsideMargin 12 / MaxLength 90 are placeholders. Not covered: stairs at the door, moving obstacles appearing during the step (only the no-progress stop handles them)."
     },
     {
       "id": "pickups",
@@ -568,6 +590,42 @@
       "gap": "The rendered, walked journey through Lvl_SpnBuildingTest is the gameplay validation run documented in Docs/NightBuild04, not an automated pixel test. A pawn standing in the closing door's swing is covered by SpnQA.Doors, not by the headless NightBuild04 tests. No hardware gamepad test (keys are checked by name only)."
     },
     {
+      "id": "nb05.living_world",
+      "title": "NPC perception (sight with line of sight, wall-attenuated hearing), reactions Idle/Investigate/Alert/Flee/ReturnToRoutine, NPC memory in the save slot (world.npcs), gameplay noises, timed door break-in (NightBuild05)",
+      "classes": [
+        "ASpnNpc",
+        "USpnNoiseSubsystem",
+        "USpnNpcMemorySubsystem"
+      ],
+      "core_headers": [
+        "NpcReaction.h"
+      ],
+      "tests": [
+        "SpnGame.NightBuild05.DoorNeverPushesAPawn",
+        "SpnGame.NightBuild05.DoorStopsAtPawnAtAnyFrameRate",
+        "SpnGame.NightBuild05.DoorEmitsNoise",
+        "SpnGame.NightBuild05.TimedBreakInNeedsTheHold",
+        "SpnGame.NightBuild05.NpcSightAndBlocking",
+        "SpnGame.NightBuild05.NpcHearingRangeAndWalls",
+        "SpnGame.NightBuild05.NpcReactionAndMemory",
+        "SpnGame.NightBuild05.SeveralNpcsReactIndependently",
+        "SpnGame.Npc.OpenDoorLeafIsNotAWall",
+        "SpnGame.NightBuild05.SaveDuringAlarmAndLoad",
+        "SpnGame.NightBuild05.ReactionSequenceIsFrameRateIndependent",
+        "SpnCore.NpcMemory.Basics",
+        "SpnCore.NpcMemory.BoundedRepeatedEvents",
+        "SpnCore.NpcMemory.NoiseChannel",
+        "SpnCore.NpcMemory.SightVerdict",
+        "SpnCore.NpcMemory.SaveLoadRoundTrip",
+        "SpnCore.NpcMemory.RepeatedSaveLoadCycles",
+        "SpnCore.NpcMemory.SlotWithoutNpcSection",
+        "SpnCore.NpcMemory.DamagedNpcSection",
+        "SpnQA.NpcReaction",
+        "core:Tests/Core/NpcReactionTests.cpp"
+      ],
+      "gap": "Patrol (fixed 2026-11-13): a leg is given up after 8 s WITHOUT PROGRESS (before: 8 s leg time, so legs over 12 m never finished); GetPatrolLegsCompleted/GivenUp are checked on the 40 m legs of SpnWorld by SpnWorldQA.Route (npcs_reach_their_routine_points), not on the small NPC test map. Hearing walls (fixed 2026-11-13): an open door leaf no longer counts as a wall (it made the neighbour alarm checks depend on a few cm of the Caretaker's position); the map probe SpnDiag.Npc.AlarmShoutWallProbe (-game on Lvl_SpnNpcTest) lists the obstacles per position. The hearing model still counts straight-line obstacles only (no sound paths around corners). The rendered, walked scenario on Lvl_SpnNpcTest (SpnQA.NpcReaction) is the gameplay validation run documented in Docs/NightBuild05, not a pixel test. The NPC is an engine-shape placeholder without animation; AI Perception is deliberately not used (see Docs/NightBuild05). NPC positions are not saved. Footsteps of the player emit no noise yet. No manual human playtest."
+    },
+    {
       "id": "nb02.road_navigation",
       "title": "Map geometry, road routing, navigation session, NPC memory and the NightBuild03 navigation tech demo (USpnMapSubsystem road mode, ASpnNavDemo)",
       "classes": [
@@ -617,6 +675,58 @@
       ],
       "title": "Inventory-backed world pickups and containers",
       "gap": "Persistence = the taken flag in world.facts + the inventory section; the actors are recreated from the level / scenario spawner and match their saved state (SpnGame.NightBuild.ObjectsWorld, real level recreation). Core ObjectPersistence (world.objects section, RegionStateCache) is deliberately not integrated: it would duplicate state that world.facts already holds and only pays off with region streaming; see Docs/NightBuild01/COMPLETION_REPORT.md."
+    },
+    {
+      "id": "character.presentation",
+      "title": "Exchangeable player character presentation (Docs/Proposals/0013 S1-S3): anim base on the movement state interface, data-driven body/follower presets with mannequin fallback, body height -> mesh scale and camera pivot",
+      "classes": [
+        "USpnAnimInstance",
+        "USpnCharacterVisualComponent",
+        "USpnRetargetFollowAnimInstance",
+        "USpnMetaHumanPrepLibrary",
+        "USpnWardrobeComponent"
+      ],
+      "core_headers": [
+        "BodyCoverage.h"
+      ],
+      "console": [
+        "Spn.Body"
+      ],
+      "tests": [
+        "SpnGame.Character.AnimBaseReadsTheMovementState",
+        "SpnGame.Character.BodyHeightKeepsGameplay",
+        "SpnGame.Character.FollowersAndMissingAssets",
+        "SpnGame.Character.RetargetedTestBody",
+        "SpnGame.Character.WardrobeLayersAndDetails",
+        "SpnQA.CharacterBody",
+        "SpnQA.Buildings",
+        "SpnWorldQA.Integration"
+      ],
+      "gap": "2026-11-15 modular body (Docs/Proposals/0018): USpnWardrobeComponent applies the Core rules spn::core::ResolveCoverage (Tests/Core/BodyCoverageTests.cpp) - separate wearable components, body zone hiding via SpnZone_<zone> material slots (no body mesh is split yet, so nothing is hidden on screen), optional detail geometry only with an enabled category and an exposed zone (only a neutral engine-sphere marker exists, off by default). Not saved, not replicated, no rendered QA yet. 2026-11-15 phase 2 (Docs/Proposals/0017): preset mh_male_193 (local parametric male MetaHuman body, 193 cm, meshes generated by the editor-only USpnMetaHumanPrepLibrary through the public MetaHumanCharacterEditor API; that library is exercised by Tools/character_mh_male_setup.py, not by an automation test). Leg goals blended to the source horizontally (retarget op 'Spn Leg Goals'); sprint row added to BS_Idle_Walk_Run (Tools/locomotion_sprint_samples.py). SpnQA.CharacterBody runs placeholder, mh_template and mh_male_193 (-SpnQaBodies=). 2026-11-14 feasibility phase (Docs/Proposals/0015): the config preset mh_template shows the engine's MetaHuman TEMPLATE body + face, posed by runtime IK retargeting from the hidden mannequin (USpnRetargetFollowAnimInstance); its retargeter is local content from Tools/character_mh_test_setup.py, so on a machine without it the preset falls back to the mannequin and SpnQA.CharacterBody / SpnGame.Character.RetargetedTestBody fail loudly. No facial animation, no grooms, no clothing on the test body. Before that: no final character, no new body asset: the only provider is the template mannequin (ABP_Unarmed reparented to USpnAnimInstance; its graphs still read the template variables, not yet the Spn* variables). Test bodies test_160 / test_195 are a scaled mannequin; the rendered runs use -SpnBody=<preset> with the Doors and World suites (not part of the default suites). Followers are checked headless only (leader pose, attachment, no collision); clipping of real clothing and foot IK are untested because no second skeleton exists. Retarget preparation (0013 section 9, editor scripts, not automation tests): character_skeleton_contract.py (reference contract + candidate checker, verified on the mannequins, a non-human mesh and a missing asset) and character_retarget_prep.py (IK_SpnMannequin, RTG_SpnMannequin_Template in /Game/SpnCharacterPrep, batch dry run Quinn -> Manny: 3 clips with identical frames). NPCs (ASpnNpc) do not use the component yet (0013 S7)."
+    },
+    {
+      "id": "visual.world_tools",
+      "title": "Visual build of the placeholder world Lvl_SpnWorld: lighting scenarios, camera runs, landscape import, instanced Megaplants trees",
+      "classes": [
+        "ASpnWorldLighting",
+        "USpnCineSubsystem",
+        "USpnRouteGuideSubsystem",
+        "USpnDecorDoorSubsystem",
+        "USpnWorldBuildLibrary",
+        "ASpnSkinnedGroup"
+      ],
+      "console": [
+        "Spn.Lighting",
+        "Spn.Quality"
+      ],
+      "tests": [
+        "SpnWorldQA.Integration",
+        "SpnWorldQA.Route",
+        "SpnWorldQA.RouteControls",
+        "SpnGame.World.ScreenPercentageOnlyWhileTheWorldLevelRuns",
+        "SpnGame.World.QualityModeFollowsTheGraphicsSetting"
+      ],
+      "gap": "Gameplay route (phase 1, 2026-11-13, Tools/spn_world/gameplay.py): SpnWorldQA.Route plays it with key events (new game through the session, objects exist once, two NPCs on the navigation mesh, encounter and collision, house A key + notebook, house B unlocked with the key, the way to the pine track, save through the session, boundary wall, highway rockfall, play-area guard, main menu -> Load: pose, doors, key, items, NPC memory). Minimap (night build 2026-11-14): SpnWorld installs the generated map data (Tools/spn_world/map_data.py -> Content/SpnWorld/Data/SpnWorldMap.json, USpnMapSubsystem::InstallGeneratedRegion): SpnWorldQA.Route minimap_shows_spnworld checks bounds 1260 m, player inside, no old test POIs visible, a road route to the cabin. Route guide prototype USpnRouteGuideSubsystem (objective line + guide waypoint, derived from saved state): SpnWorldQA.Route guide_step1..4 and guide_completes_at_the_cabin. Texture pop-in warm-up (SpnWorldWarmup, called by the session at New game / loaded pose): exercised by every SpnWorldQA run, its visual effect measured by Tools/spn_visual.ps1 cold still series (Docs/Development/Streaming-PopIn-2026-11-14.md), not asserted. Render resolution (2026-11-13): ASpnWorldLighting sets the PROVISIONAL standard r.ScreenPercentage 90 (TSR) at BeginPlay and restores the previous value at EndPlay, Spn.Quality quality = 100; asserted headless (SpnGame.World...) and in the running world (SpnWorldQA section 'render resolution'); a console r.ScreenPercentage has the higher priority and wins. Graphics settings row 'World render quality' (saved as SpnPlayer/WorldQualityMode, applied live by the world level; Spn.Quality is a session switch that does not change it): headless SpnGame.World.QualityModeFollowsTheGraphicsSetting and the rendered menu check graphics_menu_world_quality in SpnWorldQA. SpnWorldQA.Integration (run_gameplay_qa.ps1 -Suite World) plays the generated world: walking and sprinting on asphalt, forest track and a slope, collisions with a tree, a rock and the cabin wall, the cabin door with E, inside/outside of the room volume, the interior exposure values, the four lighting scenarios switched with Spn.Lighting, camera/feet clipping at the stops. Not covered: the camera runs of USpnCineSubsystem (verified only by the recorded videos of Tools/spn_visual.ps1), USpnWorldBuildLibrary (editor-only, exercised by every world build), the visual result of the exposure (only its configuration is asserted). Earlier note: verified only by real runs: the world generator (Tools/spn_world_build.ps1) and the recorded camera runs, stills and perf reports of Tools/spn_visual.ps1 (videos and PROGRESS.md in Artifacts/VisualProgress). Not part of gameplay: SpnWorldLighting only changes lights/fog/post process of its own level, SpnCineSubsystem only acts with -SpnCine on the command line, SpnWorldBuildLibrary is editor-only, SpnSkinnedGroup is a placement holder for trees. The door opening of the cine walker is logged (SpnCine: walker used door ...) but not asserted."
     }
   ]
 }
