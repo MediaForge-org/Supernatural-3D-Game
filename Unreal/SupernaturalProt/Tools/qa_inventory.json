@@ -317,6 +317,25 @@
       "gap": "These Core modules are not integrated in the Unreal game, so there is no in-game test; the Core tests are CMake/CTest tests (Fedora) and are NOT run by the Windows QA script."
     },
     {
+      "id": "investigation.core",
+      "title": "Investigation: evidence, dialogue, investigation assists, case prototype (engine-independent Core only)",
+      "core_headers": [
+        "Evidence.h",
+        "Dialogue.h",
+        "InvestigationAssist.h",
+        "InvestigationIds.h",
+        "CasePrototype.h"
+      ],
+      "tests": [
+        "core:Tests/Core/EvidenceTests.cpp",
+        "core:Tests/Core/DialogueTests.cpp",
+        "core:Tests/Core/InvestigationAssistTests.cpp",
+        "core:Tests/Core/CasePrototypeTests.cpp",
+        "core:Tests/Core/InvestigationIntegrationTests.cpp"
+      ],
+      "gap": "Core only (SPN-DEV-02/03, merged from main 2026-11-25): no Unreal witness actor, evidence object or journal UI yet (Docs/Planning/TASKS.md UNREAL-WITNESS-EVIDENCE), so nothing is checked in game. PROTOTYPE-CASE-01 is a placeholder closure rule (witness AND evidence), closure stays a manual player action (EVD-04/05). Planned use: the first case proposal Docs/Proposals/0019."
+    },
+    {
       "id": "devices",
       "title": "Switch, button, lever and links (Core foundation)",
       "core_headers": [
