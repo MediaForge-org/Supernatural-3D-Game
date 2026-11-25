@@ -36,6 +36,29 @@ inline constexpr std::size_t kNoiseKindCount = 5;
 /// DoorBreak, Impact and Shout (an NPC raising the alarm) are suspicious; footsteps and normal door use are harmless. A harmless noise that is very loud is suspicious as well.
 [[nodiscard]] bool IsSuspicious(NoiseKind kind, double strength, double suspiciousStrength = 0.75) noexcept;
 
+/// Footsteps of a moving character (NightBuild06; NightBuild05 KNOWN_ISSUES 6). Range and strength grow with the horizontal speed from
+/// `walkSpeed` (quiet) to `sprintSpeed` (loud); crouching scales both down. Footsteps stay BELOW the suspicious strength on purpose: a calm NPC
+/// hears and ignores them, a wary one (after something suspicious) turns to them - so footsteps add stealth pressure without making every
+/// walk an alarm. All numbers are PLACEHOLDERS (CLAUDE.md section 3).
+struct FootstepNoiseConfig {
+    double minSpeed = 50.0;        ///< cm/s: below this no footstep noise at all (standing, shuffling)
+    double walkSpeed = 180.0;      ///< cm/s: the quiet end
+    double sprintSpeed = 800.0;    ///< cm/s: the loud end (faster is clamped)
+    double quietRange = 4.0;       ///< m at walkSpeed
+    double loudRange = 18.0;       ///< m at sprintSpeed
+    double quietStrength = 0.15;
+    double loudStrength = 0.6;     ///< must stay below the suspicious strength (0.75)
+    double crouchFactor = 0.5;     ///< range and strength while crouched
+};
+
+struct FootstepNoise {
+    bool audible = false;
+    double range = 0.0;     ///< m
+    double strength = 0.0;  ///< 0..1
+};
+
+[[nodiscard]] FootstepNoise FootstepNoiseFor(double horizontalSpeedCmS, bool crouched, const FootstepNoiseConfig& config = {}) noexcept;
+
 struct GameplayNoise {
     Vec2 position;
     double range = 0.0;    ///< m: audible radius at sensitivity 1 and no walls in between

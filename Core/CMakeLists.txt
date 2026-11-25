@@ -4,6 +4,7 @@ add_library(spn_core STATIC
     src/AppearanceEdit.cpp
     src/AppearanceGenerator.cpp
     src/AppearanceRecipe.cpp
+    src/BodyCollision.cpp
     src/BodyCoverage.cpp
     src/CameraArm.cpp
     src/CatalogFingerprint.cpp

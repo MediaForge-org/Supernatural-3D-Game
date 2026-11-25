@@ -422,3 +422,38 @@ TEST_CASE("game event bus carries gameplay noises") {
     CHECK(seen.noiseRange == 18.0);
     CHECK(ToString(GameEventType::NoiseEmitted) == "noise emitted");
 }
+
+TEST_CASE("footstep noise: silent when standing, louder with speed, quieter crouched, never suspicious on its own") {
+    CHECK_FALSE(FootstepNoiseFor(0.0, false).audible);
+    CHECK_FALSE(FootstepNoiseFor(40.0, false).audible);
+    CHECK_FALSE(FootstepNoiseFor(std::numeric_limits<double>::quiet_NaN(), false).audible);
+
+    const FootstepNoise walk = FootstepNoiseFor(180.0, false);
+    const FootstepNoise jog = FootstepNoiseFor(350.0, false);
+    const FootstepNoise sprint = FootstepNoiseFor(800.0, false);
+    CHECK(walk.audible);
+    CHECK(walk.range == doctest::Approx(4.0));
+    CHECK(walk.strength == doctest::Approx(0.15));
+    CHECK(jog.range > walk.range);
+    CHECK(jog.strength > walk.strength);
+    CHECK(sprint.range == doctest::Approx(18.0));
+    CHECK(sprint.strength == doctest::Approx(0.6));
+    CHECK(FootstepNoiseFor(2000.0, false).range == doctest::Approx(18.0));   // faster than sprint is clamped
+
+    const FootstepNoise sneak = FootstepNoiseFor(350.0, true);
+    CHECK(sneak.range == doctest::Approx(jog.range * 0.5));
+    CHECK(sneak.strength == doctest::Approx(jog.strength * 0.5));
+
+    for (double speed : {60.0, 180.0, 350.0, 550.0, 800.0, 1200.0}) {
+        CHECK_FALSE(IsSuspicious(NoiseKind::Footstep, FootstepNoiseFor(speed, false).strength));
+    }
+}
+
+TEST_CASE("footstep noise: a calm listener ignores steps, the hearing range still follows the speed") {
+    const HearingConfig ears;
+    const GameplayNoise walk{{0.0, 0.0}, FootstepNoiseFor(180.0, false).range, FootstepNoiseFor(180.0, false).strength, NoiseKind::Footstep};
+    const GameplayNoise sprint{{0.0, 0.0}, FootstepNoiseFor(800.0, false).range, FootstepNoiseFor(800.0, false).strength, NoiseKind::Footstep};
+    CHECK_FALSE(CanHear(ears, walk, {8.0, 0.0}, 0).heard);   // a walk is not heard 8 m away
+    CHECK(CanHear(ears, sprint, {8.0, 0.0}, 0).heard);       // a sprint is
+    CHECK_FALSE(CanHear(ears, sprint, {8.0, 0.0}, 2).heard); // but not through two walls (18 m * 0.25 = 4.5 m)
+}

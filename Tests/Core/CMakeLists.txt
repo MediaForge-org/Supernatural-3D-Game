@@ -26,6 +26,7 @@ add_executable(spn_core_tests
     JumpModelTests.cpp
     LedgeAssistTests.cpp
     BodyCoverageTests.cpp
+    BodyCollisionTests.cpp
     GroundSteeringTests.cpp
     LocomotionTests.cpp
     MapGeometryTests.cpp

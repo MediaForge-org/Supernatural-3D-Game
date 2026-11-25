@@ -36,6 +36,17 @@ bool IsSuspicious(NoiseKind kind, double strength, double suspiciousStrength) no
     return std::isfinite(strength) && strength >= suspiciousStrength;
 }
 
+FootstepNoise FootstepNoiseFor(double horizontalSpeedCmS, bool crouched, const FootstepNoiseConfig& config) noexcept {
+    FootstepNoise out;
+    if (!std::isfinite(horizontalSpeedCmS) || horizontalSpeedCmS < config.minSpeed || config.sprintSpeed <= config.walkSpeed) return out;
+    const double t = std::clamp((horizontalSpeedCmS - config.walkSpeed) / (config.sprintSpeed - config.walkSpeed), 0.0, 1.0);
+    const double factor = crouched ? config.crouchFactor : 1.0;
+    out.range = (config.quietRange + t * (config.loudRange - config.quietRange)) * factor;
+    out.strength = (config.quietStrength + t * (config.loudStrength - config.quietStrength)) * factor;
+    out.audible = out.range > 0.0 && out.strength > 0.0;
+    return out;
+}
+
 HearingResult CanHear(const HearingConfig& config, const GameplayNoise& noise, Vec2 listener, int walls) noexcept {
     HearingResult r;
     if (!Finite(noise.position) || !Finite(listener) || !std::isfinite(noise.range) || !std::isfinite(noise.strength)) return r;
