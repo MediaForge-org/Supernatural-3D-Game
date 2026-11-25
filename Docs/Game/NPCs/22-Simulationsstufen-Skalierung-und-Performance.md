@@ -306,7 +306,7 @@ Die Quellen: Host-Speicherstand maßgeblich; Gäste im Host-Speicherstand; bis z
 9. **Spieler beobachtet einen Hintergrund-NPC über Stunden.** Der NPC wird S0/S1 und bleibt konsistent; kein Wechsel mitten im Blick.
 10. **Ermittlung prüft Alibi eines S3-NPC.** Aufenthalt wird konsistent rekonstruiert (Ermittlung 12 §8).
 11. **Mehrere Spieler, ein NPC.** Der NPC ist S0 beim nächsten Spieler; die anderen sehen repliziertes Verhalten.
-12. **Untergrund.** Offen (Q-N25); unabhängige Budgetierung (N-SI-024).
+12. **Untergrund.** **historisch (N-02, 08.11.2026)** für die Untergrundzivilisation; Restfrage für Bunker, Höhlen und kleinere Untergrundbereiche bleibt offen (Q-N25). Die unabhängige Budgetierung (N-SI-024) ist ebenfalls historisch.
 
 ---
 

@@ -470,6 +470,8 @@ Der Assistent (`23#612A` Punkt 15, „Gefällt mir sehr“): Normal vielleicht u
 
 ### 17.3 Interne Eskalationsstufen statt Wanted-Sterne
 
+> **Statusvermerk (Entscheidung 39, 31.08.):** Das Changelog formuliert interne Eskalationsstufen als Option („kann“) und die Kartenbeschränkung auf immersiven Schwierigkeiten als Soll-Regel („sollte“). Der Abschnitt bleibt 💡 Vorschlag, bis der Entwickler die Stufenanzeige und die Minimap-Regel entscheidet. Bis dahin ist die Richtung dokumentiert, nicht bestätigt.
+
 Der Assistent (`23#612A` Punkt 16): Das konkrete Sternsystem würde er „nicht kopieren“, aber intern **sechs oder mehr Threat/Escalation Levels** führen: 0 keine, 1 lokale Reaktion, 2 aktive Suche, 3 große Polizeireaktion, 4 taktische Reaktion, 5 State/Federal-Eskalation, 6 extreme Fahndung; „UI muss nicht zwingend sechs Sterne zeigen. Die Simulation dahinter ist wichtiger.“ Dazu die Liste der Fahndungsinformation (Abschnitt 17.1) und `23#510A`: Eine Tabelle zu GTA-Merkmalen bewertet „6 Wanted Stars“ als „Nicht übernehmen“, „Wir bauen ein realistischeres Behörden-/Threat-System ohne GTA-Sterne“. Status: 💡; der Entwickler äußerte sich weder in `23#511E` noch in `23#613E` dagegen.
 
 **Wirkung auf K-E8:** Die „Fahndungsstufen“ im Quiz-Text (`48#154A`, `48#156A`) sind damit mit hoher Wahrscheinlichkeit die **internen** Stufen aus `23#612A`, nicht sichtbare Sterne. Der Konflikt ist dadurch **entschärft, aber nicht entschieden**: Es gibt keine Entwickleraussage, die Sterne ausschließt oder Stufen anzeigt. Die Anzeige ist weiterhin offen.

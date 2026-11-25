@@ -206,7 +206,9 @@ Falsche Sinneseindrücke durch Kreaturen (Halluzination, Imitation, Stimmen) sin
 
 ## 11. Entwurf: Architektur und Prüfwerkzeug
 
-> 💡 **Vorschlag.** Er ordnet, wo die Teile liegen; die Technik des Master (StateTree plus eigenes C++) bleibt maßgeblich.
+> 📋 **Technikrahmen (verbindlich, PROJECT_DECISIONS „NPCs and AI“; keine spätere Nutzerentscheidung überholt):** StateTree organisiert den hierarchischen Zustand, eigenes C++ übernimmt Wahrnehmung, Gedächtnis, Kampf und Sonderregeln.
+>
+> 💡 **Vorschlag:** die Aufteilung, wo die einzelnen Teile liegen.
 
 ```text
 CreatureBrain
@@ -286,3 +288,8 @@ Am 22.10.2026 hat der Entwickler eine **verbindliche Produktvision** zu einer le
 - Zahlen: Reichweiten, Zeiten, Schwellen (nicht Teil dieses Ordners).
 - Wie weit Persönlichkeit und Erfahrung die Reaktion auf Fallen ändern (❓ Q-K15).
 - Die Anbindung an Netzwerk und Koop (Autorität der KI im Mehrspielerbetrieb, [Modul 17](17-Persistenz-Daten-und-Modding.md)).
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Reaktion auf Verfolgung (Entscheidung 29, Richtung):** Intelligente Monster können auf die Jagd reagieren, indem sie ihr Lager verlegen, Beweise verbergen, ihre Opfermuster ändern, Fallen stellen, Jäger beobachten oder falsche Fährten legen. Nicht jede Art kann alles; die Auswahl hängt von Art und Individuum ab.
+- 📋 **Art-spezifische Ernte (Entscheidung 29):** Monsterernte richtet sich nach der Art und ist **nicht** immer Häuten. Proben können Blut, Gewebe, Knochen, Zahn, Kralle, Organe, Sekrete oder übernatürliche Rückstände umfassen.

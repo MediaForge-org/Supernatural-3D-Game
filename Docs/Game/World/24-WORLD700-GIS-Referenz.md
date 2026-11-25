@@ -256,3 +256,85 @@ In WORLD_700 gibt es **drei U-Bahn-Linien** (Nord–Süd-Hauptlinie, West–Ost-
 | **Summe aller Tabellen** | **501** |
 
 Die Summe aller Tabellenzeilen kann von den ‚495 Features‘ in `G7-CLOSE` abweichen, weil dort Hilfstabellen (zum Beispiel Review-Flags) anders gezählt sein können; die Abweichung wird nicht aufgelöst.
+
+---
+
+## 11. Iteration 7: Georeferenz, Zoomstufen, Stil und Phase-B-Schranken
+
+Quelle: Master `02_WORLD_700/AVAILABLE_TECHNICAL_MAP_ARTIFACTS_2026-09-23/README_iteration_7_technical_map.md`, `…/2026-09-27/open_world_multiresolution_phase_a/` (Methodik, Stil-Manifest, Wiederherstellungsstatus). Geltung: technische Referenz der geschlossenen WORLD_700-Geografie; **keine** Aussage über die Größe der Hauptwelt (siehe [Spielwelt und Untergrund §2](../Spielwelt-und-Untergrund.md#2-zwei-getrennte-linien-der-weltplanung)).
+
+**11.1 Koordinatensystem (📋 technische Festlegung der Referenz, fiktiv).** OWP-LCS-1 ist ein lokales Ingenieur-Koordinatensystem für die Vorproduktion, **kein** vermessenes oder reales geodätisches Bezugssystem. Ursprung ist die südwestliche Außenecke `(0, 0)`; X läuft West nach Ost, Y Süd nach Nord, Z ist die Höhe in Metern.
+
+- Raster: 12.288 × 8.192 px, 2,7 m pro Pixel; Weltumhüllung 33.177,6 m × 22.118,4 m; Fläche der Umhüllung 733,835428 km².
+- Pixelkanten-Umrechnung: `WorldX_m = PixelX × 2,7`; `WorldY_m = (8192 − PixelY) × 2,7`; umgekehrt `PixelX = WorldX_m ÷ 2,7`; `PixelY = 8192 − (WorldY_m ÷ 2,7)`.
+- Die `.pgw`-Datei nutzt die Pixelmitte der oberen linken Ecke (üblich in GIS-Software). Die Rasterquelle ist unverändert (`WORLD_MASTER_LOCK_1`).
+- GeoJSON-Koordinaten sind Meter in OWP-LCS-1, **nicht** Länge und Breite.
+
+**11.2 Zoomstufen (🧭 Vorschlag).** Z0 zeigt die gesamte Welt; jede Stufe verdoppelt die lineare Skala. Bei 1.536 px Viewportbreite erreicht Z3 etwa die native 12K-Auflösung. Z4 bis Z6 halten Vektoren scharf. Zusätzliches Gelände- und Gebäudedetail entsteht **nicht** durch Hochskalieren des Rasters, sondern nur durch eigene Stadtbasiskarten. Jedes Feature trägt `min_zoom` und `max_zoom`.
+
+**11.3 Stabile Kennungen (📋).** `feature_id` ist unveränderlich; Namen dürfen sich ändern. POI haben Platzhalter für die Zustände `unknown`, `discovered`, `visited`, `completed`, `locked`, `hidden` sowie Spoiler- und Entdeckungsattribute (siehe §4.2).
+
+**11.4 Genauigkeitsgrenzen (📋 Quellenangabe).**
+- Passpunkte (GCP) sind aus dem gesperrten visuellen Master abgeleitet; die Hauptnetz-Topologie ist explizit und maschinell prüfbar.
+- Staats- und Stadtpolygone sind vereinfachte Planungsdigitalisierungen, **keine** Katasterdaten (siehe §1).
+- Einzugsgebiete bleiben konzeptionell, bis ein echtes Höhenmodell vorliegt (siehe [Gewässer §D8](05-Gewaesser-und-Hydrologie.md)).
+- Lokale Straßen, einzelne Haltestellen, Fahrspuren, Flughafen-Gates und genaue Rennstrecken gehören in spätere Detailkarten.
+
+**11.5 Verteilung (🧭).** Für die Weltkarte in WebGL oder MapLibre sollen die Sammlungen in GeoPackage, PMTiles oder Vektor-Kacheln umgewandelt werden. Dabei bleiben `feature_id`, `min_zoom` und `max_zoom` erhalten.
+
+**11.6 Phase-A-Methodik und Abnahmeschranken (🧭, Vorschlag bis Freigabe).** Die Phase A wurde nicht als Freigabe, sondern als Vorschlag mit neun Renderregionen geführt; die Freigabefrage „9 oder 11 Regionen“ bleibt blockiert (K-19, siehe [§ Phase-A-Freigabe in Modul 17](17-Weltgenerierung-und-GIS-Daten.md)). Widerspruch: Das Register W-TE-008 in [Modul 19](19-Kartenreferenzen-und-Versionsgeschichte.md) führt A.2 mit 11 Regionen als `APPROVED_LOCKED` nach Entwicklerangabe (30#194E); der Master-Stand lautet `PROPOSED / AWAITING REGION APPROVAL`. Beide Aussagen bleiben nebeneinander stehen, bis der Entwickler entscheidet. Vor der Phase B sind folgende Schranken vorgesehen:
+
+1. Anzahl und Namen der Regionen freigeben.
+2. Jede Renderausdehnung und jede Überlappung (5 bis 10 %) freigeben.
+3. Den Stil `MAP_RENDER_STYLE_V1` sperren.
+4. Die Quellenvollständigkeit je Region bestätigen.
+5. Eine Pilotregion erzeugen, bevor die Serienproduktion beginnt.
+
+Die Renderregionen sind Produktionsausschnitte, **keine** neuen Verwaltungs- oder Geografiegrenzen. Regionale PNG (16K bis 24K) liefern nicht die Bodenauflösung einer globalen 128K-Karte; die tiefsten Kacheln müssen direkt aus DEM, Vektor und Landnutzung gerendert werden. **Hochskalieren regionaler PNG ist verboten.**
+
+**11.7 Stil-Vorschlag `MAP_RENDER_STYLE_V1` (🧭, Status `PROPOSED_STYLE_LOCK_FOR_PHASE_B`, nicht gesperrt).** Prinzipien: Farbgebung des WORLD-Masters erhalten; einheitliche Darstellung von Relief und Wasser; maßstabsabhängige Straßen- und Beschriftungshierarchie; keine geografische Neuinterpretation. Master-Kacheln: verlustfreies PNG 512 × 512. Auslieferung: WebP, AVIF optional. Vektor-Überlagerung: SVG bzw. spätere Vektor-Kacheln. Der Stil wird erst nach Freigabe in Phase B gesperrt.
+
+**11.8 Wiederherstellungsstand (📋 Befund).** Das Paket Phase A war abgeschnitten (kein gültiges ZIP-Zentralverzeichnis). Wiederhergestellt und per SHA256 geprüft: `docs/README.md`, `docs/phase_a_methodology.md`, `manifests/MAP_RENDER_STYLE_V1.json`, `manifests/regional_map_manifest.json`, `previews/regional_segmentation_preview.png`. **Nicht** wiederherstellbar: `segmentation/region_table.csv`, `segmentation/regional_boundaries_overlay.svg`, `storage_estimates/storage_estimates.json`. Die späteren Phase-A.1- und A.2-Dateien sind nicht stillschweigend als Ersatz zu verwenden (siehe [Modul 19](19-Kartenreferenzen-und-Versionsgeschichte.md)).
+
+**11.9 Nicht übertragbar (begründet).** Die beiden Raster-PNG der Iterationen 5 und 6 (je rund 105 MB) und das Phase-A-Vorschaubild (rund 7,7 MB) sind Binärmaterial. Sie bleiben im Archiv; die Maße und Hashes stehen in §11.1 und §11.8.
+
+**11.10 Ebenen-Manifest Iteration 6 (📋 Produktionsvorgabe, Ebenen-Struktur).** Die Ebenen des Overlays sind in dreizehn Gruppen gegliedert. Die Status geben an, welche Ebenen gesperrt und welche bearbeitbar sind.
+
+| Gruppe | Inhalt | Status |
+|---|---|---|
+| BASE | Gelände, Vegetation, Wasser | gesperrtes Raster |
+| ADMIN | Staatsgrenzen und Staatsbeschriftung | bearbeitbares Vektorgerüst, im Komposit ausgeblendet |
+| TRANSPORT/HIGHWAYS | Autobahn- und Straßenhierarchie | bearbeitbar |
+| TRANSPORT/RAIL | Fern-, Regional- und Pendelbahn | bearbeitbar |
+| TRANSPORT/METRO | U-Bahn-Linien 1–3 | bearbeitbar |
+| TRANSPORT/TRAM | innerstädtisches Straßenbahnnetz | bearbeitbar |
+| TRANSPORT/BUS | strategische Stadt- und Fernbuskorridore | bearbeitbar |
+| TRANSPORT/STATIONS | Haltestellen-Hierarchie T1–T4 | bearbeitbar |
+| TRANSPORT/PARK_AND_RIDE | ausgewählte Umsteige-Parkplätze | bearbeitbar |
+| HYDROLOGY | Beckenabfluss, Seeabflüsse, Feuchtgebiete | bearbeitbar |
+| URBAN | gesperrte Stadtflächen und Flughafen-Anker | Referenzgerüst |
+| POI | Motorsport, Hunter-HQ, Gondel, Damm | Referenzgerüst |
+| LABELS | Stadt-, Gewässer- und Infrastrukturbeschriftung | bearbeitbar, im Komposit ausgeblendet |
+
+**Anzeige-Hierarchie (🧭 Vorschlag, je Zoomstufe):**
+
+- Stufe 1: Metropole, Großstadt A und B, große Seen, Hauptgebirgsregion.
+- Stufe 2: Mittelstädte, Haltestellen der Stufen T1–T2, Flughäfen, große Motorsportanlagen, Hauptflüsse.
+- Stufe 3: Kleinstädte, Dörfer, kleine Seen, lokale POI, Umsteige-Parkplätze.
+- Stufe 4: lokale Straßen, Mikroinfrastruktur, kleine Wasserläufe.
+
+**Produktionshinweise aus dem Manifest (📋):**
+
+1. Das SVG ist ein technisches kartografisches Gerüst zur 12K-Master-Karte. Es sind **keine** vermessenen GIS-Daten.
+2. Vor einer interaktiven Kartenveröffentlichung sind Passpunkte und ein Weltkoordinatenbezug festzulegen (siehe §11.1).
+3. Im Raster eingebrannte Beschriftungen sind in die Ebene LABELS zu übertragen, bevor die mehrstufige Beschriftungsausdünnung beginnt.
+4. Gebirge, Makrogeografie und alle gesperrten POI bleiben bei späteren Vektorverfeinerungen unverändert.
+5. Für die Stufen 2 bis 4 gilt maßstabsabhängige Sichtbarkeit in künftigen Zoom-Kacheln.
+
+Der Manifest-Kopf nennt die Fläche als „720–750 km² (Designziel)“. Diese Angabe bezieht sich auf die WORLD_700-Linie und ist keine Festlegung der Hauptwelt.
+
+## 12. Ergänzungen aus den Methodenpaketen (MASTER-MIGRATION-19)
+
+- 🧭 **Web-Kartenprojektion:** Die lokale Hülle wird in ein reserviertes, synthetisches Web-Mercator-Rechteck abgebildet. Die Abbildung bleibt ausdrücklich fiktiv und von realen Geodaten-Ebenen getrennt (Quelle: `Iteration 8`, `WEB_MAP_PROJECTION_STRATEGY.md`, Textpaket in `_SOURCE_ARCHIVE`).
+- 🧭 **Renderquelle für tiefe Stufen:** Für sehr hohe Auflösungen (Zielmaßstab etwa 0,25 m pro Pixel) genügen die 16K- bis 24K-Regionalbilder nicht. Die tiefsten Kacheln müssen direkt aus DEM und kanonischen Vektordaten gerendert werden (Quelle: `Phase A`, `phase_a_methodology.md`).
+- Beide Punkte betreffen die Produktionskette und ändern keine gesperrte Makrogeografie.

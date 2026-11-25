@@ -49,7 +49,7 @@ Der Abgleich mit der bestehenden Datei ergab für diese Punkte keine Lücke und 
 | Wasserpark und Freizeitpark | §10 | W-UR-006 |
 | Mindestens 90 % betretbare Gebäude | §12 | W-UR-001 |
 | Zeitreise: jedes Jahr, ca. 1600 bis heute, versionierte Schichten | §7 | W-RE-004 |
-| Untergrund 50–100 km² tentativ, Gesellschaftstabelle U24 bis U36 | §14 | W-UG-008, W-GS-001 ff. |
+| Untergrund 50–100 km² tentativ **(historisch nach N-02)**, Gesellschaftstabelle U24 bis U36 (Geltung offen, K-29) | §14 | W-UG-008, W-GS-001 ff. |
 | Reichsgrößen Hölle/Fegefeuer/Himmel | §15 | W-RE-002 |
 | Karten werden in Qualitätsstufen abgenommen, keine Karte akzeptiert | §16 | W-KA-003 |
 

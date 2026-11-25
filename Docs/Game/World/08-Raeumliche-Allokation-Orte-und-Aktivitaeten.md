@@ -93,6 +93,18 @@ Betretbarkeit ≥ 90 %; Hero-/Full-/Procedural-/Limited-Interiors; Handel, Gastr
 
 Überlappungen sind erlaubt; für die finale Allokation GIS-Layer statt Prozenttorte (35#92A). Flughäfen: Metropolis International 12–16 km², zwei Regionalflughäfen je 4–6. Motorsport: 6 Anlagen mit 12–17 km² (W-MO-012). Diese Tabelle gehört zur 2.000-km²-Linie und ist für den 2.200-km²-Kandidaten nicht fortgeschrieben.
 
+### 7.1 Inhaltsmengen 09.09. (🕰️ historisch, Arbeitsrichtung)
+
+> ⚠️ **historisch (09.09.):** Diese Mengen gehören zur WORLD_2000-Arbeitsrichtung vom 09.09. und sind nicht mehr verbindlich. Der Entwickler: „Ja das ist besser“ (W-AK-004, 35#96A, 35#97E). Die Zahlen sind 🕰️ und keine Festlegung.
+
+- Pro Bundesstaat mindestens ein **Sports Hub**.
+- **2–4** Ski- und Snowboardgebiete.
+- **5–10** größere Marinas bzw. Bootsanlagen.
+- **1** sehr großer Themenpark und **1** regionaler Themenpark.
+- **1** großer Wasserpark und **2–4** kleine Wasserparks.
+- Mehrere Golfplätze.
+- Mega-POIs ×1,5–2; Städte, Sport und Freizeit ×2–3 gegenüber WORLD_700; Alltags-POIs stärker.
+
 ---
 
 ## 8. Sammelobjekte und Entdeckungsebenen

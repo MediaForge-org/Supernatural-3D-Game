@@ -96,7 +96,7 @@ Boote liegen an Marinas, Tauchen/Erkunden per Boot (M-WB17); Häfen, Fischerei, 
 
 ## 7. Unterirdisches Netz
 
-Mehrere Untergrundstädte verbindet ein unterirdisches Schienen- oder ähnliches Transportsystem (D14-UC, 📋 Richtung; Technik offen). Zugangskontrolle ist ein eigenes System (W-UG-022). Ob die Oberflächenbahn angebunden ist, ist offen (W-VK-016). Details: [Modul 11](11-Untergrund-Architektur-und-Infrastruktur.md).
+> ⚠️ **historisch (N-02, 08.11.2026): Die Untergrundstädte und ihr Verbindungsnetz entfallen als Pflichtinhalt. Bunker, Höhlen und kleinere Untergrundbereiche bleiben möglich.** Mehrere Untergrundstädte verbindet ein unterirdisches Schienen- oder ähnliches Transportsystem (D14-UC, 📋 Richtung; Technik offen). Zugangskontrolle ist ein eigenes System (W-UG-022). Ob die Oberflächenbahn angebunden ist, ist offen (W-VK-016). Details: [Modul 11](11-Untergrund-Architektur-und-Infrastruktur.md).
 
 ---
 

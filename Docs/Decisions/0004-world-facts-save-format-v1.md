@@ -127,3 +127,13 @@ with "history from change events" unless it is decided which history is kept
 (everything, per-key last N, milestones only). Not decided, not implemented. Also
 OPEN: UTF-8 validation, per-save metadata, realm/namespace separation, co-op
 authority and compare-and-set, observers/threading rules.
+
+## 6. Berichtete Risiken aus dem Bericht vom 19.10.2026 (nicht unabhängig geprüft)
+
+Quelle: Projekt-Protokoll 19.10.2026 (`WORLDFACTS_PHASE_0_3`). Die Angaben sind berichtet, nicht reproduziert.
+
+- **Replay-Laufzeit:** `StateAt(n)` läuft linear mit der Journallänge. Ein berichteter Test mit 1,2 Millionen Einträgen dauerte etwa 1,5 Sekunden. Ein Snapshot-Mechanismus fehlt.
+- **Kompatibilität:** Strengere Schlüssel- und Zeichenketten-Grenzen könnten alte v1-Speicherstände am Laden hindern. Ein Regressionstest dafür fehlt.
+- **Plattform:** Windows/MSVC und Git-Zeilenenden sind nicht getestet. `.gitattributes` schützt das eingefrorene Golden-File vor Zeilenende-Umwandlung.
+- **Golden-File:** Das eingefrorene Golden-File darf **nie** neu erzeugt werden, nur damit Tests grün werden. Eine Änderung am Byte-Format braucht eine neue Version, ein eigenes Golden-File, strikten Parser und Migrationstests.
+- Die Migrationsstrategie ist nicht als Kanon festgelegt und nicht umgesetzt.

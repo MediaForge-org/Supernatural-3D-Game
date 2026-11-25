@@ -16,6 +16,11 @@ add_executable(spn_core_tests
     GameEventsTests.cpp
     DoorPersistenceTests.cpp
     DoorStatesTests.cpp
+    CasePrototypeTests.cpp
+    EvidenceTests.cpp
+    DialogueTests.cpp
+    InvestigationAssistTests.cpp
+    InvestigationIntegrationTests.cpp
     EnvScenarioTests.cpp
     InteractionTests.cpp
     InventoryTests.cpp

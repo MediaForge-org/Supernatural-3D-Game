@@ -199,7 +199,7 @@ Diese Quellen werden vom Auftrag erwartet und **existieren nicht oder liefern ni
 | Zahl der Fahrzeuge, NPCs im Straßenverkehr, Straßenkilometer | nicht vorhanden; nur die Planungsannahme von rund 500.000 NPC-Identitäten (`W-TV-010`, 🧭) und die Weltgröße als Arbeitsszenario |
 | Netzwerkarchitektur für Fahrzeuge im Koop | nicht vorhanden (`E-KO-010`, `N-KO-018`) |
 | Tankstellen-, Parkplatz- und Garagenkonzept | außer ‚Parken, Valet-Service an passenden Orten‘ nicht vorhanden (`W-VK-013`) |
-| Straßenverkehr in der Untergrundzivilisation | nicht vorhanden (Untergrundnetz: Schiene oder ähnlich, Technik offen) |
+| Straßenverkehr in der Untergrundzivilisation | **historisch (N-02)**; nicht vorhanden (Untergrundnetz: Schiene oder ähnlich, Technik offen) |
 
 ---
 

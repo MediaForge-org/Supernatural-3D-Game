@@ -248,3 +248,7 @@ Die Kopplung mit dem Kampfsystem gehört in die Kampfdokumentation; dieses Modul
 - Keine abgeschlossene Liste der Persönlichkeitsdimensionen (die Quelle sagt ‚usw.‘).
 - Das Kommunikationsstil-Modell (`M-OD`) und seine Beziehungsfolgen.
 - Tiefe von Alterskrankheiten (Q-N12).
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Kommunikation ohne Zahlenabzug (Entscheidung 44):** Kommunikationsstile sind Verhaltensdaten, keine sichtbaren Rollenspiel-Balken. Die Wirkung auf Beziehungen hängt vom Kontext und der Qualität der Kommunikation ab. Wer eine Nachricht ignoriert, erzeugt **keinen** numerischen Malus.

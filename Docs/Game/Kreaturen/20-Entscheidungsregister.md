@@ -482,3 +482,12 @@ Gruppe zu [10-Monster-KI-Wahrnehmung-und-Gedaechtnis.md](10-Monster-KI-Wahrnehmu
 ---
 
 **Summe:** 273 Einträge in 20 Gruppen.
+
+## Konsolidierung 08.11.2026 (Systemintegration)
+
+| Lücke | Inhalt | Status |
+|---|---|---|
+| L-04 Hölle-Zeitverhältnis (KS-012) | Zeitdehnung ist im Kanon OPEN (C-08) | offen |
+| L-11 Tierarten (TI-001) | 220–280 als Zielbereich (V-07, vorläufig) | Statusangleichung: vorläufig |
+| L-14 DLC-Aussage (GR-013) | Aussage unklar, nicht als Festlegung übernommen | Klärung offen |
+| L-18 Journal (PD-002) | siehe Ermittlung/20, L-18 | Technik-Abgleich offen |

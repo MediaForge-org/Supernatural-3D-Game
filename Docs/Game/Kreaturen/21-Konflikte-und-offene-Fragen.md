@@ -117,7 +117,7 @@ Jede Frage ist **nicht beantwortet** und wurde den Quellen gestellt. Nummern än
 | Q-K29 | Sind HQ und Bunker von der Auffindbarkeit durch seltene Gegner ausgenommen? | 09, 10 |
 | Q-K30 | Welches Zeitverhältnis hat das Fegefeuer? | 06, 07 |
 | Q-K31 | Gilt für den Gameplay-Tod in Ebenen eine Sonderregel? | 07 |
-| Q-K32 | Welche Eigennamen tragen Organisation, Ursprungswesen und Kategorien? | 01, 03, 11 |
+| Q-K32 | Welche Eigennamen tragen Organisation, Ursprungswesen und Kategorien? Master `BLOCK_09_STATUS.md` führt zusätzlich das **Progenitor-/Erste-Art-Konzept** und eine Men-of-Letters-artige Institution als offen, jeweils mit eigener Original-IP und Namen. Das Konzept selbst ist in `Docs/` bisher nicht beschrieben. | 01, 03, 11 |
 | Q-K33 | Wie lernt ein Nemesis (Regeln oder Daten), und was kann der Spieler von einer Feindschaft beobachten? (Proposal 0010 §11) | 10 |
 
 ---

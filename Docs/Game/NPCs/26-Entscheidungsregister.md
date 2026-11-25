@@ -326,7 +326,7 @@ Gruppe zu [Modul 10](10-Familien-Haushalte-und-soziale-Netzwerke.md).
 | N-FA-012 | Familienbesuche und Feiern an Feiertagen verändern Routinen von NPC-Familien | 📋 | `23#1088A` Frage 162; „159-166 ja“ in `23#1089E` |
 | N-FA-013 | Das Spiel weiß auch nach Jahrzehnten, wer früher mit wem verbunden war; historische Beziehungen sind abfragbar für Dialoge, Fälle, Familiengeschichten und Weltlore | 📋 | `35#272A` Fragen 38–39; „1-50 passt alles“ in `35#273E` |
 | N-FA-014 | Der Tod eines NPCs löst Reaktionen aus: Ersatz in Geschäft oder Eigentum, Reaktion der Familie; Erinnerung anderer NPCs; bedeutende Figuren möglicherweise mit Beerdigung | 📋 | `23#1056A` Fragen 103–104, 112; Antworten in `23#1057E` |
-| N-FA-015 | Familien- und Wohnformen sind vielfältig; Haushalte bestehen aus Familien, Freunden, Alleinlebenden usw. | 📋 | [Spielwelt und Untergrund](../Spielwelt-und-Untergrund.md) §13 (Oberflächenwelt: Familien, Freunde, Kollegen); §14.2 (Untergrund: ‚Natürliche Vielfalt aller Familien- und Wohnformen‘) |
+| N-FA-015 | **historisch (N-02):** Familien- und Wohnformen sind vielfältig; Haushalte bestehen aus Familien, Freunden, Alleinlebenden usw. | 📋 | [Spielwelt und Untergrund](../Spielwelt-und-Untergrund.md) §13 (Oberflächenwelt: Familien, Freunde, Kollegen); §14.2 (Untergrund: ‚Natürliche Vielfalt aller Familien- und Wohnformen‘) |
 | N-FA-016 | NPCs besitzen Wohnungen, Fahrzeuge, Haustiere und Gegenstände persistent | 📋 | `23#1056A` Frage 22; „ja“ in `23#1057E` |
 | N-FA-017 | Ordnung in Gesellschaft: Mitgliedschaften in Clubs, Sekten, Motorradclubs, Gangs, Racing Clubs, Jagdvereinen, Fight-Szenen usw. sind eigene soziale Gruppen mit Mitgliedschaftsregeln | 🧭 | `23#676A`–`23#680A` |
 | N-FA-018 | Touristen sind ein eigener Populationstyp mit saisonalen Spitzen | 📋 | `23#1088A` Fragen 167–168; „167-173 ja“ in `23#1089E` |
@@ -562,7 +562,7 @@ Gruppe zu [Modul 18](18-Behoerden-Hunter-Organisationen-und-uebernatuerliche-Wes
 | N-BH-001 | Es gibt mehrere Behörden (City Police, County Sheriff, State Police/Highway Patrol, Rangers usw.) mit unterschiedlichen geografischen Zuständigkeiten (Jurisdiktionen) | 📋 | `23#1056A` Fragen 57–58; „ja sicherlich“ und „ja“ in `23#1057E` |
 | N-BH-002 | Die Polizei weiß nicht magisch alles; bei Verdacht kann es zu einem Verhör kommen | 📋 | `23#1056A` Frage 59; „ja genau, wenn man verdächtigt wird kann es zu einem verhör kommen und so weiter“ in `23#1057E` |
 | N-BH-003 | Zeugen rufen Notruf; Täterbeschreibung (Kleidung, Fahrzeug, Kennzeichen, Richtung); Kennzeichenabfrage; Verkehrskontrollen (normale Stops oder Verfolgung, je nach Lage); Verhalten des Spielers entscheidet, ob eine Situation harmlos endet oder eskaliert | 📋 | `23#1056A` Fragen 60–64; Antworten in `23#1057E` |
-| N-BH-004 | Schwere Fahndung bleibt lange bestehen, bis das Kopfgeld bezahlt, die Klage zurückgezogen oder der Beschuldigte freigesprochen wird: „sicher nicht, sie bleiben lange bestehen bis man kopfgeld bezahlt, oder die klage zurückgezogen oder man freigesprochen wird“ | 📋 | `23#1056A` Frage 65; Antwort in `23#1057E`; `23#1058A` ‚Man kann tatsächlich zum landesweit Gesuchten werden‘ |
+| N-BH-004 | Schwere Fahndung bleibt lange bestehen, bis das Kopfgeld bezahlt, die Klage zurückgezogen oder der Beschuldigte freigesprochen wird: „sicher nicht, sie bleiben lange bestehen bis man kopfgeld bezahlt, oder die klage zurückgezogen oder man freigesprochen wird“ | 📋 | `23#1056A` Frage 65; Antwort in `23#1057E`; `23#1058A` ‚Man kann tatsächlich zum landesweit Gesuchten werden‘. Kein Sternesystem: `M-PD` ‚Strafsystem statt Sterne‘; ob „Fahndungsstufen“ sichtbar sind, bleibt offen (`Ermittlung/14` §2, K-E8; SY-NPC-027) |
 | N-BH-005 | Bei schweren Taten folgen Ermittlungen und Detectives; Beweise (Kameras, Zeugen, Kennzeichen, Spuren) werden selektiv simuliert; Festnahme führt zu Verhör, Geldstrafe, Kaution, Gerichtsverfahren, Haft, Zeitsprung statt Game Over; Anwälte und Kaution später ausbaubar | 📋 | `23#1056A` Fragen 66–69; Antworten in `23#1057E`; `23#1058A` |
 | N-BH-006 | Das Rechtssystem verfolgt tatsächliche Information und Beweissicherheit über Jurisdiktionen hinweg statt allwissender Fahndungslogik; Beweise sind Zeugen, Kameras, Kleidung, Gesicht, Fahrzeuge, Kennzeichen, Waffen/Ballistik, Fingerabdrücke/DNA, digitale Beweise; Festnahme ist eine echte Alternative zur tödlichen Polizeigewalt; Polizei-K9 und Geruchs-Wind-Modell erwünscht | 📋 | `M-PD` ‚Cash / law / evidence‘ |
 | N-BH-007 | Wiederholte Probleme mit derselben lokalen Polizei können deren Verhalten beeinflussen; bestimmte kriminelle Gruppen können wissen, wer der Spieler ist | 📋 | `23#1056A` Fragen 43–44; „ja“ in `23#1057E` |
@@ -576,7 +576,7 @@ Gruppe zu [Modul 18](18-Behoerden-Hunter-Organisationen-und-uebernatuerliche-Wes
 | N-BH-015 | Menschenähnliche übernatürliche Wesen, die niemandem schaden, können ein normales, dauerhaftes Leben mit Beruf, Haus, Familie, Freunden, Routinen führen, wenn der Spieler sie verschont | 📋 | `M-PD` ‚Peaceful supernatural beings and independent hunter agency‘ |
 | N-BH-016 | Ein verschontes friedliches Wesen wird nicht automatisch zum Feind; ein anderer Hunter kann es töten, wenn es zu seinem Wissen, Charakter, seiner Ideologie und Lage passt | 📋 | `M-PD` ‚Peaceful supernatural beings and independent hunter agency‘ |
 | N-BH-017 | Die Gesellschaft reagiert auf das Übernatürliche mit Behördenermittlungen, Absperrungen, Sondereinheiten, politischen Entscheidungen, geheimen Programmen, Medienberichten, Vertuschung; die Welt entwickelt sich auch ohne den Spieler | 📋 | `48#145E`; `48#146A` (💡) |
-| N-BH-018 | Staatliche Monsterforschung existiert (unterirdische Labore u. a.) und wird geheim gehalten, weil öffentliches Wissen Angst erzeugt | 📋 | `48#171E` ([Kreaturen 11](../Kreaturen/11-Hunterwelt-Organisationen-und-Kulte.md) §5; [Ermittlung 17](../Ermittlung/17-Geheimhaltung-und-oeffentliches-Wissen.md)) |
+| N-BH-018 | Staatliche Monsterforschung existiert (unterirdische Labore u. a.; N-02: Labore bleiben möglich) und wird geheim gehalten, weil öffentliches Wissen Angst erzeugt | 📋 | `48#171E` ([Kreaturen 11](../Kreaturen/11-Hunterwelt-Organisationen-und-Kulte.md) §5; [Ermittlung 17](../Ermittlung/17-Geheimhaltung-und-oeffentliches-Wissen.md)) |
 | N-BH-019 | Eine Elite im Hintergrund verfolgt viele verschiedene Ziele und will manches um keinen Preis öffentlich machen; der Entwickler hält es für möglich, dass Monster teilweise von ihr stammen. Nach dem Vorschlag des Assistenten wirkt sie fast allmächtig, ist es aber nicht, und ihre wahre Struktur wird nicht von Anfang an erklärt | 📋 Richtung / 💡 | `48#179E`; Vorschlag `48#178A` |
 | N-BH-020 | Bestimmte NPCs, darunter Polizisten, sind Teil der Hunter-Crew oder des Netzes (Rekrutierung aus Polizei, Militär, Medizin, Werkstatt, Wissenschaft, Okkultismus, Opfern, Zivilisten) | 🧭 | `23#678A` (Vorschlag des Assistenten) |
 
@@ -704,7 +704,7 @@ Gruppe zu [Modul 22](22-Simulationsstufen-Skalierung-und-Performance.md).
 | N-SI-013 | Relationship-/Präferenzzustand skaliert: kompaktes generiertes Profil für Unbekannte; detaillierte Werte erst bei Relevanz; Seed bleibt; Einfrieren bei relevanter Begegnung; detaillierte Kanten nur für relevante Personen; echte Beziehungen zwischen zwei NPCs werden automatisch detaillierter; kurzfristige Anziehung zwischen Hintergrund-NPCs darf verschwinden; wichtige Historie nie | 📋 Richtung | `35#278A` Fragen 21–30; „12-35 ja“ in `35#279E` |
 | N-SI-014 | Die Welt läuft nur, während man spielt; Zeitsprünge werden nachgeholt | 📋 | „11 die welt läuft nur wenn man gerade spielt“ in `35#279E`; `35#278A` Frage 12 |
 | N-SI-015 | Optimierung ist ein globales Kernziel: „ja genau, das ganze spiel muss super optimiert sein“; hohe Qualität, aber nicht für jeden High-End-Hardware | 📋 | `35#785E` Punkt 139; `35#786A` |
-| N-SI-016 | Eine Bevölkerung von mehreren Hunderttausend NPCs (etwa 500.000) ist Planungsgröße, nicht beschlossen; Simulationsstufen und Budgets sind unabhängig von der Lore-Bevölkerung zu planen: ‚The entire population need not be individually active at once.‘ | 🧭 | [Spielwelt und Untergrund](../Spielwelt-und-Untergrund.md) §13; `M-PO` Punkt 5; `35#227E` |
+| N-SI-016 | Eine Bevölkerung von mehreren Hunderttausend NPCs (etwa 500.000) ist Planungsgröße, nicht beschlossen; Simulationsstufen und Budgets sind unabhängig von der Lore-Bevölkerung zu planen: ‚The entire population need not be individually active at once.‘ | 🧭 | [Spielwelt und Untergrund](../Spielwelt-und-Untergrund.md) §13; `M-PO` Punkt 5; `35#227E`. Die Zahl hängt an der offenen Weltgröße (N-01, SY-WELT-006). |
 | N-SI-017 | **Simulations-LOD, Save-Schema, deterministische Offscreen-Simulation, Tests und Leistungsbudgets sind offen** | ❓ | `M-OQ16` Punkt 9; `M-AS` Kandidat 6 |
 | N-SI-018 | Promotion und Demotion zwischen den Stufen sind für wichtige Ergebnisse verlustfrei; Stufenschwellen sind Konfiguration | 💡 | [Proposal 0010](../../Proposals/0010-living-world-npc-memory-and-nemesis.md) §4 Punkt 6, §5 |
 | N-SI-019 | Es gibt eine Weltuhr; Fortschreiben läuft nie der Weltuhr voraus | 💡 | [Proposal 0010](../../Proposals/0010-living-world-npc-memory-and-nemesis.md) §7 Punkt 5 |
@@ -712,7 +712,7 @@ Gruppe zu [Modul 22](22-Simulationsstufen-Skalierung-und-Performance.md).
 | N-SI-021 | Portable C++20-Kernbibliotheken für technische Logik mit klarem Nutzen (Regeln, Zustandsübergänge, Speicherschemata, Teile der Antriebslogik) und Unreal-Adapter für Actors, Komponenten, Navigation und Laufzeitintegration | 📋 | `CLAUDE.md` §5 |
 | N-SI-022 | Fedora-Laptop für Code und schnelle Tests (16 GB, integrierte Grafik, Editor eventuell unpraktisch); Windows-Desktop (RTX 3090, 32 GB) für Unreal-Integration und Rendering-Tests | 📋 | `CLAUDE.md` §5 |
 | N-SI-023 | Das System darf nicht gestartet werden, bevor seine Mindest-Eingaben existieren | 💡 | [Proposal 0010](../../Proposals/0010-living-world-npc-memory-and-nemesis.md) §8 |
-| N-SI-024 | Ressourcen für NPC-Verkehr, Menschenmengen und Bahnbetrieb werden mit Detailstufen abstrahiert; Untergrundbevölkerung wird unabhängig von der Lore-Zahl budgetiert; Budgets, Performance-Stufen und deterministische Resynchronisation sind offen | 📋 / ❓ | [Welt 16](../World/16-NPC-Verkehr-und-Verkehrssimulation.md) §8 |
+| N-SI-024 | **historisch (N-02):** Ressourcen für NPC-Verkehr, Menschenmengen und Bahnbetrieb werden mit Detailstufen abstrahiert; Untergrundbevölkerung wird unabhängig von der Lore-Zahl budgetiert; Budgets, Performance-Stufen und deterministische Resynchronisation sind offen | 📋 / ❓ | [Welt 16](../World/16-NPC-Verkehr-und-Verkehrssimulation.md) §8 |
 
 ---
 
@@ -1121,3 +1121,13 @@ Gruppe zu [Modul 24](24-Integration-und-Konsistenzregeln.md).
 | KS | 12 |
 | EN | 320 |
 | **gesamt** | **843** |
+
+## Konsolidierung 08.11.2026 (Systemintegration)
+
+| Lücke | Inhalt | Status |
+|---|---|---|
+| L-02 Todesursache wichtiger NPCs (LT-006, LB-017) | siehe Ermittlung/20 | **blockiert (K-27)** |
+| L-08 Speichergröße (PE-012) | siehe Ermittlung/20, L-08 | Entscheidung offen |
+| L-15 Einwanderer und tote Personen (ID-023, ID-024) | nicht entschieden | Entscheidung offen |
+| L-16 Liste story-kritischer HQ-Figuren (CO-026) | fehlt im Ordner | Lücke, nicht ergänzt |
+| L-18 Journal (PE-020) | siehe Ermittlung/20, L-18 | Technik-Abgleich offen |

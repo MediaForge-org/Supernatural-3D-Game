@@ -143,3 +143,8 @@ Die Fahrphysik ist ein Bereich, in dem Gefühl und Zahlen auseinanderfallen. Der
 | Tiefe von Reifen- und Wettermodell im Straßenverkehr | `CQ-12` |
 | Konstanten und Schleifpunkt (nach Prototyp) | `CQ-13` |
 | Physik der NPC-Fahrer und Zustandsübernahme beim Umschalten | `CQ-14` |
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Vertrautheit (Entscheidung 33):** Wer dasselbe Fahrzeug wiederholt fährt, verbessert die **Fahrervertrautheit**, nicht die Fahrzeugwerte. Die Figur lernt Kupplungspunkt, Bremsreaktion, Abmessungen, Lenkung und Kraftabgabe und macht dadurch weniger Bedienfehler. Die Grenze dieser Vertrautheit bleibt offen (`W-FZ-014`).
+- 📋 **Keine magische Luftlenkung und kein Umdrehen (Entscheidung 35):** Keine Lenkeingabe in der Luft, die das Fahrzeug beliebig dreht. Begrenzte reale Effekte (Drehimpuls, Aerodynamik, Radkontakt) sind möglich. Ein Fahrzeug auf dem Dach richtet sich **nicht** durch Stickeingabe auf. Bergung erfolgt über Abschleppdienst, Seilwinde, Bergefahrzeug, Crew oder anderes Fahrzeug (`VEH-DEC-WE-004`).

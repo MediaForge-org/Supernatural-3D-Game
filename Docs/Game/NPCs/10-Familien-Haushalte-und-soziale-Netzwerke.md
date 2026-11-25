@@ -225,7 +225,7 @@ Familien tragen Konflikte weiter (Racheketten, Loyalitäten). Das ist die Verbin
 7. **Hunter-Familien.** Hunter können Familie haben; Wissen wird vererbt ([Kreaturen 11](../Kreaturen/11-Hunterwelt-Organisationen-und-Kulte.md)); die Quellen nennen ‚Jägerfamilien‘ (`CANONICAL_ADDENDUM_2026-09-05.md`, Modul 01 F8).
 8. **Haustiere.** Verstorbene Haustiere, Neuanschaffung, Tierarzt (Ereignisse).
 9. **Kinder und Schule.** Tagesabläufe von Kindern (Modul 13) sind Teil der Familienroutinen; Darstellung ist rechtlich zu prüfen (N-FA-019).
-10. **Haushalte in der Untergrundzivilisation.** Dort gelten abweichende Gesellschaftsregeln (Spielwelt §14.2: Zugehörigkeit durch Vertrauen, individuelles Lernen); dieser Ordner führt sie nicht (Q-N25).
+10. **Haushalte in der Untergrundzivilisation** (**historisch, N-02**). Früher galten dort abweichende Gesellschaftsregeln abweichende Gesellschaftsregeln (Spielwelt §14.2: Zugehörigkeit durch Vertrauen, individuelles Lernen); dieser Ordner führt sie nicht (Q-N25).
 
 ---
 
@@ -252,5 +252,5 @@ Familien tragen Konflikte weiter (Racheketten, Loyalitäten). Das ist die Verbin
 - Keine Zahlen: Haushaltsgrößen, Altersverteilung, Kinderzahl (Q-N18).
 - Offen: Familie des Spielercharakters (Q-N17), Familiengründung (N-FA-010), Schwangerschaft (`35#281E` Punkt 14), Einwanderer (N-ID-023).
 - Offen: Rechtsfrage zur Darstellung von Kindern (N-FA-019).
-- Offen: Haushalte im Untergrund (Q-N25).
+- Haushalte im Untergrund: historisch (N-02). Restfrage für Bunker und kleinere Untergrundbereiche offen (Q-N25).
 - Kein Entwurf für Beerdigungen als Ereignisse (nur „ja kann sein“, `23#1057E` Punkt 104).

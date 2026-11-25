@@ -56,8 +56,9 @@ Das Spiel ist eine **originale Marke**. Es orientiert sich an der Genre-Traditio
 - 📋 **Entscheidungen, Beziehungen, Konsequenzen, Ermittlung, Vorbereitung, Ausrüstung, Wissen und organisches Fertigkeitswachstum** tragen die Rollenspieltiefe.
 - 📋 **Vermieden werden:** sichtbare Monster- oder Charakterlevel, farbcodierte Beute-Seltenheit, an Stufen gebundene Gegner, automatische Gegnerskalierung und abstrakte Schadenszahlen als Fortschrittsmotor. Die Bedrohung ergibt sich aus den Regeln der Kreatur, ihrem Wissen, der Umgebung, Verletzungen, der Zahl der Gegner und der taktischen Lage.
 - 📋 **Realismus und innere Konsistenz** gehören zu den höchsten Prioritäten des ganzen Projekts.
+- 🧭 **Gesamtphilosophie** (Projektzusammenfassung §83, MASTER-MIGRATION-19): Die Systeme sollen ineinandergreifen und nicht nur eine Feature-Sammlung bilden. Zu den Grundsätzen gehören physische Weltreaktionen, Persistenz, glaubwürdige NPCs, eine kontrollierte starke Story, eine offene Welt ohne künstliche Storymauern, Ermittlung ohne magische Hilfen im Detektivmodus, hochwertige Animation und Physik, fotorealistische Grafik, tiefe Fahrzeug-, Körper-, Wildtier- und Monstersysteme sowie ein starker Singleplayer, echter Koop und großes Online. Dazu kommen kundenfreundliche Distribution, Modding in Singleplayer und Koop (nicht im Official Online), eine Creator-Ökonomie, langfristige Erweiterbarkeit und testbare, versionierte Systeme. Belegstellen je Punkt: §1, §2, §3, §6, §11, §12, `Gameplay-Systeme` §6–§9, §15, `Spielwelt` §11–§13, `Ermittlung/03`, `Produktions-Referenzen` §11–§12.
 - 📋 **Keine Kugelschwämme:** Die richtige Waffe, Munition und die Schwäche der Kreatur sind das Kernstück der Jagd. Schwierigkeit entsteht aus Wissen, Vorbereitung, Zielen, Positionierung, KI, Kreaturenregeln, Ressourcen und Verletzungen.
-- 📋 **Keine unnötigen versteckten Pflichtziele.** Ein Fall darf gelöst werden, sobald genug richtige Hinweise vorliegen.
+- 📋 **Keine unnötigen versteckten Pflichtziele.** Ein Fall darf gelöst werden, sobald genug richtige Hinweise vorliegen; der Abschluss ist eine bewusste Spielerhandlung und nicht automatisch (EVD-05).
 - 📋 **Inhalte dürfen wieder relevant werden.** Orte werden nicht von einer Quest „verbraucht“.
 - 📋 **Nicht „zum Marker laufen und fünf Gegner töten“, hundertmal.** Der Entwickler lehnt diesen Aufbau für Nebeninhalte ausdrücklich ab.
 
@@ -96,7 +97,7 @@ Horror soll **systemisch** entstehen, nicht aus Skripten: aus Unsicherheit, Ger�
 
 - 📋 Das Übernatürliche ist **öffentlich unbewiesen**. Das Internet ist voll mit gefälschten und mehrdeutigen Beweisen; echte Ereignisse verschwinden im Rauschen.
 - 📋 Es gibt **keinen universellen magischen Gedächtnisverlust**. Die Welt erinnert sich, und die öffentliche Meinung kann sich über Jahre verschieben.
-- 📋 Das Übernatürliche hat eine **mehrhundertjährige verborgene Geschichte**. Religiöse und kulturelle Gemeinschaften, Jägerfamilien, okkulte Gelehrte, geheime Archive, Programme aus Kriegszeiten und rivalisierende Organisationen können jeweils verschiedene Wissensfragmente besitzen. Künstlich oder rituell geschaffene Wesen und Wächter gehören zum Umfang. Historische Konfliktschichten sind in originaler Form nutzbar.
+- 📋 Das Übernatürliche hat eine **mehrhundertjährige verborgene Geschichte**. Religiöse und kulturelle Gemeinschaften, Jägerfamilien, okkulte Gelehrte, geheime Archive, Programme aus Kriegszeiten (der Master nennt ausdrücklich die okkulte Geschichte der WWII-Ära) und rivalisierende Organisationen können jeweils verschiedene Wissensfragmente besitzen. Die Ära wird in eigener Original-IP umgesetzt, nicht als Kopie von Figuren, Namen oder Handlungen einer Vorlage (CA5 §3). Künstlich oder rituell geschaffene Wesen und Wächter gehören zum Umfang. Historische Konfliktschichten sind in originaler Form nutzbar.
 - 📋 **Geheimes Wissen** kann in der fiktiven Geschichte verborgene Technik umfassen. Solche Ideen sind erfundene Spielwelt und keine Aussage über reale Physik oder Geschichte.
 - 📋 **Zeitreise** ist als großes System geplant (siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#7-zeitreise-und-historische-weltzustände)).
 - Physische Erscheinungen, Geister, Besessenheit, Flüche, Infektion und Verwandlung kommen selten vor und haben echte Folgen. Rituale brauchen echte Vorbereitung, Zutaten, Zeit und Bedingungen; es gibt **keine allgemeine Mana-Leiste**, der Spieler bleibt im Kern ein Jäger. Verfluchte Gegenstände sind dauerhaft, aber selten, können durch die Wirtschaft wandern und Fälle auslösen. Spukhäuser haben dauerhafte Geschichte mit indirekten Folgen für den Immobilienmarkt. Kulte können alltäglich oder tatsächlich übernatürlich sein, wachsen, spalten sich, zerfallen und lassen sich mit Detektiv- und Sozial-Tarnsystemen infiltrieren.
@@ -135,6 +136,9 @@ ländliches Gebiet → persönliche / tragische Vergangenheit des Protagonisten
 - Das große **Hauptquartier** ist nicht die Startbasis. Es wird **erst nach mehreren Stunden Hauptgeschichte entdeckt**, und die Entdeckung soll ein bedeutender Moment sein. Danach wächst es zur Hauptbasis; nicht alle Bereiche müssen sofort zugänglich sein, Teile können jahrzehntelang versiegelt, beschädigt oder vergessen gewesen sein.
 - ❓ Das **genaue auslösende Ereignis** ist offen. Die Details der Vergangenheit des Protagonisten und die Reihenfolge der frühen Fälle sind nicht festgelegt.
 
+- 📋 **Geografie vor Story (31.08., Entscheidung 4):** Die Hauptwelt bleibt weitgehend offen. Der Spieler kann eine später erzählte Region schon oft besucht haben, bevor ein Kapitel die Crew dorthin führt. Story- und Nebeninhalte fehlen, bis Voraussetzungen erfüllt sind: Vorgängermissionen, Kapitelzustand, Weltzustand oder Wissen. Läden, Alltag, Tierwelt und Entdeckungen dürfen vor dem zugehörigen Handlungsbogen existieren.
+- 📋 **Keine unsichtbaren Wände**, nur um die Kapitelreihenfolge zu erhalten. Die Ordnung entsteht über Verfügbarkeit von Inhalten, nicht über Sperrräume.
+
 ### 5.3 Was offen ist
 
 ❓ Akt- und Kapitelzahl, vollständige Gliederung der Hauptgeschichte, Namen und Eigenschaften der großen Bedrohungen, Figuren-Besetzung und Biografien, Endspiel, vollständige Kosmologie, endgültiges Hauptquartier (Ort, Aufbau, Ausbaufolge, mögliche Umzüge), Feldbasen und ihre Platzierung im Handlungsverlauf.
@@ -143,7 +147,8 @@ Konkrete Figurennamen, Handlungsstränge oder Kapitelinhalte gehören deshalb **
 
 ### 5.4 Missionsverfügbarkeit
 
-📋 Missionen folgen einem **Abhängigkeitsgraphen**. Verfügbarkeit hängt ab von Akt/Kapitel, früheren Missionen, Story- und Weltzustand, Beziehungen, Wissen, Ort, Zeit, Figurenzustand und Ergebnissen. Mögliche Zustände einer Mission: gesperrt, zulässig, entdeckbar, entdeckt, verfügbar, aktiv, unterbrochen, abgeschlossen, gescheitert, abgelaufen, ersetzt, Folgen ausstehend, archiviert. Der Graph dient der Freischaltung, Reihenfolge und lokalen Reaktivität, **nicht** einer exponentiell anderen Hauptgeschichte. Wiederholungen („Replay“) verändern den kanonischen Story-Zustand nicht.
+📋 Missionen folgen einem **Abhängigkeitsgraphen**. Der Graph steuert Verfügbarkeit, Reihenfolge und lokale Varianten; er ist **keine** Erlaubnis für einen unwartbaren, exponentiellen Hauptstrang. Mögliche Missionszustände (31.08., Entscheidung 7): Gesperrt, Berechtigt, Auffindbar, Entdeckt, Verfügbar, Aktiv, Pausiert, Abgeschlossen, Fehlgeschlagen, Ersetzt, Folgen ausstehend, Archiviert. Die Zustandsliste ist ein Entwurf und noch nicht als Schema bestätigt. Verfügbarkeit hängt ab von Akt/Kapitel, früheren Missionen, Story- und Weltzustand, Beziehungen, Wissen, Ort, Zeit, Figurenzustand und Ergebnissen. Mögliche Zustände einer Mission: gesperrt, zulässig, entdeckbar, entdeckt, verfügbar, aktiv, unterbrochen, abgeschlossen, gescheitert, abgelaufen, ersetzt, Folgen ausstehend, archiviert. Der Graph dient der Freischaltung, Reihenfolge und lokalen Reaktivität, **nicht** einer exponentiell anderen Hauptgeschichte. Wiederholungen („Replay“) verändern den kanonischen Story-Zustand nicht.
+- 💡 **Vorschlag, nicht bestätigt:** Mögliche Missionszustände (Entwurf aus der Projektzusammenfassung `PROJECT_STATE_2026-08-31_COMPACT.md` §7): Locked, Eligible, Discoverable, Discovered, Available, Active, Suspended, Completed, Failed, Expired, Replaced, ConsequencesPending, Archived. Die Liste ist keine Entscheidung (MASTER-MIGRATION-17).
 
 ---
 
@@ -181,7 +186,7 @@ Konkrete Figurennamen, Handlungsstränge oder Kapitelinhalte gehören deshalb **
 - 📋 Ein **dauerhaftes Hauptquartier** ist das emotionale und soziale Zentrum. Es **wächst**, statt dass die Gruppe grundlos umzieht. Bereiche können Schlafzimmer, Küche, Wohnzimmer, Garage, Waffenraum, Archiv, Werkstatt, Training, Krankenzimmer, Sicherheitsräume, Lager und Forschung umfassen.
 - 📋 Die Crew lebt dort: schlafen, essen, trainieren, recherchieren, Fahrzeuge reparieren, Waffen pflegen, telefonieren, fernsehen, reden, streiten, feiern, gehen und zurückkommen.
 - 📋 Versorgung (Lebensmittel, Medikamente, Munition, Waffenpflege, Ritualmaterial, Treibstoff, Werkstattmaterial) soll **organisch** sein, ohne lästigen Verwaltungszwang. Die Crew kann selbst Geld, Vorräte, Ersatzteile und Informationen beisteuern. Optionale Arbeiten (Waffen reinigen, Munition sortieren, Fahrzeug warten, Garage aufräumen, Archiv sortieren, Vorräte verstauen) und spontane Feiern nach Erfolgen oder Geburtstagen sind möglich, aber nie Pflichtmissionen. Große Vorräte werden nachgefüllt, damit Munition kein sinnloses Mikromanagement erzeugt.
-- 📋 **Feldbasen** (Motels, Hütten, gemietete Häuser, Unterschlupfe, Bunker) dienen entfernten Handlungsbögen; ein kleines mobiles Wildnislager aus Fahrzeug- und Campingausrüstung ist möglich.
+- 📋 **Feldbasen** (Motels, Hütten, gemietete Häuser, Unterschlupfe, Bunker) dienen entfernten Handlungsbögen; ein kleines mobiles Wildnislager aus Fahrzeug- und Campingausrüstung ist möglich. Der Bunker als Feldbasis ist ❓ offen (K-28).
 - ❓ Der Standort, Aufbau, die Ausbaufolge und mögliche geschichtsbedingte Umzüge sind offen.
 - Eine **öffentliche Spielerkarte** zeigt das Hauptquartier nicht auffällig; geheime Orte bleiben an Entdeckung und Handlung gebunden.
 
@@ -240,7 +245,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 - **Qualitative Anzeige** des Wissens statt ständiger Prozentzahlen. Unbekannter Inhalt verrät seine Kategorie nicht: Kennt man sieben von zehn Einträgen eines Gebiets, erscheinen die übrigen drei nur als „Unbekannt“. Gebiete haben absichtlich unterschiedliche Kategorie-Mischungen, damit die Oberfläche nicht verrät, was fehlt. Eine optionale exakte Fortschrittsanzeige ist später denkbar.
 - **Kartenhierarchie:** Welt → Region/County → Stadt → Bezirk → relevante Straße/Ort → Gebäude/Komplex.
 - **Hunter-Aufzeichnung:** Ein eigenes Fortschrittsmenü zeigt Geschichte, Fälle, Scheitern und ungelöste Fälle, Monster, Orte, Sammelobjekte, Erkundung, Artefakte, Waffen, Rituale und Personen. Der Monsterstatus ist reicher als „getötet“: begegnet, identifiziert, erforscht, vertrieben, gebannt, gefangen, getötet, Fluch gebrochen und mehr.
-- **Sammelobjekte:** Der ursprüngliche Plan sah etwa 1.200–1.500 physische Sammelobjekte vor, das galt für das frühere, viel kleinere Weltkonzept (🕰️). **Für die heutige Welt sind die Zahlen offen** und müssen je Kategorie neu zugeordnet werden (nicht linear skalieren). Sammelobjekte sind optional. Entdeckungen (Orte, Straßen, Gebäude, Höhlen, Gewässer, Geschichte) sind eine getrennte Ebene und nicht alle physische Funde. Die Gesamtzahl der verfolgten Einträge lag früher bei etwa 5.000, ebenfalls ❓.
+- **Sammelobjekte:** Der ursprüngliche Plan sah etwa 1.200–1.500 physische Sammelobjekte vor, das galt für das frühere, viel kleinere Weltkonzept von etwa 200 km² (🕰️, **historisch; keine aktuelle Weltgröße**; Master `CANONICAL_ADDENDUM_2026-09-05.md` §6, Zeile 79). Die heutige Weltgröße ist offen (N-01). **Für die heutige Welt sind die Zahlen offen** und müssen je Kategorie neu zugeordnet werden (nicht linear skalieren). Sammelobjekte sind optional. Entdeckungen (Orte, Straßen, Gebäude, Höhlen, Gewässer, Geschichte) sind eine getrennte Ebene und nicht alle physische Funde. Die Gesamtzahl der verfolgten Einträge lag früher bei etwa 5.000, ebenfalls ❓.
 
 ---
 
@@ -261,7 +266,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 
 ### 9.2 Schwächen, Widerstände und Anatomie
 
-- **Schwächen wirken nicht nur als Bonusschaden.** Eine kanonische Schwäche kann tödlich, stark schädigend, regenerationshemmend, abwehrend, lähmend, schutzbrechend, manifestationszwingend, wahre Gestalt enthüllend oder fähigkeitsstörend sein.
+- **Schwächen wirken nicht nur als Bonusschaden.** Eine Schwäche kann tödlich, stark schädigend, regenerationshemmend, abwehrend, lähmend, schutzbrechend, manifestationszwingend, wahre Gestalt enthüllend oder fähigkeitsstörend sein. Vorbereitung und mehrere Tötungswege sind akzeptiert (Master `BLOCK_09_STATUS.md:5`); die frühere Formulierung „eine kanonische Schwäche“ ist nicht Master-konform.
 - **Widerstände** sind intern abgestuft (immun bis empfindlich), die Oberfläche zeigt aber beobachtete Belege, keine Prozentwerte.
 - **Anatomie ist modular und artspezifisch** (Körperregionen, Strukturen, lebenswichtige Organe, Fortbewegung, Sinnesorgane, übernatürliche Strukturen). Wo ein Wesen körperlich ist, gelten funktionale Verletzungen (ein zerstörtes Bein beeinträchtigt die Bewegung, außer es gibt eine Regenerations- oder Ausgleichsregel).
 - **Regeneration** wird in Rate, regenerierbare Gewebe, Knochen/Organe/Gliedmaßen, Ressourcen, Umweltbedingungen, Unterdrücker und absolute Grenzen zerlegt.
@@ -335,6 +340,7 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 
 - 📋 Das Platin des Basisspiels ist **vollständig offline** erreichbar, ohne Online-Trophäen im Basisset. Auch Jahrzehnte nach einer Serverabschaltung soll es möglich bleiben.
 - 📋 **Eigene Gruppen** für Online, den härtesten Modus („Grounded“), Permadeath und jedes Story-DLC. Grounded und Permadeath sind keine Voraussetzung für das Basis-Platin.
+- 🧭 **DLC-Grundsatz** (Projektzusammenfassung `PROJECT_STATE_2026-08-31_COMPACT.md` §79, MASTER-MIGRATION-17): Das Basisspiel soll nicht künstlich überladen werden. Bei Erfolg folgen große Erweiterungen mit Regionen, Story, Monstern, Jägern, Organisationen, Ebenen, Fahrzeugen, Artefakten und Systemen. Umfang und Termine sind nicht festgelegt.
 - 📋 Vor der Veröffentlichung gibt es ein Prüfverfahren auf Verpassbares („Missable Audit“) und gute Guide-Tauglichkeit.
 - ❓ Die endgültige Trophäenliste und ob eine Mindestschwierigkeit nötig ist, sind offen.
 
@@ -349,11 +355,14 @@ Wer ein sich entwickelndes Ereignis ignoriert, riskiert Folgen: mehr Opfer, Poli
 | Modus | Planung | Status |
 |---|---|---|
 | **Einzelspieler** | Komplett offline spielbar; Mods ja; Cheats ja; lokale Spielstände | 📋 |
-| **Koop-Kampagne** | Die Einzelspieler-Kampagne mit Freunden, **primär 2–4 Spieler**; keine eigene Koop-Geschichte nötig; Mods ja; Cheats ja; **kein Transfer zur offiziellen Online-Progression**. Fortschritt gehört dem Spielstand des Gastgebers; Gast-Fortschritt ist an den Host-Spielstand gebunden. | 📋 Richtung; ❓ Netzwerkarchitektur und Zeitpunkt |
+| **Koop-Kampagne** | Die Einzelspieler-Kampagne mit Freunden, **primär 2–4 Spieler**; keine eigene Koop-Geschichte nötig; Mods ja; Cheats ja; **kein Transfer zur offiziellen Online-Progression**. Fortschritt gehört dem Spielstand des Gastgebers; Gast-Fortschritt ist an den Host-Spielstand gebunden. | 📋 Richtung; ❓ Netzwerkarchitektur und Zeitpunkt (Host-Speicherstand: K-25 bestätigt, 08.11.2026) |
 | **Offizieller Online-Modus** | Öffentliche, Freunde- und private Lobbys teilen **eine** persistente Online-Fortschrittsspur je Slot; **keine Mods, keine Cheats**; serverautoritativ, Anti-Cheat, Wirtschaftssicherheit, Crossplay-Kompatibilität; Sprach-Chat (gegebenenfalls über das Ingame-Handy). Mehr kooperative Jagd, Ermittlung, Jobs, Geschäfte, Erkundung, Motorsport, Freizeit, Crew-Aktivitäten und dynamische Ereignisse; weniger Griefing, bessere Spawn- und Polizeiregeln, keine übermächtigen Griefer-Fahrzeuge. Mögliche dauerhafte Hunter-Crews mit Spezialisierungen ohne harte Klassen, Feindseligkeits-/Verteidigungsmodus, Kopfgelder und Geschäfte. | 🔭 / ❓ |
 
 - 🧭 **Lobbygröße:** Langfristig ist grob **64–100 Spieler pro großer Weltinstanz** ein technisches Ziel, **keine Zusage** für den Start. Die Zahl der Online-Slots pro Konto ist offen.
 - Der Singleplayer-Modus soll **ohne Online-Zwang** funktionieren.
+- 📋 **Online-Richtung (31.08., Entscheidung 13):** Red Dead Online dient höchstens als Ideengeber für einzelne Punkte. Der langfristige Maßstab ist eine deutlich bessere Version von GTA Online: mehr PvE, reichere Ermittlung und Monsterjagd, stärkere Solo-Spielbarkeit, bessere Freunde- und Privatsitzungen, weniger Trolling, bessere Spawn-Regeln, glaubwürdigere Polizeireaktion, bessere Geschäfte und Jobs, sinnvolle Motorsport- und Freizeitsysteme.
+- 📋 Keine übermächtigen Trolling-Fahrzeuge, nur um Machtzuwachs zu erzeugen. Denkbare spätere Systeme: dauerhafte Jäger-Crews, Spezialisierungen ohne Sperre, Feindseligkeits- und Anti-Trolling-Regeln, defensive oder friedliche Spielweise, Kopfgelder auf Spieler, Geschäfte.
+- 📋 **Modus-Grenzen (31.08., Entscheidung 12):** Der Wechsel zwischen öffentlicher, freunde- und privater Lobby behält Geld, Fahrzeuge, Immobilien, Rang und Freischaltungen. Keine Mods und keine Cheats in jeder offiziellen Online-Lobby, auch in Freunde- und Privatlobbys, weil Fortschritt in die öffentliche Lobby zurückfließt.
 
 ### 13.1 Wirtschaft und Monetarisierung (nicht beschlossen)
 
@@ -361,7 +370,7 @@ Folgende Punkte wurden **diskutiert, aber nicht endgültig beschlossen**. Sie si
 
 - 🧭 Das normale Spiel soll fair und vollständig ohne Echtgeld spielbar sein; keine Lootboxen, keine Energie-/Wartezeit-Mechanik, kein „Pay-to-Revive“, keine käuflichen Kampfwerte oder körperlichen Statuswerte, kein künstlich schlechter Grind, Motorsport durch Klassen und Homologation gegen Pay-to-Win geschützt.
 - 🧭 Eine **optionale Echtgeld-Beschleunigung** der gewöhnlichen Online-Währung wurde „im Prinzip“ als zulässig diskutiert, ohne dass Wissen und Fortschritt durch Geld ersetzbar sind. Preise, Pakete und Schutzvorkehrungen sind ❓ offen.
-- 🧭 **Kreativmarktplatz mit Umsatzbeteiligung**, Förderfonds für hochwertige kostenlose Inhalte, Creator-Codes und eine großzügige Medienrichtlinie für Videos, Streams, Guides, Lore und Machinima: als Wunschrichtung dokumentiert; Aufteilung, Auszahlungsanbieter, Steuer-/Identitätsprüfung und Betrugsschutz ❓ offen. Kein freies Auszahlen gewöhnlicher Spielgegenstände oder Währung.
+- 🧭 **Kreativmarktplatz mit Umsatzbeteiligung**, Förderfonds für hochwertige kostenlose Inhalte, Creator-Codes und eine großzügige Medienrichtlinie für Videos, Streams, Guides, Lore und Machinima: als Wunschrichtung dokumentiert; Aufteilung, Auszahlungsanbieter, Steuer-/Identitätsprüfung und Betrugsschutz ❓ offen. Kein freies Auszahlen gewöhnlicher Spielgegenstände oder Währung. Angebotbare Inhalte laut Wunschrichtung (Projektzusammenfassung §14, MASTER-MIGRATION-18): Kleidung, Lackierungen, Tattoos, Frisuren, Möbel, Foto-Presets, Animationen, Mods für Einzelspieler und Koop, Fälle, Karten, Fahrzeuge, Monster und Content-Packs. Creator-Inhalte kommen in den offiziellen Online-Modus nur nach Prüfung und Zertifizierung.
 - 🧭 Fremde Inhalte kommen in den offiziellen Online-Modus nur durch eine Prüf-, Sicherheits- und Zertifizierungs-Pipeline und gelten dann als offizieller Inhalt.
 
 ---
@@ -394,7 +403,7 @@ Folgende Punkte wurden **diskutiert, aber nicht endgültig beschlossen**. Sie si
 - **Gesprächsarten:** natürliches Gespräch, Ermittlungsdialog über tatsächlich bekannte Themen und Beweise, wichtige Entscheidungsdialoge, dynamischer Kontextdialog beim Fahren, Kämpfen, Schleichen und Erkunden.
 - Beziehung und NPC-Gedächtnis wählen Dialogvarianten, ohne verborgene Beziehungszahlen offenzulegen. Gespräche sind unterbrechbar und werden kontextbewusst fortgesetzt. Man kann beim Gehen, Fahren, Ausrüsten, Wundversorgen und Ermitteln sprechen, ohne in statischen Posen einzufrieren. Gespräche im Fahrzeug („Roadtrip-Gespräche“) sind ein wichtiger Kanal der Charakterentwicklung.
 - **Tiefe nach Rang:** Hauptfiguren extrem tief, wiederkehrende Nebenfiguren tief, gewöhnliche Einwohner flacher, aber mit Ort, Wetter, Gerüchten, Polizeiaktivität und Weltzustand. Praktisch alle relevanten NPCs sind ansprechbar. NPCs sprechen auch untereinander, sodass Gerüchte organisch wandern und der Spieler Gespräche belauschen kann.
-- **Umfang:** Frühere kleine Zeilenannahmen sind ausdrücklich verworfen. Hauptfiguren können insgesamt **Hunderttausende** Dialog- und Textzeilen mit Varianten erreichen, wichtige wiederkehrende Nebenfiguren 10.000–50.000 und mehr, insgesamt potenziell mehrere Millionen Datensätze. Die genaue Zahl ist ❓ offen; Architektur, Werkzeuge, Prüfung, Lokalisierung und Stimmenproduktion müssen darauf ausgelegt sein.
+- **Umfang:** Frühere kleine Zeilenannahmen sind ausdrücklich verworfen. Hauptfiguren können insgesamt **Hunderttausende** Dialog- und Textzeilen mit Varianten erreichen, wichtige wiederkehrende Nebenfiguren 10.000–50.000 und mehr, insgesamt potenziell mehrere Millionen Datensätze. Die genaue Zahl ist ❓ offen; Architektur, Werkzeuge, Prüfung, Lokalisierung und Stimmenproduktion müssen darauf ausgelegt sein. Die Zeilenzahlen sind vorläufig; die Zuordnung Haupt-/Nebenfiguren ist offen (W-05).
 
 ### 15.2 Stimmen
 
@@ -415,12 +424,39 @@ Folgende Punkte wurden **diskutiert, aber nicht endgültig beschlossen**. Sie si
 
 🔭 **Offizielle Wissens- und Guide-Plattform** als großes Produktziel: Alle offiziellen Inhalte (Hauptmissionen, Nebenfälle, alternative Lösungen, Sammelobjekte, Orte, Monster, Waffen, Rituale, Fahrzeuge, Unterschlupfe, Mechaniken, Überleben, Fahren, Schwierigkeit, Modding und API, DLC, Versionsunterschiede). **Spoilerstufen:** spoilerfrei → kleiner Hinweis → stärkerer Hinweis → Ermittlungswege → vollständige Lösung. Ein optionaler KI-Assistent nutzt dieselbe Wissensbasis und respektiert die gewünschte Spoilerstufe; mit autorisiertem Spielzustandszugriff kann er auf tatsächlich Entdecktes zugeschnitten antworten, über eine offizielle Schnittstelle und nicht durch das Auslesen des Arbeitsspeichers. Ein optionales physisches oder digitales Lösungsbuch ist denkbar.
 
-🧭 Zugang: Ein einmaliger Freischaltcode aus dem Spielkauf könnte dauerhaften Basis-Guide-Zugang zu einem Webkonto geben; Nicht-Besitzer könnten gegen einen kleinen Einmalpreis Zugang erhalten, der Preis ist ❓ offen. DLC-Guides setzen den DLC-Besitz voraus. Grundphilosophie: legaler Besitz soll die bequemste und bestunterstützte Erfahrung sein; keine feindselige Kopierschutz-Reibung.
+🧭 Zugang: Ein einmaliger Freischaltcode aus dem Spielkauf könnte dauerhaften Basis-Guide-Zugang zu einem Webkonto geben; Nicht-Besitzer könnten gegen einen kleinen Einmalpreis Zugang erhalten, der Preis ist ❓ offen. DLC-Guides setzen den DLC-Besitz voraus. Nicht-Besitzer sehen nur öffentliche, spoilerfreie Produktseiten, Trailer und Funktionsbeschreibungen (`PROJECT_DECISIONS` §18, MASTER-MIGRATION-17). Grundphilosophie: legaler Besitz soll die bequemste und bestunterstützte Erfahrung sein; keine feindselige Kopierschutz-Reibung. 🧭 Eine Steam-Verknüpfung ist für den Guide-Zugang nicht als Pflicht vorgesehen. Berechtigungen (Entitlements) werden je Produkt und DLC getrennt verwaltet. Das Serviceprinzip lautet: die bezahlte Version zum besten Erlebnis machen, nicht Nichtzahler bestrafen (Entwurf `SPN_Prompt_Pack/04_Modding_Ecosystem`, MASTER-MIGRATION-18).
 
-🧭 **Vertrieb:** Ein physischer Besitz (Disc) ist ein ausdrückliches Wunsch-Ziel, soweit Plattformregeln es erlauben; das Basisspiel v1.0 soll möglichst ohne Internet oder Plattformkonto installier- und spielbar sein. Die Größe des Basisspiels geht von etwa 100 GB aus. Große optionale Pakete (Ultra-Texturen, verlustfreie Stimmenpakete, zusätzliche Sprachpakete) sollen wählbar sein, ohne die Standardinstallation aufzublähen.
+🧭 **Vertrieb:** Ein physischer Besitz (Disc) ist ein ausdrückliches Wunsch-Ziel, soweit Plattformregeln es erlauben; das Basisspiel v1.0 soll möglichst ohne Internet oder Plattformkonto installier- und spielbar sein. Die Größe des Basisspiels geht von etwa 100 GB aus. Große optionale Pakete (Ultra-Texturen, verlustfreie Stimmenpakete, zusätzliche Sprachpakete) sollen wählbar sein, ohne die Standardinstallation aufzublähen. Ergänzung aus der Projektzusammenfassung (§16, MASTER-MIGRATION-17, 🧭): Die Disc kann als Besitznachweis im Laufwerk dienen. Updates können ein Konto oder Internet brauchen, die Lizenz bleibt an die Disc gebunden. Eine spätere DLC-Disc und eine finale Komplettversion sind denkbar. Bei Xbox ist die Blu-ray-Kapazität zu beachten.
 
 ---
 
 ## 17. Was nicht festgelegt ist
 
 Zusammengefasst ❓ **offen**: Handlung, Figuren und Fraktionen; Akt- und Kapitelzahl; genaue Bedrohungen und Kosmologie; Zahl und Art der Nebenfälle; Hauptquartier-Details; das Todes-/Scheiterns-System; Fortschrittsdesign; Monsterliste; Trophäenliste; Zahl der Sammelobjekte; Online-Details und Monetarisierung; Stimmenproduktion; Spieltitel. Die vollständige Übersicht mit Quellen steht in [Entscheidungsstatus](Entscheidungsstatus.md).
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Reiche (Ergänzung zu §4)
+- Hölle, Fegefeuer (Purgatorium) und Himmel sind eigene Open Worlds im Basisspiel, mit eigener Persistenz (Master: `CANONICAL_ADDENDUM_2026-09-06.md:16–22, 72–75`). Größen sind nicht gewählt: Hölle 350–500 km² (Favorit 420), Purgatorium 500–750 km² (650), Himmel 250–400 km² (320) plus Erinnerungsdomänen (Planungsbereiche). Die Reichsgrößen (350–500 km² Hölle, 500–750 km² Fegefeuer, 250–400 km² Himmel) sind Planungsbereiche ohne Festlegung; die Hauptwelt-Größe ist offen (N-01).
+- Ausführlicher in `Spielwelt-und-Untergrund.md` und `World/26-Reiche-Zeitreise-und-historische-Weltzustaende.md`.
+
+### Tötungswege (Ergänzung zu §9.2)
+- Vorbereitung und mehrere Tötungswege gehören zum Kreaturdesign (Master: `BLOCK_09_STATUS.md:5`). Der Abgleich hat festgehalten, dass der Begriff „eine kanonische Schwäche“ in §9.2 mit dem Master nicht übereinstimmt. Die Formulierung ist zu prüfen.
+
+### Kalender und Freizeit (Ergänzung zu §11.3)
+- Feiertage, Tourismus, saisonale Ereignisse, Urbex, Metalldetektor, Geocaching, Flohmärkte, Nachlassverkäufe und Auktionen sind akzeptierte Sandbox-Schichten (Master: `CANONICAL_ADDENDUM_2026-09-05.md:55`).
+
+### Begleiter (Ergänzung zu §6.3)
+- Begleiter unterscheiden sich in Kampf, Medizin, Forschung, Technik, Spurensuche, Persönlichkeit und Moral. Sie können den Spieler begleiten oder getrennt reisen (Master: `CANONICAL_ADDENDUM_2026-09-05.md:43`).
+- Gewöhnliche oder anwerbbare Begleiter können dauerhaft sterben. Story-kritische Hunter-HQ-Figuren sind vor willkürlichem Tod geschützt, explizite Story-Tode bleiben endgültig (CA5:44). *Geltung für den Spieler offen (K-24).*
+
+### Stimmen (Ergänzung zu §15.2)
+- Freiwillige Freunde oder Familie können saubere Referenzaufnahmen liefern. Einwilligung, kommerzielle Rechte, Nutzungsumfang und Löschregeln sind Pflicht (Master: `VOICE_PRODUCTION_AND_REFERENCE_WORKFLOW_2026-09-10.md:3–6`).
+- Standardinstallation mit komprimierter Stimme; verlustfreie Stimmenpakete (48 kHz) und Zusatzsprachen einzeln wählbar (Master: `OPTIONAL_CONTENT_PACKS_2026-09-10.md:5–10`).
+
+### Krankenhaus und Koop-Abwesenheit (Ergänzung zu §14.2)
+- *Nutzeraussage, nicht Kanon (Chat 10.10.2026):* Krankenhaus heilt schneller, Zeit vergeht schneller, Mitspieler spielen weiter, Abwesenheit wenige Minuten bis 15 Minuten. Zur Bestätigung vorgemerkt.

@@ -83,12 +83,14 @@ Eine **kleine, universelle Interaktion** mit einer einzigen Aktion `Use`, einem 
 - **Wahrnehmung der Verletzung:** Blutverlust, Schmerz, Schock und Adrenalin müssen durch Animation, Audio, Atmung, Sicht, Zittern, Bewegung, Zielen, Stimme, Koordination und Handlungsfähigkeit spürbar sein. **Schmerz ist vom physischen Schaden getrennt.** Adrenalin kann wahrgenommenen Schmerz unterdrücken; Symptome werden später deutlicher. Nerven- und Sehnenschäden beeinflussen Kontrolle und Griff. Verletzte Gliedmaßen wirken sich auf Hinken, Sprinten, Waffeneinsatz, Nachladen, Gleichgewicht, Atmung und Ausdauer aus. Offene Brüche mit sichtbarem Knochen sind möglich, auch beim Spieler.
 - **Feuer** kann sich ausbreiten; ein früher kleiner Kleidungsbrand lässt sich ersticken.
 - **Verzögerte oder innere Verletzungen** können bis zur ärztlichen Diagnose unsicher bleiben.
-- **Behandlung auf drei Ebenen:** Feldbehandlung für leichte Verletzungen und Stabilisierung; ein medizinisch geschulter Jäger oder Arzt für manche mittelschweren Fälle; schwere innere Verletzungen, komplizierte Schüsse, schwere offene Brüche, schwere Verbrennungen, kritische Infektionen und massiven Blutverlust brauchen Krankenhaus. Schmerzmittel wirken verzögert und sind Symptomlinderung, keine magische Heilung. Erholungsstufen: akut → stabilisiert → heilend → erholend → erholt. Erneute Verletzung einer noch nicht ausgeheilten Region erreicht schwere Zustände schneller.
+- **Behandlung auf drei Ebenen:** Feldbehandlung für leichte Verletzungen und Stabilisierung; ein medizinisch geschulter Jäger oder Arzt für manche mittelschweren Fälle; schwere innere Verletzungen, komplizierte Schüsse, schwere offene Brüche, schwere Verbrennungen, kritische Infektionen und massiven Blutverlust brauchen Krankenhaus. Schmerzmittel wirken verzögert und sind Symptomlinderung, keine magische Heilung. Erholungsstufen: akut → stabilisiert → heilend → erholend → erholt. Erneute Verletzung einer noch nicht ausgeheilten Region erreicht schwere Zustände schneller. Widerspruch W-10 offen: Erholungsstufen gegen Rehabilitationssimulation (siehe GS:402); Entwicklerklärung ausstehend.
 - **Animation:** Komplexe Verletzungsanimation (Schichten, IK, prozedurale Anpassung) ist vor der Veröffentlichung nötig, auch wenn frühe Builds einfacher sind.
 
 **Darstellung**
 
 - 📋 **Gore** ist gewollt und ursachenabhängig (Pistole ≠ Schrotflinte aus der Nähe ≠ Messer ≠ Axt ≠ Kralle). Bei **erwachsenen Menschen** liegt die Zielschwere mindestens auf dem Niveau eines bekannten Western-Spiels, aber enger an Verletzungs- und Medizinzustand, Kleidungsschaden und tatsächliche Schadensbedingungen gebunden; plausible Ergebnisse umfassen Ein- und Austrittswunden, Schnitte, Verbrennungen, Brüche, schweren Gewebeschaden, Verlust von Fingern, Händen und Gliedmaßen, Enthauptung unter sehr extremen und physikalisch passenden Bedingungen und Explosionstrauma. Ein späterer Planungsblock nennt für erwachsene Menschen und Monster teils eine Schwere „deutlich darüber“. Die endgültige Schwelle ist ❓ von Plattform-, Alters- und Rechtsprüfung abhängig.
+- 📋 **Minderjährige NPCs (Richtung, Backlog Track 44, 📋 aktuelle offizielle Darstellungsrichtung):** Kinder dürfen existieren und sind nicht um eine magische Unverwundbarkeit herum konstruiert. Es gibt keine Belohnungen oder Herausforderungen, die auf deren Verletzung abzielen. Extreme Zerstückelung, Enthauptung und Gibbing sind in der aktuellen offiziellen Darstellung für Minderjährige **nicht** vorgesehen. Die endgültigen Grenzen brauchen eine spätere Prüfung durch Plattform, Altersfreigabe und Recht; diese Prüfung steht aus.
+- 📋 **Darstellungsprofile (Backlog Track 44):** Gewalt-Einstellungen für Spieler sind Voll, Reduziert und Minimal. Der Verletzungszustand ist die kanonische Wahrheit; die Darstellung folgt ihm. Verletzungen entstehen aus Einschlag, Gewebe, Knochen und Schutz über Blutung und Schmerz bis zur Darstellung. Kleidungsschäden entsprechen der Verletzung. Monsterspezifische Anatomie, Blut, Regeneration und Todesprofile sind getrennt festzulegen. Regionale und plattformspezifische Profile sind offen.
 - 📋 **Minderjährige** können in der Welt existieren und haben keinen magischen Unverwundbarkeits-Schutz, aber die offizielle Darstellung schließt extreme Verstümmelung, Zerlegung oder Enthauptung aus, und es gibt weder Belohnungen noch Herausforderungen, die auf ihre Verletzung zielen. Endgültige Grenzen brauchen Plattform-, Bewertungs- und Rechtsprüfung.
 - 📋 Nutzer-Einstellungen für Gore: voll / reduziert / minimal. Einstellbare **Kill-Cams** für seltene, hochwertige Tötungen (filmische Projektilverfolgung, optional eine anatomische Röntgen-ähnliche Ansicht mit eigener visueller Sprache, die an die tatsächliche Verletzungssimulation gebunden ist; Häufigkeit konfigurierbar, standardmäßig selten).
 - Siehe [Spielvision](Spielvision.md#14-schwierigkeit-scheitern-und-tod) für Tod und Scheitern (❓ offen).
@@ -193,6 +195,7 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 - **Gehör:** Richtung, Entfernung und Unsicherheit aus tatsächlicher Schallausbreitung. Berücksichtigt werden Lautstärke, Dauer und Frequenz, Entfernung, Raumakustik, Wände, Türen, Materialien, Hintergrundlärm, Wetter, Böden und Hörvermögen. Unterschiedliche Geräuschkategorien werden unterschiedlich gedeutet (Schritte, Nachladen, Magazinabwurf, Tür, Glasbruch, Stimme, Schuss, Motor, geworfener Gegenstand). Schrittgeräusche hängen von Tempo, Haltung, Untergrund, Schuhwerk und Verletzung ab. Wer den Stick nur wenig auslenkt, bewegt sich kontinuierlich langsamer und leiser (kein separater Pflicht-Schleichknopf). Für Innenräume wird ein Raum-/Portalmodell bevorzugt. Hall kann die Ortung erschweren.
 - **Sicht:** Richtung, Reichweite, tatsächliches Licht, Bewegung, Deckung, Silhouette, Haltung und Sichtbarkeit/Wetter. Dunkelheit verringert die Sicht, ohne Unsichtbarkeit zu gewähren. Ein im Dunkeln gehörter Spieler kann ohne visuelle Identifikation grob geortet werden. Taschenlampen sind Werkzeuge und Risiken; kreaturspezifische KI kann Licht und Strom manipulieren.
 - **Intelligente Gegner** kombinieren Spuren (Geräusch, Blut, Türen, Fenster, letzte Position) zu Hypothesen, prüfen Verstecke auch ohne Gewissheit (Verstecke sind nie garantiert sicher) und erkennen wiederholte Ablenkungstricks. Menschliche Gegner teilen Informationen nur über plausible Kommunikation (Stimme, Funk, Sichtzeichen), **kein Schwarmbewusstsein**. Kreaturen kommunizieren artspezifisch. Blutspuren können von Menschen visuell verfolgt werden; Geruchsverfolgung ist kreaturspezifisch.
+- 📋 **Gezieltes Prüfen:** Hat ein Gegner ein bestimmtes Versteckverhalten des Spielers gesehen oder starke Belege, prüft er diese Art von Versteck später gezielter. Ohne Beleg verdächtigt er nur oder sucht gelegentlich (`PROJECT_DECISIONS` §22, MASTER-MIGRATION-17).
 - **Taktikvorrat** intelligenter Monster: beobachten, auflauern, flankieren, Strom abschalten, Licht manipulieren, falsche Geräusche und Stimmen erzeugen, absichtlich schweigen, Ausgänge blockieren, Jäger isolieren, verletzte Ziele verfolgen, Begleiter angreifen, zurückziehen und neu positionieren, Nachladen und Verletzungen ausnutzen. Die Taktikwahl ist kontextabhängig und adaptiv, nicht zufällig rotierend. Absichtliches Schweigen darf nicht so häufig sein, dass es vorhersehbar wird. Falsche oder psychologische übernatürliche Geräusche unterscheiden zwischen körperlichen Weltgeräuschen und Wahrnehmung nur des Ziels.
 - **Zusammenspiel:** Kampf kann zu Suche und Tarnung zurückkehren, wenn die Sichtlinie bricht und die genaue Position verloren geht. Verletzung erschwert Tarnung (Hinken, schweres Atmen, Schmerzlaute, Blutspuren).
 - **Anzeigen:** Tarn-HUD ist optional (im härtesten Modus standardmäßig aus).
@@ -245,6 +248,8 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 
 ---
 
+- 📋 **Gemeinsame Sekundärphysik** für Figurenbewegung, Rückstoß, Fahrzeuge, Kleidung, Haare und Interaktionen. Dämpfung und Masse sind realistisch; übertriebenes Wabbeln ist nicht gewollt (`PROJECT_DECISIONS` §51, MASTER-MIGRATION-17).
+
 ## 10. Recht, Polizei und Beweise
 
 > Vertiefung: [Ermittlung, Modul 06](Ermittlung/06-Kriminalitaet-Polizei-und-Justiz.md) (Fahndung, Strafsystem, Haft, Rettung) und [Modul 05](Ermittlung/05-Spuren-Tracking-Forensik-und-Zeugen.md) (Beweise).
@@ -252,7 +257,7 @@ Siehe [Spielwelt und Untergrund](Spielwelt-und-Untergrund.md#112-eisenbahn) für
 📋
 
 - **Gesetz folgt tatsächlicher Information** und Beweislage über Zuständigkeiten hinweg (lokal, Bezirk, Bundesstaat, Bund), nicht omniszienter Fahndungslogik. Beweisquellen: Zeugen, Überwachungskameras, Kleidung, Gesicht, Fahrzeug und Kennzeichen, Waffen und Ballistik, Fingerabdrücke und DNA wo passend, digitale Beweise, Komplizen. Meldelatenz beim Notruf; Verarbeitungs- und Verteilungsverzögerungen; Vertrauensmodell der Verdächtigung.
-- **Strafsystem statt „Sterne“:** Tat → Schweregrad → Vorsatz oder Fahrlässigkeit → Opfer → Zeugen und Beweise → Notwehr/Nothilfe → Vorstrafen → Festnahme → Staatsanwaltschaft → Prozess oder Absprache → Urteil → Haft, Bewährung, Geldstrafe oder Freispruch. **Festnahme ist kein automatisches Game Over:** Verhör, Geldstrafe, Kaution, Gericht, Gefängnis und vergehende Zeit können auftreten. Das Gefängnis ist eine eigene soziale Simulation. Schwerer Fahndungsstatus bleibt bis zu glaubwürdiger Auflösung bestehen, nicht nur für eine kurze Zeit. Man kann **landesweit gesucht** werden. Aufgeben und Festnahme sind echte Alternativen zur tödlichen polizeilichen Lösung.
+- **Strafsystem statt „Sterne“:** Tat → Schweregrad → Vorsatz oder Fahrlässigkeit → Opfer → Zeugen und Beweise → Notwehr/Nothilfe → Vorstrafen → Festnahme → Staatsanwaltschaft → Prozess oder Absprache → Urteil → Haft, Bewährung, Geldstrafe oder Freispruch. **Festnahme ist kein automatisches Game Over:** Verhör, Geldstrafe, Kaution, Gericht, Gefängnis und vergehende Zeit können auftreten. Das Gefängnis ist eine eigene soziale Simulation. Schwerer Fahndungsstatus bleibt bis zu glaubwürdiger Auflösung bestehen, nicht nur für eine kurze Zeit. Man kann **landesweit gesucht** werden. Aufgeben und Festnahme sind echte Alternativen zur tödlichen polizeilichen Lösung. Vollständige Beweis- und Forensikliste: [Spielvision §7.3](Spielvision.md) (SV:219).
 - **Polizei-Details:** Spürhunde und ein wiederverwendbares Geruchs-/Windmodell; wichtige abgelegte Waffen oder Gegenstände bleiben physisch und können Beweise werden (mit intelligenter Bereinigung gegen unbegrenzten Müll); Durchsuchung, Beschlagnahme und Fahrzeugdurchsuchung nach Regeln; Beweiskette und Aufräumen; Hintergründe der Polizeikarte je Schwierigkeit.
 - **Selbstverteidigung** ist unabhängig vom Geschlecht. Schwere Straftaten sind Teil der Kriminalitäts- und Justizsimulation und werden ausschließlich über Konsequenzsysteme behandelt (Zeugen, Spuren, Ermittlung, Festnahme, Prozess, Haft, Ruf); es gibt dafür keine eigene Spielmechanik (siehe [Adult-System](Adult/09-Dunkle-Themen-und-Nicht-Uebernommenes.md)).
 - **NPC-Reaktion:** NPCs, die ein schweres Verbrechen beobachten, können Polizei rufen, eingreifen, festhalten, fliehen, angreifen oder (bei besonders gewalttätigen Gruppen) massiv eskalieren, abhängig von Persönlichkeit, Fraktion und Moral.
@@ -323,6 +328,7 @@ Die **engine-unabhängige Datengrundlage für das Aussehen** im Core: Datenmodel
 - **Konsolen:** PS5 mit zwei Hauptmodi: Grafik (30 FPS, höchste machbare Qualität) und Leistung (60 FPS, 4K-Ausgabe mit reduzierter interner Auflösung); **kein 40-FPS-Modus geplant**. PS5 Pro versucht hohe Qualität bei 60 FPS, soweit die Profilierung es erlaubt. Xbox Series X folgt derselben 30/60-Philosophie, Series S erhält angepasste Rendering-, VRAM- und Streaming-Einstellungen unter Beibehaltung der Spielsysteme. Natives 4K plus 60 FPS plus maximales Raytracing auf der Basis-PS5 wird **nicht versprochen**, wenn die Profilierung es nicht trägt. Mehr Anzeigeoptionen als üblich (HDR/Kalibrierung, Bewegungsunschärfe, Filmkorn, chromatische Aberration, Kameraeffekte, Sichtfeld, Gore-Dauer), aber nicht jede PC-Konsolenvariable.
 - **Optimierung ist Architekturanforderung von Anfang an**, nicht nur Politur: CPU, GPU, VRAM, RAM, Streaming, KI, Physik, Animation, Audio und Simulation werden gemeinsam budgetiert.
 - ❓ Mindest-/Empfohlen-/Ultra-Hardware, native Auflösungen, Bildraten, Raytracing-Funktionssatz, Path-Tracing-Verfügbarkeit, 8K-Verhalten, PS5-Pro- und Series-S-Profile, Hochskalierungs- und Frame-Generation-Matrix.
+- 📋 **Path Tracing** ist ein optionaler High-End-, Foto- oder Kinopfad und nicht die normale Spielbasis. Für preiswertere Hardware kann 4K über TSR, DLSS, FSR oder XeSS erreicht werden. Zielgarantien (etwa native 4K mit maximalem Raytracing auf der Basis-PS5) gibt es nur, wenn die reale Profilierung sie trägt; Qualität darf dafür nicht zerstört werden (`PROJECT_DECISIONS` §25, MASTER-MIGRATION-17).
 
 ### 14.2 Audio
 
@@ -340,15 +346,17 @@ Die **engine-unabhängige Datengrundlage für das Aussehen** im Core: Datenmodel
 
 ## 15. Modding
 
+📋 **Ausdrücklich unterstützt:** Modding ist gewollt und soll **kein Reverse Engineering** verlangen (`PROJECT_DECISIONS.md`, Abschnitt „Modding“; Nachweis in `Planning/Nachweis/entscheidungsabgleich-project-decisions.md`, MASTER-MIGRATION-17).
+
 📋 **Architektur v1 (Block 5, bestätigt am 11. September 2026):**
 
-- **Anbieterunabhängig:** Der Mod-Kern darf nicht von einem Steam Workshop oder einem einzelnen Anbieter abhängen. Online-Hosting ist optional und nur eine Quelle für Entdeckung, Download und Updates, nicht die technische Wahrheit für installierte Mods; die lokale Modmenge bleibt ohne Online-Anbieter nutzbar.
-- **Standard-Ort:** `<GameRoot>/mods/`. Ein Mod-Manager durchsucht und registriert portable **`.spnmod`**-Pakete und/oder entpackte Verzeichnisse. Zusätzliche Bibliotheken auf anderen Laufwerken sind eine optionale Zusatzfunktion, die Standardinstallation hängt von keinem Launcher ab.
+- **Anbieterunabhängig:** Der Mod-Kern darf nicht von einem Steam Workshop oder einem einzelnen Anbieter abhängen. Online-Hosting ist optional und nur eine Quelle für Entdeckung, Download und Updates, nicht die technische Wahrheit für installierte Mods; die lokale Modmenge bleibt ohne Online-Anbieter nutzbar.- **Standard-Ort:** `<GameRoot>/mods/`. Ein Mod-Manager durchsucht und registriert portable **`.spnmod`**-Pakete und/oder entpackte Verzeichnisse. Zusätzliche Bibliotheken auf anderen Laufwerken sind eine optionale Zusatzfunktion, die Standardinstallation hängt von keinem Launcher ab.
 - **Aktivierung:** Installiert ≠ aktiviert. Aktivierung pro Profil und **pro Spielstand**; Deaktivieren löscht weder Paket noch Zustand.
+- 🧭 **API-Familien (Projektzusammenfassung §15):** Registry, Asset-Registry, Gameplay-Tag-Erweiterungen sowie Schnittstellen für Interaktion, Animation, Position, Übergang, Kamera, Audio und Präsentation. Ein Mod-Manifest nennt ID, Version, benötigte Spielversion, Abhängigkeiten, Autor, Lizenz und Plattform-/Netzwerkkompatibilität. Eingeschränkte Skriptmods; native Mods nur in Einzelspieler, Koop oder bewusst modifizierten Umgebungen (MASTER-MIGRATION-18). 💡 Pflicht laut Entwurf `SPN_Prompt_Pack/04_Modding_Ecosystem`: Beispielmods, Dokumentation, öffentlich lesbare Header, Packaging-Werkzeuge und klare Fehlermeldungen.
 - **Additiv:** Mods erweitern standardmäßig über APIs, Register und Hooks; Überschreiben nur mit ausdrücklichen Ebenen- und Ladereihenfolge-Regeln. Vorläufige Ebenen: Daten/Inhalt, Unreal/Blueprint, native C++-Mods (vertrauter nativer Code; öffentliche Schnittstellen mit geringstem Privileg). Lua nur, wenn es eine echte Lücke schließt.
-- **Manifest:** ID, Version, benötigte Spielversion, Abhängigkeiten, Autor, Lizenz, Plattform-/Netzwerkkompatibilität; Herkunftsklassen (Basisspiel, offizielles DLC, Entwickler-Mod, Community-Mod); Entwickler-Mods erhalten keine Sonderrechte. Sicherheitskern nicht moddbar (Altersberechtigung, Zustimmung, Blockregeln, Serverautorität, Kontoberechtigungen, Spamschutz, Onlinesicherheit).
+- **Manifest:** ID, Version, benötigte Spielversion, Abhängigkeiten, Autor, Lizenz, Plattform-/Netzwerkkompatibilität; Herkunftsklassen (Basisspiel, offizielles DLC, Entwickler-Mod, Community-Mod); Entwickler-Mods erhalten keine Sonderrechte. Sicherheitskern nicht moddbar (Altersberechtigung, Zustimmung, Blockregeln, Serverautorität, Kontoberechtigungen, Spamschutz, Onlinesicherheit). Die Feldliste ist 💡 Vorschlag; der Master-Nachweis fehlt (W-08).
 - **Modi:** Einzelspieler und Koop-Kampagne erlauben Mods; der offizielle Online-Modus **nicht**. Ein offizieller Mod-Browser mit komfortabler Installation und Abhängigkeitsauflösung ist gewünscht, mit automatischem Scan, Kompatibilitätstest und, wo möglich, Prüfung und Signatur für native Mods. Eine Sicherheitsprüfung kann beliebigen nativen Code nicht mathematisch garantieren.
-- **Kritische fehlende Mods** blockieren das Laden standardmäßig, mit Experten-Ausnahme nach Sicherung.
+- **Kritische fehlende Mods** blockieren das Laden standardmäßig. Die Experten-Ausnahme ist nur nach automatischem Backup oder Snapshot und nach klarer Risikoangabe erlaubt (rekonstruierte Regel aus Master `MODDING/MODDING_ARCHITECTURE_V1_RECONSTRUCTED_2026-09-09.md:5`, bitte bestätigen, K-14).
 
 ✅ **Vorbereitung im Core:** Inhalts-IDs mit Namensraum (`namespace:pfad`); unbekannte Objektarten sind Daten und kein Fehler (ein Spielstand mit Fakten einer nicht registrierten Mod-Objektart lädt und speichert unverändert; nur das *Benutzen* meldet `UnknownKind`); Aussehen mit fehlenden Mod-Inhalten wird nicht zerstört.
 
@@ -386,3 +394,46 @@ Die **engine-unabhängige Datengrundlage für das Aussehen** im Core: Datenmodel
 ## 18. Offene Punkte
 
 ❓ Zahlenwerte für Spielbalance, Fahrverhalten, KI und Simulation; Schadensmodell der Fahrzeuge; Fortschrittssystem; Todes-/Scheiterns-System; Schlossmodell und Interaktionsverben; Eingabe- und Hinweis-Oberfläche; Combat-Focus-Details; Gore-Schwellen; Straftatenkatalog und Strafmodell; Wirtschaftsbalance; Spielnetzwerk und App-Liste; Menschen-Pipeline und Parameterliste; Hardware-Anforderungen und Bildraten; `.spnmod`-Details. Die vollständige Übersicht steht in [Entscheidungsstatus](Entscheidungsstatus.md).
+
+---
+
+## Nachtrag Master-Abgleich (08.11.2026)
+
+Ergänzungen aus dem Abgleich mit dem Planungsmaster. Quellen in Klammern: Master-Dateien unter `Planning/Master/SPN_FULL_CUMULATIVE_MASTER_2026-09-27/`, Kürzel siehe `Docs/Planning/SOURCES.md`. Blockierte Punkte sind als offen markiert und nicht entschieden (`Docs/Planning/CONFLICTS.md`).
+
+### Beziehungstiefe (Ergänzung zu §8)
+- Mehrere gleichzeitige Beziehungen sind möglich. Eifersucht, Konflikte, Geheimhaltung, offene Arrangements, Trennungen und ihre Folgen können entstehen (Master: `01_CURRENT_CANONICAL_STATE/CANONICAL_ADDENDUM_2026-09-05.md:40`). *Der Romantik-Teil ist offen (K-23).*
+- Zusammenleben, Heirat und gemeinsames Eigentum sind im Umfang (CA5:41). Familiengenerationen haben niedrige Priorität, weil die Langzeit-Simulation aufwendig ist (CA5:41).
+- Wichtige Figuren erhalten individuelle Tiefe; generische NPCs nutzen systemische Beziehungsinhalte (CA5:42).
+
+### Verletzungsgrenzen (Ergänzung zu §4)
+- Keine volle Rehabilitationssimulation. Schwere Verletzungen können vorübergehende Funktionseinschränkungen bewirken (CA5:50).
+- Amputation und Prothesen: *offen, nur über Story oder als physikalisches Ergebnis (K-22).* Der Master lässt nur die Story-Variante zu.
+
+### Simulationsbudgets (Ergänzung zu §8 und §14)
+- Außerhalb des Blickfeldes laufen Simulationen begrenzt. Konkrete Budgets sind nicht gewählt (Master: `Ergänzung AIS:22, 33–39`, siehe `Docs/Planning/Konsolidierung/A-gameplay-spielvision.md` L-12).
+
+### Mod-Laden (Ergänzung zu §15)
+- Eine In-Session-Deaktivierung ist logisch: keine neuen Aktivierungen. Bereits geladene Inhalte werden sicher neu geladen oder übergeben, ohne unsicheres Entladen (Master: `MODDING/MODDING_ARCHITECTURE_V1_RECONSTRUCTED_2026-09-09.md:5`). *Rekonstruierte Regel, bestätigen lassen (K-14).*
+- Der Modzustand bleibt für spätere Aktivierung erhalten.
+- Der Mod-Manager synchronisiert beim Start die lokale Mod-Liste. Anbieter-Metadaten werden auf das eigene kanonische Manifest abgebildet, nicht umgekehrt (Master: `MODDING/MODDING_ARCHITECTURE_V1_BLOCK_05_CONFIRMED_2026-09-11.md:21–25, 40–42`).
+
+### Persistenz-Details (Ergänzung zu §16)
+- Realm-Namensräume für Hölle, Purgatorium und Himmel (Master: `WORLD_FACTS` und Tier 2, siehe Abgleich L-10).
+- Host- und Gast-Metadaten im Speicherstand. Der Host-Speicherstand ist maßgeblich (bestätigt, K-25).
+- Compare-and-Set für Koop-Änderungen ist im Master offen.
+- Binäres Speicherformat: offen.
+
+### Phasenvertrag (Ergänzung zu §6.2)
+- Phase 0 ist ein Platzhalter-Ziel innerhalb von 2–4 Wochen nach Entwicklungsstart (Master: `CLAUDE.md` §4; `01_CURRENT_CANONICAL_STATE/ADDENDA_2026/2026-10-15/01_CANON_ADDENDUM.md:19`).
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Kosmetik ohne Spielkraft (Entscheidung 1):** Der Charakter-Editor ist ausdrücklich umfangreich: Gesichtsmodellierung, Körperproportionen, Größe, Muskel- und Fettverteilung, Haare, Augen, Hautdetails, Narben, Tattoos, Piercings, Stimme, Körperbehaarung und Details. Anatomische Kosmetik darf **keine** Spielkraft liefern. Körperliche Leistung folgt aus dem Körperzustand, Training und Verletzung, nicht aus Aussehen oder Geschlecht. Wo das Körper- und Nacktheitssystem anatomische Anpassung nutzt, gilt sie nur im Adult-Paket (siehe [Adult](Adult-System.md)).
+
+
+## Ergänzung aus PROJECT_DECISIONS (Rendering und Stealth, 🧭 Richtung)
+
+- **Konsolen-Anzeigeoptionen:** mehr Optionen als bei typischen Konsolenreleases, soweit sicher und zertifizierbar: HDR und Kalibrierung, Bewegungsunschärfe, Filmkorn, chromatische Aberration, Kameraeffekte, Sichtfeld wo Plattform und Spiel es erlauben, Persistenz von Gore. **Keine** rohen PC-Konsolenvariablen auf Konsole; Optionen bleiben innerhalb validierter Leistungsprofile.
+- **Türen als Geräuschquelle:** Türen erzeugen je nach Bedienung und Zustand unterschiedliche Geräusche. Alte, knarrende Türen bleiben auch bei vorsichtigem Öffnen hörbar.
+- **Verdeckte Bewegung:** langsame und leise Bewegung über kleine Analogausschläge des Sticks, nicht über eine zusätzliche Pflicht-Taste für „Ultra-Sneak“.

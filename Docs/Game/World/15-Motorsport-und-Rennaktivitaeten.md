@@ -51,6 +51,7 @@ Teams, Hersteller, Fahrer/Fahrerinnen, Qualifying, Reifen, Wetter, Setups, Schad
 |---|---|:---:|---|
 | Anforderung | mindestens fünf Rennstrecken, realistische Klassen und Homologation | 📋 | M-PD; M-B38 |
 | Entwickler 28.08.–01.09. | F1-Strecke plus fünf weitere Rennstrecken; Rallye bergauf wie Pikes Peak | 📋 | 23#511E; 23#823E; 23#822E |
+| Entwickler 16.09. (Chat 35) | Ungesicherte Schotter-Bergstrecke „wie Pikes Peak“ ohne Absperrungen (Wunsch). Ob sie mit der Pikes-Peak-Bergrallye identisch ist, ist offen (OF-58; W-MO-014). Offen: Sicherheit und Absperrung; die Ausgestaltung (Gefahrenstufen, Schadenssystem) ist 💡 und nicht festgelegt. Siehe §7. | 📋 Wunsch / ❓ | 35#568E; 35#570E; W-MO-014; OF-58 |
 | WORLD_700 | sechs Standorte | 🕰️ | G7-GPKG |
 | 09.09. WORLD_2000 | 16–22 Standorte (Hierarchie) | 🕰️ | 35#96A; 35#97E |
 | Oktober-Aufträge | ‚sechs Motorsportsysteme‘ | 🕰️ | 30#265E |

@@ -64,7 +64,7 @@ Die Spalte *Quelle* nennt die Art und das Datum des Dokuments, nicht den Dateipf
 |---|---|---|
 | Ältere Welt | Geografisch und optisch abgeschlossen; Makrogeografie gesperrt; additive Inhalte erlaubt; kein klassisches DLC; Referenz- und Technik-Master | Kanon 04.–10.09.2026, Nachtrag 15.10.2026 |
 | Größere Hauptwelt | Standard-Hauptwelt des Basisspiels; **keine Endgenerierung vor vollständigen Anforderungen und räumlicher Zuordnung** | Kanon 05.–16.09.2026, Nachtrag 15.10.2026 |
-| Weltgröße | ca. 2.000 km² weiches Ziel, 2.200 km² Szenario; kein Geometrie-Lock | Nachtrag 15.10.2026 |
+| Weltgröße (**überholt, K-20 / N-01: endgültige Größe offen**) | ca. 2.000 km² weiches Ziel, 2.200 km² Szenario; kein Geometrie-Lock | Nachtrag 15.10.2026 |
 | Städte | Vorbilder: Stimmung und Vielfalt von vier bekannten amerikanischen Großstädten, keine realen Flächen; die früher abgeleitete Gesamtstadtfläche von 570 km² als Entscheidung abgelehnt; plausible Nachbarschaften, Hügel, Vegetation, Parks, Flüsse, organische Straßen | Statusdokument 13.10.2026, Nachtrag 15.10.2026 |
 | Reiche | Himmel, Hölle und Fegefeuer als eigene Open Worlds im Basisspiel; Persistenz auch dort | Kanon 05.–10.09.2026 |
 | Zeitreise | Großes Spielsystem; jahresgenau etwa 1600 bis zur Gegenwart; keine harte Untergrenze | Kanon 05./06.09.2026 |
@@ -87,7 +87,7 @@ Die Spalte *Quelle* nennt die Art und das Datum des Dokuments, nicht den Dateipf
 | Medaillen | Bronze, Silber, Gold, Platin, Diamant; verborgene Kriterien; Replay ändert Story-Zustand nicht | Entscheidungsänderungen 25.–31.08.2026 |
 | Soziale Medien | Nie Pflicht für Hauptgeschichte oder normale Nebenfälle; nur optionale dynamische Weltereignisse | Entscheidungsänderungen 25.–31.08.2026 |
 | Fahren | Manuelle Kupplung, Abwürgen, freie Gangwahl; frühe versus langfristige Version; Handschalt-Variante für jedes Fahrzeug als Ziel | Entscheidungsregister 31.08.2026, Spezifikation 15.10.2026 |
-| Untergrund (Gesellschaft) | Gesellschaftsentscheidungen U24–U36: Vertrauen, Haushalte, Lernen, Medizin, Lebensdauer, Verjüngung, KI-Stufen und individuelle Anerkennung, KI-Aufsicht je nach Aufgabe, gemischte Kommunikation | Entscheidungsnachträge 15.–18.10.2026 |
+| Untergrund (Gesellschaft) | Gesellschaftsentscheidungen U24–U36: Vertrauen, Haushalte, Lernen, Medizin, Lebensdauer, Verjüngung, KI-Stufen und individuelle Anerkennung, KI-Aufsicht je nach Aufgabe, gemischte Kommunikation | Entscheidungsnachträge 15.–18.10.2026. **Geltung nach N-02 (08.11.2026) offen (K-29); keine Entscheidung über die Inhalte.** |
 | Rail | Alle Züge innerhalb der Karte; Facility-Bereiche; hohe Elektrifizierung; Fahren nur mit Job/Berechtigung; Langzeitziel | Spezifikation 15.10.2026 |
 | Adult-Bereich | Rahmen: getrenntes optionales Paket, Zustimmungs- und Altersregeln, Basisspiel nicht explizit; Detailplanung im Entwicklerinterview | Entscheidungsänderungen 25.–31.08.2026; Entwicklerinterview 28.08.–27.09.2026 |
 
@@ -97,15 +97,15 @@ Die Spalte *Quelle* nennt die Art und das Datum des Dokuments, nicht den Dateipf
 
 | Thema | Arbeitsstand | Anmerkung |
 |---|---|---|
-| Fläche der Hauptwelt | 2.200 km² trockenes Festland plus Ostinsel (80–100 km², 90 als Test) | Arbeitsziel der nächsten Kartenversion; kein abgeschlossenes Karten-Master |
+| Fläche der Hauptwelt | 2.200 km² trockenes Festland plus Ostinsel (80–100 km², 90 als Test) | **überholt durch K-20 (08.11.2026)**; Arbeitsziel der nächsten Kartenversion; kein abgeschlossenes Karten-Master |
 | Metropolis | 110 km², 20 Bezirke, ca. 20 km² Innenstadt, ca. 12 km² Hochhauskern, 3–5 Supertalls (700–1.000 m) | Arbeitsmaß; frühere Testwerte (20–25 km²; 70–73 km² in einer älteren Planung) sind abgelöst |
-| Größte Untergrundstadt | Horizontale Ausdehnung 50–100 km²; Bevölkerung mehrere Hunderttausend bis etwa 1 Million | ausdrücklich keine Geometrie-Festlegung |
+| Größte Untergrundstadt (**historisch, N-02**) | Horizontale Ausdehnung 50–100 km²; Bevölkerung mehrere Hunderttausend bis etwa 1 Million | ausdrücklich keine Geometrie-Festlegung |
 | Reichsgrößen | Hölle 350–500 km² (Favorit 420), Fegefeuer 500–750 (650), Himmel 250–400 (320) plus Taschendomänen | Planungsbereiche |
 | Hauptgeschichte | Umfang etwa 80–100 Stunden | Stand 31.08.2026, Planungsziel |
 | Zeitskala | Etwa 2 Echtstunden pro Spieltag | nur eine Idee |
 | Tierarten | 220–280 auf der Hauptkarte | Zielbereich |
 | Kernarten von Monstern | Grob 20–30 sehr tiefe statt 100 flacher | bevorzugt, nicht gesperrt |
-| Phasenziele | Phase 0 2–4 Monate (kleiner Platzhalter in 2–4 Wochen); Phase 1 ca. 1–3 km² und 30–60 Minuten; Phase 2 ca. 5–10 km², 3–5 Stunden; Phase 3 ca. 25–50 km², 10–20+ Stunden | Schätzungen, keine Termine |
+| Phasenziele | Phase 0 2–4 Monate (kleiner Platzhalter in 2–4 Wochen); Phase 1 ca. 1–3 km² und 30–60 Minuten; Phase 2 ca. 5–10 km², 3–5 Stunden; Phase 3 ca. 25–50 km², 10–20+ Stunden | Schätzungen, keine Termine. Phase-1-Einstieg: ca. 30 Minuten spielbarer Inhalt (N-03, verbindlich, 08.11.2026, Entwicklerangabe); die Spanne 30–60 Minuten bleibt als Arbeitsbereich (K-04) |
 | Online | 64–100 Spieler pro großer Weltinstanz | langfristiges Ziel |
 | Basisspiel-Größe | etwa 100 GB | Richtung |
 | Bevölkerung | mehrere Hunderttausend NPCs | Planungsgröße |
@@ -144,7 +144,7 @@ Diese Punkte standen in Planungspaketen als **Ingenieursvorschläge** oder als B
 
 ### 5.2 Untergrund und Reiche
 
-- Größe, Höhenstufen, Lage, Bevölkerung, Dichte, Kavernen, Machbarkeit der größten Untergrundstadt; Zugangsregeln, Verkehrsrechte; Untergrund-Netz und Anbindung an die Oberfläche; Beziehung der Jäger-Einrichtungen zu den Städten.
+- Größe, Höhenstufen, Lage, Bevölkerung, Dichte, Kavernen, Machbarkeit der größten Untergrundstadt (**historisch, N-02**); Zugangsregeln, Verkehrsrechte; Untergrund-Netz und Anbindung an die Oberfläche; Beziehung der Jäger-Einrichtungen zu den Städten.
 - Bewusst **reservierte** Story-Fragen (ihre Beantwortung ist Teil der Hauptgeschichte und wird nicht vorweggenommen).
 - KI-Rechte, Bewusstsein, Notfallbefugnisse; Sicherheit und Identität neuronaler Schnittstellen.
 - Reichsgrößen, Grenzen, Namen, Kosmologie, politische Strukturen, Zeitverhältnisse, Gedächtnisdomänen, Transport und Schnellreise, Jenseits-Ablauf.
@@ -221,7 +221,7 @@ Mehrere Planungsdokumente erwähnen sowohl eine gesicherte unterirdische Einrich
 
 ### 6.4 Größe der größten Untergrundstadt
 
-Ein Tagesstand vom 14.10.2026 nennt die Größe als unbekannt; der Nachtrag vom 15.10.2026 nennt 50–100 km² als vorläufig. Das ist **kein Widerspruch**, sondern eine Verfeinerung; die Zahl bleibt vorläufig.
+Ein Tagesstand vom 14.10.2026 nennt die Größe als unbekannt; der Nachtrag vom 15.10.2026 nennt 50–100 km² als vorläufig. Das ist **kein Widerspruch**, sondern eine Verfeinerung. Seit N-02 (08.11.2026) ist die Zahl **historisch** und nicht mehr verbindlich; die größte Untergrundstadt entfällt als Pflichtinhalt, und es gibt keine Geometrie-Festlegung.
 
 ### 6.5 Hauptquartier-Beschriftung auf Karten
 
@@ -259,3 +259,9 @@ Dieses Dokument beruht auf dem Planungsmaster, soweit er für diese Aufbereitung
 - Es wird **nicht behauptet**, das gesamte Archiv geprüft zu haben. Eine Aussage „nichts gefunden“ bezieht sich nur auf das Gelesene.
 - Die Planungsdokumente sind teilweise Gesprächsprotokolle mit Assistenten. Dort stehende **Vorschläge der Assistenten** sind nicht übernommen, wenn der Entwickler sie nicht bestätigt hat.
 - Der Planungsmaster wird bei dieser Aufbereitung **nicht verändert**.
+
+---
+
+### Nachtrag 08.11.2026 (Entwicklerentscheidung N-02)
+
+Die vollständige unterirdische Zivilisation entfällt. Bunker, Höhlen, Geheimlabore und kleinere unterirdische Gebiete bleiben möglich. Die Aussagen oben zu Erbauern, Umfang (50–100 km²), Bevölkerung und unterirdischem Schienenverbund sind **historisch** und nicht mehr verbindlich. Verweis: `Docs/Planning/DECISIONS.md` N-02, `Docs/Planning/CANON.md`.

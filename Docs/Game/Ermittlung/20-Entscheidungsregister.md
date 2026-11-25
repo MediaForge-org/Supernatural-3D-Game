@@ -233,7 +233,7 @@ Kennungen: `E-<Gruppe>-<Nr>`; Gruppen: **FA** Fallmodell, **MO** Ermittlungsmodi
 | E-GH-002 | Öffentliches Wissen ist regional unterschiedlich und veränderlich | 📋 | `48#147E` |
 | E-GH-003 | Vier Wissensstufen: Gerücht, persönlicher Glaube, belegtes Wissen, offizielle Anerkennung | 💡 | `48#148A` |
 | E-GH-004 | Staatliche Monsterforschung existiert und wird aus Angst vor Panik geheim gehalten | 📋 | `48#171E` |
-| E-GH-005 | Geheime Labore werden zuerst durch die Story entdeckt, danach frei gesucht; nicht alle auf der Karte | 📋 / 💡 (Karte) | `48#173E`; `48#174A` |
+| E-GH-005 | Geheime Labore werden zuerst durch die Story entdeckt, danach frei gesucht; nicht alle auf der Karte (N-02: unterirdische Labore bleiben möglich) | 📋 / 💡 (Karte) | `48#173E`; `48#174A` |
 | E-GH-006 | Forschungskomplexe von klein bis riesig; kleine eher freundlich, große der Elite feindselig | 📋 | `48#175E` |
 | E-GH-007 | Eine extrem mächtige Elite; viele Ziele; Monster teilweise von ihr | 📋 Richtung | `48#177E`, `48#179E` |
 | E-GH-008 | Die Elite soll fast allmächtig wirken, aber nicht sein | 💡 | `48#178A` |
@@ -407,3 +407,16 @@ Kennungen: `E-<Gruppe>-<Nr>`; Gruppen: **FA** Fallmodell, **MO** Ermittlungsmodi
 | E-EN-037 | Verbrechensfamilien, Faktoren, Ereignisfluss, Organisationsmodell | 💡 | Modul 25 |
 | E-EN-038 | Ereignisfamilien, Lebenszyklus, Einsatzketten, Folgen | 💡 | Modul 26 |
 | E-EN-039 | Medienrollen, Aufnahmeeigenschaften, Fälschungsarten, Spuren des Spielers im Netz | 💡 | Modul 27 |
+
+## Konsolidierung 08.11.2026 (Systemintegration)
+
+| Lücke | Inhalt | Status |
+|---|---|---|
+| L-02 Todesursache wichtiger NPCs (ZE-007) | wichtige NPCs nur durch den Spieler vs. unabhängige Lebensentwicklung | **blockiert (K-27)** |
+| L-08 Speichergröße (WZ-004) | Zielwert 20–50 MB nicht bestätigt | Entscheidung offen |
+| L-10 Fahndungsstufen (PO-003, RE-013) | Stern-System abgelehnt, Fahndungsstufen als ⚠️ | Entscheidung offen (W-07) |
+| L-11 Hauptgeschichte (FA-001) | Dauer 80–100 Std. ist im Entscheidungsstatus vorläufig (V-05) | Statusangleichung: vorläufig |
+| L-12 Sammelobjekte (QA-035, AR-015) | 1.200–1.500 bei E-QA-035 als 📋, bei E-AR-015 als 🕰️/❓ | Widerspruch offen (W-08) |
+| L-13 Koop-Missionsfortschritt (KO-005) | Option B eingeschränkt durch Host-Regel | Host-Persistenz bestätigt (K-25); Rest offen |
+| L-18 Weltjournal (WF:36–38) | Journal unbegrenzt, keine Kompaktierung | Technik-Abgleich offen |
+| L-19 Akzeptanzkriterien | in vielen Einträgen fehlend, nicht ergänzt | markiert als fehlend |

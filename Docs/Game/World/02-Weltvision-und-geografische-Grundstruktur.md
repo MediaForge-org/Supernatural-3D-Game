@@ -23,7 +23,7 @@ Teil der Welt-Dokumentation ([Index](README.md)). Vertieft [Spielwelt und Unterg
 
 Das Spiel spielt in einer **fiktiven, modernen, USA-geprägten Welt**, in der das Übernatürliche unter der gewöhnlichen Gesellschaft verborgen liegt (`M-PD` §World). Die Hauptwelt ist ein **zusammenhängendes Festland** mit einer riesigen Metropole, weiteren Großstädten, vielen Kleinstädten und Dörfern, großen Wäldern und einem Hochgebirge im Norden, einer Küste im Osten mit einer bewohnten Insel, wenigen zusammenhängenden Gewässersystemen und weiten Fahrstrecken. Darunter liegt eine **verborgene, uralte Zivilisation**; daneben stehen **drei übernatürliche Reiche** als eigene Karten. Die Welt soll sich **dicht und lebendig** anfühlen, aber ‚abgelegen wie im echten Leben‘ dort, wo wenig Menschen leben (35#87E).
 
-Dieser Absatz fasst 📋-Richtungen zusammen. Die **Zahlen** (2.200 km², 110 km² …) sind 🧭 ([Modul 03](03-Massstab-Flaechen-Proportionen.md)).
+Dieser Absatz fasst 📋-Richtungen zusammen. Die **Zahlen** (2.200 km², 110 km² …) sind 🧭 ([Modul 03](03-Massstab-Flaechen-Proportionen.md)). Seit N-01/K-20 (08.11.2026) ist 2.200 km² kein Richtwert mehr.
 
 ---
 
@@ -90,7 +90,7 @@ Quelle: `D18-MAP`, `D19-REQ`, Skizze 13.10. (`45#277E`–`45#280A`). Status 🧭
 | Greywater ist die einzige Hafenstadt | 📋 | W-ST-015 |
 | Südreservoir weiter im Südosten | 📋 | W-WA-006 |
 | Hunter HQ abseits, unauffällig, nicht in/bei einer Stadt | 📋 | W-UG-023 |
-| Hunter-HQ-Lage: südlich/südwestlich von Metropolis am Übergang zur großen Waldwildnis, etwa 10–15 Straßenkilometer, nahe Wasser (Entwurf 04.10.; exakte Position ❓) | 🧭 | W-ST-035, W-KA-017 |
+| Hunter-HQ-Lage: südlich/südwestlich von Metropolis am Übergang zur großen Waldwildnis, etwa 10–15 Straßenkilometer, nahe Wasser (Entwurf 04.10., **Hypothese einer früheren Hülle**; exakte Position ❓) | 🧭 Hypothese | W-ST-035, W-KA-017, OF-69 |
 | Natürliche, unregelmäßige Weltgrenze | 📋 | W-GE-021 |
 
 ---

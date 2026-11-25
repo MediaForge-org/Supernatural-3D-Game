@@ -59,14 +59,14 @@ Teil der Welt-Dokumentation ([Index](README.md)). Konflikte: [Modul 21](21-Konfl
 
 | Nr. | Frage | Ursprung |
 |---|---|---|
-| OF-24 | Footprint der größten Untergrundstadt innerhalb 50–100 km², Ebenen, Bezirke, Kavernenhöhe. | D14-OQ Nr. 1; D15-OQ Nr. 3 |
+| OF-24 | Footprint der größten Untergrundstadt innerhalb 50–100 km², Ebenen, Bezirke, Kavernenhöhe. **Historisch nach N-02** (Stadt entfällt als Pflichtinhalt; offen nur für Bunker und Höhlen). | D14-OQ Nr. 1; D15-OQ Nr. 3 |
 | OF-25 | Bevölkerung und Dichten nach Footprint-Wahl. | D14-OQ Nr. 2 |
 | OF-26 | Anzahl und relative Größe der Untergrundstädte; Netz durchgängig? | D14-OQ Nr. 3 |
 | OF-27 | Verhältnis Untergrund-Bunker ↔ oberirdisches HQ. | K10 |
 | OF-28 | Herkunft des Schlüssels (reserviert) – Story-Strang später. | D14-HB |
 | OF-29 | Umstände der Bunkerentdeckung, Erneuerung des Bündnisses, Status der Bunkerbewohner. | D14-OQ Nr. 6, 7 |
 | OF-30 | Ursprung und Grenzen der fiktiven Energie; warum die Elite sie nicht hat. | D14-OQ Nr. 8 |
-| OF-31 | Anzahl, Rolle, Kognition der unsterblichen Erbauer. | D14-OQ Nr. 9 |
+| OF-31 | Anzahl, Rolle, Kognition der unsterblichen Erbauer. **Historisch nach N-02** (Erbauer-Zivilisation). | D14-OQ Nr. 9 |
 | OF-32 | Wasser, Landwirtschaft, Luft, Wärme, Abfall und Ökologie in Stadtgröße. | D14-OQ Nr. 10 |
 | OF-33 | Wer weiß von der Oberfläche; wie werden Agenten erkannt? | D14-OQ Nr. 11 |
 | OF-34 | Weitere geheime Anlagen. | D14-OQ Nr. 12 |

@@ -105,7 +105,7 @@ Das Journal des NPCs enthält **Lebensereignisse** (`life_log`, Modul 03 §3). E
 
 **Zeitreise.** In der Vergangenheit sind die NPCs in ihrem damaligen Alter (N-GE-028).
 
-**Alter der Spielerfiguren und Begleiter.** Auch der Spieler und die Crew unterliegen der Zeit, soweit die Welt über Jahre läuft; ob und wie schnell, entscheidet die Weltuhr-Planung (❓ Q-N21).
+**Alter der Spielerfiguren und Begleiter.** Sichtbare Alterung folgt **Story- und Weltzeit** und autorisierten Zeitsprüngen oder Epilogen, nicht den reinen Spielstunden; viele Stunden freies Umherstreifen lassen niemanden altern (DECISION_CHANGELOG 31.08., Entscheidung 51). Auch der Spieler und die Crew unterliegen der Zeit, soweit die Welt über Jahre läuft; ob und wie schnell, entscheidet die Weltuhr-Planung (❓ Q-N21).
 
 ---
 

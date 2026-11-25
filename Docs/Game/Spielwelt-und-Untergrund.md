@@ -81,13 +81,13 @@ Die Hauptwelt soll **größenunabhängig** gebaut werden: Der Entwickler plant e
 
 ## 4. Der aktuelle Arbeitsstand der Hauptwelt
 
-🧭 **Provisorische Voreinstellung** („Preset“) von 2.200 km². Das ist ein Arbeitsziel für die nächste Kartenversion und kein abgeschlossenes Kartenmaster.
+🧭 **Provisorische Voreinstellung** („Preset“) von 2.200 km². **überholt (K-20 / N-01 vom 08.11.2026: endgültige Größe offen)**. Das ist ein Arbeitsziel für die nächste Kartenversion und kein abgeschlossenes Kartenmaster.
 
 **Quellenlücke:** Der Master enthält keine Entscheidung ab dem 20.10.2026 (Konflikt K12), mit Ausnahme der drei Primärentscheidungen vom 22.10.2026 (`PE-E1022`); der übrige hier beschriebene Stand gilt bis 19.10.2026.
 
 | Bereich | Wert | Bedeutung |
 |---|---:|---|
-| Zusammenhängendes trockenes Festland | **2.200 km²** | aktuell angestrebte Fläche, ohne Wasser |
+| Zusammenhängendes trockenes Festland | **2.200 km²** | **überholt (K-20 / N-01 vom 08.11.2026: endgültige Größe offen)**; früher angestrebte Fläche, ohne Wasser |
 | davon Metropolis | 110 km² | rund 5 % des Festlands; zusammenhängendes Stadtgebiet einschließlich Vororten, nicht zusätzlich zu den 2.200 km² (📋 bestätigt am 22.10.2026, `PE-E1022`) |
 | Festland außerhalb von Metropolis | 2.090 km² | Differenz |
 | Bewohnte Ostinsel | 80–100 km² | zusätzliches Land; 90 km² als vorläufige Testgeometrie |
@@ -137,7 +137,7 @@ Wichtig: Die 2.200 km² beziehen sich auf **trockenes Festland**, nicht auf die 
 
 **Karten-Geheimhaltung:** Eine allgemeine, für Spieler sichtbare Hauptkarte darf das **geheime Jäger-Hauptquartier nicht auffällig beschriften**. Geheime Orte bleiben in den Kartenebenen hinter Entdeckung und Handlung verborgen. Das gilt für Spieler- und Exportkarten; die geografische Lage des HQ darf dagegen in dieser allgemeinen Weltdokumentation beschrieben werden (siehe unten).
 
-**Lage des Hunter-HQ (Dokumentation 📋 freigegeben am 22.10.2026, `PE-E1022`):** Das oberirdische HQ liegt abseits dichter Siedlung, nicht in oder neben einer Stadt (Entwickler 13.10.: „aufjedenfall nicht in der stadt oder daneben“, `45#279E`). Nach dem Entwurf vom 04.10. liegt es südlich bis südwestlich von Metropolis am Übergang vom Meridian-Becken zur großen Südlichen Wildnis, versteckt, waldnah und nahe Wasser, etwa 10–15 Straßenkilometer vom Stadtzentrum (🧭, `45#7A`, `45#13A`, `W-ST-035`). Die **exakte Position** im 2.200-km²-Kandidaten ist ❓ offen; es gibt keine festgelegten Koordinaten (die des Entwurfs vom 04.10. gehören zu einer früheren Hülle). Die Freigabe betrifft nur die geografische Dokumentation (`W-KA-017`), nicht geheime Eingänge, Story-Enthüllungen oder interne Einrichtungen; das Verhältnis zum Untergrund-Bunker bleibt ❓.
+**Lage des Hunter-HQ (Dokumentation 📋 freigegeben am 22.10.2026, `PE-E1022`):** Das oberirdische HQ liegt abseits dichter Siedlung, nicht in oder neben einer Stadt (Entwickler 13.10.: „aufjedenfall nicht in der stadt oder daneben“, `45#279E`). Nach dem Entwurf vom 04.10. liegt es südlich bis südwestlich von Metropolis am Übergang vom Meridian-Becken zur großen Südlichen Wildnis, versteckt, waldnah und nahe Wasser, etwa 10–15 Straßenkilometer vom Stadtzentrum (🧭 **Hypothese einer früheren Hülle**, `45#7A`, `45#13A`, `W-ST-035`). Die **exakte Position** im 2.200-km²-Kandidaten ist ❓ offen; es gibt keine festgelegten Koordinaten (die des Entwurfs vom 04.10. gehören zu einer früheren Hülle). Die Freigabe betrifft nur die geografische Dokumentation (`W-KA-017`), nicht geheime Eingänge, Story-Enthüllungen oder interne Einrichtungen; das Verhältnis zum Untergrund-Bunker bleibt ❓.
 
 ---
 
@@ -149,7 +149,7 @@ Wichtig: Die 2.200 km² beziehen sich auf **trockenes Festland**, nicht auf die 
 
 | Merkmal | Arbeitsziel |
 |---|---|
-| Fläche | **110 km²** zusammenhängendes Stadtgebiet einschließlich Vororten (📋 bestätigt am 22.10.2026, `PE-E1022`; nicht nur die Innenstadt, nicht die Metropolregion; Teil der 2.200 km²); gilt für diesen Kandidaten, kein dauerhafter Weltmaßstab |
+| Fläche | **110 km²** zusammenhängendes Stadtgebiet einschließlich Vororten (📋 bestätigt am 22.10.2026, `PE-E1022`; nicht nur die Innenstadt, nicht die Metropolregion; Bezug zu den 2.200 km² ist **überholt (K-20 / N-01 vom 08.11.2026: endgültige Größe offen)**); gilt für diesen Kandidaten, kein dauerhafter Weltmaßstab |
 | Stadtteile | **20 unterscheidbare Bezirke** (die Bezirksnamen sind nicht festgelegt) |
 | Innenstadt | ca. 20 km² |
 | Hochhauskern | ca. 12 km², innerhalb der Innenstadt (keine zusätzlichen 12 km²) |
@@ -198,7 +198,7 @@ Wichtig: Die 2.200 km² beziehen sich auf **trockenes Festland**, nicht auf die 
 - Monate und Tage brauchen in der ersten Umsetzung keine eigene Zielwahl; eine praktische Standardeinstellung behält Monat, Tag und Uhrzeit bei einem Jahreswechsel bei.
 - Der historische Zustand wird aus **zeitversionierten Schichten** (Geografie, Infrastruktur, Gebäude, Bevölkerung, Technik) und **Änderungsereignissen** rekonstruiert, nicht als vollständige Karte je Jahr gespeichert. Das motiviert das Journal-Konzept des Weltzustands (siehe README, Kapitel Persistenz).
 - **Reisen in die Zukunft** bleiben ein offenes, strengeres Gestaltungsproblem, weil Spielerhandlungen den ursächlichen Zustand verändern können. Vollständig verzweigbare alternative Zeitlinien sind ein späteres, hochkomplexes Merkmal und keine Voraussetzung für den Start.
-- 📋 **Geografie ist die stabile Schicht:** Beim Sprung ins Jahr 1600 bleiben „nur seen berge flüsse“; die Stadt ist ‚wahrscheinlich komplett weg‘. Siedlungen und Bauten sind zeitversioniert (`35#41E`, Frage 125; `W-RE-006`).
+- 📋 **Geografie ist die stabile Schicht:** Beim Sprung ins Jahr 1600 bleiben „nur seen berge flüsse“; die Stadt ist ‚wahrscheinlich komplett weg‘. Siedlungen und Bauten sind zeitversioniert (`35#41E`, Frage 125; `W-RE-006`). ⚠️ **Konflikt K-33, offen:** Der Master zählt Geografie zu den zeitversionierten Schichten (`CANONICAL_ADDENDUM_2026-09-05.md` §2); nicht entschieden.
 - 📋 Handlungen in der Vergangenheit können die Gegenwart verändern: ‚theoretisch ja, aber nicht übertreiben‘ (`35#41E`, Frage 128; `W-RE-007`).
 - ✅ Ein winziger Teil ist bereits implementiert: das Journal des Weltzustands kann frühere Zustände rekonstruieren (`StateAt`). **Zeitreise selbst ist nicht implementiert und für die jetzigen Systeme nicht vorausgesetzt.**
 
@@ -224,6 +224,14 @@ Wichtig: Die 2.200 km² beziehen sich auf **trockenes Festland**, nicht auf die 
 - 📋 Große Wälder, Seen, Berge, Feuchtgebiete, Ackerland, Täler und abgelegene Wildnis sind wesentlich. Das Spiel soll mindestens so wild wirken wie die ältere Welt, eher wilder.
 - 📋 Große **Höhlen** und eine **stark ausgebaute Unterwasserwelt** (Tierschwärme, Pflanzen, Felsen, Wracks, Höhlen, Tiefenzonen, versunkene oder ruinierte Strukturen, wo es passt) gehören zur Planung. Die Unterwasserwelt ist ein bedeutender Spielbereich; deshalb ist mehr Küste oder mehr Seefläche eine offene Gestaltungsoption.
 - 📋 **PCG** (prozedurale Generierung) ist für Vegetation, Felsen, Straßenschmuck und kontrollierte Umgebungsvariation geeignet, **nicht** als Ersatz für handgebaute wichtige Orte. Hero-Gebäude sind einzigartig, Fall- und Story-Gebäude stark ausgearbeitet.
+
+### 9.2a Wildtier-Studium, Verarbeitung und Forensik (Backlog Track 37, 📋 Richtung)
+
+- 🧭 **Seltene Einzeltiere** (Projektzusammenfassung §31, MASTER-MIGRATION-18): sehr alte oder große Tiere, Albinismus, Melanismus, Narben, auffällige Aggressivität und lokale Geschichten. Ein eigener Archiv-Unterpunkt ist möglich, kein Arcade-„LEGENDARY“-Label. Sie bleiben verpassbar nur, solange sie nicht bewusst getötet wurden. Das vollständige Tierarchiv bleibt auch nach der Story möglich (§29).
+- Gewöhnliche Arten, die für das Archiv nötig sind, sind **nicht dauerhaft verpassbar**. Die Studie ist eine bewusste Handlung; die Forschung pro Art ist abgeschlossen, wenn sie vollständig ist.
+- Tierrufe, Spuren, Lebensräume, Territorien, Wanderungen und saisonales Verhalten, wo es begründet ist. Individuelle Unterschiede bei Alter, Geschlecht, Körperzustand, Gesundheit, Verletzung, Krankheit und Größe. Seltene, legendenhafte Einzeltiere ohne Arcade-Markierung.
+- Verarbeitung: Häuten, Ausweiden, Zerlegen, Probennahme oder ganzer Kadaver. Die Materialqualität folgt dem tatsächlichen Zustand, der Beschädigung und der Verarbeitung, **nicht** Sternen. Hochwertige Felle bringen mehr Geld. Kadaver lassen sich im Fahrzeug transportieren; Kühlung und Verderb wirken moderat.
+- Relevante Kadaver durchlaufen die Zustände frisch, Zersetzung, fortgeschrittener Zerfall, Skelett und Entfernung. Fliegen, Insekten, Geruch, Aasfresser und Wetter reagieren darauf. Die Forensik kann ungefähre Todeszeit, Wundmuster und mögliche tierische oder monsterhafte Ursache erschließen. Aasfresser und Raubtiere ziehen sich an; **ungewöhnliches Fehlen oder Verhalten von Aasfressern** kann selbst ein Ermittlungshinweis sein. Wildtierkrankheiten oder Parasiten können das Verhalten beeinflussen, die Materialsicherheit betreffen und manchmal mit übernatürlichen Fällen zusammenhängen. Die Anbindung an das Jägerarchiv und Tests sind Teil des Umfangs.
 
 ### 9.2 Tierwelt
 
@@ -311,6 +319,7 @@ Planungsstand vom 15. Oktober 2026 (📋 bestätigte Bereiche, nicht exakte Best
 
 - **Mindestens 90 % der normalen Gebäude** sollen in irgendeiner Form betretbar sein; reine Fassaden sind eine Minderheit. Orte sind abwechslungsreich: Modulare Elemente dürfen wiederverwendet werden, aber wichtige Orte und Fallorte dürfen nicht erkennbar kopiert wirken.
 - **Innenraum-Stufen:** Hero (einzigartig), voller Spielinhalt, prozedural, begrenzt.
+- 📋 **Fall- und Story-Gebäude** sind stark handgebaut und erzählerisch aufgeladen. Hero-Gebäude sind einzigartig; modulare Teile dürfen für Alltagsinnenräume verwendet werden, müssen aber so variiert sein, dass sie nicht wie Kopien wirken (PROJECT_DECISIONS, Welt).
 - **Kaufen und mieten:** mehrere Immobilien; der Wert reagiert auf Lage, Zustand, Aussicht, Verkehr, Kriminalität, Wirtschaft und Entwicklung.
 - **Grundstückskauf und Hausbau:** Der Spieler kann Land kaufen und ein Haus selbst entwerfen und bauen, einschließlich Garage, Werkstatt, Jägerräumen, Archiv, Serverraum, Fitnessraum, Pool, Garten, Nebengebäuden, Sicherheit, Notstrom und schnellem Internet. Die Hausgröße begrenzen vor allem Land, Geld, Gelände, Vorschriften und Technik, keine willkürliche Kleinstgrenze.
 - **Stadtwachstum über Jahre und Jahrzehnte:** Bau, Abriss, Sanierung, Geschäftswechsel und Verkehrsprojekte.
@@ -343,10 +352,10 @@ Planungsstand vom 15. Oktober 2026 (📋 bestätigte Bereiche, nicht exakte Best
 
 ### 14.1 Was feststeht
 
-- 📋 Eine **verborgene, unabhängige Zivilisation** lebt in mehreren **abgeschlossenen Städten unter der Erde**, verbunden durch ein unterirdisches **Schienen- oder ähnliches Verkehrsnetz**. Sie ist keine bloße Erweiterung der Jägerbasis.
-- 📋 Die Städte sind stark gegen die Oberfläche abgeschottet; viele Einwohner wissen wenig oder nichts über die Oberfläche. Die Einwohner sind misstrauisch gegenüber Fremden und Oberflächenbewohnern. Die Zugangs- und Wissensstufen sind ❓ offen.
-- 📋 **Wünschenswerte Naturräume:** ein unterirdischer Fluss, Seen, Höhlen-Ökosysteme und offene Naturzonen. Herkunft, Entwässerung, Beleuchtung, Belüftung und Wasserchemie sind nicht festgelegt. Ein bewiesener, ewig geschlossener Realwelt-Ökokreislauf wird nicht behauptet.
-- 🧭 **Maßstab:** Größere Städte umfassen mehrere Quadratkilometer oder mehr. Für die größte Stadt gilt eine **vorläufige horizontale Ausdehnung von etwa 50–100 km²**; das ist **keine Geometrie-Festlegung** und sagt nichts über Höhenstufen, Bevölkerung oder Kavernenlayout. Eine Gesamtbevölkerung im Bereich von mehreren Hunderttausend bis etwa einer Million ist nur ein grobes Szenario. Weitere unabhängige oder verbundene unterirdische Anlagen sind in der Planung.
+> ⚠️ **historisch (N-02, 08.11.2026):** - 📋 Eine **verborgene, unabhängige Zivilisation** lebt in mehreren **abgeschlossenen Städten unter der Erde**, verbunden durch ein unterirdisches **Schienen- oder ähnliches Verkehrsnetz**. Sie ist keine bloße Erweiterung der Jägerbasis.
+> ⚠️ **historisch (N-02, 08.11.2026):** - 📋 Die Städte sind stark gegen die Oberfläche abgeschottet; viele Einwohner wissen wenig oder nichts über die Oberfläche. Die Einwohner sind misstrauisch gegenüber Fremden und Oberflächenbewohnern. Die Zugangs- und Wissensstufen sind ❓ offen.
+> ✅ **Nach N-02 (08.11.2026) ausdrücklich erlaubt:** - 📋 **Wünschenswerte Naturräume:** ein unterirdischer Fluss, Seen, Höhlen-Ökosysteme und offene Naturzonen. Herkunft, Entwässerung, Beleuchtung, Belüftung und Wasserchemie sind nicht festgelegt. Ein bewiesener, ewig geschlossener Realwelt-Ökokreislauf wird nicht behauptet.
+> ⚠️ **historisch (N-02, 08.11.2026):** - 🧭 **Maßstab:** Größere Städte umfassen mehrere Quadratkilometer oder mehr. Für die größte Stadt gilt eine **vorläufige horizontale Ausdehnung von etwa 50–100 km²**; das ist **keine Geometrie-Festlegung** und sagt nichts über Höhenstufen, Bevölkerung oder Kavernenlayout. Eine Gesamtbevölkerung im Bereich von mehreren Hunderttausend bis etwa einer Million ist nur ein grobes Szenario. Weitere unabhängige oder verbundene unterirdische Anlagen sind in der Planung.
 - 🧭 Das Bevölkerungsmodell der Planung unterscheidet *horizontale Grundfläche*, *gesamte nutzbare Geschossfläche* und *durchschnittliche Dichte*; die Simulationsstufen der NPCs sind unabhängig von der Lore-Bevölkerung (die gesamte Bevölkerung muss nicht gleichzeitig individuell aktiv sein).
 
 ### 14.2 Gesellschaft
@@ -398,6 +407,8 @@ Alle Beispiele und technischen Taxonomien, die in Planungspaketen als Illustrati
 | **Fegefeuer** | ca. 500–750 km² | ca. 650 km² | Wildnis, Überleben, Monsterökologie; der stärkste Kandidat für Territorium, Jagd, Wanderung und Nahrungsketten |
 | **Himmel** (gemeinsame Welt) | ca. 250–400 km² | ca. 320 km² | **kein** Wolken-und-weiße-Gebäude-Klischee; vertrautes und fremdes, eingeschränktes Gelände mischen sich; zusätzlich variable **Gedächtnis- und Taschendomänen**, die den Erlebnisraum größer machen als die gemeinsame Fläche |
 
+🧭 **Reihenfolge der Reichsplanung** (aus der Vorstufe 04.09., `01_CURRENT`-Altbestand `REALM_DESIGN_PHASE_CURRENT.md`, MASTER-MIGRATION-17): Zuerst die Weltbibel mit Kosmologie, Maßstab, Geografielogik, Fortbewegung, Ökologie, Bewohnern, Strukturen, Gefahren, Zeitregeln, Ressourcen, Aktivitäten, Story, Streaming, Persistenz, Entdeckungen und Übergängen; danach die räumliche Zuordnung; erst zuletzt die Karte. Eine Reichskarte wird nicht als Ausgangspunkt gezeichnet. Die Größen der Reiche sind davon unabhängig und nicht festgelegt.
+
 **Kandidaten für wichtige Orte** (Arbeitsbezeichnungen, nicht endgültig):
 
 - *Hölle:* Ankunfts-/Abstiegszone, zentrale höllische Stadt oder Zitadelle, Gefängnisviertel, Ruinenfelder, Aschewüsten, ein dunkler Fluss oder Wasserweg, altes höllisches Viertel, Tore und Portalkomplexe, verlassene Festung, Tiefe Hölle.
@@ -439,3 +450,9 @@ Alle Beispiele und technischen Taxonomien, die in Planungspaketen als Illustrati
 ❓ Endgültige Weltfläche und Geometrie; Anzahl der Siedlungen, Stadtgrößen, Bezirke (inklusive Namen), Straßentopologie und Regionen; das akzeptierte Karten-Master; die Namen der Städte und Gewässer; Grenzen der Ostinsel; die Anzahl und Lage von Flughäfen, Sportstätten, Wasser- und Freizeitparks, Casinos und Nachtleben-Orten; Bevölkerungszahlen; Zeitskala; Zeitreise-Details (Zukunft, Verzweigung); Details zu Reichen und Untergrund; Zahl und Verteilung von Sammelobjekten und Entdeckungen. Die gesamte Übersicht steht in [Entscheidungsstatus](Entscheidungsstatus.md).
 
 Weiter offen: Gipfelhöhe (K4); Anzahl der Flughäfen und Motorsportstandorte (K8); Zeitverhältnis von Fegefeuer und Himmel sowie die Technik der Höllenzeit; exakte Position des Hunter-HQ (`OF-69`); Tod in den anderen Ebenen; Entscheidungen ab dem 20.10.2026, die im Master nicht enthalten sind (K12).
+
+---
+
+### Nachtrag 08.11.2026 (Entwicklerentscheidung N-02)
+
+Die vollständige unterirdische Zivilisation entfällt. Bunker, Höhlen, Geheimlabore und kleinere unterirdische Gebiete bleiben möglich. Die Aussagen oben zu Erbauern, Umfang (50–100 km²), Bevölkerung und unterirdischem Schienenverbund sind **historisch** und nicht mehr verbindlich. Verweis: `Docs/Planning/DECISIONS.md` N-02, `Docs/Planning/CANON.md`.

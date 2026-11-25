@@ -277,7 +277,7 @@ Behörden, Hunter, Wesen, Kulte und Medien bilden ein Spannungsfeld. Typische Ko
 9. **Hunter-Rekrut aus dem Polizeidienst.** Rekrutierung (Modul 19).
 10. **Ein verschontes Wesen kommt ins Visier der Behörden.** Es bittet den Spieler um Hilfe.
 11. **Medienkampagne gegen einen Hunter.** Verdacht, öffentliche Meinung (Modul 07).
-12. **Untergrund und Behörden.** Offen (Q-N25).
+12. **Untergrund und Behörden.** **historisch (N-02, 08.11.2026)** für die Untergrundzivilisation; Restfrage für Bunker, Höhlen und kleinere Untergrundbereiche bleibt offen (Q-N25).
 
 ---
 

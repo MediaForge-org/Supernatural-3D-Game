@@ -184,3 +184,11 @@ Die Einträge sind Gegenüberstellungen, keine Empfehlungen.
 | `CQ-53` | Gliedmaßenverlust und bleibende Folgen beim Spieler (Spannung zu `M-CA0905`) | `COMBAT-DEC-VL-012`, `-013`, `-019`, `CK-04` | ja |
 | `CQ-54` | Tiefe des Infektionsmodells (Faktoren, Zeitstufen, Behandlungsfenster) | `COMBAT-DEC-VL-014` | ja |
 | `CQ-55` | Behandlungsoberfläche und Anzeige des Befunds (Menü, Kontextinteraktion, Diagnoseanzeige, Aufwand) | `COMBAT-DEC-VL-006`, `-009`, `-020` | ja |
+
+## Ergänzung aus dem Entscheidungsabgleich 31.08. (Stand 09.11.2026)
+
+- 📋 **Insassenverletzung bei Unfällen (Entscheidung 36):** Aufprallenergie, Richtung, Sicherheitsgurt, Airbag, Fahrzeugsicherheit und Sitzposition des Insassen fließen in das Verletzungssystem ein. Sicherheits- und Assistenzsysteme unterscheiden sich nach Fahrzeuggeneration und Ausstattung; sie können dort abgeschaltet werden, wo es realistisch ist, besonders im Rennsport (`VEH-DEC-ZV-016`).
+
+## Ergänzung aus dem älteren Prompt-Entwurf (MASTER-MIGRATION-18)
+
+- 💡 **Wiederverletzung:** Ein erneuter Treffer auf eine noch nicht verheilte Stelle führt schneller wieder zu einem schweren Zustand. Die Quelle ist ein älterer Arbeitsentwurf (`SPN_Prompt_Pack/03_Combat_Survival/01_Anatomie_Verletzungen_Medizin.md`), keine bestätigte Entscheidung. Erholungsstufen (akut, stabilisiert, heilend, erholend, erholt) sind in dieser Datei bereits belegt.
