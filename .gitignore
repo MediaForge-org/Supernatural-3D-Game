@@ -127,6 +127,11 @@ credentials*.json
 *.hgt
 *.uasset
 *.umap
+# NightBuild06 (2026-11-24): the QA test maps and their material instances are own, script-generated content (about 5 MB, no Fab /
+# MetaHuman / Megaplant dependency, checked with Tools/asset_dependency_report.py) that the headless and QA suites need. Only this folder
+# is re-included; .gitattributes stores it in LFS. Everything else under Content/ stays ignored (Docs/NightBuild06/ASSET_MANIFEST.md).
+!/Unreal/SupernaturalProt/Content/SpnTest/**/*.uasset
+!/Unreal/SupernaturalProt/Content/SpnTest/**/*.umap
 *.blend
 *.blend1
 *.fbx
