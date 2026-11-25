@@ -288,6 +288,16 @@ void ASpnNpc::HandleNoise(const FSpnNoise& Noise)
 	}
 	LastHandledNoiseSequence = Noise.Sequence;
 
+	// Beyond the range even without walls: not heard, and the wall traces are skipped (walls only ever shorten the range, so the verdict is the
+	// same as CanHear's). This matters since NightBuild06: every moving character sends footstep noises several times a second.
+	if (FVector::Dist2D(Noise.LocationCm, GetActorLocation()) > Noise.RangeCm * HearingSensitivity)
+	{
+		++NoisesNotHeard;
+		UE_LOG(LogSupernaturalProt, Verbose, TEXT("NPC %s: %s out of range (%.1f m, range %.1f m), no wall check"), *DisplayName, LexToString(Noise.Kind),
+			FVector::Dist2D(Noise.LocationCm, GetActorLocation()) / 100.f, Noise.RangeCm * HearingSensitivity / 100.f);
+		return;
+	}
+
 	TArray<FString> Obstacles;
 	const int32 Walls = CountWallsBetween(Noise.LocationCm, GetEarLocation(), Noise.ObjectId, &Obstacles);
 	float Distance = 0.f, EffectiveRange = 0.f;

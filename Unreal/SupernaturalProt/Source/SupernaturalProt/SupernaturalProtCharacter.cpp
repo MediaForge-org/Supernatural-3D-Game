@@ -19,6 +19,7 @@
 #include "Spn/SpnMovementDiagnostics.h"
 #include "Spn/Character/SpnCharacterVisualComponent.h"
 #include "Spn/Character/SpnWardrobeComponent.h"
+#include "SpnNpcReaction.h"
 #include "Spn/UI/SpnUiNotify.h"
 #include "Spn/UI/SpnUiText.h"
 #include "InputTriggers.h"
@@ -143,6 +144,7 @@ void ASupernaturalProtCharacter::Tick(float DeltaSeconds)
 	TickStepAside(DeltaSeconds);
 	TickPadSprint(DeltaSeconds);
 	UpdateStairCamera(DeltaSeconds);
+	TickFootstepNoise(DeltaSeconds);
 
 	if (HideMeshCameraDistance > 0.f && CameraBoom != nullptr && FollowCamera != nullptr && GetMesh() != nullptr)
 	{
@@ -619,6 +621,145 @@ void ASupernaturalProtCharacter::SetCameraBase(const FVector& RelativeLocation)
 	{
 		CameraBoom->SetRelativeLocation(StairBaseLocation - FVector(0.f, 0.f, StairLagZ));
 	}
+}
+
+void ASupernaturalProtCharacter::TickFootstepNoise(float DeltaSeconds)
+{
+	// Gameplay footsteps (NightBuild06): one noise per FootstepNoiseEveryCm walked on the ground, loudness from the speed (Core FootstepNoiseFor).
+	// Authority only: noises are gameplay events, the server's NPCs hear them. No audio asset is involved.
+	const UCharacterMovementComponent* Move = GetCharacterMovement();
+	if (!bEmitFootstepNoise || !HasAuthority() || Move == nullptr || !Move->IsMovingOnGround() || DeltaSeconds <= 0.f)
+	{
+		return;
+	}
+	const float Speed = static_cast<float>(GetVelocity().Size2D());
+	float RangeCm = 0.f, Strength = 0.f;
+	if (!SpnNpcSense::FootstepNoise(Speed, bIsCrouched != 0, RangeCm, Strength))
+	{
+		FootstepDistance = 0.f;   // standing still: the next walk starts a fresh stride
+		return;
+	}
+	FootstepDistance += Speed * DeltaSeconds;
+	if (FootstepDistance < FootstepNoiseEveryCm)
+	{
+		return;
+	}
+	FootstepDistance = FMath::Fmod(FootstepDistance, FMath::Max(FootstepNoiseEveryCm, 1.f));
+	const UGameInstance* GameInstance = GetGameInstance();
+	USpnNoiseSubsystem* Noise = GameInstance != nullptr ? GameInstance->GetSubsystem<USpnNoiseSubsystem>() : nullptr;
+	if (Noise == nullptr)
+	{
+		return;
+	}
+	FSpnNoise Step;
+	Step.Kind = ESpnNoiseKind::Footstep;
+	Step.LocationCm = GetActorLocation() - FVector(0.f, 0.f, GetBodyCollision().HalfHeight);   // at the feet
+	Step.RangeCm = RangeCm;
+	Step.Strength = Strength;
+	Step.SourceId = GetName();
+	if (Noise->EmitNoise(Step) != 0)
+	{
+		++FootstepNoiseCount;
+	}
+}
+
+void ASupernaturalProtCharacter::CaptureDefaultBodyCollision()
+{
+	if (bDefaultCollisionCaptured)
+	{
+		return;
+	}
+	DefaultCollision = GetBodyCollision();
+	DefaultMeshRelative = GetMesh() != nullptr ? GetMesh()->GetRelativeLocation() : FVector::ZeroVector;
+	DefaultBaseEyeHeight = BaseEyeHeight;
+	bDefaultCollisionCaptured = true;
+}
+
+FSpnBodyCollisionProfile ASupernaturalProtCharacter::GetBodyCollision() const
+{
+	FSpnBodyCollisionProfile P;
+	if (const UCapsuleComponent* Capsule = GetCapsuleComponent())
+	{
+		P.Radius = Capsule->GetUnscaledCapsuleRadius();
+		P.HalfHeight = Capsule->GetUnscaledCapsuleHalfHeight();
+	}
+	if (const UCharacterMovementComponent* Move = GetCharacterMovement())
+	{
+		P.CrouchedHalfHeight = Move->GetCrouchedHalfHeight();
+	}
+	return P;
+}
+
+FSpnBodyCollisionProfile ASupernaturalProtCharacter::GetDefaultBodyCollision() const
+{
+	return bDefaultCollisionCaptured ? DefaultCollision : GetBodyCollision();
+}
+
+float ASupernaturalProtCharacter::GetCapsuleCentreShift() const
+{
+	return GetBodyCollision().HalfHeight - GetDefaultBodyCollision().HalfHeight;
+}
+
+bool ASupernaturalProtCharacter::ApplyBodyCollision(const FSpnBodyCollisionProfile& Profile)
+{
+	UCapsuleComponent* Capsule = GetCapsuleComponent();
+	UCharacterMovementComponent* Move = GetCharacterMovement();
+	UWorld* World = GetWorld();
+	if (Capsule == nullptr || World == nullptr)
+	{
+		return false;
+	}
+	CaptureDefaultBodyCollision();
+	const FSpnBodyCollisionProfile Current = GetBodyCollision();
+	if (Current.Equals(Profile))
+	{
+		return true;
+	}
+	if (bIsCrouched || bSteppingAside || (Move != nullptr && Move->MovementMode == MOVE_Custom))
+	{
+		UE_LOG(LogSupernaturalProt, Warning, TEXT("%s: body collision %.0f/%.0f not applied - crouched or in a scripted move; the capsule stays %.0f/%.0f"),
+			*GetName(), Profile.Radius, Profile.HalfHeight, Current.Radius, Current.HalfHeight);
+		return false;
+	}
+
+	// the feet stay put: the centre moves by the half-height change. A larger capsule must fit here first (never pushed into a wall / ceiling).
+	const float DeltaHalfHeight = Profile.HalfHeight - Current.HalfHeight;
+	const FVector NewLocation = GetActorLocation() + FVector(0.f, 0.f, DeltaHalfHeight);
+	if (Profile.HalfHeight > Current.HalfHeight || Profile.Radius > Current.Radius)
+	{
+		FCollisionQueryParams Params(SCENE_QUERY_STAT(SpnBodyCollisionRoom), /*bTraceComplex*/ false, this);
+		FCollisionResponseParams Response;
+		Capsule->InitSweepCollisionParams(Params, Response);
+		if (World->OverlapBlockingTestByChannel(NewLocation, GetActorQuat(), Capsule->GetCollisionObjectType(),
+			FCollisionShape::MakeCapsule(Profile.Radius, Profile.HalfHeight), Params, Response))
+		{
+			UE_LOG(LogSupernaturalProt, Warning, TEXT("%s: body collision %.0f/%.0f does not fit here (blocked); the capsule stays %.0f/%.0f"),
+				*GetName(), Profile.Radius, Profile.HalfHeight, Current.Radius, Current.HalfHeight);
+			return false;
+		}
+	}
+
+	Capsule->SetCapsuleSize(Profile.Radius, Profile.HalfHeight, /*bUpdateOverlaps*/ false);
+	SetActorLocation(NewLocation, /*bSweep*/ false, nullptr, ETeleportType::TeleportPhysics);
+	Capsule->UpdateOverlaps();
+	if (Move != nullptr)
+	{
+		Move->SetCrouchedHalfHeight(Profile.CrouchedHalfHeight);
+		Move->bJustTeleported = true;
+	}
+	const float Shift = Profile.HalfHeight - DefaultCollision.HalfHeight;   // centre above the default centre
+	if (USkeletalMeshComponent* Body = GetMesh())
+	{
+		const FVector MeshRelative = DefaultMeshRelative - FVector(0.f, 0.f, Shift);
+		Body->SetRelativeLocation(MeshRelative);
+		CacheInitialMeshOffset(MeshRelative, Body->GetRelativeRotation());   // the network smoothing restores to this offset
+	}
+	BaseEyeHeight = DefaultBaseEyeHeight - Shift;
+	SetCameraBase(GetCameraBase() - FVector(0.f, 0.f, DeltaHalfHeight));
+	ResetStairCamera();   // the teleport by DeltaHalfHeight is not a stair step
+	UE_LOG(LogSupernaturalProt, Log, TEXT("%s: body collision radius %.1f, half height %.1f, crouched %.1f (default %.1f/%.1f/%.1f)"), *GetName(),
+		Profile.Radius, Profile.HalfHeight, Profile.CrouchedHalfHeight, DefaultCollision.Radius, DefaultCollision.HalfHeight, DefaultCollision.CrouchedHalfHeight);
+	return true;
 }
 
 void ASupernaturalProtCharacter::ResetStairCamera()

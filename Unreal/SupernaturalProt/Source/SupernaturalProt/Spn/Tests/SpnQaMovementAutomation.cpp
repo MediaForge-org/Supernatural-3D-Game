@@ -97,8 +97,9 @@ bool FSpnQaSpawnTest::RunTest(const FString& Parameters)
 				FString::Printf(TEXT("%d player-controlled pawn(s), %d ASupernaturalProtCharacter(s) in the world"), Players, Characters));
 			if (OtherPawns.Num() == 0)
 			{
-				SpnQa::Check(*this, &Character, TEXT("Spawn"), TEXT("npc_vs_player"), SpnQa::EStatus::NotImplemented,
-					TEXT("no NPC/test pawn exists in the V2 level (Core Npc module is not integrated in Unreal); the guard is an ASpnPlayAreaGuard volume, not a pawn"));
+				// NPCs exist since NightBuild05 (ASpnNpc), but none is placed in this level: not testable here, not "not implemented".
+				SpnQa::Check(*this, &Character, TEXT("Spawn"), TEXT("npc_vs_player"), SpnQa::EStatus::NotTested,
+					TEXT("no NPC pawn is placed in this level; NPC pawns (ASpnNpc) are checked by suite Npc on Lvl_SpnNpcTest and SpnWorldQA.Route; the guard is an ASpnPlayAreaGuard volume, not a pawn"));
 			}
 			else
 			{

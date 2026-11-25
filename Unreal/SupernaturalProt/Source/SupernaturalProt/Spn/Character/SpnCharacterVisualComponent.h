@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/SkinnedMeshComponent.h"
+#include "SpnBodyCollision.h"
 #include "SpnCharacterVisualComponent.generated.h"
 
 class UAnimInstance;
@@ -54,12 +55,24 @@ struct FSpnBodyPreset
 	/** The IK pass of the retargeter runs up to this LOD of the retargeted body; -1 = at every LOD. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Body|Retarget")
 	int32 RetargetIKLodThreshold = -1;
+
+	/**
+	 * Gameplay collision of this body (NightBuild06, Core BodyCollision). Keep (default) = the character's own capsule, unchanged
+	 * gameplay. FromHeight = capsule half height from the body height (GetBodyHeightCm) plus CollisionHeadClearanceCm, radius unchanged,
+	 * crouch scaled. Explicit = ExplicitCollision. Whether the protagonist's capsule follows its body is the developer's decision (0017).
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Body|Collision")
+	ESpnBodyCollision Collision = ESpnBodyCollision::Keep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Body|Collision", meta = (EditCondition = "Collision == ESpnBodyCollision::Explicit"))
+	FSpnBodyCollisionProfile ExplicitCollision;
 };
 
 /**
  * Separates the visual body from the gameplay pawn: builds the presentation from a preset (body mesh, anim class, follower meshes, height)
- * and adapts the camera pivot to the body height. It NEVER changes the capsule, movement, step/jump height or interaction reach - a body
- * with other proportions does not change gameplay (0013 §4 point 4).
+ * and adapts the camera pivot to the body height. It never changes movement, step/jump height or interaction reach - a body with other
+ * proportions does not change gameplay (0013 §4 point 4). The capsule changes ONLY when a preset opts in with Collision != Keep
+ * (NightBuild06 body collision profile); no shipped preset does that except the clearly named *_fit test presets.
  *
  * A missing asset falls back to what the blueprint shows (the mannequin) and is reported in the log - the same rule as the Fab assets
  * of the world generator. Third-party bodies are never referenced from C++ or git; presets point to local content.
@@ -95,6 +108,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Body|Camera", meta = (ClampMin = "0", ClampMax = "1.5"))
 	float CameraHeightFactor = 0.9f;
 
+	/** Capsule top above the top of the head for presets with Collision = FromHeight, cm (PLACEHOLDER). */
+	UPROPERTY(Config, EditAnywhere, BlueprintReadWrite, Category = "Spn|Body|Collision", meta = (ClampMin = "0", ClampMax = "30"))
+	float CollisionHeadClearanceCm = 2.f;
+
 	/** Applies a preset; None restores the blueprint's presentation. False (and the fallback stays) if the id is unknown. */
 	UFUNCTION(BlueprintCallable, Category = "Spn|Body")
 	bool ApplyPreset(FName Id);
@@ -116,6 +133,10 @@ public:
 	int32 GetMissingAssetCount() const { return MissingAssets; }
 
 	TArray<FName> GetPresetIds() const;
+
+	/** The body collision the last ApplyPreset asked for (resolved by the core) and whether the character accepted it. */
+	const FSpnBodyCollisionResolved& GetLastCollision() const { return LastCollision; }
+	bool WasCollisionRefused() const { return bCollisionRefused; }
 
 	/** The retargeted body of the active preset, or null (then the gameplay mesh itself is shown). */
 	USkeletalMeshComponent* GetRetargetBody() const { return RetargetBody; }
@@ -161,4 +182,6 @@ private:
 	float CurrentScale = 1.f;
 	float RetargetHeightCm = 0.f;   // > 0: a retargeted body of this measured height is shown (not scaled)
 	int32 MissingAssets = 0;
+	FSpnBodyCollisionResolved LastCollision;
+	bool bCollisionRefused = false;
 };

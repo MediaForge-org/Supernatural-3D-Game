@@ -54,6 +54,9 @@ namespace SpnNpcSense
 	/** DoorBreak, Impact and Shout are suspicious; very loud harmless noises as well. */
 	SPNCORE_API bool IsSuspicious(const FSpnNoise& Noise);
 
+	/** Footstep loudness for a horizontal speed (spn::core::FootstepNoiseFor, placeholder bands; never suspicious on its own). False: silent. */
+	SPNCORE_API bool FootstepNoise(float HorizontalSpeedCmS, bool bCrouched, float& OutRangeCm, float& OutStrength);
+
 	/** Hearing verdict. `Walls` = number of solid obstacles between source and listener (the caller counts them); each halves the range by WallAttenuation. */
 	SPNCORE_API bool CanHear(const FSpnNoise& Noise, const FVector& ListenerCm, int32 Walls, float Sensitivity, float WallAttenuation, float& OutDistanceCm, float& OutEffectiveRangeCm);
 

@@ -439,6 +439,36 @@ void USpnCineSubsystem::FinishShotStats()
 		O->SetNumberField(TEXT("streaming_settled_after_s"), LastPendingTime);
 		O->SetNumberField(TEXT("compiling_max"), CompileMax);
 		O->SetNumberField(TEXT("nanite_quality_min"), NaniteMin);
+
+		// hitches (NightBuild06): how many frames miss 30 / 20 fps, and the five worst with their time and the largest part of the frame
+		int32 Over33 = 0, Over50 = 0;
+		TArray<const FFrameStat*> Worst;
+		for (const FFrameStat& S : Stats)
+		{
+			Over33 += S.Ms > 33.3f ? 1 : 0;
+			Over50 += S.Ms > 50.f ? 1 : 0;
+			Worst.Add(&S);
+		}
+		Worst.Sort([](const FFrameStat& A, const FFrameStat& B) { return A.Ms > B.Ms; });
+		O->SetNumberField(TEXT("frames_over_33ms"), Over33);
+		O->SetNumberField(TEXT("frames_over_50ms"), Over50);
+		TArray<TSharedPtr<FJsonValue>> WorstJson;
+		for (int32 i = 0; i < FMath::Min(5, Worst.Num()); ++i)
+		{
+			const FFrameStat& S = *Worst[i];
+			const TCHAR* Bound = S.Compiling > 0 ? TEXT("shader_or_asset_compile") : (S.Gpu >= S.Game && S.Gpu >= S.Render ? TEXT("gpu") : (S.Game >= S.Render ? TEXT("game") : TEXT("render")));
+			TSharedRef<FJsonObject> W = MakeShared<FJsonObject>();
+			W->SetNumberField(TEXT("t"), S.T);
+			W->SetNumberField(TEXT("ms"), S.Ms);
+			W->SetNumberField(TEXT("game_ms"), S.Game);
+			W->SetNumberField(TEXT("render_ms"), S.Render);
+			W->SetNumberField(TEXT("gpu_ms"), S.Gpu);
+			W->SetNumberField(TEXT("compiling"), S.Compiling);
+			W->SetNumberField(TEXT("streaming_wanting"), S.Wanting);
+			W->SetStringField(TEXT("largest"), Bound);
+			WorstJson.Add(MakeShared<FJsonValueObject>(W));
+		}
+		O->SetArrayField(TEXT("worst_frames"), WorstJson);
 	}
 	ShotReports.Add(MakeShared<FJsonValueObject>(O));
 }
@@ -540,6 +570,7 @@ void USpnCineSubsystem::Tick(float DeltaTime)
 				FFrameStat Stat{DeltaTime * 1000.f, FPlatformTime::ToMilliseconds(GGameThreadTime), FPlatformTime::ToMilliseconds(GRenderThreadTime),
 					FPlatformTime::ToMilliseconds(RHIGetGPUFrameCycles(0)), GNumDrawCallsRHI[0], GNumPrimitivesDrawnRHI[0]};
 				SampleStreaming(Stat);
+				Stat.T = ShotTime;
 				if (Stat.Wanting > 0 || Stat.Compiling > 0) { LastPendingTime = ShotTime; }
 				Stats.Add(Stat);
 			}

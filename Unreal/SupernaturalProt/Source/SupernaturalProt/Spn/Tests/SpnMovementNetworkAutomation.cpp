@@ -16,11 +16,13 @@
 // Expect to fix API details (the PIE session API changes between engine versions). Until then use the manual procedure
 // in the handover document (p.NetShowCorrections, NetEmulation).
 
-#include "Editor.h"
-#include "Settings/LevelEditorPlaySettings.h"
 #include "Spn/Tests/SpnMovementTestSupport.h"
 
 #if WITH_DEV_AUTOMATION_TESTS && WITH_EDITOR
+
+// editor-only headers inside the guard (NightBuild06): the packaged game target has no Editor.h
+#include "Editor.h"
+#include "Settings/LevelEditorPlaySettings.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpnMovementNetworkSprintTest, "SpnGame.Movement.NetworkSprint",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)

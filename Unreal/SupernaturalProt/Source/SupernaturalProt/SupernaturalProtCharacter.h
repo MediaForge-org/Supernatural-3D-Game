@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputCoreTypes.h"
 #include "Logging/LogMacros.h"
+#include "SpnBodyCollision.h"
 #include "SupernaturalProtCharacter.generated.h"
 
 class USpringArmComponent;
@@ -308,6 +309,15 @@ public:
 	FORCEINLINE int32 GetStepAsideCount() const { return StepAsideCount; }
 
 private:
+	// body collision profile: the spawned values, captured once before the first change
+	void CaptureDefaultBodyCollision();
+	float FootstepDistance = 0.f;
+	int32 FootstepNoiseCount = 0;
+	bool bDefaultCollisionCaptured = false;
+	FSpnBodyCollisionProfile DefaultCollision;
+	FVector DefaultMeshRelative = FVector::ZeroVector;
+	float DefaultBaseEyeHeight = 0.f;
+
 	void TickStepAside(float DeltaSeconds);
 	bool bSteppingAside = false;
 	bool bStepRestoreOrient = true;
@@ -357,6 +367,42 @@ public:
 	/** Rest position of the camera boom relative to the capsule (the stair smoothing offsets from it). Set by the body presentation. **/
 	FVector GetCameraBase() const;
 	void SetCameraBase(const FVector& RelativeLocation);
+
+	/**
+	 * Gameplay collision of a body profile (NightBuild06; rules in Core BodyCollision.h, chosen per body preset): sets the capsule radius /
+	 * half height and the crouched half height. The feet stay where they are: the capsule centre moves by the half-height change, the mesh
+	 * moves down by the same amount (it stays on the capsule bottom), and the camera base and BaseEyeHeight move down too, so their height
+	 * above the floor does not change (the body presentation adds the head height on top).
+	 * Refuses (false, nothing changed) while crouched, in a custom move (ledge assist, step aside), or when the larger capsule would overlap
+	 * blocking geometry at the current place. CO-OP: not replicated yet; every machine must apply the same profile (open point).
+	 */
+	bool ApplyBodyCollision(const FSpnBodyCollisionProfile& Profile);
+
+	/** The capsule the character was spawned with (captured before the first ApplyBodyCollision). */
+	FSpnBodyCollisionProfile GetDefaultBodyCollision() const;
+
+	/** The capsule now. */
+	FSpnBodyCollisionProfile GetBodyCollision() const;
+
+	/** Current minus default half height: how far the capsule centre sits above where the default capsule would put it, cm. */
+	float GetCapsuleCentreShift() const;
+
+	/**
+	 * Gameplay footstep noises (NightBuild06): while walking on the ground the character sends a Footstep noise every FootstepNoiseEveryCm,
+	 * as loud as its speed (spn::core::FootstepNoiseFor: quiet walk, loud sprint, halved crouched; never suspicious on its own). Calm NPCs
+	 * ignore them, wary NPCs turn to them. PLACEHOLDER values.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Noise")
+	bool bEmitFootstepNoise = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spn|Noise", meta = (ClampMin = "20"))
+	float FootstepNoiseEveryCm = 150.f;
+
+	/** Footstep noises sent so far (tests, diagnostics). */
+	int32 GetFootstepNoiseCount() const { return FootstepNoiseCount; }
+
+	/** One frame of the footstep emission (called from Tick; public so headless tests can drive it). */
+	void TickFootstepNoise(float DeltaSeconds);
 
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }

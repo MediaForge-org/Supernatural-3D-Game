@@ -77,6 +77,14 @@ bool SpnNpcSense::IsSuspicious(const FSpnNoise& Noise)
 	return spn::core::IsSuspicious(ToCore(Noise.Kind), Noise.Strength);
 }
 
+bool SpnNpcSense::FootstepNoise(float HorizontalSpeedCmS, bool bCrouched, float& OutRangeCm, float& OutStrength)
+{
+	const spn::core::FootstepNoise F = spn::core::FootstepNoiseFor(HorizontalSpeedCmS, bCrouched);
+	OutRangeCm = static_cast<float>(F.range * 100.0);
+	OutStrength = static_cast<float>(F.strength);
+	return F.audible;
+}
+
 bool SpnNpcSense::CanHear(const FSpnNoise& Noise, const FVector& ListenerCm, int32 Walls, float Sensitivity, float WallAttenuation, float& OutDistanceCm, float& OutEffectiveRangeCm)
 {
 	spn::core::HearingConfig Config;

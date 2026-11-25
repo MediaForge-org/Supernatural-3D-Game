@@ -28,6 +28,16 @@ USpnCharacterVisualComponent::USpnCharacterVisualComponent()
 	Tall.Id = TEXT("test_195");
 	Tall.HeightCm = 195.f;
 	Presets.Add(Tall);
+
+	// PLACEHOLDER body collision tests (NightBuild06): the same heights with a capsule that follows the body. Not a gameplay decision.
+	FSpnBodyPreset ShortFit = Short;
+	ShortFit.Id = TEXT("test_160_fit");
+	ShortFit.Collision = ESpnBodyCollision::FromHeight;
+	Presets.Add(ShortFit);
+	FSpnBodyPreset TallFit = Tall;
+	TallFit.Id = TEXT("test_195_fit");
+	TallFit.Collision = ESpnBodyCollision::FromHeight;
+	Presets.Add(TallFit);
 }
 
 TArray<FName> USpnCharacterVisualComponent::GetPresetIds() const
@@ -248,9 +258,22 @@ bool USpnCharacterVisualComponent::ApplyPreset(FName Id)
 	RetargetHeightCm = bRetarget && Preset->HeightCm > 0.f ? Preset->HeightCm : 0.f;
 	if (ASupernaturalProtCharacter* Player = Cast<ASupernaturalProtCharacter>(GetOwner()))
 	{
-		// a retargeted body is never scaled; its measured height only moves the camera pivot like a scaled body of that height would
+		// gameplay collision of the body (Keep unless the preset opts in); a refusal keeps the old capsule and the presentation goes on
+		const ESpnBodyCollision Mode = Preset != nullptr ? Preset->Collision : ESpnBodyCollision::Keep;
+		LastCollision = SpnBodyCollision::Resolve(Mode, GetBodyHeightCm(), Preset != nullptr ? Preset->ExplicitCollision : FSpnBodyCollisionProfile(),
+			Player->GetDefaultBodyCollision(), CollisionHeadClearanceCm);
+		bCollisionRefused = !Player->ApplyBodyCollision(LastCollision.Profile);
+		if (bCollisionRefused || LastCollision.Issues.Num() > 0)
+		{
+			UE_LOG(LogSupernaturalProt, Warning, TEXT("%s: body preset '%s' collision %s%s"), *GetNameSafe(GetOwner()), *Id.ToString(),
+				bCollisionRefused ? TEXT("refused by the character (old capsule kept)") : TEXT("applied"),
+				LastCollision.Issues.Num() > 0 ? *(TEXT(", issues: ") + FString::Join(LastCollision.Issues, TEXT(", "))) : TEXT(""));
+		}
+
+		// a retargeted body is never scaled; its measured height only moves the camera pivot like a scaled body of that height would.
+		// The capsule centre shift is taken out: the camera base is relative to the capsule centre, its height above the floor must not change.
 		const float DeltaZ = RetargetHeightCm > 0.f ? (RetargetHeightCm - Reference) * CameraHeightFactor : (CurrentScale - 1.f) * Reference * CameraHeightFactor;
-		Player->SetCameraBase(OriginalCameraBase + FVector(0.f, 0.f, DeltaZ));
+		Player->SetCameraBase(OriginalCameraBase + FVector(0.f, 0.f, DeltaZ - Player->GetCapsuleCentreShift()));
 	}
 
 	Active = Preset != nullptr ? Id : NAME_None;

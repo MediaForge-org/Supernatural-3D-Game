@@ -12,6 +12,7 @@
 #include "RenderTimer.h"
 #include "Spn/Character/SpnCharacterVisualComponent.h"
 #include "Spn/Character/SpnRetargetFollowAnimInstance.h"
+#include "Spn/Character/SpnWardrobeComponent.h"
 #include "Spn/Tests/SpnMovementTestSupport.h"
 #include "Spn/Tests/SpnQaRecorder.h"
 
@@ -175,7 +176,9 @@ bool FSpnQaCharacterBodyTest::RunTest(const FString& Parameters)
 	const TSharedRef<TMap<FString, double>> Speeds = MakeShared<TMap<FString, double>>();
 	// -SpnQaBodies=none,mh_template,mh_male_193 (default: all three); "none" = the placeholder and always runs first (speed reference)
 	FString BodyList = TEXT("none,mh_template,mh_male_193");
-	FParse::Value(FCommandLine::Get(), TEXT("SpnQaBodies="), BodyList);
+	// bShouldStopOnSeparator = false: the list is comma-separated (before NightBuild06 the parse stopped at the first comma, so an explicit
+	// list ran only its first body)
+	FParse::Value(FCommandLine::Get(), TEXT("SpnQaBodies="), BodyList, /*bShouldStopOnSeparator*/ false);
 	TArray<FString> BodyIds;
 	BodyList.ParseIntoArray(BodyIds, TEXT(","));
 	TArray<FName> Presets = {NAME_None};
@@ -291,7 +294,9 @@ bool FSpnQaCharacterBodyTest::RunTest(const FString& Parameters)
 				for (USkeletalMeshComponent* Part : ShownParts(Character))
 				{
 					TArray<UTexture*> Used;
-					Part->GetUsedTextures(Used, EMaterialQualityLevel::Num);
+					// NightBuild06: EMaterialQualityLevel::Num trips an engine ensure in UE 5.8 (MaterialInterface.cpp), which marked this whole
+					// automation test as failed in every run since 2026-11-14 while all its QA checks passed. High = the desktop default.
+					Part->GetUsedTextures(Used, EMaterialQualityLevel::High);
 					Textures.Append(Used);
 					if (USkeletalMesh* Mesh = Part->GetSkeletalMeshAsset())
 					{
@@ -323,12 +328,111 @@ bool FSpnQaCharacterBodyTest::RunTest(const FString& Parameters)
 			}));
 		ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(0.3f));
 
+		// --- modular body, rendered (NightBuild06 Phase H): the neutral detail marker (an engine sphere, category base:test_marker) appears on
+		// the SHOWN body when its category is enabled and the chest is exposed, and no detail component exists once an opaque, data-only
+		// test vest covers the chest. Two screenshots per body. PLACEHOLDER: no garment asset exists; the vest is data only (draws nothing).
+		{
+			struct FWardrobeRun { TObjectPtr<ACameraActor> Camera; int32 Stage = -1; double StageStart = 0; int32 Exposed = -1; int32 Covered = -1; bool bVisible = false; bool bOnShownBody = false; };
+			const TSharedRef<FWardrobeRun> WR = MakeShared<FWardrobeRun>();
+			ADD_LATENT_AUTOMATION_COMMAND(FScenarioCommand(*this, ViewSpot, 90.f, 10.f,
+				[WR, Label](ASupernaturalProtCharacter& Character)
+				{
+					SpnQa::Section(FString::Printf(TEXT("Character body %s: modular body marker"), *Label));
+					WR->Camera = Character.GetWorld()->SpawnActor<ACameraActor>(FVector::ZeroVector, FRotator::ZeroRotator);
+					USpnWardrobeComponent* Wardrobe = Character.GetWardrobe();
+					if (Wardrobe == nullptr) { return; }
+					if (!Wardrobe->Wearables.ContainsByPredicate([](const FSpnWearableDef& D) { return D.Coverage.Item == FName(TEXT("base:test_vest_data")); }))
+					{
+						FSpnWearableDef Vest;
+						Vest.Coverage.Item = TEXT("base:test_vest_data");
+						Vest.Coverage.Layer = ESpnWearLayer::Base;
+						Vest.Coverage.Covers = SpnBodyCoverage::ZoneBit(ESpnBodyZone::Chest) | SpnBodyCoverage::ZoneBit(ESpnBodyZone::Abdomen) | SpnBodyCoverage::ZoneBit(ESpnBodyZone::Back);
+						Vest.Coverage.bOpaque = true;
+						Wardrobe->Wearables.Add(Vest);
+					}
+					FSpnPresentationPolicy Policy;
+					Policy.EnabledDetailCategories.Add(TEXT("base:test_marker"));
+					Wardrobe->SetWorn({});
+					Wardrobe->SetPolicy(Policy);
+				},
+				[WR, Label](ASupernaturalProtCharacter& Character, float, double Elapsed)
+				{
+					APlayerController* PC = Cast<APlayerController>(Character.GetController());
+					USpnWardrobeComponent* Wardrobe = Character.GetWardrobe();
+					if (PC == nullptr || WR->Camera == nullptr || Wardrobe == nullptr) { return true; }
+					if (WR->Stage < 0 || Elapsed - WR->StageStart >= 2.0)
+					{
+						++WR->Stage;
+						WR->StageStart = Elapsed;
+						if (WR->Stage == 1) { Wardrobe->SetWorn({TEXT("base:test_vest_data")}); }
+						if (WR->Stage >= 2) { return true; }
+						// close front view of the chest of the shown body
+						const FVector Chest = ShownParts(Character)[0]->GetSocketLocation(TEXT("spine_03"));
+						const FVector Eye = Chest + FRotator(0.f, 90.f, 0.f).Vector() * 140.f;
+						WR->Camera->SetActorLocationAndRotation(Eye, (Chest - Eye).Rotation());
+						WR->Camera->GetCameraComponent()->SetFieldOfView(40.f);
+						PC->SetViewTarget(WR->Camera);
+						return false;
+					}
+					const double In = Elapsed - WR->StageStart;
+					if (In > 1.0 && In - Character.GetWorld()->GetDeltaSeconds() <= 1.0)
+					{
+						const int32 Count = Wardrobe->GetDetailComponents().Num();
+						if (WR->Stage == 0)
+						{
+							WR->Exposed = Count;
+							const UPrimitiveComponent* Marker = Count > 0 ? Wardrobe->GetDetailComponents()[0].Get() : nullptr;
+							WR->bVisible = Marker != nullptr && Marker->IsVisible();
+							WR->bOnShownBody = Marker != nullptr && Marker->GetAttachParent() == ShownParts(Character)[0];
+						}
+						else
+						{
+							WR->Covered = Count;
+						}
+						FScreenshotRequest::RequestScreenshot(SpnQa::QaDir() / TEXT("shots") / FString::Printf(TEXT("CharacterBody_%s_marker_%s.png"), *Label,
+							WR->Stage == 0 ? TEXT("exposed") : TEXT("covered")), false, false);
+					}
+					return false;
+				},
+				[this, WR, Label](ASupernaturalProtCharacter& Character, bool bTimedOut)
+				{
+					if (APlayerController* PC = Cast<APlayerController>(Character.GetController())) { PC->SetViewTarget(&Character); }
+					if (WR->Camera != nullptr) { WR->Camera->Destroy(); }
+					if (USpnWardrobeComponent* Wardrobe = Character.GetWardrobe())
+					{
+						Wardrobe->SetWorn({});
+						Wardrobe->SetPolicy(FSpnPresentationPolicy());   // back to the default: no optional detail at all
+					}
+					FString Why;
+					if (bTimedOut) { Why = TEXT("timed out"); }
+					else if (WR->Exposed != 1) { Why = FString::Printf(TEXT("exposed chest: %d detail component(s), expected 1"), WR->Exposed); }
+					else if (!WR->bVisible) { Why = TEXT("the marker exists but is not visible"); }
+					else if (!WR->bOnShownBody) { Why = TEXT("the marker is not attached to the shown body"); }
+					else if (WR->Covered != 0) { Why = FString::Printf(TEXT("covered chest: %d detail component(s), expected 0"), WR->Covered); }
+					SpnQa::Check(*this, &Character, TEXT("CharacterBody"), Label + TEXT("_modular_marker"), Why.IsEmpty() ? SpnQa::EStatus::Pass : SpnQa::EStatus::Fail,
+						(Why.IsEmpty() ? FString() : Why + TEXT(". ")) + FString::Printf(TEXT("neutral marker on the shown body: exposed %d component(s) (visible %d), under the data-only test vest %d; screenshots CharacterBody_%s_marker_*.png"),
+							WR->Exposed, WR->bVisible ? 1 : 0, WR->Covered, *Label));
+				}));
+			ADD_LATENT_AUTOMATION_COMMAND(FEngineWaitLatentCommand(0.3f));
+		}
+
 		// --- gaits: walk, jog, sprint (same input as the keyboard)
-		// steady gaits (sampled after 1.2 s) and two transitions sampled from the first frame: start + stop, and a 90 degree turn while jogging
-		struct FGait { const TCHAR* Name; ESpnGait Gait; bool bSprint; float Seconds; bool bWhole; float TurnAt; };
+		// steady gaits (sampled after 1.2 s) and two transitions sampled from the first frame: start + stop, and a 90 degree turn while jogging.
+		// NightBuild06 (Phase D, measurement only): gait changes walk -> jog and run -> sprint, braking out of a run, jogging backwards (S)
+		// and sideways (D). The character turns to its movement direction, so S / D measure the turn plus the jog in the new direction.
+		struct FGait
+		{
+			const TCHAR* Name; ESpnGait Gait; bool bSprint; float Seconds; bool bWhole; float TurnAt;
+			ESpnGait SwitchTo = ESpnGait::Walk; float SwitchAt = 0.f; bool bSprintFromSwitch = false; FKey Key = EKeys::W;
+		};
 		for (const FGait& G : {FGait{TEXT("walk"), ESpnGait::Walk, false, 4.f, false, 0.f}, FGait{TEXT("jog"), ESpnGait::Jog, false, 4.f, false, 0.f},
 			FGait{TEXT("run"), ESpnGait::Run, false, 4.f, false, 0.f}, FGait{TEXT("sprint"), ESpnGait::Jog, true, 3.5f, false, 0.f},
-			FGait{TEXT("start_stop_walk"), ESpnGait::Walk, false, 2.f, true, 0.f}, FGait{TEXT("turn90_jog"), ESpnGait::Jog, false, 3.5f, true, 1.5f}})
+			FGait{TEXT("start_stop_walk"), ESpnGait::Walk, false, 2.f, true, 0.f}, FGait{TEXT("turn90_jog"), ESpnGait::Jog, false, 3.5f, true, 1.5f},
+			FGait{TEXT("walk_to_jog"), ESpnGait::Walk, false, 3.5f, true, 0.f, ESpnGait::Jog, 1.5f},
+			FGait{TEXT("run_to_sprint"), ESpnGait::Run, false, 3.5f, true, 0.f, ESpnGait::Run, 1.5f, true},
+			FGait{TEXT("brake_from_run"), ESpnGait::Run, false, 2.5f, true, 0.f},
+			FGait{TEXT("backward_jog"), ESpnGait::Jog, false, 4.f, false, 0.f, ESpnGait::Walk, 0.f, false, EKeys::S},
+			FGait{TEXT("sideways_jog"), ESpnGait::Jog, false, 4.f, false, 0.f, ESpnGait::Walk, 0.f, false, EKeys::D}})
 		{
 			const TSharedRef<FFootRun> Run = MakeShared<FFootRun>();
 			ADD_LATENT_AUTOMATION_COMMAND(FScenarioCommand(*this, FVector(LaneX, LaneStartY, StandZ), 90.f, G.Seconds + 3.f,
@@ -339,8 +443,13 @@ bool FSpnQaCharacterBodyTest::RunTest(const FString& Parameters)
 				},
 				[Run, G](ASupernaturalProtCharacter& Character, float, double Elapsed)
 				{
-					Run->Keys.Set(Character, EKeys::W, Elapsed < G.Seconds);
-					Run->Keys.Set(Character, EKeys::LeftShift, G.bSprint && Elapsed < G.Seconds);
+					const bool bSwitched = G.SwitchAt > 0.f && Elapsed >= G.SwitchAt;
+					if (bSwitched && Elapsed - Character.GetWorld()->GetDeltaSeconds() < G.SwitchAt && G.SwitchTo != G.Gait)
+					{
+						Character.GetSpnMovement()->SetBaseGait(G.SwitchTo);
+					}
+					Run->Keys.Set(Character, G.Key, Elapsed < G.Seconds);
+					Run->Keys.Set(Character, EKeys::LeftShift, (G.bSprint || (bSwitched && G.bSprintFromSwitch)) && Elapsed < G.Seconds);
 					if (G.TurnAt > 0.f && Elapsed >= G.TurnAt && Elapsed - Character.GetWorld()->GetDeltaSeconds() < G.TurnAt)
 					{
 						Character.GetController()->SetControlRotation(FRotator(0.f, 0.f, 0.f));   // input direction turns from +Y to +X

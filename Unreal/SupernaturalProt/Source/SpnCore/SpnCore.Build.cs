@@ -41,6 +41,10 @@ public class SpnCore : ModuleRules
 		// exactly as in the CMake build.
 		PCHUsage = PCHUsageMode.NoPCHs;
 		bUseUnity = false;
+		// The core uses std::filesystem and the standard library, which report failures as exceptions; the save and inventory bridges catch
+		// them (try / catch in SpnSaveSubsystem, SpnInventorySubsystem). Editor targets force exceptions on, game targets do not: without
+		// this the packaged game build fails with C4530 (found by the first packaging attempt, NightBuild06).
+		bEnableExceptions = true;
 
 		// CoreUObject/Engine: USpnWorldStateSubsystem (a game instance subsystem).
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });

@@ -59,6 +59,8 @@ public:
 		/** streaming state of the frame: texture/mesh mip streamer (required and over-budget MB, assets still wanting mips),
 		    Nanite streaming quality scale (1 = full quality, below 1 = the Nanite pool is too small), assets still compiling (editor builds) */
 		float TexRequiredMB = 0.f, TexOverMB = 0.f, NaniteScale = 1.f; int32 Wanting = 0, Compiling = 0;
+		/** seconds into the shot (NightBuild06: lets the report say WHEN the worst frames happened) */
+		float T = 0.f;
 	};
 
 	/** Camera pose of a shot at U in [0,1] (arc-length parameterised Catmull-Rom through the keys). Public for the automation test. */
