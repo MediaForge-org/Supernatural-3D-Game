@@ -107,6 +107,28 @@ Today there are free save slots and "Continue". Proposal for this case:
 - **Old saves** stay loadable, so a player can go back before the choice. Strict "a choice is final" is the job of the later optional
   permadeath / ironman mode, not of this case.
 
+## 4a. Optional collectibles (proposal; developer 2026-11-26: "plausibel", 2–3 kinds or all, choice open)
+
+Rule: **every single find gives something at once.** A full set gives a last piece on top, but nothing important is held back until
+the last one.
+- **One find:** a journal entry with a short text, plus a counter ("2/6").
+- **Part of a set (for example half):** a combined journal entry that tells a connection (for example "the disappearances repeat every
+  few decades").
+- **Full set:** a final piece, for example an extra dialogue option, a hidden place or a revealing entry.
+
+None of this gives combat power or is needed to finish the case.
+
+| Kind | Single find | Part of the set | Full set |
+|---|---|---|---|
+| Old missing-person notices (6) | name and year of one earlier victim | half: a pattern of years | timeline back to the miller's father |
+| Glass-plate photos (4) | a picture of the mill in the past | – | last photo: something in the background |
+| Marks of an old hunter (5) | a hunter's lesson in the journal (tutorial) | – | the hunter's hiding place with a note |
+| Tape cassettes (3) | an audio log as text | – | the last tape goes silent |
+| Carved wooden figures (5) | one figure per victim | – | the twist becomes clear early; an extra dialogue option with the miller |
+
+Built as one data-driven system: a collectible kind is data (id, count, texts, set rewards), so kinds can be added or removed without
+code. Collection state lives in WorldFacts (saved). Counts are for this case only; the game-wide count is open (`DECISIONS.md` C-55).
+
 ## 5. Order of work (each step playable and tested)
 
 1. **Night build A — the core loop in greybox:**
