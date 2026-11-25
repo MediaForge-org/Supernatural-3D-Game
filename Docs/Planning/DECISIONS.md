@@ -259,3 +259,17 @@ Quellenstatus aller Einträge: **Verbindlich (Entwicklerangabe 08.11.2026, SPN-D
 | NPCA-03 | Keine Modelle ohne Festlegung | Verbindlich | Keine automatische Festlegung umfassender Lügen-, Wahrheits- oder Persönlichkeitsmodelle; keine automatisch erzeugten NPC-Erinnerungen. | Entwicklerangabe 08.11.2026 | Konsistent mit `Ermittlung/05` (Aussagen sind Information, keine garantierte Wahrheit). |
 
 Offen (ausdrücklich nicht entschieden): Anzahl und Namen der Schwierigkeitsgrade (DIF-01), konkrete Beweiskategorien über Monster hinaus (EVD-03), Umfang der freien Texteingabe (DLG-01), Abschlussbedingungen des Falls (siehe K-35).
+
+## K. Tod, Neustart, Heilung (Entwicklerangabe 26.11.2026)
+
+Quelle aller Einträge: Entwicklerangabe im Chat vom 25./26.11.2026 (Fall-Vorschlag `Docs/Proposals/0019-first-case-silent-mill.md`). Wörtlich: „man soll nach dem tod wieder auf einen checkpoint zurückgesetzt werden, bei permadeath ist das je nachdem was für einen man hat, nach mission, kapitel, ganzes spiel oder so, aber normal einfach nach auto save oder man kann […] auch einfach spielstand laden“.
+
+| ID | Thema | Status | Festlegung | Quelle | Konsistenz |
+|---|---|---|---|---|---|
+| TOD-01 | Spielertod im Normalfall | Verbindlich | Nach dem Tod wird der Spieler auf einen Checkpoint (letzter Autosave) zurückgesetzt; alternativ lädt er selbst einen Spielstand. | Entwicklerangabe 26.11.2026 | Schließt K-26 für den Spieler. Konsistent mit `COMBAT-DEC-BW-012` (Rückkehr zum Checkpoint) und `BW-002`. Offen bleibt der Zustand nach dem Zurücksetzen (TOD-04). |
+| TOD-02 | Permadeath | Verbindlich (Ausgestaltung offen) | Optionaler Modus. Was der Tod zurücksetzt, hängt von der Permadeath-Variante ab, zum Beispiel Mission, Kapitel oder ganzes Spiel. Anzahl und Namen der Varianten sind offen. | Entwicklerangabe 25./26.11.2026 | Konsistent mit `COMBAT-DEC-BW-019` (Todesfolgen als eigener Einstellbereich). |
+| TOD-03 | Speichern im ersten Fall | Verbindlich (für den Fall-Prototyp) | Manuell speichern überall außer während einer Verfolgung; Autosaves an Kapitelpunkten und direkt nach der Endentscheidung; nach dem Tod wird der neueste Spielstand geladen; ältere Spielstände bleiben ladbar. | Entwicklerangabe 25.11.2026 („genau so wie ich es will“), Proposal 0019 §4 | Konsistent mit TOD-01. Safe-Checkpoint-Prüfung: `COMBAT-DEC-BW-017` (💡). |
+| TOD-04 | Zustand nach dem Zurücksetzen | Offen | Ob der Checkpoint-Tod Folgen hat (etwa nur minimal überlebensfähige Gesundheit, `COMBAT-DEC-BW-012`) oder folgenlos ist (`COMBAT-DEC-BW-001`: folgenlos soll nicht Standard sein), ist nicht neu entschieden. | – | Frage an den Entwickler offen. |
+| MED-01 | Heilung im fertigen Spiel | Verbindlich (bestätigt) | Keine Sofortheilung durch Verbrauchsgegenstände. Verletzungen brauchen passende Behandlung, zum Beispiel bei einem gebrochenen Arm Spritze und Einrenken. Richtwert: Far Cry 3 (Behandlungsanimation pro Verletzung). | Entwicklerangabe 26.11.2026 | Bestätigt `COMBAT-DEC-VL-001`/`VL-002`. Far Cry 3 ist ein Richtwert für das Gefühl, keine Vorlage für Inhalte. |
+
+Offen (ausdrücklich nicht entschieden): TOD-04; Varianten des Permadeath (TOD-02); Gegenstände, Schritte und Dauer der Behandlung (`CQ-51`, `CQ-52`).
