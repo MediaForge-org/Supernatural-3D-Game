@@ -86,6 +86,7 @@
       "tests": [
         "SpnQA.LedgeAssist",
         "SpnQA.Jump",
+        "SpnGame.Movement.JumpWithLedgeAssist",
         "core:Tests/Core/LedgeAssistTests.cpp"
       ],
       "gap": "No animation (the capsule follows the core path; the mesh plays the jump pose). Network prediction of a running move is not done (single player only). Tested on runtime boxes on the movement test map, not on the generated world's walls and fences."
@@ -185,6 +186,8 @@
         "SpnGame.Doors.WalkedPawnBehindBlocksTheStep",
         "SpnGame.Doors.WalkedLedgeBehindStopsTheStep",
         "SpnGame.Doors.WalkedStepForDifferentCharacterSizes",
+        "SpnGame.Doors.NpcInTheSwingIsNeverPushed",
+        "SpnGame.Doors.OpenerStepClearsTheLeafForEveryBodyProfile",
         "SpnGame.TestMap.PlayDoors",
         "SpnQA.Doors",
         "SpnQA.Buildings",
@@ -193,7 +196,7 @@
         "core:Tests/Core/DevicesTests.cpp",
         "core:Tests/Core/InteractionSystemTests.cpp"
       ],
-      "gap": "Locked doors have no key model; door sound/animation are placeholders. Closing onto a player: the Core decides through a block rule, but the Unreal overlap query (ASpnTestDoor) is written without a build and NOT verified; doors vs NPCs are not tested. Step-aside (2026-11-13): the character that opened a door and stands in its swing takes one short walked step out of it if a capsule sweep finds room, else the door stays blocked; the step direction is the shortest of several candidates (radial, straight back, 15 degree steps; never towards the leaf) that passes the capsule sweep and ends on walkable floor. SpnGame.Doors.Walked* tick a headless world so the character really walks (open space, 140 cm corridor, dead end, pawn behind, ledge, capsule radius 25/35/50/60); StepAsideMargin 12 / MaxLength 90 are placeholders. Not covered: stairs at the door, moving obstacles appearing during the step (only the no-progress stop handles them)."
+      "gap": "Locked doors have no key model; door sound/animation are placeholders. Closing onto a player: the Core decides through a block rule, but the Unreal overlap query (ASpnTestDoor) is written without a build and NOT verified; doors vs NPCs: checked headless since NightBuild06 (an NPC standing in the swing); NPCs walking through doors are not tested. Step-aside (2026-11-13): the character that opened a door and stands in its swing takes one short walked step out of it if a capsule sweep finds room, else the door stays blocked; the step direction is the shortest of several candidates (radial, straight back, 15 degree steps; never towards the leaf) that passes the capsule sweep and ends on walkable floor. SpnGame.Doors.Walked* tick a headless world so the character really walks (open space, 140 cm corridor, dead end, pawn behind, ledge, capsule radius 25/35/50/60); StepAsideMargin 12 / MaxLength 90 are placeholders. Not covered: stairs at the door, moving obstacles appearing during the step (only the no-progress stop handles them). 2026-11-24 (NightBuild06): a real ASpnNpc in the swing stops the leaf, is never moved or asked to step, and blocks closing (SpnGame.Doors.NpcInTheSwingIsNeverPushed); the opener step clears the leaf with the default, test_160_fit and test_195_fit capsules."
     },
     {
       "id": "pickups",
@@ -257,7 +260,7 @@
         "SpnQA.Spawn",
         "SpnGame.MapV2.Spawn"
       ],
-      "gap": "NPC pawns do not exist in the Unreal project yet (SpnQA.Spawn reports npc_vs_player as NOT_IMPLEMENTED); local split-screen/co-op spawning is not designed."
+      "gap": "The V2 level places no NPC pawn, so SpnQA.Spawn reports npc_vs_player as NOT_TESTED there; NPC pawns (ASpnNpc, NightBuild05) are spawned and checked in suite Npc (Lvl_SpnNpcTest) and SpnWorldQA.Route. Local split-screen/co-op spawning is not designed."
     },
     {
       "id": "level.v2",
@@ -601,6 +604,8 @@
         "NpcReaction.h"
       ],
       "tests": [
+        "SpnGame.Npc.PlayerFootstepsAreGameplayNoises",
+        "SpnGame.Npc.FootstepsMatterOnlyToAWaryNpc",
         "SpnGame.NightBuild05.DoorNeverPushesAPawn",
         "SpnGame.NightBuild05.DoorStopsAtPawnAtAnyFrameRate",
         "SpnGame.NightBuild05.DoorEmitsNoise",
@@ -623,7 +628,7 @@
         "SpnQA.NpcReaction",
         "core:Tests/Core/NpcReactionTests.cpp"
       ],
-      "gap": "Patrol (fixed 2026-11-13): a leg is given up after 8 s WITHOUT PROGRESS (before: 8 s leg time, so legs over 12 m never finished); GetPatrolLegsCompleted/GivenUp are checked on the 40 m legs of SpnWorld by SpnWorldQA.Route (npcs_reach_their_routine_points), not on the small NPC test map. Hearing walls (fixed 2026-11-13): an open door leaf no longer counts as a wall (it made the neighbour alarm checks depend on a few cm of the Caretaker's position); the map probe SpnDiag.Npc.AlarmShoutWallProbe (-game on Lvl_SpnNpcTest) lists the obstacles per position. The hearing model still counts straight-line obstacles only (no sound paths around corners). The rendered, walked scenario on Lvl_SpnNpcTest (SpnQA.NpcReaction) is the gameplay validation run documented in Docs/NightBuild05, not a pixel test. The NPC is an engine-shape placeholder without animation; AI Perception is deliberately not used (see Docs/NightBuild05). NPC positions are not saved. Footsteps of the player emit no noise yet. No manual human playtest."
+      "gap": "Patrol (fixed 2026-11-13): a leg is given up after 8 s WITHOUT PROGRESS (before: 8 s leg time, so legs over 12 m never finished); GetPatrolLegsCompleted/GivenUp are checked on the 40 m legs of SpnWorld by SpnWorldQA.Route (npcs_reach_their_routine_points), not on the small NPC test map. Hearing walls (fixed 2026-11-13): an open door leaf no longer counts as a wall (it made the neighbour alarm checks depend on a few cm of the Caretaker's position); the map probe SpnDiag.Npc.AlarmShoutWallProbe (-game on Lvl_SpnNpcTest) lists the obstacles per position. The hearing model still counts straight-line obstacles only (no sound paths around corners). The rendered, walked scenario on Lvl_SpnNpcTest (SpnQA.NpcReaction) is the gameplay validation run documented in Docs/NightBuild05, not a pixel test. The NPC is an engine-shape placeholder without animation; AI Perception is deliberately not used (see Docs/NightBuild05). NPC positions are not saved. Player footsteps (NightBuild06): ASupernaturalProtCharacter sends a Footstep noise every 150 cm on the ground, loudness from the speed (Core FootstepNoiseFor: walk 4 m / 0.15 ... sprint 18 m / 0.6, halved crouched, placeholders), never suspicious on its own: calm NPCs ignore it, wary NPCs do not; an NPC skips its wall traces for noises beyond the range. Surfaces (gravel vs carpet) and shoes do not change it yet. No manual human playtest."
     },
     {
       "id": "nb02.road_navigation",
@@ -687,7 +692,8 @@
         "USpnWardrobeComponent"
       ],
       "core_headers": [
-        "BodyCoverage.h"
+        "BodyCoverage.h",
+        "BodyCollision.h"
       ],
       "console": [
         "Spn.Body"
@@ -698,11 +704,14 @@
         "SpnGame.Character.FollowersAndMissingAssets",
         "SpnGame.Character.RetargetedTestBody",
         "SpnGame.Character.WardrobeLayersAndDetails",
+        "SpnGame.Character.BodyCollisionFollowsTheBodyOnlyWhenAsked",
+        "SpnGame.Character.BodyCollisionNeedsRoomAndAStandingCharacter",
+        "core:Tests/Core/BodyCollisionTests.cpp",
         "SpnQA.CharacterBody",
         "SpnQA.Buildings",
         "SpnWorldQA.Integration"
       ],
-      "gap": "2026-11-15 modular body (Docs/Proposals/0018): USpnWardrobeComponent applies the Core rules spn::core::ResolveCoverage (Tests/Core/BodyCoverageTests.cpp) - separate wearable components, body zone hiding via SpnZone_<zone> material slots (no body mesh is split yet, so nothing is hidden on screen), optional detail geometry only with an enabled category and an exposed zone (only a neutral engine-sphere marker exists, off by default). Not saved, not replicated, no rendered QA yet. 2026-11-15 phase 2 (Docs/Proposals/0017): preset mh_male_193 (local parametric male MetaHuman body, 193 cm, meshes generated by the editor-only USpnMetaHumanPrepLibrary through the public MetaHumanCharacterEditor API; that library is exercised by Tools/character_mh_male_setup.py, not by an automation test). Leg goals blended to the source horizontally (retarget op 'Spn Leg Goals'); sprint row added to BS_Idle_Walk_Run (Tools/locomotion_sprint_samples.py). SpnQA.CharacterBody runs placeholder, mh_template and mh_male_193 (-SpnQaBodies=). 2026-11-14 feasibility phase (Docs/Proposals/0015): the config preset mh_template shows the engine's MetaHuman TEMPLATE body + face, posed by runtime IK retargeting from the hidden mannequin (USpnRetargetFollowAnimInstance); its retargeter is local content from Tools/character_mh_test_setup.py, so on a machine without it the preset falls back to the mannequin and SpnQA.CharacterBody / SpnGame.Character.RetargetedTestBody fail loudly. No facial animation, no grooms, no clothing on the test body. Before that: no final character, no new body asset: the only provider is the template mannequin (ABP_Unarmed reparented to USpnAnimInstance; its graphs still read the template variables, not yet the Spn* variables). Test bodies test_160 / test_195 are a scaled mannequin; the rendered runs use -SpnBody=<preset> with the Doors and World suites (not part of the default suites). Followers are checked headless only (leader pose, attachment, no collision); clipping of real clothing and foot IK are untested because no second skeleton exists. Retarget preparation (0013 section 9, editor scripts, not automation tests): character_skeleton_contract.py (reference contract + candidate checker, verified on the mannequins, a non-human mesh and a missing asset) and character_retarget_prep.py (IK_SpnMannequin, RTG_SpnMannequin_Template in /Game/SpnCharacterPrep, batch dry run Quinn -> Manny: 3 clips with identical frames). NPCs (ASpnNpc) do not use the component yet (0013 S7)."
+      "gap": "2026-11-24 (NightBuild06) SpnQA.CharacterBody: the automation state was Fail in every run since 2026-11-14 (an engine ensure from GetUsedTextures(EMaterialQualityLevel::Num)) while its QA checks passed - fixed (quality High); -SpnQaBodies=a,b,c now runs every listed body (the parse stopped at the first comma); new rendered check <body>_modular_marker (neutral marker on the shown body visible with the chest exposed, gone under a data-only test vest; screenshots) and gait scenarios walk_to_jog, run_to_sprint, brake_from_run, backward_jog, sideways_jog (measured, not judged). Body collision (NightBuild06): presets may opt in to a capsule that follows the body (Collision=FromHeight / Explicit, Core spn::core::ResolveBodyCollision); the feet, mesh, camera and eye height stay where they are, a larger capsule is refused without room or while crouched / in a ledge move / stepping aside. Default presets keep the capsule (35 / 90): whether the protagonist uses it is the developer's decision (0017). Only the *_fit test presets use it (test_160_fit, test_195_fit, mh_male_193_fit); not replicated (co-op open). 2026-11-15 modular body (Docs/Proposals/0018): USpnWardrobeComponent applies the Core rules spn::core::ResolveCoverage (Tests/Core/BodyCoverageTests.cpp) - separate wearable components, body zone hiding via SpnZone_<zone> material slots (no body mesh is split yet, so nothing is hidden on screen), optional detail geometry only with an enabled category and an exposed zone (only a neutral engine-sphere marker exists, off by default). Not saved, not replicated, no rendered QA yet. 2026-11-15 phase 2 (Docs/Proposals/0017): preset mh_male_193 (local parametric male MetaHuman body, 193 cm, meshes generated by the editor-only USpnMetaHumanPrepLibrary through the public MetaHumanCharacterEditor API; that library is exercised by Tools/character_mh_male_setup.py, not by an automation test). Leg goals blended to the source horizontally (retarget op 'Spn Leg Goals'); sprint row added to BS_Idle_Walk_Run (Tools/locomotion_sprint_samples.py). SpnQA.CharacterBody runs placeholder, mh_template and mh_male_193 (-SpnQaBodies=). 2026-11-14 feasibility phase (Docs/Proposals/0015): the config preset mh_template shows the engine's MetaHuman TEMPLATE body + face, posed by runtime IK retargeting from the hidden mannequin (USpnRetargetFollowAnimInstance); its retargeter is local content from Tools/character_mh_test_setup.py, so on a machine without it the preset falls back to the mannequin and SpnQA.CharacterBody / SpnGame.Character.RetargetedTestBody fail loudly. No facial animation, no grooms, no clothing on the test body. Before that: no final character, no new body asset: the only provider is the template mannequin (ABP_Unarmed reparented to USpnAnimInstance; its graphs still read the template variables, not yet the Spn* variables). Test bodies test_160 / test_195 are a scaled mannequin; the rendered runs use -SpnBody=<preset> with the Doors and World suites (not part of the default suites). Followers are checked headless only (leader pose, attachment, no collision); clipping of real clothing and foot IK are untested because no second skeleton exists. Retarget preparation (0013 section 9, editor scripts, not automation tests): character_skeleton_contract.py (reference contract + candidate checker, verified on the mannequins, a non-human mesh and a missing asset) and character_retarget_prep.py (IK_SpnMannequin, RTG_SpnMannequin_Template in /Game/SpnCharacterPrep, batch dry run Quinn -> Manny: 3 clips with identical frames). NPCs (ASpnNpc) do not use the component yet (0013 S7)."
     },
     {
       "id": "visual.world_tools",
