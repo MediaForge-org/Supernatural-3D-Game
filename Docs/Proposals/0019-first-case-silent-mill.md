@@ -131,6 +131,9 @@ code. Collection state lives in WorldFacts (saved). Counts are for this case onl
 
 ## 5. Order of work (each step playable and tested)
 
+> **Status 2026-11-26:** night build A is implemented as a greybox (Docs/NightBuild07/README.md). The pistol, the ending choice and the
+> investigation are still to come (B and C).
+
 1. **Night build A — the core loop in greybox:**
    - case map greybox;
    - creature (patrol, hear, chase, stun by bell);
