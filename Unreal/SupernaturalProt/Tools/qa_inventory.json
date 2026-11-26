@@ -336,6 +336,37 @@
       "gap": "Core only (SPN-DEV-02/03, merged from main 2026-11-25): no Unreal witness actor, evidence object or journal UI yet (Docs/Planning/TASKS.md UNREAL-WITNESS-EVIDENCE), so nothing is checked in game. PROTOTYPE-CASE-01 is a placeholder closure rule (witness AND evidence), closure stays a manual player action (EVD-04/05). Planned use: the first case proposal Docs/Proposals/0019."
     },
     {
+      "id": "case.first_case_a",
+      "title": "First case 'Die Stille Mühle', night build A (NightBuild07): blind creature hunting by sound, the bell, throwables, player death / respawn with the difficulty's health, autosaves, save block during a pursuit, difficulty profiles, the greybox case level",
+      "classes": [
+        "ASpnCreature",
+        "ASpnBell",
+        "ASpnThrowablePickup",
+        "ASpnThrownObject",
+        "ASpnAutosavePoint",
+        "USpnCaseSubsystem"
+      ],
+      "core_headers": [
+        "Creature.h",
+        "Difficulty.h"
+      ],
+      "keys": [
+        "DefaultThrowKey"
+      ],
+      "tests": [
+        "SpnGame.Case.CreatureHearsASprintButNotASneak",
+        "SpnGame.Case.ALoudNoiseStartsAPursuitAfterTheDifficultysHeadStart",
+        "SpnGame.Case.TheBellStunsOnlyCreaturesInRange",
+        "SpnGame.Case.ACatchKillsAndTheRespawnUsesTheDifficultysHealth",
+        "SpnGame.Case.SavingIsRefusedWhileTheCreatureHunts",
+        "SpnGame.Case.AThrownBottleIsALure",
+        "SpnCaseQA.Mill.ContentNavigationAndShots",
+        "SpnCaseQA.Flow.DeathScreenAndRespawnFromTheAutosave",
+        "core:Tests/Core/CreatureTests.cpp"
+      ],
+      "gap": "PLACEHOLDER case (Docs/Proposals/0019, Docs/NightBuild07): engine shapes, no sound, no animation; the developer makes the assets later. Headless tests tick a small world without a navigation mesh (the creature steers straight); SpnCaseQA.Mill checks the generated level Lvl_SpnCaseMill (content, the navigation the creature needs, the player's ways) and takes 4 screenshots in a rendered -game run - not a playtest. SpnCaseQA.Flow (rendered -game run from the main menu) covers New game -> the arrival autosave -> death -> the death screen (Back does not close it) -> 'Load the last checkpoint' -> alive at the autosave with the difficulty's health, and the disabled Save entry of the pause menu while the creature hunts. NOT covered yet: the second autosave point (before_mill_night) in a walked run, a real catch in the level (the flow test kills by DamagePlayer), a picked bottle is not saved (it comes back after a load), health is not saved, no crouch key exists (Walk is the quiet gait). Values are placeholders (two TEST difficulty profiles only; DIF-01 count and names open). No manual playtest. The SpnCaseQA.* tests are deliberately not SpnQA.* (the QA runner would run them on its own maps; on 2026-11-26 that crashed a QA Full run before the rename) and are not part of run_gameplay_qa.ps1 yet."
+    },
+    {
       "id": "devices",
       "title": "Switch, button, lever and links (Core foundation)",
       "core_headers": [
