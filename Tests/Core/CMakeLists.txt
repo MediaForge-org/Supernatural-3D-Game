@@ -32,6 +32,7 @@ add_executable(spn_core_tests
     LedgeAssistTests.cpp
     BodyCoverageTests.cpp
     BodyCollisionTests.cpp
+    CreatureTests.cpp
     GroundSteeringTests.cpp
     LocomotionTests.cpp
     MapGeometryTests.cpp
