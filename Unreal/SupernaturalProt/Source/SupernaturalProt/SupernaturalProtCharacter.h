@@ -82,6 +82,13 @@ class ASupernaturalProtCharacter : public ACharacter
 	UPROPERTY(Transient)
 	UInputMappingContext* RuntimeGaitMappingContext;
 
+	/** Runtime action and context that throw a carried object (first case, NightBuild07; placeholder binding) */
+	UPROPERTY(Transient)
+	UInputAction* RuntimeThrowAction;
+
+	UPROPERTY(Transient)
+	UInputMappingContext* RuntimeThrowMappingContext;
+
 	/** Gamepad-only runtime actions (developer decision 2026-11-14): Force = hold Square, L3 = sprint toggle (tap) / gait change (hold) */
 	UPROPERTY(Transient)
 	UInputAction* RuntimeForcePadAction;
@@ -188,6 +195,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Input")
 	FKey DefaultGaitCycleKey = EKeys::V;
 
+	/** Key that throws a carried object, a lure for the case creature (placeholder binding, mapped at runtime) */
+	UPROPERTY(EditAnywhere, Category="Input")
+	FKey DefaultThrowKey = EKeys::G;
+
 public:
 
 	/** Constructor: uses USpnCharacterMovementComponent (four gaits, configurable jump height) */
@@ -212,6 +223,7 @@ protected:
 
 	/** Creates (once) and maps the runtime gait-cycle action */
 	UInputAction* ResolveGaitAction();
+	UInputAction* ResolveThrowAction();
 
 protected:
 
@@ -294,6 +306,9 @@ public:
 	/** Cycles the base gait Walk -> Jog -> Run */
 	UFUNCTION(BlueprintCallable, Category="Input")
 	virtual void DoCycleGait();
+
+	/** Throws one carried object (USpnCaseSubsystem::Throw); nothing if none is carried */
+	virtual void DoThrow();
 
 	/**
 	 * A short automatic step to Target (world, only X/Y are used), e.g. out of the swing of a door this character just opened.

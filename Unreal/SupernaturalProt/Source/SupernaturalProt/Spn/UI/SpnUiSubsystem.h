@@ -42,6 +42,8 @@ enum class ESpnPage : uint8
 	Slots,
 	Confirm,
 	Map,
+	/** First case (NightBuild07): the death screen (load the last checkpoint / main menu). Cannot be closed with Back. */
+	Death,
 };
 
 UENUM()
@@ -70,6 +72,8 @@ public:
 	void ShowMainMenu();
 	bool OpenPause();
 	bool OpenMap();
+	/** The death screen (USpnCaseSubsystem::OnPlayerDied). False without the game flow. */
+	bool OpenDeath(const FString& Cause);
 	void OpenSettings();
 	void OpenSlots(ESpnSlotMode Mode);
 	void ShowConfirm(const FText& Title, const FText& Body, const FText& YesLabel, TFunction<void()> OnYes);
@@ -117,6 +121,9 @@ private:
 	void FillSettings();
 	void FillSlots();
 	void FillConfirm();
+	void FillDeath();
+	void HandleCaseDeath(const FString& Cause);
+	void BindCase();
 	void OnActivate(ESpnPage Page, FName Id, bool bSecondary);
 	void OnAdjust(ESpnPage Page, FName Id, int32 Delta);
 
@@ -152,6 +159,9 @@ private:
 	TMap<FName, FString> SlotItems;
 	FString PendingMismatchSlot;
 	FDelegateHandle WorldReadyHandle;
+	FDelegateHandle CaseDeathHandle;
+	TWeakObjectPtr<UObject> CaseBound;
+	FString DeathCause;
 	FDelegateHandle PendingLoadHandle;
 	FDelegateHandle PostLoadHandle;
 	TArray<FIntPoint> Resolutions;

@@ -24,6 +24,7 @@
 #include "Spn/UI/SpnUiText.h"
 #include "InputTriggers.h"
 #include "SupernaturalProt.h"
+#include "Spn/Case/SpnCaseSubsystem.h"
 
 namespace
 {
@@ -115,6 +116,9 @@ void ASupernaturalProtCharacter::SetupPlayerInputComponent(UInputComponent* Play
 
 		// Base gait (Walk -> Jog -> Run)
 		EnhancedInputComponent->BindAction(ResolveGaitAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoCycleGait);
+
+		// First case (NightBuild07): throw a carried object as a lure
+		EnhancedInputComponent->BindAction(ResolveThrowAction(), ETriggerEvent::Started, this, &ASupernaturalProtCharacter::DoThrow);
 
 		// Gamepad (developer decision 2026-11-14): Force = Square held, L3 = sprint toggle (tap) / gait change (hold)
 		ResolvePadActions();
@@ -213,6 +217,14 @@ void ASupernaturalProtCharacter::EndPlay(const EEndPlayReason::Type EndPlayReaso
 		}
 	}
 
+	if (RuntimeThrowMappingContext != nullptr)
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+		{
+			EnhancedInput->RemoveMappingContext(RuntimeThrowMappingContext);
+		}
+	}
+
 	if (RuntimePadMappingContext != nullptr)
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
@@ -245,6 +257,32 @@ UInputAction* ASupernaturalProtCharacter::ResolveGaitAction()
 		EnhancedInput->AddMappingContext(RuntimeGaitMappingContext, RuntimeInteractContextPriority);
 	}
 	return RuntimeGaitAction;
+}
+
+UInputAction* ASupernaturalProtCharacter::ResolveThrowAction()
+{
+	if (RuntimeThrowAction == nullptr)
+	{
+		RuntimeThrowAction = NewObject<UInputAction>(this, TEXT("IA_SpnThrow_Runtime"), RF_Transient);
+		RuntimeThrowAction->ValueType = EInputActionValueType::Boolean;
+
+		RuntimeThrowMappingContext = NewObject<UInputMappingContext>(this, TEXT("IMC_SpnThrow_Runtime"), RF_Transient);
+		RuntimeThrowMappingContext->MapKey(RuntimeThrowAction, DefaultThrowKey);
+	}
+
+	if (UEnhancedInputLocalPlayerSubsystem* EnhancedInput = GetEnhancedInput(GetController()))
+	{
+		EnhancedInput->AddMappingContext(RuntimeThrowMappingContext, RuntimeInteractContextPriority);
+	}
+	return RuntimeThrowAction;
+}
+
+void ASupernaturalProtCharacter::DoThrow()
+{
+	if (USpnCaseSubsystem* Case = GetWorld() != nullptr ? GetWorld()->GetSubsystem<USpnCaseSubsystem>() : nullptr)
+	{
+		Case->Throw(this);
+	}
 }
 
 UInputAction* ASupernaturalProtCharacter::ResolveSprintAction()

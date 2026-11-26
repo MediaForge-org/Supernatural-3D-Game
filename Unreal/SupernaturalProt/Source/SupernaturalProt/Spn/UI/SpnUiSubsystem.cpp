@@ -23,6 +23,7 @@
 #include "SpnMapSubsystem.h"
 #include "SpnSaveSubsystem.h"
 #include "Spn/SpnSessionSubsystem.h"
+#include "Spn/Case/SpnCaseSubsystem.h"
 #include "Spn/SpnInteractable.h"
 #include "Spn/SpnInteractionComponent.h"
 #include "Spn/UI/SpnHudWidget.h"
@@ -218,7 +219,72 @@ void USpnUiSubsystem::HandleWorldReady(bool bMenu)
 	{
 		EnsureHud();
 		ApplyGameplayInput(0);
+		BindCase();
 	}
+}
+
+void USpnUiSubsystem::BindCase()
+{
+	APlayerController* Controller = GetController();
+	UWorld* World = Controller != nullptr ? Controller->GetWorld() : nullptr;
+	USpnCaseSubsystem* Case = World != nullptr ? World->GetSubsystem<USpnCaseSubsystem>() : nullptr;
+	if (Case == nullptr || CaseBound.Get() == Case)
+	{
+		return;
+	}
+	if (USpnCaseSubsystem* Old = Cast<USpnCaseSubsystem>(CaseBound.Get()))
+	{
+		Old->OnPlayerDied.Remove(CaseDeathHandle);
+	}
+	CaseDeathHandle = Case->OnPlayerDied.AddUObject(this, &USpnUiSubsystem::HandleCaseDeath);
+	CaseBound = Case;
+}
+
+void USpnUiSubsystem::HandleCaseDeath(const FString& Cause)
+{
+	OpenDeath(Cause);
+}
+
+bool USpnUiSubsystem::OpenDeath(const FString& Cause)
+{
+	USpnSessionSubsystem* Session = GetSession();
+	if (Session == nullptr || !Session->IsGameFlowEnabled() || Session->IsMenuWorld() || GetController() == nullptr)
+	{
+		return false;
+	}
+	CloseAll(); // a pause or the map closes: death wins
+	DeathCause = Cause;
+	if (USpnMenuScreen* Menu = GetOrCreateMenu(ESpnPage::Death))
+	{
+		Menu->SetBackdropOpacity(0.88f);
+	}
+	EnsureHud();
+	Push(ESpnPage::Death);
+	return true;
+}
+
+void USpnUiSubsystem::FillDeath()
+{
+	USpnMenuScreen* Menu = GetMenuScreen(ESpnPage::Death);
+	if (Menu == nullptr)
+	{
+		return;
+	}
+	USpnSessionSubsystem* Session = GetSession();
+	const bool bHasSave = Session != nullptr && !Session->FindContinueSlot().IsEmpty();
+	TArray<FSpnMenuItem> Items;
+	FSpnMenuItem Reload;
+	Reload.Id = TEXT("reload");
+	Reload.Title = T(TEXT("ui.death.reload"));
+	Reload.Subtitle = bHasSave ? FText::GetEmpty() : T(TEXT("ui.death.reload.nosave"));
+	Items.Add(Reload);
+	FSpnMenuItem Main;
+	Main.Id = TEXT("mainmenu");
+	Main.Title = T(TEXT("ui.pause.mainmenu"));
+	Items.Add(Main);
+	const FText Body = DeathCause == TEXT("creature") ? T(TEXT("ui.death.cause.creature")) : FText::GetEmpty();
+	Menu->SetTexts(T(TEXT("ui.death.title")), Body, T(TEXT("ui.death.footer")));
+	Menu->SetItems(Items, TEXT("reload"));
 }
 
 void USpnUiSubsystem::ApplyGameplayInput(int32 Attempt)
@@ -505,6 +571,7 @@ void USpnUiSubsystem::RefreshPage(ESpnPage Page)
 	case ESpnPage::Settings: FillSettings(); break;
 	case ESpnPage::Slots: FillSlots(); break;
 	case ESpnPage::Confirm: FillConfirm(); break;
+	case ESpnPage::Death: FillDeath(); break;
 	default: break;
 	}
 }
@@ -580,9 +647,9 @@ void USpnUiSubsystem::Pop()
 
 void USpnUiSubsystem::Back()
 {
-	if (Stack.IsEmpty() || Stack.Last() == ESpnPage::MainMenu)
+	if (Stack.IsEmpty() || Stack.Last() == ESpnPage::MainMenu || Stack.Last() == ESpnPage::Death)
 	{
-		return; // the main menu is the base of the stack and cannot be closed
+		return; // the main menu is the base of the stack and cannot be closed; the death screen needs a choice
 	}
 	Pop();
 }
@@ -752,6 +819,15 @@ void USpnUiSubsystem::FillPause()
 	auto Add = [&Items](const TCHAR* Id, const TCHAR* Key) { FSpnMenuItem I; I.Id = Id; I.Title = T(Key); Items.Add(I); };
 	Add(TEXT("resume"), TEXT("ui.pause.resume"));
 	Add(TEXT("save"), TEXT("ui.pause.save"));
+	if (const USpnCaseSubsystem* Case = GetController() != nullptr && GetController()->GetWorld() != nullptr ? GetController()->GetWorld()->GetSubsystem<USpnCaseSubsystem>() : nullptr)
+	{
+		if (Case->IsSaveBlocked()) // TOD-03: no save while a creature hunts the player
+		{
+			Items.Last().bEnabled = false;
+			Items.Last().Subtitle = T(TEXT("ui.save.blocked"));
+			Items.Last().SubtitleColor = SpnUi::Warning;
+		}
+	}
 	Add(TEXT("load"), TEXT("ui.pause.load"));
 	Add(TEXT("settings"), TEXT("ui.menu.settings"));
 	Add(TEXT("mainmenu"), TEXT("ui.pause.mainmenu"));
@@ -1005,6 +1081,15 @@ void USpnUiSubsystem::DoSaveToSlot(const FString& SlotId)
 	{
 		return;
 	}
+	if (const USpnCaseSubsystem* Case = GetController() != nullptr && GetController()->GetWorld() != nullptr ? GetController()->GetWorld()->GetSubsystem<USpnCaseSubsystem>() : nullptr)
+	{
+		if (Case->IsSaveBlocked())
+		{
+			if (Menu != nullptr) { Menu->SetMessage(T(TEXT("ui.save.blocked")), SpnUi::Error); }
+			Notify(T(TEXT("ui.save.blocked")), SpnUi::ENote::Error);
+			return;
+		}
+	}
 	const FSpnSaveStatus Status = Session->SaveGame(SlotId);
 	if (Status.IsOk())
 	{
@@ -1113,6 +1198,21 @@ void USpnUiSubsystem::OnActivate(ESpnPage Page, FName Id, bool bSecondary)
 			const FString Chosen = *Slot;
 			ShowConfirm(T(TEXT("ui.confirm.load.title")), T(TEXT("ui.confirm.load.body"), {SlotTitle(Chosen)}), T(TEXT("ui.confirm.load.yes")),
 				[this, Chosen]() { DoLoadSlot(Chosen, false); });
+		}
+		break;
+	}
+	case ESpnPage::Death:
+	{
+		APlayerController* Controller = GetController();
+		USpnCaseSubsystem* Case = Controller != nullptr && Controller->GetWorld() != nullptr ? Controller->GetWorld()->GetSubsystem<USpnCaseSubsystem>() : nullptr;
+		if (Id == TEXT("reload"))
+		{
+			Pop(); // the death page is not closable by Back, so it is popped here
+			if (Case != nullptr) { Case->Respawn(); }
+		}
+		else if (Id == TEXT("mainmenu"))
+		{
+			Session->ReturnToMainMenu();
 		}
 		break;
 	}
